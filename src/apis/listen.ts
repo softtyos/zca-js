@@ -4,7 +4,7 @@ import { type FriendEvent, initializeFriendEvent, type TFriendEvent } from "../m
 import { type GroupEvent, initializeGroupEvent, type TGroupEvent } from "../models/GroupEvent.js";
 import type { Message, TGroupMessage, TMessage, TReaction, Typing } from "../models/index.js";
 import { GroupMessage, UserMessage, Reaction, Undo, ThreadType, GroupTyping, UserTyping } from "../models/index.js";
-import { decodeEventData, getFriendEventType, getGroupEventType, hasOwn, logger, makeURL } from "../utils.js";
+import { decodeEventData, getBrowserLanguage, getFriendEventType, getGroupEventType, hasOwn, logger, makeURL } from "../utils.js";
 import { ZaloApiError } from "../Errors/ZaloApiError.js";
 import type { ContextSession } from "../context.js";
 import { type SeenMessage, GroupSeenMessage, UserSeenMessage } from "../models/SeenMessage.js";
@@ -179,12 +179,12 @@ export class Listener extends EventEmitter<ListenerEvents> {
         const ws = new WebSocket(this.wsURL, {
             headers: {
                 "accept-encoding": "gzip, deflate, br, zstd",
-                "accept-language": "en-US,en;q=0.9",
+                "accept-language": getBrowserLanguage(this.ctx.language),
                 "cache-control": "no-cache",
                 connection: "Upgrade",
                 host: new URL(this.wsURL).host,
                 origin: "https://chat.zalo.me",
-                prgama: "no-cache",
+                pragma: "no-cache",
                 "sec-websocket-extensions": "permessage-deflate; client_max_window_bits",
                 "sec-websocket-version": "13",
                 upgrade: "websocket",
