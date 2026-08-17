@@ -176,9 +176,13 @@ export class Listener extends EventEmitter<ListenerEvents> {
     public start({ retryOnClose = false }: { retryOnClose?: boolean } = {}) {
         if (this.ws) throw new ZaloApiError("Already started");
 
+        this.wsURL = makeURL(this.ctx, this.urls[this.rotateCount], {
+            t: Date.now(),
+        });
+
+        const cookie = this.ctx.cookie.getCookieStringSync("https://chat.zalo.me");
         const ws = new WebSocket(this.wsURL, {
             headers: {
-                "accept-encoding": "gzip, deflate, br, zstd",
                 "accept-language": getBrowserLanguage(this.ctx.language),
                 "cache-control": "no-cache",
                 connection: "Upgrade",
@@ -189,9 +193,9 @@ export class Listener extends EventEmitter<ListenerEvents> {
                 "sec-websocket-version": "13",
                 upgrade: "websocket",
                 "user-agent": this.userAgent,
-                cookie: this.cookie,
+                cookie,
             },
-            agent: this.ctx.options.agent
+            agent: this.ctx.options.agent,
         });
         this.ws = ws;
 
