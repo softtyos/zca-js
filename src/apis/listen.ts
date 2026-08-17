@@ -80,6 +80,8 @@ export class Listener extends EventEmitter<ListenerEvents> {
     private selfListen;
     private pingInterval?: Timer;
     private retryTimeout?: Timer;
+    private watchdogTimeout?: Timer;
+    private consecutive1006Count = 0;
 
     private id = 0;
 
@@ -162,7 +164,16 @@ export class Listener extends EventEmitter<ListenerEvents> {
         retry.count++;
 
         const { count, max, times } = retry;
-        const retryTime = count - 1 < times.length ? times[count - 1] : times[times.length - 1];
+        let retryTime: number;
+        if (count - 1 < times.length) {
+            retryTime = times[count - 1];
+        } else {
+            const lastTime = times[times.length - 1] || 1000;
+            const multiplier = Math.min(Math.pow(1.5, count - times.length), 10);
+            const jitter = Math.floor(Math.random() * 1000);
+            retryTime = Math.min(Math.floor(lastTime * multiplier) + jitter, 30000);
+        }
+
         logger(this.ctx).verbose(`Retry for code ${code} in ${retryTime}ms (${count}/${max})`);
 
         return retryTime;
@@ -174,15 +185,36 @@ export class Listener extends EventEmitter<ListenerEvents> {
         }
     }
 
+    private resetWatchdog() {
+        if (this.watchdogTimeout) clearTimeout(this.watchdogTimeout);
+        this.watchdogTimeout = setTimeout(() => {
+            logger(this.ctx).verbose("Watchdog timeout: no packet/pong received from Zalo WebSocket in 50s. Forcing reconnect...");
+            if (this.ws) {
+                try {
+                    if (typeof this.ws.terminate === "function") {
+                        this.ws.terminate();
+                    } else if (typeof this.ws.close === "function") {
+                        this.ws.close(CloseReason.AbnormalClosure);
+                    }
+                } catch {
+                    // Ignore if already terminated
+                }
+            }
+        }, 50000);
+    }
+
     private shouldRotate(code: CloseReason) {
-        if (
-            code !== CloseReason.AbnormalClosure &&
-            !this.ctx.settings.features.socket.rotate_error_codes.includes(code)
-        ) {
+        if (code === CloseReason.AbnormalClosure) {
+            this.consecutive1006Count++;
+            if (this.consecutive1006Count >= 2) {
+                this.consecutive1006Count = 0;
+                return true;
+            }
             return false;
         }
 
-        return true;
+        this.consecutive1006Count = 0;
+        return this.ctx.settings.features.socket.rotate_error_codes.includes(code);
     }
 
     private rotateEndpoint() {
@@ -220,7 +252,9 @@ export class Listener extends EventEmitter<ListenerEvents> {
         this.ws = ws;
 
         ws.onopen = () => {
+            this.consecutive1006Count = 0;
             this.resetRetryCount();
+            this.resetWatchdog();
             this.onConnectedCallback();
             this.emit("connected");
         };
@@ -253,6 +287,7 @@ export class Listener extends EventEmitter<ListenerEvents> {
         };
 
         ws.onmessage = async (event) => {
+            this.resetWatchdog();
             this.emit("pong"); // Pulse event to notify watchdog that socket is alive
             const { data } = event;
             if (!(data instanceof Buffer)) return;
@@ -284,9 +319,14 @@ export class Listener extends EventEmitter<ListenerEvents> {
                         this.emit("ping");
                     };
 
+                    const pingIntervalTime = Math.min(
+                        Math.max(this.ctx.settings?.features?.socket?.ping_interval || 25000, 10000),
+                        25000,
+                    );
+
                     this.pingInterval = setInterval(() => {
                         ping();
-                    }, this.ctx.settings.features.socket.ping_interval);
+                    }, pingIntervalTime);
                 }
 
                 if (version == 1 && cmd == 501 && subCmd == 0) {
@@ -511,6 +551,7 @@ export class Listener extends EventEmitter<ListenerEvents> {
 
     public stop() {
         if (this.retryTimeout) clearTimeout(this.retryTimeout);
+        if (this.watchdogTimeout) clearTimeout(this.watchdogTimeout);
         if (this.ws) {
             if (this.ws.readyState !== WebSocket.CLOSED) {
                 this.ws.close(CloseReason.ManualClosure);
@@ -573,6 +614,7 @@ export class Listener extends EventEmitter<ListenerEvents> {
         this.ws = null;
         this.cipherKey = undefined;
         if (this.pingInterval) clearInterval(this.pingInterval);
+        if (this.watchdogTimeout) clearTimeout(this.watchdogTimeout);
     }
 }
 

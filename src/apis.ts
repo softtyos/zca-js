@@ -95,6 +95,7 @@ import { lastOnlineFactory } from "./apis/lastOnline.js";
 import { leaveGroupFactory } from "./apis/leaveGroup.js";
 import { lockPollFactory } from "./apis/lockPoll.js";
 import { parseLinkFactory } from "./apis/parseLink.js";
+import { preloadConversationsFactory } from "./apis/preloadConversations.js";
 import { rejectFriendRequestFactory } from "./apis/rejectFriendRequest.js";
 import { removeFriendFactory } from "./apis/removeFriend.js";
 import { removeFriendAliasFactory } from "./apis/removeFriendAlias.js";
@@ -247,6 +248,7 @@ export class API {
     public leaveGroup: ReturnType<typeof leaveGroupFactory>;
     public lockPoll: ReturnType<typeof lockPollFactory>;
     public parseLink: ReturnType<typeof parseLinkFactory>;
+    public preloadConversations: ReturnType<typeof preloadConversationsFactory>;
     public rejectFriendRequest: ReturnType<typeof rejectFriendRequestFactory>;
     public removeFriend: ReturnType<typeof removeFriendFactory>;
     public removeFriendAlias: ReturnType<typeof removeFriendAliasFactory>;
@@ -399,6 +401,7 @@ export class API {
         this.leaveGroup = leaveGroupFactory(ctx, this);
         this.lockPoll = lockPollFactory(ctx, this);
         this.parseLink = parseLinkFactory(ctx, this);
+        this.preloadConversations = preloadConversationsFactory(ctx, this);
         this.rejectFriendRequest = rejectFriendRequestFactory(ctx, this);
         this.removeFriend = removeFriendFactory(ctx, this);
         this.removeFriendAlias = removeFriendAliasFactory(ctx, this);
