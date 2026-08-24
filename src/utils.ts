@@ -342,13 +342,13 @@ export async function getDefaultHeaders(ctx: ContextBase, origin: string = "http
         "accept-language": getBrowserLanguage(ctx.language),
         "content-type": "application/x-www-form-urlencoded",
         cookie: await ctx.cookie.getCookieString(origin),
-        origin: "https://chat.zalo.me",
+        origin: origin,
         priority: "u=1, i",
-        referer: "https://chat.zalo.me/",
+        referer: `${origin}/`,
         "user-agent": ctx.userAgent,
         "sec-fetch-dest": "empty",
         "sec-fetch-mode": "cors",
-        "sec-fetch-site": "same-site",
+        "sec-fetch-site": origin === "https://id.zalo.me" ? "same-origin" : "same-site",
         ...secChUa,
     };
 }
@@ -359,9 +359,22 @@ export async function request(ctx: ContextBase, url: string, options?: RequestIn
 
     const defaultHeaders = await getDefaultHeaders(ctx, origin);
     if (!raw) {
-        if (options) {
-            options.headers = Object.assign(defaultHeaders, options.headers || {});
-        } else options = { headers: defaultHeaders };
+        if (options && options.headers) {
+            const mergedHeaders: Record<string, string> = { ...defaultHeaders };
+            const inputHeaders = options.headers as Record<string, string>;
+            for (const [key, value] of Object.entries(inputHeaders)) {
+                const lowerKey = key.toLowerCase();
+                for (const existingKey of Object.keys(mergedHeaders)) {
+                    if (existingKey.toLowerCase() === lowerKey && existingKey !== key) {
+                        delete mergedHeaders[existingKey];
+                    }
+                }
+                mergedHeaders[key] = value;
+            }
+            options.headers = mergedHeaders;
+        } else {
+            options = { ...(options || {}), headers: defaultHeaders };
+        }
     }
 
     const _options = {
