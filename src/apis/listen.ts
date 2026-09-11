@@ -226,7 +226,25 @@ export class Listener extends EventEmitter<ListenerEvents> {
     }
 
     public start({ retryOnClose = false }: { retryOnClose?: boolean } = {}) {
-        if (this.ws) throw new ZaloApiError("Already started");
+        if (this.retryTimeout) {
+            clearTimeout(this.retryTimeout);
+            this.retryTimeout = undefined;
+        }
+
+        if (this.ws) {
+            const state = this.ws.readyState;
+            if (state === WebSocket.CONNECTING || state === WebSocket.OPEN) {
+                logger(this.ctx).warn("Listener is already active or connecting. Skipping duplicate start().");
+                return;
+            }
+            try {
+                this.ws.removeAllListeners();
+                this.ws.close();
+            } catch {
+                // ignore
+            }
+            this.ws = null;
+        }
 
         this.wsURL = makeURL(this.ctx, this.urls[this.rotateCount], {
             t: Date.now(),
@@ -273,7 +291,11 @@ export class Listener extends EventEmitter<ListenerEvents> {
                 }
                 this.emit("reconnecting", event.code as CloseReason);
                 this.retryTimeout = setTimeout(() => {
-                    this.start({ retryOnClose: true });
+                    try {
+                        this.start({ retryOnClose: true });
+                    } catch (error) {
+                        logger(this.ctx).error("Failed to auto-restart listener on retry timeout:", error);
+                    }
                 }, retry);
             } else {
                 this.onClosedCallback(event.code, event.reason);
