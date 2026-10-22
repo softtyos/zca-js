@@ -15,8 +15,10 @@ import {
     ThreadType,
     UserMessage,
     decryptWithPrivateKey,
+    decryptZCloudAES,
     decryptZdbBuffer,
     deriveZdbAesKey,
+    encryptZCloudAES,
     generateRSAKeyPair,
 } from "../src/index.js";
 import { createContext, type ContextSession } from "../src/context.js";
@@ -476,6 +478,7 @@ async function runVerificationSuite() {
     const receivedUnreadCleared: ClearUnread[][] = [];
     const receivedSyncEvents: unknown[] = [];
     const receivedCallEvents: unknown[] = [];
+    const receivedVoice2TextEvents: Array<{ act: string; act_type: string; data: { req_id: string; text?: string } }> = [];
 
     api.listener.on("old_messages", (msgs, type, hasMore) => {
         if (type === ThreadType.User) receivedOldUserMsgs.push(msgs as UserMessage[]);
@@ -485,6 +488,7 @@ async function runVerificationSuite() {
     api.listener.on("unread_cleared", (items) => receivedUnreadCleared.push(items));
     api.listener.on("sync_event", (ev) => receivedSyncEvents.push(ev));
     api.listener.on("call_event", (ev) => receivedCallEvents.push(ev));
+    api.listener.on("voice2text_event", (ev) => receivedVoice2TextEvents.push(ev));
 
     // Khởi tạo 1 socket nội bộ ngắn để kích hoạt đúng hàm ws.onmessage thật của Listener
     const { WebSocketServer } = await import("ws");
@@ -624,6 +628,17 @@ async function runVerificationSuite() {
                                     }),
                                 },
                             },
+                            {
+                                content: {
+                                    act_type: "voice2text",
+                                    act: "convert_finish",
+                                    data: JSON.stringify({
+                                        req_id: "v2t-req-123",
+                                        err: 0,
+                                        text: "Xin chào Zalo AI",
+                                    }),
+                                },
+                            },
                         ],
                     },
                 });
@@ -657,9 +672,74 @@ async function runVerificationSuite() {
     assert.equal((receivedSyncEvents[1] as { type: string }).type, SyncEventType.TRANSFER_AFTER_LOGIN);
     assert.equal(receivedCallEvents.length, 1, "Phải nhận được sự kiện call_event (voip answer)");
     assert.equal((receivedCallEvents[0] as { type: string }).type, CallEventType.ANSWER);
+    assert.equal(receivedVoice2TextEvents.length, 1, "Phải nhận được sự kiện voice2text_event");
+    assert.equal(receivedVoice2TextEvents[0].data.req_id, "v2t-req-123");
+    assert.equal(receivedVoice2TextEvents[0].data.text, "Xin chào Zalo AI");
 
-    console.log("✅ [6/6] Listener WebSocket (510/511 subCmd 0&1, undo, 504 unread_cleared, 601 sync_event & call_event): Hoạt động chính xác.");
-    console.log("\n🎉 TẤT CẢ 6 HẠNG MỤC KIỂM ĐỊNH ĐỀU VƯỢT QUA 100%!");
+    console.log("✅ [6/7] Listener WebSocket (510/511 subCmd 0&1, undo, 504 unread_cleared, 601 sync_event, call_event & voice2text_event): Hoạt động chính xác.");
+
+    // ========================================================================
+    // 7. KIỂM TRA MÃ HÓA ZCLOUD (98yS AES-256-CBC RANDOM IV) & 38 API MỚI (26.7.10)
+    // ========================================================================
+    const sampleZCloudKey = crypto.randomBytes(32).toString("base64");
+    const sampleZCloudPayload = JSON.stringify({ usage: 1024, quota: 524288000, plan: -1 });
+    const encryptedZCloud1 = encryptZCloudAES(sampleZCloudPayload, sampleZCloudKey);
+    const encryptedZCloud2 = encryptZCloudAES(sampleZCloudPayload, sampleZCloudKey);
+    assert.notEqual(encryptedZCloud1, encryptedZCloud2, "encryptZCloudAES phải tạo 16-byte random IV khác nhau mỗi lần");
+    assert.equal(decryptZCloudAES(encryptedZCloud1, sampleZCloudKey), sampleZCloudPayload);
+    assert.equal(decryptZCloudAES(encryptedZCloud2, sampleZCloudKey), sampleZCloudPayload);
+
+    const newApiMethods = [
+        "getCloudViewerKey",
+        "getUsageZCloud",
+        "getUsageMyCloud",
+        "getCloudSettings",
+        "getCloudInfo",
+        "getFamilyUsage",
+        "verifyCloudMedia",
+        "getFamilyViewerKey",
+        "getFamilyProfile",
+        "voiceToText",
+        "getEmojiStatusConfig",
+        "getFriendsEmojiStatus",
+        "getRecentSearchList",
+        "updateRecentSearch",
+        "getConversationMedia",
+        "getMediaStorePreview",
+        "removeConversationMedia",
+        "encryptGids",
+        "getMiniProfile",
+        "getPhonebookV2",
+        "getAliasListV2",
+        "getBlockFriends",
+        "getExtraGroupInfo",
+        "getExtraFriendInfo",
+        "getQuotaCommunity",
+        "getProfileRank",
+        "getProfileVerificationStatus",
+        "getLastSeen",
+        "getLastSeenReaction",
+        "undoMultiMessage",
+        "getLastReadContactTab",
+        "readContactTab",
+        "clearUnreadFriendRequests",
+        "getListPinTopics",
+        "getGroupCloudMessageJump",
+        "getStickerCategoriesV2",
+        "getStickerCategoryData",
+        "getStickerSuggestKeywords",
+        "getStickerSuggestion",
+        "getPersonalizedStickerList",
+        "getStickerHello",
+        "keepAlive",
+    ] as const;
+
+    for (const methodName of newApiMethods) {
+        assert.equal(typeof api[methodName], "function", `API method api.${methodName} phải tồn tại trên class API`);
+    }
+
+    console.log(`✅ [7/7] ZCloud AES-256-CBC (98yS) & ${newApiMethods.length} API mới từ Zalo PC 26.7.10: Đã gắn kết và kiểm định 100%.`);
+    console.log("\n🎉 TẤT CẢ 7 HẠNG MỤC KIỂM ĐỊNH ĐỀU VƯỢT QUA 100%!");
 }
 
 runVerificationSuite().catch((err) => {

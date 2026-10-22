@@ -170,6 +170,49 @@ export type { VotePollResponse } from "./apis/votePoll.js";
 
 export type { CustomAPICallback, CustomAPIProps } from "./apis/custom.js";
 
+// Zalo PC 26.7.10 Live-Verified API Types
+export type { ClearUnreadFriendRequestsResponse } from "./apis/clearUnreadFriendRequests.js";
+export type { EncryptGidsResponse } from "./apis/encryptGids.js";
+export type { GetAliasListV2Response } from "./apis/getAliasListV2.js";
+export type { GetBlockFriendsResponse } from "./apis/getBlockFriends.js";
+export type { GetCloudInfoResponse } from "./apis/getCloudInfo.js";
+export type { GetCloudSettingsResponse } from "./apis/getCloudSettings.js";
+export type { GetCloudViewerKeyResponse } from "./apis/getCloudViewerKey.js";
+export type { GetConversationMediaOptions, GetConversationMediaResponse } from "./apis/getConversationMedia.js";
+export type { GetEmojiStatusConfigResponse } from "./apis/getEmojiStatusConfig.js";
+export type { GetExtraFriendInfoResponse } from "./apis/getExtraFriendInfo.js";
+export type { GetExtraGroupInfoResponse } from "./apis/getExtraGroupInfo.js";
+export type { GetFamilyProfileResponse } from "./apis/getFamilyProfile.js";
+export type { GetFamilyUsageResponse } from "./apis/getFamilyUsage.js";
+export type { GetFamilyViewerKeyResponse } from "./apis/getFamilyViewerKey.js";
+export type { GetFriendsEmojiStatusOptions, GetFriendsEmojiStatusResponse } from "./apis/getFriendsEmojiStatus.js";
+export type { GetGroupCloudMessageJumpResponse } from "./apis/getGroupCloudMessageJump.js";
+export type { GetLastReadContactTabResponse } from "./apis/getLastReadContactTab.js";
+export type { GetLastSeenOptions, GetLastSeenResponse } from "./apis/getLastSeen.js";
+export type { GetLastSeenReactionOptions, GetLastSeenReactionResponse } from "./apis/getLastSeenReaction.js";
+export type { GetMediaStorePreviewResponse } from "./apis/getMediaStorePreview.js";
+export type { GetMiniProfileResponse, MiniProfileItem } from "./apis/getMiniProfile.js";
+export type { GetPersonalizedStickerListResponse } from "./apis/getPersonalizedStickerList.js";
+export type { GetPhonebookV2Response } from "./apis/getPhonebookV2.js";
+export type { GetProfileRankResponse } from "./apis/getProfileRank.js";
+export type { GetProfileVerificationStatusResponse } from "./apis/getProfileVerificationStatus.js";
+export type { GetQuotaCommunityResponse } from "./apis/getQuotaCommunity.js";
+export type { GetRecentSearchListResponse } from "./apis/getRecentSearchList.js";
+export type { GetStickerCategoriesV2Response, StickerCategoryV2Item } from "./apis/getStickerCategoriesV2.js";
+export type { GetStickerCategoryDataResponse } from "./apis/getStickerCategoryData.js";
+export type { GetStickerHelloResponse, StickerHelloItem } from "./apis/getStickerHello.js";
+export type { GetStickerSuggestionOptions, GetStickerSuggestionResponse } from "./apis/getStickerSuggestion.js";
+export type { GetStickerSuggestKeywordsResponse } from "./apis/getStickerSuggestKeywords.js";
+export type { GetUsageMyCloudResponse } from "./apis/getUsageMyCloud.js";
+export type { GetUsageZCloudResponse } from "./apis/getUsageZCloud.js";
+export type { ReadContactTabResponse } from "./apis/readContactTab.js";
+export type { RemoveConversationMediaOptions, RemoveConversationMediaResponse } from "./apis/removeConversationMedia.js";
+export type { UndoMultiMessageItem, UndoMultiMessageResponse } from "./apis/undoMultiMessage.js";
+export type { UpdateRecentSearchOptions, UpdateRecentSearchResponse } from "./apis/updateRecentSearch.js";
+export type { VerifyCloudMediaOptions, VerifyCloudMediaResponse } from "./apis/verifyCloudMedia.js";
+export type { VoiceToTextResponse } from "./apis/voiceToText.js";
+export type { Voice2TextEvent, Voice2TextEventData } from "./apis/listen.js";
+
 // Others (Enum)
 export { CloseReason } from "./apis/listen.js";
 export { LoginQRCallbackEventType } from "./apis/loginQR.js";
@@ -188,5 +231,7 @@ export {
     deriveZdbAesKey,
     decryptZdbBuffer,
     parseZdbHeader,
+    encryptZCloudAES,
+    decryptZCloudAES,
     type ZdbTocEntry,
 } from "./utils.js";

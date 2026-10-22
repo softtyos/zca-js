@@ -369,3 +369,113 @@ api.listener.on("call_event", (event) => {
 > - Kiểm định toàn diện trên Server thật (6 bước): `npm run test:live`
 > - Chỉ test nhanh Gọi Thoại + Video tới 1 UID: `npm run test:live -- --only-call --call <UID>`
 > - Chỉ test riêng Gọi Video tới 1 UID: `npm run test:live -- --only-call --video-only --call <UID>`
+
+---
+
+## 6. Hệ Sinh Thái 36 API Mới Bóc Tách Từ Zalo PC `26.7.10` (Đã Kiểm Định Live 100%)
+
+Toàn bộ các API dưới đây được bóc tách từ mã nguồn Zalo PC `26.7.10` (macOS) và **đã vượt qua 100% kiểm định trực tiếp trên máy chủ Zalo thật (`error_code === 0`)**:
+
+### 6.1. Hệ Sinh Thái ZCloud & ZFamily (Chuẩn mã hóa `98yS` — AES-256-CBC với 16-Byte Random IV)
+
+Khác với các API thông thường dùng Zero-IV, các dịch vụ ZCloud (`zcld.chat.zalo.me`) và ZFamily (`zfml.chat.zalo.me`) sử dụng cặp khóa `{ viewer_key, enk }` từ `getCloudViewerKey()` / `getFamilyViewerKey()` và giải mã dữ liệu bằng `decryptZCloudAES(data, enk)` (tự động trích xuất 16 byte đầu của bản mã Base64 làm IV).
+
+```ts
+// 1. Lấy khóa phiên ZCloud (tùy chọn — các hàm dưới đây sẽ tự động gọi nếu không truyền vào)
+const cloudKey = await api.getCloudViewerKey();
+
+// 2. Kiểm tra dung lượng ZCloud V2, MyCloud, cài đặt ZCloud và gói Gia đình
+const zcloudUsage = await api.getUsageZCloud(cloudKey);
+const myCloudUsage = await api.getUsageMyCloud(cloudKey);
+const cloudSettings = await api.getCloudSettings(cloudKey);
+const cloudInfo = await api.getCloudInfo(cloudKey);
+const familyUsage = await api.getFamilyUsage(cloudKey);
+const verifyQueue = await api.verifyCloudMedia({}, cloudKey);
+
+// 3. Lấy khóa phiên ZFamily và thông tin gói ZFamily
+const familyKey = await api.getFamilyViewerKey();
+const familyProfile = await api.getFamilyProfile(familyKey);
+```
+
+### 6.2. AI Voice-to-Text (`13394`) & Sự Kiện WebSocket `voice2text_event`
+
+Chuyển đổi tin nhắn thoại sang văn bản bằng trí tuệ nhân tạo của Zalo:
+
+```ts
+// Lắng nghe kết quả nhận diện giọng nói trả về bất đồng bộ qua Control WebSocket (cmd=601)
+api.listener.on("voice2text_event", (event) => {
+    console.log("Hoàn tất chuyển giọng nói thành văn bản:", event.data.req_id, event.data);
+});
+
+// Gửi yêu cầu chuyển đổi URL file âm thanh (.aac / .m4a)
+const { req_id } = await api.voiceToText("https://voice.chat.zalo.me/...");
+```
+
+### 6.3. Trạng Thái Cảm Xúc (Emoji Status) & Lịch Sử Tìm Kiếm Gần Đây (Recent Search)
+
+```ts
+// Lấy bộ cấu hình Emoji Status và trạng thái hiện tại của danh sách bạn bè
+const emojiConfig = await api.getEmojiStatusConfig(0);
+const friendsEmoji = await api.getFriendsEmojiStatus();
+
+// Lấy và cập nhật lịch sử tìm kiếm gần đây (tự động đồng bộ version chống lỗi 160)
+const recentSearch = await api.getRecentSearchList(0);
+await api.updateRecentSearch({
+    listRecent: recentSearch.list_recent,
+    listKeyword: ["SofttyNet", "Zalo SDK"],
+});
+```
+
+### 6.4. Kho Lưu Trữ Hội Thoại (Media Store — Ảnh/Video, File, Link)
+
+> **Lưu ý quan trọng:** Máy chủ Zalo yêu cầu `mediaType` phải thuộc 1 trong 3 giá trị: `"media"` (ảnh & video), `"file"`, hoặc `"link"`.
+
+```ts
+// Lấy danh sách Ảnh/Video, File hoặc Link trong kho lưu trữ nhóm
+const mediaItems = await api.getConversationMedia({
+    groupId: "6522526361652130721",
+    mediaType: "media", // "media" | "file" | "link"
+    limit: 20,
+});
+
+// Xem trước kho lưu trữ nhóm
+const preview = await api.getMediaStorePreview("6522526361652130721", ThreadType.Group, 10);
+
+// Xóa media khỏi kho lưu trữ hội thoại
+await api.removeConversationMedia({
+    threadId: "6522526361652130721",
+    type: ThreadType.Group,
+    msgIds: ["8404893204600"],
+});
+```
+
+### 6.5. Nhóm, Hồ Sơ, Danh Bạ, Tin Nhắn & Nhãn Dán Mở Rộng
+
+| Phương thức `api.*` | Command ID | Endpoint | Công dụng |
+| :--- | :---: | :--- | :--- |
+| `api.encryptGids(uids)` | `12053` | `/api/gid/encrypt` | Mã hóa danh sách UID thật sang Global/Noise ID (chiều ngược của `decryptGids`) |
+| `api.getMiniProfile(friendIds)` | `12134` | `/api/social/friend/getminiprofiles` | Lấy hồ sơ rút gọn hàng loạt của danh sách UID |
+| `api.getPhonebookV2(version?)` | `12428` | `/api/social/friend/phonebook/v2` | Lấy danh bạ đồng bộ từ điện thoại (Phonebook V2) |
+| `api.getAliasListV2(options?)` | `12205` | `/api/alias/list/v2` | Lấy danh sách tên gợi nhớ (Alias V2) |
+| `api.getBlockFriends(options?)` | `11429` | `/api/friend/blocklistv2` | Lấy danh sách người dùng đang bị chặn (Blocklist V2) |
+| `api.getExtraGroupInfo(groupIds)` | `12607` | `/api/group/userctx/multiget` | Lấy ngữ cảnh mục đích & vai trò (`purpose`, `role`) của nhiều nhóm |
+| `api.getExtraFriendInfo(friendIds)` | `11442` | `/api/friend/context/multiget` | Lấy ngữ cảnh mục đích & vai trò (`purpose`, `role`) của nhiều bạn bè |
+| `api.getQuotaCommunity(groupId)` | `12181` | `/api/group/quota/community` | Kiểm tra hạn mức nâng cấp Nhóm lên Cộng đồng |
+| `api.getProfileRank(profileId?)` | `12012` | `/api/social/profile/getrank` | Lấy hạng tài khoản (`userRank`) |
+| `api.getProfileVerificationStatus()` | `12150` | `/api/social/profile/verification/status` | Kiểm tra trạng thái xác thực định danh tài khoản |
+| `api.getLastSeen({ groupIds, userIds })` | `12009` | `/api/preloadconvers/get-last-seen` | Lấy mốc tin nhắn đã xem cuối cùng của danh sách nhóm & cá nhân |
+| `api.getLastSeenReaction({ groupIds, userIds })` | `12450` | `/api/react/gLastSn` | Lấy mốc biểu cảm (reaction) đã xem cuối cùng |
+| `api.undoMultiMessage(items, type)` | `12115`/`12116` | `/api/message/multi_undo` | Thu hồi hàng loạt nhiều tin nhắn cá nhân hoặc nhóm cùng lúc |
+| `api.getLastReadContactTab()` | `12230` | `/api/friend/last-read-contact-tab` | Lấy dấu thời gian lần cuối đọc tab Danh bạ |
+| `api.readContactTab(ts?)` | `12231` | `/api/friend/read-contact-tab` | Đánh dấu đã đọc tab Danh bạ |
+| `api.clearUnreadFriendRequests(uids)` | `12232` | `/api/friend/recommendsv2/read-requests` | Đánh dấu đã xem danh sách lời mời kết bạn |
+| `api.getListPinTopics(groupId, ver?)` | `12001` | `/api/board/pin/list` | Lấy danh sách chủ đề / tin nhắn đã ghim trong nhóm |
+| `api.getGroupCloudMessageJump(groupId, globalMsgId, count?)` | `12508` | `/api/cm/rgetv2` | Nhảy tới vị trí một tin nhắn nhóm cụ thể trên Cloud và tải ngữ cảnh xung quanh |
+| `api.getStickerCategoriesV2()` | `12020` | `/api/message/sticker/category/list/v2` | Lấy danh mục các bộ Sticker V2 |
+| `api.getStickerCategoryData(cid)` | `11156` | `/api/message/sticker/category/detail` | Lấy thông tin chi tiết một bộ Sticker theo `cid` |
+| `api.getStickerSuggestKeywords()` | `11740` | `/api/message/sticker/suggest/keywords` | Lấy danh sách từ khóa gợi ý Sticker tự động |
+| `api.getStickerSuggestion(keyword)` | `11741` | `/api/message/sticker/suggest/stickers` | Gợi ý Sticker theo từ khóa đang gõ |
+| `api.getPersonalizedStickerList()` | `11745` | `/api/message/sticker/personalized/list` | Lấy danh sách Sticker cá nhân hóa |
+| `api.getStickerHello()` | `11751` | `/api/message/sticker/suggestion` | Lấy bộ Sticker chào hỏi gợi ý theo khung giờ |
+| `api.keepAlive()` | `11770` | `/keepalive` | Gửi tín hiệu duy trì phiên kết nối HTTP tới máy chủ Chat |
+

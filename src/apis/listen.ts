@@ -18,6 +18,20 @@ type UploadEventData = {
     fileId: string;
 };
 
+export type Voice2TextEventData = {
+    req_id: string;
+    err?: number;
+    text?: string;
+    content?: string;
+    [key: string]: unknown;
+};
+
+export type Voice2TextEvent = {
+    act: string;
+    act_type: "voice2text";
+    data: Voice2TextEventData;
+};
+
 export type WsPayload<T = Record<string, unknown>> = {
     version: number;
     cmd: number;
@@ -56,6 +70,7 @@ interface ListenerEvents {
     group_event: [data: GroupEvent];
     sync_event: [data: SyncEvent];
     call_event: [data: CallEvent];
+    voice2text_event: [data: Voice2TextEvent];
     cipher_key: [key: string];
     ping: [];
     pong: [];
@@ -480,6 +495,16 @@ export class Listener extends EventEmitter<ListenerEvents> {
                                 control.content.act_type,
                             );
                             this.emit("call_event", callEvent);
+                        } else if (control.content.act_type == "voice2text") {
+                            const v2tData: Voice2TextEventData =
+                                typeof control.content.data == "string"
+                                    ? JSON.parse(control.content.data)
+                                    : control.content.data;
+                            this.emit("voice2text_event", {
+                                act: control.content.act,
+                                act_type: "voice2text",
+                                data: v2tData,
+                            });
                         }
                     }
                 }
