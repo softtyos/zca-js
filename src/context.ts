@@ -106,6 +106,10 @@ type LoginInfo = {
         recent_search: string[];
         group_e2e: string[];
         quick_message: string[];
+        ai_features: string[];
+        emoji_stt: string[];
+        backuppcmobile: string[];
+        banner: string[];
     };
 };
 

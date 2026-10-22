@@ -41,15 +41,15 @@ listener.on("message", (message) => {
     }
 });
 
-listener.onConnected(() => {
+listener.on("connected", () => {
     console.log("Connected");
 });
 
-listener.onClosed(() => {
+listener.on("closed", () => {
     console.log("Closed");
 });
 
-listener.onError((error) => {
+listener.on("error", (error) => {
     console.error("Error:", error);
 });
 

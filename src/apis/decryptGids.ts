@@ -2,7 +2,9 @@ import { ZaloApiError } from "../Errors/ZaloApiError.js";
 import { apiFactory } from "../utils.js";
 
 export type DecryptGidsResponse = {
-    gids: Record<string, string>;
+    data?: Record<string, string>;
+    gids?: Record<string, string>;
+    [key: string]: unknown;
 };
 
 export const decryptGidsFactory = apiFactory<DecryptGidsResponse>()((api, ctx, utils) => {
@@ -10,6 +12,7 @@ export const decryptGidsFactory = apiFactory<DecryptGidsResponse>()((api, ctx, u
 
     /**
      * Giải mã danh sách Global ID (g_...) ẩn danh thành User ID thật
+     * (tương ứng hàm `getUidFromGlobalNoiseId` / command `12054` trên Zalo PC)
      *
      * @param gids Danh sách Global ID (hoặc 1 GID đơn lẻ)
      * @throws {ZaloApiError}
@@ -19,6 +22,7 @@ export const decryptGidsFactory = apiFactory<DecryptGidsResponse>()((api, ctx, u
         if (!Array.isArray(gids)) gids = [gids];
 
         const params = {
+            globalUids: JSON.stringify(gids),
             gids,
             imei: ctx.imei,
         };

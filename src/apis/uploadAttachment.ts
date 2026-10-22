@@ -312,9 +312,15 @@ export const uploadAttachmentFactory = apiFactory()((api, ctx, utils) => {
                             const resData = await resolveResponse<RawResponse>(ctx, response);
 
                             if (resData && resData.fileId != "-1" && resData.photoId != "-1")
-                                await new Promise<void>((resolve) => {
+                                await new Promise<void>((resolve, reject) => {
                                     if (data.fileType == "video" || data.fileType == "others") {
+                                        const timeoutId = setTimeout(() => {
+                                            ctx.uploadCallbacks.delete(resData.fileId!.toString());
+                                            reject(new ZaloApiError("Upload attachment timed out after 5 minutes"));
+                                        }, 5 * 60 * 1000);
+
                                         const uploadCallback: UploadCallback = async (wsData) => {
+                                            clearTimeout(timeoutId);
                                             const result = {
                                                 fileType: data.fileType,
                                                 ...resData,

@@ -15,6 +15,8 @@ export type { AddUnreadMarkResponse } from "./apis/addUnreadMark.js";
 export type { AddUserToGroupResponse } from "./apis/addUserToGroup.js";
 export type { BlockUserResponse } from "./apis/blockUser.js";
 export type { BlockViewFeedResponse } from "./apis/blockViewFeed.js";
+export type { CancelPullMobileParams, CancelPullMobileResponse } from "./apis/cancelPullMobile.js";
+export type { CancelVoiceCallOptions, CancelVoiceCallResponse } from "./apis/cancelVoiceCall.js";
 export type { ChangeAccountAvatarResponse } from "./apis/changeAccountAvatar.js";
 export type { ChangeFriendAliasResponse } from "./apis/changeFriendAlias.js";
 export type { ChangeGroupAvatarResponse } from "./apis/changeGroupAvatar.js";
@@ -43,6 +45,7 @@ export type { DisperseGroupResponse } from "./apis/disperseGroup.js";
 export type { EditNoteOptions, EditNoteResponse } from "./apis/editNote.js";
 export type { EditReminderGroup, EditReminderUser, EditReminderOptions, EditReminderResponse } from "./apis/editReminder.js";
 export type { EnableGroupLinkResponse } from "./apis/enableGroupLink.js";
+export type { EndVoiceCallOptions, EndVoiceCallResponse } from "./apis/endVoiceCall.js";
 export type { FetchAccountInfoResponse } from "./apis/fetchAccountInfo.js";
 export type { FindUserResponse } from "./apis/findUser.js";
 export type { FindUserByUsernameResponse } from "./apis/findUserByUsername.js";
@@ -80,6 +83,7 @@ export type { GetListDeviceResponse } from "./apis/getListDevice.js";
 export type { GetListReminderResponse, ListReminderOptions, ReminderListGroup, ReminderListUser } from "./apis/getListReminder.js";
 export type { GetMultiUsersByPhonesResponse } from "./apis/getMultiUsersByPhones.js";
 export type { GetMuteResponse, MuteEntriesInfo } from "./apis/getMute.js";
+export type { GetNoisedIdsParams, GetNoisedIdsResponse } from "./apis/getNoisedIds.js";
 export type { GetPendingGroupMembersResponse, GetPendingGroupMembersUserInfo } from "./apis/getPendingGroupMembers.js";
 export type { GetPinConversationsResponse } from "./apis/getPinConversations.js";
 export type { PollDetailResponse } from "./apis/getPollDetail.js";
@@ -93,6 +97,7 @@ export type { GetSentFriendRequestResponse, SentFriendRequestInfo } from "./apis
 export type { GetSettingsResponse } from "./apis/getSettings.js";
 export type { GetStickerCategoryDetailResponse } from "./apis/getStickerCategoryDetail.js";
 export type { StickerDetailResponse } from "./apis/getStickersDetail.js";
+export type { GetSyncDataParams } from "./apis/getSyncData.js";
 export type { GetUnreadMarkResponse, UnreadMark } from "./apis/getUnreadMark.js";
 export type { ProfileInfo, UserInfoResponse } from "./apis/getUserInfo.js";
 export type { InviteUserToGroupsResponse } from "./apis/inviteUserToGroups.js";
@@ -105,6 +110,8 @@ export type { LockPollResponse } from "./apis/lockPoll.js";
 export type { LoginQRCallback, LoginQRCallbackEvent } from "./apis/loginQR.js";
 export type { LostFocusResponse } from "./apis/lostFocus.js";
 export type { ParseLinkErrorMaps, ParseLinkResponse } from "./apis/parseLink.js";
+export type { PreloadConversationsRawResponse, PreloadConversationsResponse } from "./apis/preloadConversations.js";
+export type { PullMobileParams, PullMobileResponse } from "./apis/pullMobile.js";
 export type { RegisterCatalogResponse } from "./apis/registerCatalog.js";
 export type { RejectFriendRequestResponse } from "./apis/rejectFriendRequest.js";
 export type { RemoveFriendResponse } from "./apis/removeFriend.js";
@@ -115,7 +122,7 @@ export type { RemoveQuickMessageResponse } from "./apis/removeQuickMessage.js";
 export type { RemoveReminderResponse } from "./apis/removeReminder.js";
 export type { RemoveUnreadMarkResponse } from "./apis/removeUnreadMark.js";
 export type { RemoveUserFromGroupResponse } from "./apis/removeUserFromGroup.js";
-export type { RequestSyncFromPhoneResponse } from "./apis/requestSyncFromPhone.js";
+export type { RequestSyncFromPhoneOptions, RequestSyncFromPhoneResponse } from "./apis/requestSyncFromPhone.js";
 export type { ResetHiddenConversPinResponse } from "./apis/resetHiddenConversPin.js";
 export type { ReuseAvatarResponse } from "./apis/reuseAvatar.js";
 export type { ReviewPendingMemberRequestPayload, ReviewPendingMemberRequestResponse } from "./apis/reviewPendingMemberRequest.js";
@@ -133,6 +140,7 @@ export type { SendStickerResponse, SendStickerPayload } from "./apis/sendSticker
 export type { SendTypingEventResponse } from "./apis/sendTypingEvent.js";
 export type { SendVideoOptions, SendVideoResponse } from "./apis/sendVideo.js";
 export type { SendVoiceOptions, SendVoiceResponse } from "./apis/sendVoice.js";
+export type { RequestCallServerInfo, SendVoiceCallOptions, SendVoiceCallResponse } from "./apis/sendVoiceCall.js";
 export type { SetHiddenConversationsResponse } from "./apis/setHiddenConversations.js";
 export type { SetMuteParams, SetMuteResponse } from "./apis/setMute.js";
 export type { SetPinnedConversationsResponse } from "./apis/setPinnedConversations.js";
@@ -162,6 +170,49 @@ export type { VotePollResponse } from "./apis/votePoll.js";
 
 export type { CustomAPICallback, CustomAPIProps } from "./apis/custom.js";
 
+// Zalo PC 26.7.10 Live-Verified API Types
+export type { ClearUnreadFriendRequestsResponse } from "./apis/clearUnreadFriendRequests.js";
+export type { EncryptGidsResponse } from "./apis/encryptGids.js";
+export type { GetAliasListV2Response } from "./apis/getAliasListV2.js";
+export type { GetBlockFriendsResponse } from "./apis/getBlockFriends.js";
+export type { GetCloudInfoResponse } from "./apis/getCloudInfo.js";
+export type { GetCloudSettingsResponse } from "./apis/getCloudSettings.js";
+export type { GetCloudViewerKeyResponse } from "./apis/getCloudViewerKey.js";
+export type { GetConversationMediaOptions, GetConversationMediaResponse } from "./apis/getConversationMedia.js";
+export type { GetEmojiStatusConfigResponse } from "./apis/getEmojiStatusConfig.js";
+export type { GetExtraFriendInfoResponse } from "./apis/getExtraFriendInfo.js";
+export type { GetExtraGroupInfoResponse } from "./apis/getExtraGroupInfo.js";
+export type { GetFamilyProfileResponse } from "./apis/getFamilyProfile.js";
+export type { GetFamilyUsageResponse } from "./apis/getFamilyUsage.js";
+export type { GetFamilyViewerKeyResponse } from "./apis/getFamilyViewerKey.js";
+export type { GetFriendsEmojiStatusOptions, GetFriendsEmojiStatusResponse } from "./apis/getFriendsEmojiStatus.js";
+export type { GetGroupCloudMessageJumpResponse } from "./apis/getGroupCloudMessageJump.js";
+export type { GetLastReadContactTabResponse } from "./apis/getLastReadContactTab.js";
+export type { GetLastSeenOptions, GetLastSeenResponse } from "./apis/getLastSeen.js";
+export type { GetLastSeenReactionOptions, GetLastSeenReactionResponse } from "./apis/getLastSeenReaction.js";
+export type { GetMediaStorePreviewResponse } from "./apis/getMediaStorePreview.js";
+export type { GetMiniProfileResponse, MiniProfileItem } from "./apis/getMiniProfile.js";
+export type { GetPersonalizedStickerListResponse } from "./apis/getPersonalizedStickerList.js";
+export type { GetPhonebookV2Response } from "./apis/getPhonebookV2.js";
+export type { GetProfileRankResponse } from "./apis/getProfileRank.js";
+export type { GetProfileVerificationStatusResponse } from "./apis/getProfileVerificationStatus.js";
+export type { GetQuotaCommunityResponse } from "./apis/getQuotaCommunity.js";
+export type { GetRecentSearchListResponse } from "./apis/getRecentSearchList.js";
+export type { GetStickerCategoriesV2Response, StickerCategoryV2Item } from "./apis/getStickerCategoriesV2.js";
+export type { GetStickerCategoryDataResponse } from "./apis/getStickerCategoryData.js";
+export type { GetStickerHelloResponse, StickerHelloItem } from "./apis/getStickerHello.js";
+export type { GetStickerSuggestionOptions, GetStickerSuggestionResponse } from "./apis/getStickerSuggestion.js";
+export type { GetStickerSuggestKeywordsResponse } from "./apis/getStickerSuggestKeywords.js";
+export type { GetUsageMyCloudResponse } from "./apis/getUsageMyCloud.js";
+export type { GetUsageZCloudResponse } from "./apis/getUsageZCloud.js";
+export type { ReadContactTabResponse } from "./apis/readContactTab.js";
+export type { RemoveConversationMediaOptions, RemoveConversationMediaResponse } from "./apis/removeConversationMedia.js";
+export type { UndoMultiMessageItem, UndoMultiMessageResponse } from "./apis/undoMultiMessage.js";
+export type { UpdateRecentSearchOptions, UpdateRecentSearchResponse } from "./apis/updateRecentSearch.js";
+export type { VerifyCloudMediaOptions, VerifyCloudMediaResponse } from "./apis/verifyCloudMedia.js";
+export type { VoiceToTextResponse } from "./apis/voiceToText.js";
+export type { Voice2TextEvent, Voice2TextEventData } from "./apis/listen.js";
+
 // Others (Enum)
 export { CloseReason } from "./apis/listen.js";
 export { LoginQRCallbackEventType } from "./apis/loginQR.js";
@@ -173,3 +224,14 @@ export { MuteAction, MuteDuration } from "./apis/setMute.js";
 export { ChatTTL } from "./apis/updateAutoDeleteChat.js";
 export { UpdateLangAvailableLanguages } from "./apis/updateLang.js";
 export { UpdateSettingsType } from "./apis/updateSettings.js";
+export { CallType } from "./apis/sendVoiceCall.js";
+export {
+    generateRSAKeyPair,
+    decryptWithPrivateKey,
+    deriveZdbAesKey,
+    decryptZdbBuffer,
+    parseZdbHeader,
+    encryptZCloudAES,
+    decryptZCloudAES,
+    type ZdbTocEntry,
+} from "./utils.js";
