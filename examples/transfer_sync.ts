@@ -3,9 +3,11 @@ import {
     LoginQRCallbackEventType,
     ThreadType,
     SyncEventType,
+    CallType,
     decryptWithPrivateKey,
     deriveZdbAesKey,
     decryptZdbBuffer,
+    parseZdbHeader,
 } from "../src/index.js";
 import fs from "node:fs";
 
@@ -118,20 +120,42 @@ export async function exampleCase3_ManualTriggerSyncFromPhone() {
                 const aesKey = deriveZdbAesKey(rawRsaKey);
                 const encryptedBuf = fs.readFileSync(result.data.file_path);
                 const zdbPlaintext = decryptZdbBuffer(encryptedBuf, aesKey);
+                const toc = parseZdbHeader(zdbPlaintext);
                 fs.writeFileSync(`${result.data.file_path}.zdb`, zdbPlaintext);
-                console.log(`🔓 Đã giải mã thành công container ZDB4.0 (${zdbPlaintext.length} bytes)!`);
+                console.log(
+                    `🔓 Đã giải mã thành công container ZDB4.0 (${zdbPlaintext.length} bytes, ${toc.entries.length} hội thoại SQLite)!`,
+                );
             }
         } else if (event.type === SyncEventType.TRANSFER_ERROR) {
             console.error("⚠️ Lỗi đồng bộ từ điện thoại:", event.data);
         }
     });
 
-    api.listener.on("connected", async () => {
-        console.log("🟢 WebSocket đã kết nối! Đang gửi yêu cầu đồng bộ sang điện thoại...");
-        const session = await api.requestSyncFromPhone();
+    api.listener.on("cipher_key", async () => {
+        console.log("🟢 WebSocket đã sẵn sàng! Đang gửi yêu cầu đồng bộ sang điện thoại...");
+        const session = await api.requestSyncFromPhone({ pcName: "Web" });
         privateKeyPem = session.privateKey;
         console.log("👉 Vui lòng mở app Zalo trên điện thoại và bấm 'Đồng bộ ngay'!");
     });
 
     api.listener.start();
+}
+
+// ==============================================================================
+// 🟠 TRƯỜNG HỢP 4: KHỞI TẠO CUỘC GỌI THOẠI & GỌI VIDEO (SIGNALING 2 BƯỚC)
+// ==============================================================================
+export async function exampleCase4_VoiceAndVideoCall(targetUid: string) {
+    console.log("\n=== TRƯỜNG HỢP 4: GỌI THOẠI & GỌI VIDEO ===");
+
+    const creds = JSON.parse(fs.readFileSync("./credentials.json", "utf-8"));
+    const zalo = new Zalo({ selfListen: true, logging: true });
+    const api = await zalo.login(creds);
+
+    // 1. Gọi Video (CallType.Video = 3)
+    const videoCall = await api.sendVoiceCall(targetUid, { callType: CallType.Video });
+    console.log(`📹 Đang đổ chuông Video tới ${targetUid} (callId=${videoCall.callId}, rtp=${videoCall.rtpServer})`);
+
+    await new Promise((r) => setTimeout(r, 5000));
+    await api.cancelVoiceCall(targetUid, videoCall.callId, { callType: CallType.Video });
+    console.log("✅ Đã huỷ cuộc gọi Video thành công!");
 }
