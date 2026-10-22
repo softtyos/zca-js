@@ -67,7 +67,9 @@ const zalo = new Zalo({
 
 ## Documentation
 
-See [API Documentation](https://zca-js.tdung.com) for more details.
+- [API Documentation](https://zca-js.tdung.com)
+- [Hướng dẫn Tích hợp: Đồng bộ Tin nhắn Đa Thiết bị (`ZDB4.0`) & Gọi Thoại / Video](docs/INTEGRATION_GUIDE_SYNC_AND_CALL.md)
+- [Kế hoạch & Hướng dẫn Dịch ngược Zalo bằng REA (`morluto/rea`)](docs/REA_REVERSE_ENGINEERING_PLAN.md)
 
 ---
 
