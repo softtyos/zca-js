@@ -2,10 +2,8 @@ import cryptojs from "crypto-js";
 import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
-import pako from "pako";
 import SparkMD5 from "spark-md5";
 import toughCookie from "tough-cookie";
-import JSONBig from "json-bigint";
 
 import { isContextSession, type ContextSession, type ContextBase } from "./context.js";
 import { ZaloApiError, ZaloApiMissingImageMetadataGetter } from "./Errors/index.js";
@@ -13,6 +11,12 @@ import { FriendEventType } from "./models/FriendEvent.js";
 import { GroupEventType } from "./models/GroupEvent.js";
 import type { API } from "./zalo.js";
 import type { AttachmentSource } from "./models/Attachment.js";
+import { ZALO_DEFAULTS, ZALO_DOMAINS, ZALO_PROTOCOL } from "./constants/index.js";
+import { decodeAES, encodeAES } from "./crypto/index.js";
+
+export * from "./constants/index.js";
+export * from "./crypto/index.js";
+export * from "./core/index.js";
 
 export const isBun = typeof Bun !== "undefined";
 
@@ -26,7 +30,6 @@ export function hasOwn(obj: Record<string, unknown>, key: string): key is keyof 
  * @param type
  * @param params
  * @returns MD5 hash
- *
  */
 export function getSignKey(type: string, params: Record<string, unknown>) {
     const n = [];
@@ -37,7 +40,7 @@ export function getSignKey(type: string, params: Record<string, unknown>) {
     }
 
     n.sort();
-    let a = "zsecure" + type;
+    let a = ZALO_PROTOCOL.SIGN_KEY_PREFIX + type;
     for (let s = 0; s < n.length; s++) a += params[n[s]];
     return cryptojs.MD5(a).toString();
 }
@@ -48,7 +51,6 @@ export function getSignKey(type: string, params: Record<string, unknown>) {
  * @param params
  * @param apiVersion automatically add zalo api version to url params
  * @returns
- *
  */
 export function makeURL(
     ctx: ContextBase,
@@ -71,228 +73,28 @@ export function makeURL(
     return url.toString();
 }
 
-export class ParamsEncryptor {
-    private zcid: string | null = null;
-    private enc_ver: string;
-    private zcid_ext: string;
-    private encryptKey: string | null;
-    constructor({ type, imei, firstLaunchTime }: { type: number; imei: string; firstLaunchTime: number }) {
-        this.enc_ver = "v2";
-        this.zcid = null;
-        this.encryptKey = null;
-
-        this.createZcid(type, imei, firstLaunchTime);
-        this.zcid_ext = ParamsEncryptor.randomString();
-        this.createEncryptKey();
-    }
-
-    getEncryptKey() {
-        if (!this.encryptKey) throw new ZaloApiError("getEncryptKey: didn't create encryptKey yet");
-        return this.encryptKey;
-    }
-
-    createZcid(type: number, imei: string, firstLaunchTime: number) {
-        if (!type || !imei || !firstLaunchTime) throw new ZaloApiError("createZcid: missing params");
-        const msg = `${type},${imei},${firstLaunchTime}`;
-        const s = ParamsEncryptor.encodeAES("3FC4F0D2AB50057BCE0D90D9187A22B1", msg, "hex", true);
-        this.zcid = s;
-    }
-
-    createEncryptKey(e = 0) {
-        const t = (e: string, t: string) => {
-            const { even: n } = ParamsEncryptor.processStr(e),
-                { even: a, odd: s } = ParamsEncryptor.processStr(t);
-            if (!n || !a || !s) return !1;
-            const i = n.slice(0, 8).join("") + a.slice(0, 12).join("") + s.reverse().slice(0, 12).join("");
-            return (this.encryptKey = i), !0;
-        };
-        if (!this.zcid || !this.zcid_ext) throw new ZaloApiError("createEncryptKey: zcid or zcid_ext is null");
-        try {
-            const n = cryptojs.MD5(this.zcid_ext).toString().toUpperCase();
-            if (t(n, this.zcid) || !(e < 3)) return !1;
-            this.createEncryptKey(e + 1);
-        } catch {
-            if (e < 3) this.createEncryptKey(e + 1);
-        }
-        return !0;
-    }
-
-    getParams() {
-        return this.zcid
-            ? {
-                  zcid: this.zcid,
-                  zcid_ext: this.zcid_ext,
-                  enc_ver: this.enc_ver,
-              }
-            : null;
-    }
-
-    static processStr(e: string) {
-        if (!e || "string" != typeof e)
-            return {
-                even: null,
-                odd: null,
-            };
-        const [t, n] = [...e].reduce((e, t, n) => (e[n % 2].push(t), e), [[], []] as string[][]);
-        return {
-            even: t,
-            odd: n,
-        };
-    }
-
-    static randomString(e?: number, t?: number) {
-        const n = e || 6,
-            a = t && e && t > e ? t : 12;
-        let s = Math.floor(Math.random() * (a - n + 1)) + n;
-        if (s > 12) {
-            let e = "";
-            for (; s > 0; ) {
-                e += Math.random()
-                    .toString(16)
-                    .substr(2, s > 12 ? 12 : s);
-                s -= 12;
-            }
-            return e;
-        }
-        return Math.random().toString(16).substr(2, s);
-    }
-
-    static encodeAES(e: string, message: string, type: "hex" | "base64", uppercase: boolean, s = 0): string | null {
-        if (!message) return null;
-        try {
-            {
-                const encoder = "hex" == type ? cryptojs.enc.Hex : cryptojs.enc.Base64;
-                const key = cryptojs.enc.Utf8.parse(e);
-
-                const cfg = {
-                    words: [0, 0, 0, 0],
-                    sigBytes: 16,
-                } as cryptojs.lib.WordArray;
-                const encrypted = cryptojs.AES.encrypt(message, key, {
-                    iv: cfg,
-                    mode: cryptojs.mode.CBC,
-                    padding: cryptojs.pad.Pkcs7,
-                }).ciphertext.toString(encoder);
-
-                return uppercase ? encrypted.toUpperCase() : encrypted;
-            }
-        } catch {
-            return s < 3 ? ParamsEncryptor.encodeAES(e, message, type, uppercase, s + 1) : null;
-        }
-    }
-}
-
-export function decryptResp(key: string, data: string): Record<string, unknown> | null | string {
-    let n = null;
-    try {
-        n = decodeRespAES(key, data);
-        const parsed = JSON.parse(n);
-        return parsed;
-    } catch {
-        return n;
-    }
-}
-
-function decodeRespAES(key: string, data: string) {
-    data = decodeURIComponent(data);
-    const parsedKey = cryptojs.enc.Utf8.parse(key);
-    const n = {
-        words: [0, 0, 0, 0],
-        sigBytes: 16,
-    } as cryptojs.lib.WordArray;
-
-    return cryptojs.AES.decrypt(
-        {
-            ciphertext: cryptojs.enc.Base64.parse(data),
-        } as cryptojs.lib.CipherParams,
-        parsedKey,
-        {
-            iv: n,
-            mode: cryptojs.mode.CBC,
-            padding: cryptojs.pad.Pkcs7,
-        },
-    ).toString(cryptojs.enc.Utf8);
-}
-
-export function decodeBase64ToBuffer(data: string) {
-    return Buffer.from(data, "base64");
-}
-
-export function decodeUnit8Array(data: Uint8Array) {
-    try {
-        return new TextDecoder().decode(data);
-    } catch {
-        return null;
-    }
-}
-
-export function encodeAES(secretKey: string, data: cryptojs.lib.WordArray | string, t = 0): string | null {
-    try {
-        const key = cryptojs.enc.Base64.parse(secretKey);
-        return cryptojs.AES.encrypt(data, key, {
-            iv: cryptojs.enc.Hex.parse("00000000000000000000000000000000"),
-            mode: cryptojs.mode.CBC,
-            padding: cryptojs.pad.Pkcs7,
-        }).ciphertext.toString(cryptojs.enc.Base64);
-    } catch {
-        return t < 3 ? encodeAES(secretKey, data, t + 1) : null;
-    }
-}
-
-export function decodeAES(secretKey: string, data: string, t = 0): string | null {
-    try {
-        data = decodeURIComponent(data);
-        const key = cryptojs.enc.Base64.parse(secretKey);
-        return cryptojs.AES.decrypt(
-            {
-                ciphertext: cryptojs.enc.Base64.parse(data),
-            } as cryptojs.lib.CipherParams,
-            key,
-            {
-                iv: cryptojs.enc.Hex.parse("00000000000000000000000000000000"),
-                mode: cryptojs.mode.CBC,
-                padding: cryptojs.pad.Pkcs7,
-            },
-        ).toString(cryptojs.enc.Utf8);
-    } catch {
-        return t < 3 ? decodeAES(secretKey, data, t + 1) : null;
-    }
-}
-
 /**
  * Suy luận nền tảng hệ điều hành (OS) từ chuỗi User-Agent.
- *
- * Hàm này được sinh ra để giải quyết vấn đề cốt lõi: thư viện zca-js trước đây
- * hardcode `sec-ch-ua-platform: "Windows"` ở 8 chỗ trong loginQR, trong khi
- * User-Agent có thể là Mac/Linux — tạo ra Browser Mismatch khiến Zalo ban session.
- *
- * Thứ tự ưu tiên nhận diện: Windows → macOS → Linux → mặc định Windows (an toàn nhất)
  *
  * @returns Chuỗi platform theo định dạng Sec-CH-UA-Platform, ví dụ: "Windows", "macOS", "Linux"
  */
 export function getPlatformFromUA(userAgent: string | undefined): string {
-    if (!userAgent) return "Windows"; // Không có UA → mặc định Windows
+    if (!userAgent) return ZALO_DEFAULTS.BROWSER.DEFAULT_PLATFORM;
     if (/Windows/i.test(userAgent)) return "Windows";
     if (/Macintosh|Mac OS X/i.test(userAgent)) return "macOS";
     if (/Linux|X11/i.test(userAgent)) return "Linux";
-    return "Windows"; // Không nhận diện được → fallback an toàn về Windows
+    return ZALO_DEFAULTS.BROWSER.DEFAULT_PLATFORM;
 }
 
 /**
  * Trích xuất phiên bản Chrome major từ chuỗi User-Agent.
  *
- * Dùng để điền vào header `sec-ch-ua` một cách động, đảm bảo Chrome version
- * trong header khớp với Chrome version trong User-Agent (tránh fingerprint anomaly).
- *
- * Lưu ý: Nếu UA không phải Chrome/Chromium (ví dụ Firefox, Safari thuần),
- * hàm trả về "130" làm giá trị mặc định an toàn thay vì throw error.
- *
  * @returns Phiên bản Chrome major dạng string, ví dụ: "130", "133"
  */
 export function getChromeVersionFromUA(userAgent: string | undefined): string {
-    if (!userAgent) return "133"; // Không có UA → dùng version ổn định hiện đại
+    if (!userAgent) return ZALO_DEFAULTS.BROWSER.DEFAULT_CHROME_VERSION;
     const match = userAgent.match(/Chrome\/(\d+)/);
-    return match ? match[1] : "133"; // Không phải Chrome → fallback về "133"
+    return match ? match[1] : ZALO_DEFAULTS.BROWSER.DEFAULT_CHROME_VERSION;
 }
 
 /**
@@ -303,16 +105,13 @@ export function getChromeVersionFromUA(userAgent: string | undefined): string {
  */
 export function getBrowserLanguage(language: string | undefined): string {
     if (language === "en") {
-        return "en-US,en;q=0.9,vi;q=0.8";
+        return ZALO_DEFAULTS.BROWSER.ACCEPT_LANGUAGE_EN;
     }
-    return "vi-VN,vi;q=0.9,en-US;q=0.8,en;q=0.7";
+    return ZALO_DEFAULTS.BROWSER.ACCEPT_LANGUAGE_VI;
 }
 
 /**
  * Sinh bộ header Sec-CH-UA nhất quán theo User-Agent (chỉ khi là Chromium/Chrome).
- *
- * Nếu User-Agent là Firefox/Safari, hàm sẽ trả về object rỗng nhằm tránh
- * tạo ra dị thường Browser Mismatch.
  *
  * @param userAgent Chuỗi User-Agent của client
  * @returns Record chứa các header sec-ch-ua-* hoặc object rỗng
@@ -330,7 +129,7 @@ export function getSecChUaHeaders(userAgent: string | undefined): Record<string,
     };
 }
 
-export async function getDefaultHeaders(ctx: ContextBase, origin: string = "https://chat.zalo.me") {
+export async function getDefaultHeaders(ctx: ContextBase, origin: string = ZALO_DOMAINS.CHAT_WEB) {
     if (!ctx.cookie) throw new ZaloApiError("Cookie is not available");
     if (!ctx.userAgent) throw new ZaloApiError("User agent is not available");
 
@@ -348,7 +147,7 @@ export async function getDefaultHeaders(ctx: ContextBase, origin: string = "http
         "user-agent": ctx.userAgent,
         "sec-fetch-dest": "empty",
         "sec-fetch-mode": "cors",
-        "sec-fetch-site": origin === "https://id.zalo.me" ? "same-origin" : "same-site",
+        "sec-fetch-site": origin === ZALO_DOMAINS.AUTH_ID ? "same-origin" : "same-site",
         ...secChUa,
     };
 }
@@ -387,7 +186,6 @@ export async function request(ctx: ContextBase, url: string, options?: RequestIn
               }
             : {
                   agent: ctx.options.agent,
-                  // Hỗ trợ Undici Dispatcher cho Node.js 18+ native fetch
                   dispatcher: ctx.options.agent,
               }),
     };
@@ -400,25 +198,24 @@ export async function request(ctx: ContextBase, url: string, options?: RequestIn
             raw?: () => Record<string, string[]>;
             getSetCookie?: () => string[];
         };
-        // Cách 1: Ưu tiên lấy Mảng Raw chuẩn gốc (Array) của thư viện node-fetch
         if (typeof headers.raw === "function") {
             const rawHeaders = headers.raw();
             if (rawHeaders && rawHeaders["set-cookie"]) {
                 cookieStrings = rawHeaders["set-cookie"];
             }
-        } 
-        // Cách 2: Nếu dùng Fetch API Native của NodeJS 18+
-        else if (typeof headers.getSetCookie === "function") {
+        } else if (typeof headers.getSetCookie === "function") {
             cookieStrings = headers.getSetCookie();
-        } 
-        // Cách 3: Fallback dùng Regex Lookahead an toàn (Không bao giờ tách nhầm dấu phẩy của Expires date)
-        else {
+        } else {
             cookieStrings = setCookieRaw.split(/,\s*(?=[a-zA-Z0-9_-]+\s*=)/);
         }
         for (const cookie of cookieStrings) {
             const parsed = toughCookie.Cookie.parse(cookie);
             try {
-                if (parsed) await ctx.cookie.setCookie(parsed, parsed.domain != "zalo.me" ? `https://${parsed.domain}` : origin);
+                if (parsed)
+                    await ctx.cookie.setCookie(
+                        parsed,
+                        parsed.domain != "zalo.me" ? `https://${parsed.domain}` : origin,
+                    );
             } catch (error: unknown) {
                 logger(ctx).error(error);
             }
@@ -432,7 +229,7 @@ export async function request(ctx: ContextBase, url: string, options?: RequestIn
         redirectOptions.method = "GET";
         if (!raw) {
             redirectOptions.headers = new Headers(redirectOptions.headers);
-            redirectOptions.headers.set("Referer", "https://id.zalo.me/");
+            redirectOptions.headers.set("Referer", `${ZALO_DOMAINS.AUTH_ID}/`);
         }
         return await request(ctx, redirectURL, redirectOptions);
     }
@@ -484,49 +281,6 @@ export async function getGifMetaData(ctx: ContextBase, filePath: string) {
     };
 }
 
-export async function decodeEventData(parsed: Record<string, unknown>, cipherKey?: string) {
-    if (typeof parsed.data !== "string")
-        throw new ZaloApiError(`Invalid data, expected string but got ${typeof parsed.data}`);
-    if (typeof parsed.encrypt !== "number")
-        throw new ZaloApiError(`Invalid encrypt type, expected number but got ${typeof parsed.encrypt}`);
-    if (parsed.encrypt < 0 || parsed.encrypt > 3)
-        throw new ZaloApiError(`Invalid encrypt type, expected 0-3 but got ${parsed.encrypt}`);
-
-    const rawData = parsed.data;
-    const encryptType = parsed.encrypt as 0 | 1 | 2 | 3;
-
-    if (encryptType === 0) return JSON.parse(rawData);
-
-    const decodedBuffer = decodeBase64ToBuffer(encryptType === 1 ? rawData : decodeURIComponent(rawData));
-
-    let decryptedBuffer: ArrayBuffer | Buffer = decodedBuffer;
-    if (encryptType !== 1) {
-        if (cipherKey && decodedBuffer.length >= 48) {
-            const algorithm = {
-                name: "AES-GCM",
-                iv: decodedBuffer.subarray(0, 16),
-                tagLength: 128,
-                additionalData: decodedBuffer.subarray(16, 32),
-            };
-            const dataSource = decodedBuffer.subarray(32);
-
-            const cryptoKey = await crypto.subtle.importKey("raw", decodeBase64ToBuffer(cipherKey), algorithm, false, [
-                "decrypt",
-            ]);
-            decryptedBuffer = await crypto.subtle.decrypt(algorithm, cryptoKey, dataSource);
-        } else {
-            throw new ZaloApiError("Invalid data length or missing cipher key");
-        }
-    }
-
-    const decompressedBuffer =
-        encryptType === 3 ? new Uint8Array(decryptedBuffer) : pako.inflate(decryptedBuffer as ArrayBuffer);
-    const decodedData = decodeUnit8Array(decompressedBuffer);
-
-    if (!decodedData) return;
-    return JSONBig.parse(decodedData);
-}
-
 export async function getMd5LargeFileObject(source: AttachmentSource, fileSize: number) {
     const buffer = typeof source == "string" ? await fs.promises.readFile(source) : source.data;
     return new Promise<{
@@ -534,7 +288,7 @@ export async function getMd5LargeFileObject(source: AttachmentSource, fileSize: 
         data: string;
     }>((resolve) => {
         let currentChunk = 0;
-        const chunkSize = 2097152, // Read in chunks of 2MB
+        const chunkSize = ZALO_DEFAULTS.UPLOAD.MD5_CHUNK_SIZE_BYTES,
             chunks = Math.ceil(fileSize / chunkSize),
             spark = new SparkMD5.ArrayBuffer();
 
@@ -589,8 +343,8 @@ export function getClientMessageType(msgType: string) {
     if (msgType === "chat.doodle") return 37;
     if (msgType === "chat.recommended") return 38;
 
-    if (msgType === "chat.link") return 38; // don't know || if (msgType === "chat.link") return 1;
-    if (msgType === "chat.video.msg") return 44; // not sure
+    if (msgType === "chat.link") return 38;
+    if (msgType === "chat.video.msg") return 44;
 
     if (msgType === "share.file") return 46;
     if (msgType === "chat.gif") return 49;
@@ -607,7 +361,6 @@ export function strPadLeft(e: number | string, t: string, n: number) {
 export function formatTime(format: string, timestamp: number = Date.now()): string {
     const date = new Date(timestamp);
 
-    // using lib Intl
     const options: Intl.DateTimeFormatOptions = {
         year: "numeric",
         month: "2-digit",
@@ -615,7 +368,6 @@ export function formatTime(format: string, timestamp: number = Date.now()): stri
         hour: "2-digit",
         minute: "2-digit",
         second: "2-digit",
-        // hour12: false, // true or false is same <(")
     };
 
     const formatted = new Intl.DateTimeFormat("vi-VN", options).format(date);
@@ -709,7 +461,7 @@ export function getFriendEventType(act: string) {
     return FriendEventType.UNKNOWN;
 }
 
-type ZaloResponse<T> = {
+export type ZaloResponse<T> = {
     data: T | null;
     error: {
         message: string;
@@ -840,50 +592,15 @@ export function generateZaloUUID(userAgent: string) {
 }
 
 /**
- * Encrypts a 4-digit PIN to a 32-character hex string
- * @param pin 4-digit PIN number
- * @returns 32-character hex string
- */
-export function encryptPin(pin: string): string {
-    return crypto.createHash("md5").update(pin).digest("hex");
-}
-
-/**
- * Decrypts a 32-character hex string back to 4-digit PIN
- * Note: This is a one-way hash, so we can only verify if a PIN matches the hash
- * @param encryptedPin 32-character hex string
- * @param pin 4-digit PIN to verify
- * @returns true if the PIN matches the hash
- *
- * @example
- * const encryptedPin = (await api.getHiddenConversations()).pin;
- * checking pin created..
- * const isValid = validatePin(encryptedPin, "1234"); // true if pin created is 1234
- * const isInvalid = validatePin(encryptedPin, "5678"); // false if not pin created is 5678
- */
-export function validatePin(encryptedPin: string, pin: string): boolean {
-    const hash = crypto.createHash("md5").update(pin).digest("hex");
-    return hash === encryptedPin;
-}
-
-/**
  * Converts a hex color code to a negative color number used by Zalo API
  * @param hex Hex color code (e.g. '#00FF00' or '00FF00')
  * @returns Negative color number (e.g. -16711936)
- *
- * @example
- * const negativeColor = hexToNegativeColor('#00FF00'); // Result: -16711936
  */
 export function hexToNegativeColor(hex: string): number {
     if (!hex.startsWith("#")) {
         hex = "#" + hex;
     }
 
-    // rgb no alpha
-    // const decimal = parseInt(hex.slice(1), 16);
-    // return decimal - 4294967296;
-
-    // rgb with alpha
     let hexValue = hex.slice(1);
     if (hexValue.length === 6) {
         hexValue = "FF" + hexValue;
@@ -896,16 +613,10 @@ export function hexToNegativeColor(hex: string): number {
  * Converts a negative color number from Zalo API to hex color code
  * @param negativeColor Negative color number (e.g. -16711936)
  * @returns Hex color code (e.g. '#00FF00')
- *
- * @example
- * const hexColor = negativeColorToHex(-16711936); // Result: '#00FF00'
  */
 export function negativeColorToHex(negativeColor: number): string {
-    // Add 2^32 to get positive number
     const positiveColor = negativeColor + 4294967296;
-
-    // return "#" + positiveColor.toString(16).padStart(6, "0"); // rgb no alpha
-    return "#" + positiveColor.toString(16).slice(-6).padStart(6, "0"); // rgb with alpha
+    return "#" + positiveColor.toString(16).slice(-6).padStart(6, "0");
 }
 
 export function normalizeHolderName(input?: string) {
@@ -919,220 +630,4 @@ export function normalizeHolderName(input?: string) {
         .trim();
 
     return normalized.length >= 5 ? normalized : undefined;
-}
-
-/**
- * Generates an RSA 2048-bit key pair for mobile message synchronization (`pull_mobile_msg`)
- * @returns Object containing public and private keys in both PEM and Base64 formats
- */
-export function generateRSAKeyPair() {
-    const { publicKey, privateKey } = crypto.generateKeyPairSync("rsa", {
-        modulusLength: 2048,
-        publicKeyEncoding: { type: "spki", format: "pem" },
-        privateKeyEncoding: { type: "pkcs8", format: "pem" },
-    });
-    const publicKeyBase64: string = publicKey
-        .toString()
-        .replace(/-----BEGIN PUBLIC KEY-----/g, "")
-        .replace(/-----END PUBLIC KEY-----/g, "")
-        .replace(/\s+/g, "");
-    const privateKeyBase64: string = privateKey
-        .toString()
-        .replace(/-----BEGIN PRIVATE KEY-----/g, "")
-        .replace(/-----END PRIVATE KEY-----/g, "")
-        .replace(/\s+/g, "");
-    return { publicKeyBase64, privateKeyBase64, publicKey: publicKey.toString(), privateKey: privateKey.toString() };
-}
-
-function b64urlToBigInt(value: string): bigint {
-    return BigInt("0x" + Buffer.from(value, "base64url").toString("hex"));
-}
-
-function modPow(base: bigint, exp: bigint, mod: bigint): bigint {
-    const zero = BigInt(0);
-    const one = BigInt(1);
-    let result = one;
-    base %= mod;
-    while (exp > zero) {
-        if (exp & one) result = (result * base) % mod;
-        base = (base * base) % mod;
-        exp >>= one;
-    }
-    return result;
-}
-
-/**
- * Pure-BigInt RSA CRT PKCS#1 v1.5 decryption fallback for Node.js environments
- * where OpenSSL blocks `RSA_PKCS1_PADDING` in `crypto.privateDecrypt` (CVE-2023-46809).
- */
-export function rsaDecryptPkcs1Manual(privateKeyPem: string, cipher: Buffer): Buffer {
-    const jwk = crypto.createPrivateKey(privateKeyPem).export({ format: "jwk" }) as Record<string, string>;
-    const n = b64urlToBigInt(jwk.n);
-    const p = b64urlToBigInt(jwk.p);
-    const q = b64urlToBigInt(jwk.q);
-    const dp = b64urlToBigInt(jwk.dp);
-    const dq = b64urlToBigInt(jwk.dq);
-    const qi = b64urlToBigInt(jwk.qi);
-    const c = BigInt("0x" + cipher.toString("hex"));
-    const m1 = modPow(c, dp, p);
-    const m2 = modPow(c, dq, q);
-    const h = (qi * (((m1 - m2) % p) + p)) % p;
-    const m = m2 + h * q;
-
-    const k = Math.ceil(n.toString(16).length / 2);
-    const em = Buffer.from(m.toString(16).padStart(k * 2, "0"), "hex");
-    if (em[0] !== 0x00 || em[1] !== 0x02) throw new ZaloApiError("Invalid RSA PKCS#1 v1.5 padding");
-    const sep = em.indexOf(0x00, 2);
-    if (sep < 10) throw new ZaloApiError("Invalid RSA PKCS#1 v1.5 padding separator");
-    return em.subarray(sep + 1);
-}
-
-/**
- * Decrypt `encrypted_key` from `syncmsg_info` using RSA private key with PKCS#1 v1.5 scheme.
- * Automatically falls back to pure-BigInt CRT decryption if OpenSSL disables `RSA_PKCS1_PADDING`.
- *
- * @param privateKey - RSA private key in PEM format
- * @param encryptedBase64 - Base64 encoded `encrypted_key` from `syncmsg_info`
- * @returns Raw decrypted bytes (typically 16-32 bytes; use `deriveZdbAesKey` for ZDB4.0 AES-256-CBC key)
- */
-export function decryptWithPrivateKey(privateKey: string, encryptedBase64: string): Buffer {
-    const cleanKey = privateKey.replace(/\\n/g, "\n");
-    const encryptedBuffer = Buffer.from(encryptedBase64, "base64");
-
-    try {
-        return crypto.privateDecrypt(
-            {
-                key: cleanKey,
-                padding: crypto.constants.RSA_PKCS1_PADDING,
-            },
-            encryptedBuffer as unknown as NodeJS.ArrayBufferView,
-        );
-    } catch (err: unknown) {
-        const errorObj = err as { code?: string; message?: string };
-        const code = String(errorObj?.code || "");
-        const msg = String(errorObj?.message || "");
-        if (code.includes("INVALID_ARG") || /RSA_PKCS1_PADDING|security-revert|not supported/i.test(msg)) {
-            return rsaDecryptPkcs1Manual(cleanKey, encryptedBuffer);
-        }
-        throw err;
-    }
-}
-
-/**
- * Derives the 32-byte AES-256-CBC key for Zalo ZDB4.0 (`.db.crypt`) backup files
- * from the raw RSA-decrypted bytes: first 32 uppercase hex characters as ASCII bytes.
- */
-export function deriveZdbAesKey(decryptedRsaBytes: Buffer): Buffer {
-    const upperHex = decryptedRsaBytes.toString("hex").toUpperCase();
-    if (upperHex.length < 32) {
-        throw new ZaloApiError(`Decrypted RSA key hex is too short (${upperHex.length} chars, expected >= 32)`);
-    }
-    return Buffer.from(upperHex.slice(0, 32), "ascii");
-}
-
-/**
- * Decrypts a Zalo ZDB4.0 (`.db.crypt`) backup buffer into its plaintext ZDB4.0 container
- * (header + table of contents + XZ stream) using 64KB independent AES-256-CBC chunks (`IV = 0`).
- */
-export function decryptZdbBuffer(zdbBuffer: Buffer, aesKey: Buffer): Buffer {
-    const ZDB_MAGIC = Buffer.from("ZDB4.0", "ascii");
-    const CHUNK_SIZE = 0x10000;
-    const zeroIv = Buffer.alloc(16, 0);
-
-    for (const startOffset of [0, 4]) {
-        const encryptedLength = Math.floor((zdbBuffer.length - startOffset) / 16) * 16;
-        if (encryptedLength < 16) continue;
-
-        const firstChunkLen = Math.min(CHUNK_SIZE, encryptedLength);
-        const firstDecipher = crypto.createDecipheriv("aes-256-cbc", aesKey, zeroIv);
-        firstDecipher.setAutoPadding(false);
-        const firstPlain = Buffer.concat([
-            firstDecipher.update(zdbBuffer.subarray(startOffset, startOffset + firstChunkLen)),
-            firstDecipher.final(),
-        ]);
-
-        if (!firstPlain.subarray(0, ZDB_MAGIC.length).equals(ZDB_MAGIC)) {
-            continue;
-        }
-
-        const chunks: Buffer[] = [firstPlain];
-        for (let offset = CHUNK_SIZE; offset < encryptedLength; offset += CHUNK_SIZE) {
-            const len = Math.min(CHUNK_SIZE, encryptedLength - offset);
-            const decipher = crypto.createDecipheriv("aes-256-cbc", aesKey, zeroIv);
-            decipher.setAutoPadding(false);
-            chunks.push(
-                Buffer.concat([
-                    decipher.update(zdbBuffer.subarray(startOffset + offset, startOffset + offset + len)),
-                    decipher.final(),
-                ]),
-            );
-        }
-        return Buffer.concat(chunks);
-    }
-
-    throw new ZaloApiError("Invalid AES key or buffer is not in ZDB4.0 format");
-}
-
-export type ZdbTocEntry = {
-    name: string;
-    size: number;
-};
-
-/**
- * Parses the Table of Contents (TOC) from a decrypted ZDB4.0 container buffer,
- * returning the list of SQLite `.db` files (`<uid>.db` / `group_<gid>.db`) and the byte offset where the XZ stream starts.
- */
-export function parseZdbHeader(zdbPlaintext: Buffer): { entries: ZdbTocEntry[]; xzOffset: number } {
-    const ZDB_MAGIC = Buffer.from("ZDB4.0", "ascii");
-    const COUNT_OFFSET = 14;
-    if (zdbPlaintext.length < COUNT_OFFSET + 4 || !zdbPlaintext.subarray(0, ZDB_MAGIC.length).equals(ZDB_MAGIC)) {
-        throw new ZaloApiError("Buffer is not a valid decrypted ZDB4.0 container");
-    }
-
-    const count = zdbPlaintext.readUInt32BE(COUNT_OFFSET);
-    let offset = COUNT_OFFSET + 4;
-    const entries: ZdbTocEntry[] = [];
-
-    for (let i = 0; i < count; i++) {
-        if (offset + 4 > zdbPlaintext.length) {
-            throw new ZaloApiError("Truncated ZDB4.0 header while reading entry name length");
-        }
-        const nameLen = zdbPlaintext.readUInt32BE(offset);
-        if (offset + 4 + nameLen + 4 > zdbPlaintext.length) {
-            throw new ZaloApiError("Truncated ZDB4.0 header while reading entry metadata");
-        }
-        const name = zdbPlaintext
-            .toString("utf8", offset + 4, offset + 4 + nameLen)
-            .replace(/\0+$/, "");
-        const size = zdbPlaintext.readUInt32BE(offset + 4 + nameLen);
-        entries.push({ name, size });
-        offset += 4 + nameLen + 4;
-    }
-
-    return { entries, xzOffset: offset };
-}
-
-/**
- * Encrypts a plaintext string for ZCloud / ZFamily APIs (`CLOUD_API` / `CLOUD_FAMILY_API`, module `"98yS"`),
- * using AES-256-CBC with a random 16-byte IV prepended to the ciphertext before Base64 encoding.
- */
-export function encryptZCloudAES(plainText: string, base64Key: string): string {
-    const key = Buffer.from(base64Key, "base64");
-    const iv = crypto.randomBytes(16);
-    const cipher = crypto.createCipheriv("aes-256-cbc", key, iv);
-    const encrypted = Buffer.concat([cipher.update(plainText, "utf8"), cipher.final()]);
-    return Buffer.concat([iv, encrypted]).toString("base64");
-}
-
-/**
- * Decrypts a Base64 payload from ZCloud / ZFamily APIs (`CLOUD_API` / `CLOUD_FAMILY_API`, module `"98yS"`),
- * extracting the first 16 bytes as the AES-256-CBC IV and the remainder as PKCS#7-padded ciphertext.
- */
-export function decryptZCloudAES(base64CipherText: string, base64Key: string): string {
-    const key = Buffer.from(base64Key, "base64");
-    const raw = Buffer.from(base64CipherText, "base64");
-    const iv = raw.subarray(0, 16);
-    const ciphertext = raw.subarray(16);
-    const decipher = crypto.createDecipheriv("aes-256-cbc", key, iv);
-    return Buffer.concat([decipher.update(ciphertext), decipher.final()]).toString("utf8");
 }

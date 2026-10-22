@@ -1,9 +1,10 @@
 import { compare } from "semver";
 import { isBun, logger } from "./utils.js";
+import { ZALO_DOMAINS, ZALO_PROTOCOL } from "./constants/index.js";
 import type { ContextBase } from "./context.js";
 
-const VERSION = "2.2.7";
-const NPM_REGISTRY = "https://registry.npmjs.org/@softtynet/zca-js";
+const VERSION = ZALO_PROTOCOL.SDK_VERSION;
+const NPM_REGISTRY = ZALO_DOMAINS.NPM_REGISTRY;
 
 export async function checkUpdate(ctx: ContextBase) {
     if (!ctx.options.checkUpdate) return;

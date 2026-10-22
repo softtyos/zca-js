@@ -1,9 +1,15 @@
 {
     "name": "@softtynet/zca-js",
-    "version": "2.2.9",
-    "description": "Bộ thư viện Zalo API nâng cao phát triển bởi Softtynet (Đồng bộ tin nhắn đa thiết bị ZDB4.0, Catch-up Sync, Voice & Video Call Signaling)",
+    "version": "2.2.10",
+    "description": "Zalo API client library for Node.js and Bun, maintained by Softtynet.",
     "main": "dist/index.js",
     "type": "module",
+    "files": [
+        "dist",
+        "index.d.ts",
+        "LICENSE",
+        "README.md"
+    ],
     "exports": {
         ".": {
             "require": "./dist/cjs/index.cjs",
@@ -17,8 +23,8 @@
         "build:esm": "tsc",
         "build:cjs": "rollup -c rollup.config.js",
         "build": "npm run build:clean && npm run build:esm && npm run build:cjs",
-        "test:verify": "npx tsx test/verify_upgrades.ts",
-        "test:live": "npx tsx test/verify_live.ts",
+        "test:verify": "npx --yes tsx test/verify_upgrades.ts",
+        "test:live": "npx --yes tsx test/verify_live.ts",
         "prettier": "prettier --write .",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix",
@@ -40,8 +46,6 @@
         "zalo-api",
         "zca-js",
         "softtynet",
-        "zalo-sync",
-        "zalo-call",
         "chatbot"
     ],
     "author": "Softtynet Co., Ltd. (Based on zca-js by RFS-ADRENO)",
@@ -78,6 +82,6 @@
         "typescript-eslint": "^8.41.0"
     },
     "lint-staged": {
-        "*.{js,ts}": "bunx eslint"
+        "*.{js,ts}": "eslint"
     }
 }

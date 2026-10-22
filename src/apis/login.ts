@@ -1,6 +1,16 @@
 import type { ContextBase } from "../context.js";
 import { ZaloApiError } from "../Errors/ZaloApiError.js";
-import { decryptResp, getSignKey, logger, makeURL, ParamsEncryptor, request } from "../utils.js";
+import {
+    decryptResp,
+    getSignKey,
+    logger,
+    makeURL,
+    ParamsEncryptor,
+    request,
+    ZALO_DEFAULTS,
+    ZALO_DOMAINS,
+    ZALO_ENDPOINTS,
+} from "../utils.js";
 
 export async function login(ctx: ContextBase, encryptParams: boolean) {
     const encryptedParams = await getEncryptParam(ctx, encryptParams, "getlogininfo");
@@ -10,7 +20,7 @@ export async function login(ctx: ContextBase, encryptParams: boolean) {
             ctx,
             makeURL(
                 ctx,
-                "https://wpa.chat.zalo.me/api/login/getLoginInfo",
+                `${ZALO_DOMAINS.WPA_CHAT}${ZALO_ENDPOINTS.WPA.LOGIN_GET_LOGIN_INFO}`,
                 {
                     ...encryptedParams.params,
                     nretry: 0,
@@ -42,12 +52,12 @@ export async function getServerInfo(ctx: ContextBase, encryptParams: boolean) {
         ctx,
         makeURL(
             ctx,
-            "https://wpa.chat.zalo.me/api/login/getServerInfo",
+            `${ZALO_DOMAINS.WPA_CHAT}${ZALO_ENDPOINTS.WPA.LOGIN_GET_SERVER_INFO}`,
             {
                 imei: ctx.imei as string,
                 type: ctx.API_TYPE,
                 client_version: ctx.API_VERSION,
-                computer_name: "Web",
+                computer_name: ZALO_DEFAULTS.BROWSER.COMPUTER_NAME,
                 signkey: encryptedParams.params.signkey,
             },
             false,
@@ -63,7 +73,7 @@ export async function getServerInfo(ctx: ContextBase, encryptParams: boolean) {
 async function getEncryptParam(ctx: ContextBase, encryptParams: boolean, type: string) {
     const params = {} as Record<string, unknown>;
     const data = {
-        computer_name: "Web",
+        computer_name: ZALO_DEFAULTS.BROWSER.COMPUTER_NAME,
         imei: ctx.imei!,
         language: ctx.language!,
         ts: Date.now(),
@@ -85,7 +95,7 @@ async function getEncryptParam(ctx: ContextBase, encryptParams: boolean, type: s
                   imei: ctx.imei,
                   type: ctx.API_TYPE,
                   client_version: ctx.API_VERSION,
-                  computer_name: "Web",
+                  computer_name: ZALO_DEFAULTS.BROWSER.COMPUTER_NAME,
               })
             : getSignKey(type, params);
 
