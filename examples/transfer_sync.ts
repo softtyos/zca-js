@@ -1,97 +1,137 @@
-import { Zalo, LoginQRCallbackEventType, ThreadType } from "../src/index.js";
+import {
+    Zalo,
+    LoginQRCallbackEventType,
+    ThreadType,
+    SyncEventType,
+    decryptWithPrivateKey,
+    deriveZdbAesKey,
+    decryptZdbBuffer,
+} from "../src/index.js";
 import fs from "node:fs";
 
 /**
  * ==============================================================================
- * ZCA-JS: HƯỚNG DẪN ĐỒNG BỘ TIN NHẮN TỪ ĐIỆN THOẠI (CROSS-DEVICE TRANSFER SYNC)
+ * ZCA-JS: HƯỚNG DẪN ĐỒNG BỘ TIN NHẮN & LẤY BÙ TIN NHẮN KHI MẤT KẾT NỐI
  * ==============================================================================
  */
 
 // ==============================================================================
-// 🟢 TRƯỜNG HỢP 1: TỰ ĐỘNG ĐỒNG BỘ KHI ĐĂNG NHẬP QR (AUTO-SYNC ON LOGIN)
+// 🟢 TRƯỜNG HỢP 1: LẤY BÙ TIN NHẮN KHI MỞ LẠI APP / SAU KHI MẤT KẾT NỐI WEBSOCKET
 // ==============================================================================
-export async function exampleCase1_AutoSyncOnLogin() {
-    console.log("=== TRƯỜNG HỢP 1: TỰ ĐỘNG ĐỒNG BỘ KHI ĐĂNG NHẬP QR ===");
-
-    const zalo = new Zalo({
-        selfListen: true,
-        logging: true,
-    });
-
-    const api = await zalo.loginQR(
-        { qrPath: "./qr.png" },
-        (event) => {
-            if (event.type === LoginQRCallbackEventType.QRCodeGenerated) {
-                console.log("👉 Mở app Zalo trên điện thoại quét mã QR trong file qr.png.");
-                console.log("👉 Tích chọn 'Đồng bộ tin nhắn' trước khi bấm Xác nhận!");
-            }
-            if (event.type === LoginQRCallbackEventType.GotLoginInfo) {
-                fs.writeFileSync("./credentials.json", JSON.stringify(event.data, null, 2));
-            }
-        }
-    );
-
-    // Lắng nghe các tin nhắn lịch sử được đồng bộ từ điện thoại sang
-    api.listener.on("old_messages", (messages, type) => {
-        console.log(`📥 [ĐÃ ĐỒNG BỘ] Nhận ${messages.length} tin nhắn lịch sử (${type === ThreadType.User ? "Cá nhân" : "Nhóm"}):`);
-        for (const msg of messages) {
-            const sender = msg.data.dName || msg.data.uidFrom;
-            const content = typeof msg.data.content === "string" ? msg.data.content : JSON.stringify(msg.data.content);
-            console.log(`   * [${msg.data.msgId}] ${sender}: ${content}`);
-        }
-    });
-
-    // Lắng nghe tin nhắn mới thời gian thực
-    api.listener.on("message", (msg) => {
-        const sender = msg.data.dName || msg.data.uidFrom;
-        console.log(`💬 [Tin nhắn mới]: ${sender}: ${msg.data.content}`);
-    });
-
-    // Khởi động WebSocket Listener để nhận dữ liệu đồng bộ
-    api.listener.start();
-
-    // Nạp danh bạ bạn bè và nhóm
-    const allFriends = await api.getAllFriends();
-    const allGroups = await api.getAllGroups();
-    console.log(`✅ Đã nạp ${allFriends.length} bạn bè và ${Object.keys(allGroups.gridVerMap).length} nhóm!`);
-}
-
-// ==============================================================================
-// 🔵 TRƯỜNG HỢP 2: KÍCH HOẠT ĐỒNG BỘ THỦ CÔNG TỪ XA (MANUAL TRIGGER SYNC)
-// ==============================================================================
-export async function exampleCase2_ManualTriggerSync() {
-    console.log("\n=== TRƯỜNG HỢP 2: KÍCH HOẠT ĐỒNG BỘ THỦ CÔNG TỪ XA ===");
-
-    if (!fs.existsSync("./credentials.json")) {
-        console.error("Vui lòng đăng nhập và lưu file credentials.json trước!");
-        return;
-    }
+export async function exampleCase1_CatchUpMissedMessages() {
+    console.log("=== TRƯỜNG HỢP 1: LẤY BÙ TIN NHẮN KHI MỞ LẠI APP ===");
 
     const creds = JSON.parse(fs.readFileSync("./credentials.json", "utf-8"));
     const zalo = new Zalo({ selfListen: true, logging: true });
     const api = await zalo.login(creds);
 
-    // 1. Đăng ký nhận tin nhắn lịch sử từ luồng đồng bộ
-    api.listener.on("old_messages", (messages, type) => {
-        console.log(`📥 [ĐÃ ĐỒNG BỘ] Nhận ${messages.length} tin nhắn lịch sử (${type === ThreadType.User ? "Cá nhân" : "Nhóm"}):`);
-        for (const msg of messages) {
-            const sender = msg.data.dName || msg.data.uidFrom;
-            const content = typeof msg.data.content === "string" ? msg.data.content : JSON.stringify(msg.data.content);
-            console.log(`   * [${msg.data.msgId}] ${sender}: ${content}`);
+    // Bước 1: Gọi preloadConversations để lấy danh sách tin nhắn mới nhất & trạng thái đã đọc
+    const preload = await api.preloadConversations();
+    console.log(`📦 Preload: ${preload.messages.length} tin nhắn mới nhất, ${preload.unreadCleared.length} hội thoại đã đọc.`);
+
+    // Bước 2: Lắng nghe tin nhắn hàng đợi (cmd 510 / 511) từ WebSocket
+    api.listener.on("old_messages", (messages, type, hasMore) => {
+        console.log(
+            `📥 [HÀNG ĐỢI OFFLINE] Nhận ${messages.length} tin nhắn (${type === ThreadType.User ? "Cá nhân" : "Nhóm"}, còn tiếp: ${Boolean(hasMore)})`,
+        );
+    });
+
+    // Bước 3: Khi WebSocket nhận được cipher_key, yêu cầu Zalo đẩy hàng đợi tin nhắn nhỡ về
+    api.listener.on("cipher_key", () => {
+        api.listener.requestOldMessages(ThreadType.User);
+        api.listener.requestOldMessages(ThreadType.Group);
+    });
+
+    api.listener.start({ retryOnClose: true });
+}
+
+// ==============================================================================
+// 🔵 TRƯỜNG HỢP 2: TỰ ĐỘNG ĐỒNG BỘ KHI ĐĂNG NHẬP QR (AUTO-SYNC ON LOGIN)
+// ==============================================================================
+export async function exampleCase2_AutoSyncOnLogin() {
+    console.log("=== TRƯỜNG HỢP 2: TỰ ĐỘNG ĐỒNG BỘ KHI ĐĂNG NHẬP QR ===");
+
+    const zalo = new Zalo({ selfListen: true, logging: true });
+    const api = await zalo.loginQR({ qrPath: "./qr.png" }, (event) => {
+        if (event.type === LoginQRCallbackEventType.QRCodeGenerated) {
+            console.log("👉 Mở app Zalo trên điện thoại quét mã QR trong file qr.png.");
+            console.log("👉 Tích chọn 'Đồng bộ tin nhắn' trước khi bấm Đăng nhập!");
+        }
+        if (event.type === LoginQRCallbackEventType.GotLoginInfo) {
+            fs.writeFileSync("./credentials.json", JSON.stringify(event.data, null, 2));
         }
     });
 
-    // 2. Khi WebSocket kết nối thành công, phát lệnh yêu cầu Mobile đồng bộ
-    api.listener.on("connected", async () => {
-        console.log("🟢 WebSocket đã kết nối!");
-        console.log("📡 Đang gửi tín hiệu yêu cầu đồng bộ sang điện thoại...");
-        
-        // Gọi API yêu cầu đồng bộ sang mobile
-        await api.requestSyncFromPhone();
-        
-        console.log("👉 Đã phát lệnh thành công! Bạn hãy mở app Zalo trên điện thoại và bấm 'Đồng bộ ngay'!");
+    let activePrivateKey = "";
+
+    api.listener.on("sync_event", async (event) => {
+        // Khi quét QR có tích chọn "Đồng bộ tin nhắn", Zalo đẩy temp_key qua sự kiện TRANSFER_AFTER_LOGIN
+        if (event.type === SyncEventType.TRANSFER_AFTER_LOGIN) {
+            console.log("🔑 Nhận được temp_key từ phiên đăng nhập QR, đang tự động kéo dữ liệu...");
+            const syncSession = await api.requestSyncFromPhone({ tempKey: event.data.temp_key });
+            activePrivateKey = syncSession.privateKey;
+        } else if (event.type === SyncEventType.SYNCMSG_INFO && activePrivateKey) {
+            console.log("📦 Điện thoại đã tải lên bản sao lưu:", event.data.file_name);
+            const downloadRes = await api.getSyncData({
+                ...event.data,
+                savePath: "./sync_data",
+            });
+            if (downloadRes.success && downloadRes.data) {
+                console.log("✅ Đã lưu file sao lưu tại:", downloadRes.data.file_path);
+            }
+        }
     });
 
-    // Khởi động WebSocket Listener
+    api.listener.start();
+}
+
+// ==============================================================================
+// 🟣 TRƯỜNG HỢP 3: KÍCH HOẠT ĐỒNG BỘ THỦ CÔNG TỪ XA SANG ĐIỆN THOẠI (PULL MOBILE)
+// ==============================================================================
+export async function exampleCase3_ManualTriggerSyncFromPhone() {
+    console.log("\n=== TRƯỜNG HỢP 3: KÍCH HOẠT ĐỒNG BỘ THỦ CÔNG TỪ XA ===");
+
+    const creds = JSON.parse(fs.readFileSync("./credentials.json", "utf-8"));
+    const zalo = new Zalo({ selfListen: true, logging: true });
+    const api = await zalo.login(creds);
+
+    let privateKeyPem = "";
+
+    api.listener.on("sync_event", async (event) => {
+        if (event.type === SyncEventType.USER_CONFIRM) {
+            console.log("📱 Người dùng đã bấm xác nhận trên điện thoại, đang chờ điện thoại tải gói tin nhắn lên...");
+        } else if (event.type === SyncEventType.SYNCMSG_INFO) {
+            console.log("📦 Đã nhận thông tin gói sao lưu ZDB4.0:", event.data.file_name);
+            const result = await api.getSyncData({
+                url: event.data.url,
+                encrypted_key: event.data.encrypted_key,
+                file_name: event.data.file_name,
+                file_size: event.data.file_size,
+                checksum_code: event.data.checksum_code,
+                from_seq_id: event.data.from_seq_id,
+                is_full_transfer: event.data.is_full_transfer,
+                savePath: "./sync_data",
+            });
+
+            if (result.success && result.data && privateKeyPem) {
+                const rawRsaKey = decryptWithPrivateKey(privateKeyPem, result.data.encrypted_key);
+                const aesKey = deriveZdbAesKey(rawRsaKey);
+                const encryptedBuf = fs.readFileSync(result.data.file_path);
+                const zdbPlaintext = decryptZdbBuffer(encryptedBuf, aesKey);
+                fs.writeFileSync(`${result.data.file_path}.zdb`, zdbPlaintext);
+                console.log(`🔓 Đã giải mã thành công container ZDB4.0 (${zdbPlaintext.length} bytes)!`);
+            }
+        } else if (event.type === SyncEventType.TRANSFER_ERROR) {
+            console.error("⚠️ Lỗi đồng bộ từ điện thoại:", event.data);
+        }
+    });
+
+    api.listener.on("connected", async () => {
+        console.log("🟢 WebSocket đã kết nối! Đang gửi yêu cầu đồng bộ sang điện thoại...");
+        const session = await api.requestSyncFromPhone();
+        privateKeyPem = session.privateKey;
+        console.log("👉 Vui lòng mở app Zalo trên điện thoại và bấm 'Đồng bộ ngay'!");
+    });
+
     api.listener.start();
 }

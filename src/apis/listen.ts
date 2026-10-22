@@ -2,13 +2,16 @@ import EventEmitter from "events";
 import WebSocket from "ws";
 import { type FriendEvent, initializeFriendEvent, type TFriendEvent } from "../models/FriendEvent.js";
 import { type GroupEvent, initializeGroupEvent, type TGroupEvent } from "../models/GroupEvent.js";
-import type { Message, TGroupMessage, TMessage, TReaction, Typing } from "../models/index.js";
+import type { Message, TGroupMessage, TMessage, TReaction, TUndo, Typing } from "../models/index.js";
 import { GroupMessage, UserMessage, Reaction, Undo, ThreadType, GroupTyping, UserTyping } from "../models/index.js";
 import { decodeEventData, getBrowserLanguage, getFriendEventType, getGroupEventType, hasOwn, logger, makeURL } from "../utils.js";
 import { ZaloApiError } from "../Errors/ZaloApiError.js";
 import type { ContextSession } from "../context.js";
 import { type SeenMessage, GroupSeenMessage, UserSeenMessage } from "../models/SeenMessage.js";
 import { type DeliveredMessage, UserDeliveredMessage, GroupDeliveredMessage } from "../models/DeliveredMessage.js";
+import { ClearUnread, type TClearUnreadItem } from "../models/ClearUnread.js";
+import { initializeSyncEvent, type SyncEvent, type TSyncEvent } from "../models/SyncEvent.js";
+import { initializeCallEvent, type CallEvent, type TCallEventData } from "../models/CallEvent.js";
 
 type UploadEventData = {
     fileUrl: string;
@@ -41,15 +44,18 @@ interface ListenerEvents {
     error: [error: unknown];
     typing: [typing: Typing];
     message: [message: Message];
-    old_messages: [messages: Message[], type: ThreadType];
+    old_messages: [messages: Message[], type: ThreadType, hasMore?: boolean];
     seen_messages: [messages: SeenMessage[]];
     delivered_messages: [messages: DeliveredMessage[]];
+    unread_cleared: [items: ClearUnread[]];
     reaction: [reaction: Reaction];
     old_reactions: [reactions: Reaction[], isGroup: boolean];
     upload_attachment: [data: UploadEventData];
     undo: [data: Undo];
     friend_event: [data: FriendEvent];
     group_event: [data: GroupEvent];
+    sync_event: [data: SyncEvent];
+    call_event: [data: CallEvent];
     cipher_key: [key: string];
     ping: [];
     pong: [];
@@ -449,6 +455,31 @@ export class Listener extends EventEmitter<ListenerEvents> {
                             );
                             if (friendEvent.isSelf && !this.selfListen) continue;
                             this.emit("friend_event", friendEvent);
+                        } else if (
+                            control.content.act_type == "syncmsgmb" ||
+                            control.content.act_type == "transfer_msg"
+                        ) {
+                            const syncEventData: TSyncEvent =
+                                typeof control.content.data == "string"
+                                    ? JSON.parse(control.content.data)
+                                    : control.content.data;
+                            const syncEvent = initializeSyncEvent(
+                                syncEventData,
+                                control.content.act,
+                                control.content.act_type,
+                            );
+                            this.emit("sync_event", syncEvent);
+                        } else if (control.content.act_type == "voip") {
+                            const callEventData: TCallEventData =
+                                typeof control.content.data == "string"
+                                    ? JSON.parse(control.content.data)
+                                    : control.content.data;
+                            const callEvent = initializeCallEvent(
+                                callEventData,
+                                control.content.act,
+                                control.content.act_type,
+                            );
+                            this.emit("call_event", callEvent);
                         }
                     }
                 }
@@ -484,18 +515,52 @@ export class Listener extends EventEmitter<ListenerEvents> {
                     this.emit("old_reactions", reactionObjects, isGroup);
                 }
 
-                if (cmd == 510 && subCmd == 1) {
-                    const parsedData = (await decodeEventData(parsed, this.cipherKey)).data;
-                    const msgs = parsedData.msgs as TMessage[];
-                    const responseMsgs = msgs.map((msg) => new UserMessage(this.ctx.uid, msg));
-                    this.emit("old_messages", responseMsgs, ThreadType.User);
+                if (cmd == 510 && (subCmd == 0 || subCmd == 1)) {
+                    const decoded = await decodeEventData(parsed, this.cipherKey);
+                    const parsedData = decoded?.data ?? decoded;
+                    const msgs = (parsedData?.msgs ?? []) as TMessage[];
+                    const responseMsgs: UserMessage[] = [];
+                    for (const msg of msgs) {
+                        if (typeof msg.content == "object" && hasOwn(msg.content, "deleteMsg")) {
+                            const undoObject = new Undo(this.ctx.uid, msg as unknown as TUndo, false);
+                            if (undoObject.isSelf && !this.selfListen) continue;
+                            this.emit("undo", undoObject);
+                        } else {
+                            responseMsgs.push(new UserMessage(this.ctx.uid, msg));
+                        }
+                    }
+                    if (responseMsgs.length > 0 || msgs.length === 0) {
+                        this.emit("old_messages", responseMsgs, ThreadType.User, parsedData?.more === 1);
+                    }
                 }
 
-                if (cmd == 511 && subCmd == 1) {
-                    const parsedData = (await decodeEventData(parsed, this.cipherKey)).data;
-                    const groupMsgs = parsedData.groupMsgs as TGroupMessage[];
-                    const responseMsgs = groupMsgs.map((msg) => new GroupMessage(this.ctx.uid, msg));
-                    this.emit("old_messages", responseMsgs, ThreadType.Group);
+                if (cmd == 511 && (subCmd == 0 || subCmd == 1)) {
+                    const decoded = await decodeEventData(parsed, this.cipherKey);
+                    const parsedData = decoded?.data ?? decoded;
+                    const groupMsgs = (parsedData?.groupMsgs ?? []) as TGroupMessage[];
+                    const responseMsgs: GroupMessage[] = [];
+                    for (const msg of groupMsgs) {
+                        if (typeof msg.content == "object" && hasOwn(msg.content, "deleteMsg")) {
+                            const undoObject = new Undo(this.ctx.uid, msg as unknown as TUndo, true);
+                            if (undoObject.isSelf && !this.selfListen) continue;
+                            this.emit("undo", undoObject);
+                        } else {
+                            responseMsgs.push(new GroupMessage(this.ctx.uid, msg));
+                        }
+                    }
+                    if (responseMsgs.length > 0 || groupMsgs.length === 0) {
+                        this.emit("old_messages", responseMsgs, ThreadType.Group, parsedData?.more === 1);
+                    }
+                }
+
+                if ((cmd == 504 || cmd == 524) && subCmd == 0) {
+                    const decoded = await decodeEventData(parsed, this.cipherKey);
+                    const parsedData = decoded?.data ?? decoded;
+                    const clearUnreads = (parsedData?.clearUnreads ?? []) as TClearUnreadItem[];
+                    if (Array.isArray(clearUnreads) && clearUnreads.length > 0) {
+                        const items = clearUnreads.map((item) => new ClearUnread(item));
+                        this.emit("unread_cleared", items);
+                    }
                 }
 
                 if (cmd == 602 && subCmd == 0) {
@@ -603,16 +668,18 @@ export class Listener extends EventEmitter<ListenerEvents> {
     }
 
     /**
-     * Request old messages
+     * Request old messages from Zalo WebSocket queue (`cmd 510` for User, `cmd 511` for Group).
+     * When `lastMsgId` is `null` or omitted, defaults to `"10000000000000000"` to fetch the latest offline messages.
      *
-     * @param lastMsgId
+     * @param threadType ThreadType.User or ThreadType.Group
+     * @param lastMsgId Optional cursor message ID (`actionId`) for pagination
      */
     public requestOldMessages(threadType: ThreadType, lastMsgId: string | null = null) {
         const payload = {
             version: 1,
             cmd: threadType === ThreadType.User ? 510 : 511,
             subCmd: 1,
-            data: { first: true, lastId: lastMsgId, preIds: [] },
+            data: { first: true, lastId: lastMsgId ?? "10000000000000000", preIds: [] },
         };
         this.sendWs(payload);
     }

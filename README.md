@@ -115,42 +115,68 @@ api.listener.start();
 > [!IMPORTANT]
 > Only one web listener can run per account at a time. If you open Zalo in the browser while the listener is active, the listener will be automatically stopped.
 
-### Synchronize Messages from Mobile
+### Synchronize Messages & Offline Catch-up
 
-`zca-js` supports cross-device message synchronization from the official Zalo mobile app:
+`zca-js` supports both **offline message catch-up** (when reconnecting or restarting your app) and **full mobile backup synchronization** (`ZDB4.0`) from the Zalo mobile app:
 
-#### Case 1: Auto-Sync on QR Login
-When logging in via `loginQR`, check the **"Sync message with your phone"** checkbox on your phone before confirming:
-
+#### 1. Catch Up Missed Messages After Reconnect / Restart
 ```javascript
-import { Zalo, LoginQRCallbackEventType } from "zca-js";
+import { Zalo, ThreadType } from "zca-js";
 
-const zalo = new Zalo({ selfListen: true });
-const api = await zalo.loginQR({ qrPath: "./qr.png" });
+const preload = await api.preloadConversations();
+console.log(`Preloaded ${preload.messages.length} latest messages`);
 
-// Listen for historical messages pushed from phone
-api.listener.on("old_messages", (messages, type) => {
-    console.log(`Received ${messages.length} historical synced messages!`);
+api.listener.on("old_messages", (messages, type, hasMore) => {
+    console.log(`Received ${messages.length} queued offline messages (type=${type}, hasMore=${hasMore})`);
+});
+
+api.listener.on("cipher_key", () => {
+    api.listener.requestOldMessages(ThreadType.User);
+    api.listener.requestOldMessages(ThreadType.Group);
+});
+
+api.listener.start({ retryOnClose: true });
+```
+
+#### 2. Trigger Mobile Backup Sync (`pull_mobile_msg`)
+```javascript
+import { SyncEventType, decryptWithPrivateKey, deriveZdbAesKey, decryptZdbBuffer } from "zca-js";
+
+let privateKey = "";
+
+api.listener.on("sync_event", async (event) => {
+    if (event.type === SyncEventType.USER_CONFIRM) {
+        console.log("User confirmed sync on phone, waiting for backup upload...");
+    } else if (event.type === SyncEventType.SYNCMSG_INFO) {
+        const res = await api.getSyncData({ ...event.data, savePath: "./sync_data" });
+        if (res.success && res.data && privateKey) {
+            const rawRsa = decryptWithPrivateKey(privateKey, res.data.encrypted_key);
+            const aesKey = deriveZdbAesKey(rawRsa);
+            console.log("Downloaded backup:", res.data.file_path, "AES key length:", aesKey.length);
+        }
+    }
+});
+
+api.listener.on("connected", async () => {
+    const session = await api.requestSyncFromPhone();
+    privateKey = session.privateKey;
+    console.log("Please tap 'Sync now' on your phone!");
 });
 
 api.listener.start();
 ```
 
-#### Case 2: Manual Trigger Sync (from existing session)
-To request message synchronization from your phone at any time:
+### Voice / Video Call Signaling
 
 ```javascript
-api.listener.on("connected", async () => {
-    // Send sync request signal to mobile phone
-    await api.requestSyncFromPhone();
-    console.log("Please tap 'Sync now' on your phone!");
-});
+import { CallType } from "zca-js";
 
-api.listener.on("old_messages", (messages, type) => {
-    console.log(`Received ${messages.length} synced messages from phone!`);
-});
+// Ring a user's phone (Audio or Video call)
+const call = await api.sendVoiceCall("target_user_id", { callType: CallType.Audio });
+console.log("Ringing callId:", call.callId, "session:", call.sessId);
 
-api.listener.start();
+// Cancel ringing or end an active call
+await api.cancelVoiceCall("target_user_id", call.callId);
 ```
 
 ### Send a message

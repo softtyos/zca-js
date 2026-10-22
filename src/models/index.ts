@@ -20,3 +20,7 @@ export * from "./User.js";
 export * from "./ZBusiness.js";
 export * from "./Label.js";
 export * from "./Sticker.js";
+export * from "./ClearUnread.js";
+export * from "./SyncEvent.js";
+export * from "./SyncData.js";
+export * from "./CallEvent.js";
