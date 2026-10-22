@@ -283,7 +283,7 @@ async function runVerificationSuite() {
             assert.equal(decodedParams.calleeId, "5249661060655759359", "Phải giữ nguyên chuỗi UID 19 chữ số");
             assert.ok(
                 decodedParams.typeRequest === CallType.Audio || decodedParams.typeRequest === CallType.Video,
-                "typeRequest phải là CallType.Audio (1) hoặc CallType.Video (2)",
+                "typeRequest phải là CallType.Audio (1) hoặc CallType.Video (3)",
             );
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
                 sessId: `5249661060655759359_${decodedParams.callId}_401`,
@@ -305,6 +305,13 @@ async function runVerificationSuite() {
             assert.equal(ext.rtp[0].ip, "171.244.25.120");
             assert.equal(ext.rtp[0].port, 4200);
             assert.equal(ext.rtcp[0].port, 4200);
+            if (decodedParams.callId === 777888) {
+                assert.equal(ext.callType, 1, "Video Call phải truyền extendData.callType = 1");
+                assert.equal(ext.video.codec[0].name, "h264", "Video Call phải truyền codec h264");
+                assert.equal(ext.video.codec[0].payload, 97);
+            } else {
+                assert.equal(ext.callType, 0, "Audio Call phải truyền extendData.callType = 0");
+            }
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, { status: 0 });
         }
 

@@ -3,7 +3,7 @@ import { apiFactory, resolveResponse } from "../utils.js";
 
 export enum CallType {
     Audio = 1,
-    Video = 2,
+    Video = 3,
 }
 
 export type SendVoiceCallOptions = {
@@ -118,7 +118,14 @@ export const sendVoiceCallFactory = apiFactory<SendVoiceCallResponse>()((api, ct
         const resolvedCodec = serverInfo?.codec ?? codec;
 
         // Step 2: Send ringing signaling request (/api/voicecall/request, command 11301)
+        const isVideo = callType === CallType.Video;
         const extendData = JSON.stringify({
+            callType: isVideo ? 1 : 0,
+            video: {
+                codec: isVideo ? [{ name: "h264", payload: 97 }] : [],
+            },
+            newZrtc: 1,
+            platform: 5,
             rtcpDiff: 0,
             rtcp: [{ ip: rtcp.ip, port: rtcp.port }],
             rtp: [{ ip: rtp.ip, port: rtp.port }],
