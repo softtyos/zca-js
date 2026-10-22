@@ -10,7 +10,7 @@ export const ZALO_PROTOCOL = {
     API_VERSION: 689,
     DEFAULT_API_VERSION: 689,
     /** Phiên bản SDK hiện tại */
-    SDK_VERSION: "2.2.10",
+    SDK_VERSION: "2.3.2",
     /** Mã zpw_type đặc thù dành riêng cho phân hệ Gọi Thoại & Video (binary C++ ZaloCall) */
     VOICECALL_API_TYPE: 24,
     /** Phiên bản mã hóa ZCID (ParamDecryptor) */

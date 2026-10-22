@@ -270,3 +270,11 @@ Mọi thay đổi trong dự án được bảo vệ bởi 3 tầng kiểm thử
    ```bash
    npm run test:live
    ```
+
+---
+
+## 6. Tài Liệu Nghiên Cứu Mở Rộng (R&D)
+
+- [Tài liệu R&D: Gọi Thoại/Video 2 Chiều (`ZRTC`), Tương thích React Native & Cơ chế Dữ liệu Nhóm](./RND_REACT_NATIVE_AND_VOICE_VIDEO_CALL.md)
+- [Hướng dẫn Tích hợp: Đồng bộ Tin nhắn Đa Thiết bị (`ZDB4.0`) & Gọi Thoại / Video](./INTEGRATION_GUIDE_SYNC_AND_CALL.md)
+
