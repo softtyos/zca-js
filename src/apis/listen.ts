@@ -351,7 +351,7 @@ export class Listener extends EventEmitter<ListenerEvents> {
                     }, pingIntervalTime);
                 }
 
-                if (version == 1 && cmd == 501 && subCmd == 0) {
+                if (version == 1 && ([501, 551].includes(cmd)) && subCmd == 0) {
                     const parsedData = (await decodeEventData(parsed, this.cipherKey)).data;
                     const { msgs } = parsedData;
                     for (const msg of msgs) {
