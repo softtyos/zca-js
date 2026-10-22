@@ -47,6 +47,7 @@ async function main() {
     const forceQR = args.includes("--qr");
     const onlyCall = args.includes("--only-call");
     const skipSync = args.includes("--skip-sync");
+    const videoOnly = args.includes("--video-only");
     const callIdx = args.indexOf("--call");
     const targetCallUid = callIdx !== -1 ? args[callIdx + 1] : undefined;
 
@@ -304,12 +305,26 @@ async function main() {
     console.log(`✅ Endpoint dịch vụ Voice Call của tài khoản: ${JSON.stringify(voiceCallUrls)}`);
 
     if (targetCallUid) {
-        console.log(`📞 Đang gọi thử tới UID ${targetCallUid} trong 5 giây rồi tự động huỷ...`);
-        const callInfo = await api.sendVoiceCall(targetCallUid, { callType: CallType.Audio });
-        console.log(`✅ Đã đổ chuông thật! callId=${callInfo.callId}, sessId=${callInfo.sessId}, rtpServer=${callInfo.rtpServer}`);
+        if (!videoOnly) {
+            console.log(`📞 [1/2] Đang gọi THOẠI (CallType.Audio) tới UID ${targetCallUid} trong 5 giây rồi tự động huỷ...`);
+            const audioCall = await api.sendVoiceCall(targetCallUid, { callType: CallType.Audio });
+            console.log(
+                `✅ Đã đổ chuông THOẠI thật! callId=${audioCall.callId}, sessId=${audioCall.sessId}, rtpServer=${audioCall.rtpServer}`,
+            );
+            await new Promise((r) => setTimeout(r, 5000));
+            await api.cancelVoiceCall(targetCallUid, audioCall.callId, { callType: CallType.Audio });
+            console.log(`✅ Đã huỷ cuộc gọi THOẠI (cancelVoiceCall) thành công!`);
+            await new Promise((r) => setTimeout(r, 2000));
+        }
+
+        console.log(`📹 [2/2] Đang gọi VIDEO (CallType.Video) tới UID ${targetCallUid} trong 5 giây rồi tự động huỷ...`);
+        const videoCall = await api.sendVoiceCall(targetCallUid, { callType: CallType.Video });
+        console.log(
+            `✅ Đã đổ chuông VIDEO thật! callId=${videoCall.callId}, sessId=${videoCall.sessId}, rtpServer=${videoCall.rtpServer}`,
+        );
         await new Promise((r) => setTimeout(r, 5000));
-        await api.cancelVoiceCall(targetCallUid, callInfo.callId);
-        console.log(`✅ Đã huỷ cuộc gọi (cancelVoiceCall) thành công!`);
+        await api.cancelVoiceCall(targetCallUid, videoCall.callId, { callType: CallType.Video });
+        console.log(`✅ Đã huỷ cuộc gọi VIDEO (cancelVoiceCall) thành công!`);
     } else {
         console.log(`ℹ️ Để test đổ chuông cuộc gọi thật tới 1 người bạn, bạn có thể chạy thêm: npx tsx test/verify_live.ts --call <UID_BAN_BE>`);
     }

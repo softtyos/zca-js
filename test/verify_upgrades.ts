@@ -281,9 +281,12 @@ async function runVerificationSuite() {
         if (u.pathname === "/api/voicecall/requestcall") {
             assert.equal(u.searchParams.get("zpw_type"), "24", "VoiceCall phải dùng zpw_type=24");
             assert.equal(decodedParams.calleeId, "5249661060655759359", "Phải giữ nguyên chuỗi UID 19 chữ số");
-            assert.equal(decodedParams.typeRequest, CallType.Audio);
+            assert.ok(
+                decodedParams.typeRequest === CallType.Audio || decodedParams.typeRequest === CallType.Video,
+                "typeRequest phải là CallType.Audio (1) hoặc CallType.Video (2)",
+            );
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
-                sessId: "5249661060655759359_555666_401",
+                sessId: `5249661060655759359_${decodedParams.callId}_401`,
                 rtpIP: "171.244.25.120:4200",
                 rtcpIP: "171.244.25.120:4200",
                 servers: [{ rtpaddr: "171.244.25.120:4200", rtcpaddr: "171.244.25.120:4200" }],
@@ -296,7 +299,7 @@ async function runVerificationSuite() {
         if (u.pathname === "/api/voicecall/request") {
             assert.equal(u.searchParams.get("zpw_type"), "24");
             assert.equal(decodedParams.calleeId, "5249661060655759359");
-            assert.equal(decodedParams.session, "5249661060655759359_555666_401");
+            assert.equal(decodedParams.session, `5249661060655759359_${decodedParams.callId}_401`);
             assert.equal(decodedParams.subCommand, 3);
             const ext = JSON.parse(decodedParams.extendData);
             assert.equal(ext.rtp[0].ip, "171.244.25.120");
@@ -308,6 +311,7 @@ async function runVerificationSuite() {
         if (u.pathname === "/api/voicecall/cancel") {
             assert.equal(u.searchParams.get("zpw_type"), "24");
             assert.equal(decodedParams.callerId, "5249661060655759359");
+            assert.ok(decodedParams.callType === CallType.Audio || decodedParams.callType === CallType.Video);
             assert.equal(decodedParams.status, 0);
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, { status: 0 });
         }
@@ -408,7 +412,7 @@ async function runVerificationSuite() {
     console.log("✅ [4/6] getSyncData + RSA-2048 (Native & BigInt CRT) + ZDB4.0 64KB multi-chunk AES-256-CBC: Hoạt động chính xác.");
 
     // -------------------------------------------------------------------------
-    // TEST 5: Voice Call Signaling (sendVoiceCall 11300+11301, cancelVoiceCall 11305, endVoiceCall 11306)
+    // TEST 5: Voice Call & Video Call Signaling (sendVoiceCall 11300+11301, cancelVoiceCall 11305, endVoiceCall 11306)
     // -------------------------------------------------------------------------
     const callRes = await api.sendVoiceCall("5249661060655759359", { callType: CallType.Audio, callId: 555666 });
     assert.equal(callRes.callId, 555666);
@@ -417,9 +421,14 @@ async function runVerificationSuite() {
     assert.equal(callRes.rtcpServer, "171.244.25.120:4200");
     assert.equal(callRes.zrtpKey, "zrtp-secret-key-base64");
 
-    await api.cancelVoiceCall("5249661060655759359", 555666);
-    await api.endVoiceCall("5249661060655759359", 555666);
-    console.log("✅ [5/6] sendVoiceCall (2-step 11300->11301) / cancelVoiceCall (11305) / endVoiceCall (11306): Hoạt động chính xác.");
+    await api.cancelVoiceCall("5249661060655759359", 555666, { callType: CallType.Audio });
+
+    const videoCallRes = await api.sendVoiceCall("5249661060655759359", { callType: CallType.Video, callId: 777888 });
+    assert.equal(videoCallRes.callId, 777888);
+    assert.equal(videoCallRes.sessId, "5249661060655759359_777888_401");
+    await api.cancelVoiceCall("5249661060655759359", 777888, { callType: CallType.Video });
+    await api.endVoiceCall("5249661060655759359", 777888);
+    console.log("✅ [5/6] sendVoiceCall (Audio & Video 2-step 11300->11301) / cancelVoiceCall (11305) / endVoiceCall (11306): Hoạt động chính xác.");
 
     // -------------------------------------------------------------------------
     // TEST 6: Listener WebSocket Events (510/511, 504/524, 601 sync_event & call_event)
