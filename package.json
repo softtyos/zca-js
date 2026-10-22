@@ -17,6 +17,8 @@
         "build:esm": "tsc",
         "build:cjs": "rollup -c rollup.config.js",
         "build": "npm run build:clean && npm run build:esm && npm run build:cjs",
+        "test:verify": "npx tsx test/verify_upgrades.ts",
+        "test:live": "npx tsx test/verify_live.ts",
         "test:feat": "npm run test/feat.ts",
         "prettier": "prettier --write .",
         "lint": "eslint .",
