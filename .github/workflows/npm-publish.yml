@@ -3,7 +3,7 @@ name: Auto Publish to npm
 on:
   push:
     branches:
-      - lib
+      - main
 
 jobs:
   publish:
@@ -23,7 +23,7 @@ jobs:
         with:
           node-version: '20.x'
           registry-url: 'https://registry.npmjs.org'
-          cache: 'npm' # [💡 CHUẨN MỚI] Bổ sung caching để cài đặt package nhanh hơn cho các lần sau
+          cache: 'npm'
 
       - name: Setup Git user
         run: |
@@ -34,7 +34,7 @@ jobs:
         run: npm ci
 
       - name: Lint Code
-        run: npm run lint # [💡 CHUẨN MỚI] Check lỗi typing trước khi build
+        run: npm run lint
 
       - name: Bump version
         # Tắt Husky hooks bằng biến môi trường HUSKY=0 để tránh đụng lỗi thiếu Bun khi tạo commit
@@ -50,10 +50,9 @@ jobs:
         run: npm run test:verify
 
       - name: Push new version to GitHub
-        run: git push origin lib --follow-tags
+        run: git push origin main --follow-tags
 
       - name: Publish to npm
-        # Tạm tắt --provenance do URL chạy Action (LyVanBong) bị lệch với URL khai báo trong package.json (RFS-ADRENO)
         run: npm publish --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
@@ -67,8 +66,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Send Telegram Notification
-        if: always() # Luôn luôn chạy bước này bất kể các bước trên thành công hay thất bại
-        uses: appleboy/telegram-action@v1.0.1 # Nâng cấp lên v1.0.1 mới nhất để tránh cảnh báo Github cũ
+        if: always()
+        uses: appleboy/telegram-action@v1.0.1
         with:
           to: ${{ secrets.TELEGRAM_TO }}
           token: ${{ secrets.TELEGRAM_TOKEN }}
