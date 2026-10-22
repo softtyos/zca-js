@@ -6,7 +6,7 @@ import {
     type ContextBase,
     type Options,
 } from "./context.js";
-import { generateZaloUUID, logger } from "./utils.js";
+import { generateZaloUUID, logger, ZALO_DEFAULTS, ZALO_DOMAINS } from "./utils.js";
 
 import toughCookie from "tough-cookie";
 
@@ -55,7 +55,7 @@ export class Zalo {
                     key: (each as toughCookie.SerializedCookie).key || each.name,
                 });
                 if (cookieObj) {
-                    const domain = cookieObj.domain || "chat.zalo.me";
+                    const domain = cookieObj.domain || ZALO_DOMAINS.DEFAULT_COOKIE_DOMAIN;
                     const url = `https://${domain.startsWith(".") ? domain.slice(1) : domain}`;
                     jar.setCookieSync(cookieObj, url);
                 }
@@ -91,7 +91,7 @@ export class Zalo {
         ctx.imei = credentials.imei;
         ctx.cookie = this.parseCookies(credentials.cookie);
         ctx.userAgent = credentials.userAgent;
-        ctx.language = credentials.language || "vi";
+        ctx.language = credentials.language || ZALO_DEFAULTS.BROWSER.DEFAULT_LANGUAGE;
 
         const loginData = await login(ctx, this.enableEncryptParam);
         const serverInfo = await getServerInfo(ctx, this.enableEncryptParam);
@@ -122,10 +122,8 @@ export class Zalo {
         callback?: LoginQRCallback,
     ) {
         if (!options) options = {};
-        if (!options.userAgent)
-            options.userAgent =
-                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36";
-        if (!options.language) options.language = "vi";
+        if (!options.userAgent) options.userAgent = ZALO_DEFAULTS.BROWSER.DEFAULT_USER_AGENT;
+        if (!options.language) options.language = ZALO_DEFAULTS.BROWSER.DEFAULT_LANGUAGE;
 
         const ctx = createContext(this.options.apiType, this.options.apiVersion);
         Object.assign(ctx.options, this.options);

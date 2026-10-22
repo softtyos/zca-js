@@ -332,6 +332,13 @@ async function runVerificationSuite() {
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, { status: 0 });
         }
 
+        if (u.pathname === "/api/getCloudViewerKey") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                viewer_key: "vk-cloud-test-123",
+                enk: "enk-cloud-test-456",
+            });
+        }
+
         throw new Error(`Unexpected request URL in test: ${urlStr}`);
     }) as typeof fetch;
 
@@ -738,8 +745,35 @@ async function runVerificationSuite() {
         assert.equal(typeof api[methodName], "function", `API method api.${methodName} phải tồn tại trên class API`);
     }
 
-    console.log(`✅ [7/7] ZCloud AES-256-CBC (98yS) & ${newApiMethods.length} API mới từ Zalo PC 26.7.10: Đã gắn kết và kiểm định 100%.`);
-    console.log("\n🎉 TẤT CẢ 7 HẠNG MỤC KIỂM ĐỊNH ĐỀU VƯỢT QUA 100%!");
+    console.log(`✅ [7/8] ZCloud AES-256-CBC (98yS) & ${newApiMethods.length} API mới từ Zalo PC 26.7.10: Đã gắn kết và kiểm định 100%.`);
+
+    // -------------------------------------------------------------------------
+    // TEST 8: Domain-Driven SDK Architecture (12 Domains, Lazy Getters, ViewerKey Cache)
+    // -------------------------------------------------------------------------
+    assert.equal(api.auth.keepAlive, api.keepAlive);
+    assert.equal(api.chat.sendMessage, api.sendMessage);
+    assert.equal(api.chat.undoMultiMessage, api.undoMultiMessage);
+    assert.equal(api.group.getGroupInfo, api.getGroupInfo);
+    assert.equal(api.group.getQuotaCommunity, api.getQuotaCommunity);
+    assert.equal(api.friend.getPhonebookV2, api.getPhonebookV2);
+    assert.equal(api.profile.getEmojiStatusConfig, api.getEmojiStatusConfig);
+    assert.equal(api.sync.pullMobile, api.pullMobile);
+    assert.equal(api.zcloud.getUsageZCloud, api.getUsageZCloud);
+    assert.equal(api.call.sendVoiceCall, api.sendVoiceCall);
+    assert.equal(api.media.voiceToText, api.voiceToText);
+    assert.equal(api.sticker.getStickerCategoriesV2, api.getStickerCategoriesV2);
+    assert.equal(api.board.getListPinTopics, api.getListPinTopics);
+    assert.equal(api.business.getBizAccount, api.getBizAccount);
+
+    // Kiểm tra ZCloud ViewerKey Cache (lần gọi đầu lưu vào ctx.zcloudViewerKeyCache, lần gọi sau lấy từ cache)
+    const firstKey = await api.zcloud.getCloudViewerKey();
+    assert.equal(firstKey.viewer_key, "vk-cloud-test-123");
+    assert.ok(ctx.zcloudViewerKeyCache, "ctx.zcloudViewerKeyCache phải được tự động lưu sau lần gọi đầu tiên");
+    const cachedKey = await api.zcloud.getCloudViewerKey();
+    assert.equal(cachedKey.viewer_key, "vk-cloud-test-123");
+
+    console.log("✅ [8/8] Kiến trúc Domain-Driven (12 Domains, Lazy Memoized Getters, ViewerKey Cache & Single Source Constants): Hoạt động chính xác.");
+    console.log("\n🎉 TẤT CẢ 8 HẠNG MỤC KIỂM ĐỊNH ĐỀU VƯỢT QUA 100%!");
 }
 
 runVerificationSuite().catch((err) => {

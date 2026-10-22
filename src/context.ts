@@ -1,5 +1,6 @@
 import type { Agent } from "http";
 import type { CookieJar } from "tough-cookie";
+import { ZALO_DEFAULTS, ZALO_PROTOCOL } from "./constants/index.js";
 
 type UploadEventData = {
     fileUrl: string;
@@ -175,7 +176,7 @@ export type Options = {
     imageMetadataGetter?: ImageMetadataGetter;
 };
 
-const _5_MINUTES = 5 * 60 * 1000;
+const _5_MINUTES = ZALO_DEFAULTS.UPLOAD.CALLBACK_TTL_MS;
 class CallbacksMap extends Map<string, UploadCallback> {
     /**
      * @param ttl Time to live in milliseconds. Default is 5 minutes.
@@ -188,24 +189,35 @@ class CallbacksMap extends Map<string, UploadCallback> {
     }
 }
 
+export type ViewerKeyCacheEntry = {
+    viewer_key: string;
+    enk: string;
+    expiresAt: number;
+};
+
 export type AppContextExtended = {
     uploadCallbacks: CallbacksMap;
     options: Options;
     readonly API_TYPE: number;
     readonly API_VERSION: number;
+    zcloudViewerKeyCache?: ViewerKeyCacheEntry;
+    zfamilyViewerKeyCache?: ViewerKeyCacheEntry;
 };
 
 export type ContextBase = Partial<AppContextBase> & AppContextExtended;
 
-export const createContext = (apiType = 30, apiVersion = 689) =>
+export const createContext = (
+    apiType: number = ZALO_PROTOCOL.API_TYPE,
+    apiVersion: number = ZALO_PROTOCOL.API_VERSION,
+) =>
     ({
         API_TYPE: apiType,
         API_VERSION: apiVersion,
         uploadCallbacks: new CallbacksMap(),
         options: {
-            selfListen: false,
-            checkUpdate: true,
-            logging: true,
+            selfListen: ZALO_DEFAULTS.OPTIONS.SELF_LISTEN,
+            checkUpdate: ZALO_DEFAULTS.OPTIONS.CHECK_UPDATE,
+            logging: ZALO_DEFAULTS.OPTIONS.LOGGING,
             polyfill: global.fetch,
         },
         secretKey: null,
@@ -217,4 +229,4 @@ export function isContextSession(ctx: ContextBase): ctx is ContextSession {
     return !!ctx.secretKey;
 }
 
-export const MAX_MESSAGES_PER_SEND = 50;
+export const MAX_MESSAGES_PER_SEND = ZALO_DEFAULTS.CHAT.MAX_MESSAGES_PER_SEND;
