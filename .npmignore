@@ -2,11 +2,15 @@
 examples
 src
 test
+docs
 
 bun.lockb
 bun.lock
 package-lock.json
 tsconfig.json
+eslint.config.js
+rollup.config.js
+.prettierrc
 
 .husky
 .github
