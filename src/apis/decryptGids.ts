@@ -2,6 +2,7 @@ import { ZaloApiError } from "../Errors/ZaloApiError.js";
 import { apiFactory } from "../utils.js";
 
 export type DecryptGidsResponse = {
+    data?: Record<string, string>;
     gids?: Record<string, string>;
     [key: string]: unknown;
 };

@@ -12,10 +12,25 @@ export type SendVoiceCallOptions = {
     codec?: string;
 };
 
+export type RequestCallServerEntry = {
+    rtpaddr?: string;
+    rtcpaddr?: string;
+    rtpIPv6?: string;
+    rtcpIPv6?: string;
+    spTcp?: number;
+    bonus?: number;
+    [key: string]: unknown;
+};
+
 export type RequestCallServerInfo = {
     sessId: string;
-    rtpServer: string;
-    rtcpServer: string;
+    rtpServer?: string;
+    rtcpServer?: string;
+    rtpIP?: string;
+    rtcpIP?: string;
+    rtpIPv6?: string;
+    rtcpIPv6?: string;
+    servers?: RequestCallServerEntry[];
     zrtpKey?: string;
     expiredTime?: number;
     codec?: string;
@@ -30,6 +45,7 @@ export type SendVoiceCallResponse = {
     zrtpKey?: string;
     expiredTime?: number;
     codec?: string;
+    serverInfo?: RequestCallServerInfo;
     requestResult?: unknown;
 };
 
@@ -63,11 +79,11 @@ export const sendVoiceCallFactory = apiFactory<SendVoiceCallResponse>()((api, ct
         const callType = options.callType ?? CallType.Audio;
         const callId = options.callId ?? Math.floor(Math.random() * 2_000_000_000);
         const codec = options.codec ?? "[]";
-        const numericCalleeId = Number.isNaN(Number(calleeId)) ? calleeId : Number(calleeId);
+        const normalizedCalleeId = String(calleeId);
 
         // Step 1: Allocate call session & RTP/RTCP relay endpoints (/api/voicecall/requestcall, command 11300)
         const step1Params = {
-            calleeId: numericCalleeId,
+            calleeId: normalizedCalleeId,
             callId,
             codec,
             typeRequest: callType,
@@ -91,9 +107,14 @@ export const sendVoiceCallFactory = apiFactory<SendVoiceCallResponse>()((api, ct
             return typeof raw === "string" ? (JSON.parse(raw) as RequestCallServerInfo) : raw;
         });
 
-        const rtp = parseServerEndpoint(serverInfo?.rtpServer);
-        const rtcp = parseServerEndpoint(serverInfo?.rtcpServer);
-        const sessId = serverInfo?.sessId ?? `${numericCalleeId}_${callId}_401`;
+        const resolvedRtpServer =
+            serverInfo?.rtpServer ?? serverInfo?.rtpIP ?? serverInfo?.servers?.[0]?.rtpaddr ?? "";
+        const resolvedRtcpServer =
+            serverInfo?.rtcpServer ?? serverInfo?.rtcpIP ?? serverInfo?.servers?.[0]?.rtcpaddr ?? "";
+
+        const rtp = parseServerEndpoint(resolvedRtpServer);
+        const rtcp = parseServerEndpoint(resolvedRtcpServer);
+        const sessId = serverInfo?.sessId ?? `${normalizedCalleeId}_${callId}_401`;
         const resolvedCodec = serverInfo?.codec ?? codec;
 
         // Step 2: Send ringing signaling request (/api/voicecall/request, command 11301)
@@ -105,7 +126,7 @@ export const sendVoiceCallFactory = apiFactory<SendVoiceCallResponse>()((api, ct
         });
 
         const step2Params = {
-            calleeId: numericCalleeId,
+            calleeId: normalizedCalleeId,
             rtcpAddress: rtcp.host,
             rtpAddress: rtp.host,
             codec: resolvedCodec,
@@ -133,11 +154,12 @@ export const sendVoiceCallFactory = apiFactory<SendVoiceCallResponse>()((api, ct
         return {
             callId,
             sessId,
-            rtpServer: serverInfo?.rtpServer ?? "",
-            rtcpServer: serverInfo?.rtcpServer ?? "",
+            rtpServer: resolvedRtpServer,
+            rtcpServer: resolvedRtcpServer,
             zrtpKey: serverInfo?.zrtpKey,
             expiredTime: serverInfo?.expiredTime,
             codec: resolvedCodec,
+            serverInfo,
             requestResult,
         };
     };

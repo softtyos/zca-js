@@ -29,9 +29,8 @@ export const cancelVoiceCallFactory = apiFactory<CancelVoiceCallResponse>()((api
         if (!callId) throw new ZaloApiError("Missing callId");
         if (!voiceCallService) throw new ZaloApiError("Missing voice_call service URL in zpwServiceMap");
 
-        const numericCalleeId = Number.isNaN(Number(calleeId)) ? calleeId : Number(calleeId);
         const params = {
-            callerId: numericCalleeId,
+            callerId: String(calleeId),
             callId,
             callType: options.callType ?? CallType.Audio,
             status: options.status ?? 0,

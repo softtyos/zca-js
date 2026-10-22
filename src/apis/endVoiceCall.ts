@@ -27,9 +27,8 @@ export const endVoiceCallFactory = apiFactory<EndVoiceCallResponse>()((api, ctx,
         if (!callId) throw new ZaloApiError("Missing callId");
         if (!voiceCallService) throw new ZaloApiError("Missing voice_call service URL in zpwServiceMap");
 
-        const numericCalleeId = Number.isNaN(Number(calleeId)) ? calleeId : Number(calleeId);
         const params = {
-            uidTo: numericCalleeId,
+            uidTo: String(calleeId),
             callId,
             status: options.status ?? 3,
             imei: ctx.imei,

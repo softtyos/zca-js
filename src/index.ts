@@ -182,4 +182,11 @@ export { ChatTTL } from "./apis/updateAutoDeleteChat.js";
 export { UpdateLangAvailableLanguages } from "./apis/updateLang.js";
 export { UpdateSettingsType } from "./apis/updateSettings.js";
 export { CallType } from "./apis/sendVoiceCall.js";
-export { generateRSAKeyPair, decryptWithPrivateKey, deriveZdbAesKey, decryptZdbBuffer } from "./utils.js";
+export {
+    generateRSAKeyPair,
+    decryptWithPrivateKey,
+    deriveZdbAesKey,
+    decryptZdbBuffer,
+    parseZdbHeader,
+    type ZdbTocEntry,
+} from "./utils.js";

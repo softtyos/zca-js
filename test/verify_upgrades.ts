@@ -280,12 +280,13 @@ async function runVerificationSuite() {
 
         if (u.pathname === "/api/voicecall/requestcall") {
             assert.equal(u.searchParams.get("zpw_type"), "24", "VoiceCall phải dùng zpw_type=24");
-            assert.equal(decodedParams.calleeId, 987654321);
+            assert.equal(decodedParams.calleeId, "5249661060655759359", "Phải giữ nguyên chuỗi UID 19 chữ số");
             assert.equal(decodedParams.typeRequest, CallType.Audio);
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
-                sessId: "987654321_555666_401",
-                rtpServer: "49.213.68.10:12000",
-                rtcpServer: "49.213.68.10:12001",
+                sessId: "5249661060655759359_555666_401",
+                rtpIP: "171.244.25.120:4200",
+                rtcpIP: "171.244.25.120:4200",
+                servers: [{ rtpaddr: "171.244.25.120:4200", rtcpaddr: "171.244.25.120:4200" }],
                 zrtpKey: "zrtp-secret-key-base64",
                 expiredTime: 60,
                 codec: "[]",
@@ -294,26 +295,26 @@ async function runVerificationSuite() {
 
         if (u.pathname === "/api/voicecall/request") {
             assert.equal(u.searchParams.get("zpw_type"), "24");
-            assert.equal(decodedParams.calleeId, 987654321);
-            assert.equal(decodedParams.session, "987654321_555666_401");
+            assert.equal(decodedParams.calleeId, "5249661060655759359");
+            assert.equal(decodedParams.session, "5249661060655759359_555666_401");
             assert.equal(decodedParams.subCommand, 3);
             const ext = JSON.parse(decodedParams.extendData);
-            assert.equal(ext.rtp[0].ip, "49.213.68.10");
-            assert.equal(ext.rtp[0].port, 12000);
-            assert.equal(ext.rtcp[0].port, 12001);
+            assert.equal(ext.rtp[0].ip, "171.244.25.120");
+            assert.equal(ext.rtp[0].port, 4200);
+            assert.equal(ext.rtcp[0].port, 4200);
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, { status: 0 });
         }
 
         if (u.pathname === "/api/voicecall/cancel") {
             assert.equal(u.searchParams.get("zpw_type"), "24");
-            assert.equal(decodedParams.callerId, 987654321);
+            assert.equal(decodedParams.callerId, "5249661060655759359");
             assert.equal(decodedParams.status, 0);
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, { status: 0 });
         }
 
         if (u.pathname === "/api/voicecall/endcall") {
             assert.equal(u.searchParams.get("zpw_type"), "24");
-            assert.equal(decodedParams.uidTo, 987654321);
+            assert.equal(decodedParams.uidTo, "5249661060655759359");
             assert.equal(decodedParams.status, 3);
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, { status: 0 });
         }
@@ -409,15 +410,15 @@ async function runVerificationSuite() {
     // -------------------------------------------------------------------------
     // TEST 5: Voice Call Signaling (sendVoiceCall 11300+11301, cancelVoiceCall 11305, endVoiceCall 11306)
     // -------------------------------------------------------------------------
-    const callRes = await api.sendVoiceCall("987654321", { callType: CallType.Audio, callId: 555666 });
+    const callRes = await api.sendVoiceCall("5249661060655759359", { callType: CallType.Audio, callId: 555666 });
     assert.equal(callRes.callId, 555666);
-    assert.equal(callRes.sessId, "987654321_555666_401");
-    assert.equal(callRes.rtpServer, "49.213.68.10:12000");
-    assert.equal(callRes.rtcpServer, "49.213.68.10:12001");
+    assert.equal(callRes.sessId, "5249661060655759359_555666_401");
+    assert.equal(callRes.rtpServer, "171.244.25.120:4200");
+    assert.equal(callRes.rtcpServer, "171.244.25.120:4200");
     assert.equal(callRes.zrtpKey, "zrtp-secret-key-base64");
 
-    await api.cancelVoiceCall("987654321", 555666);
-    await api.endVoiceCall("987654321", 555666);
+    await api.cancelVoiceCall("5249661060655759359", 555666);
+    await api.endVoiceCall("5249661060655759359", 555666);
     console.log("✅ [5/6] sendVoiceCall (2-step 11300->11301) / cancelVoiceCall (11305) / endVoiceCall (11306): Hoạt động chính xác.");
 
     // -------------------------------------------------------------------------

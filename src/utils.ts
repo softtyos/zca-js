@@ -1072,3 +1072,42 @@ export function decryptZdbBuffer(zdbBuffer: Buffer, aesKey: Buffer): Buffer {
 
     throw new ZaloApiError("Invalid AES key or buffer is not in ZDB4.0 format");
 }
+
+export type ZdbTocEntry = {
+    name: string;
+    size: number;
+};
+
+/**
+ * Parses the Table of Contents (TOC) from a decrypted ZDB4.0 container buffer,
+ * returning the list of SQLite `.db` files (`<uid>.db` / `group_<gid>.db`) and the byte offset where the XZ stream starts.
+ */
+export function parseZdbHeader(zdbPlaintext: Buffer): { entries: ZdbTocEntry[]; xzOffset: number } {
+    const ZDB_MAGIC = Buffer.from("ZDB4.0", "ascii");
+    const COUNT_OFFSET = 14;
+    if (zdbPlaintext.length < COUNT_OFFSET + 4 || !zdbPlaintext.subarray(0, ZDB_MAGIC.length).equals(ZDB_MAGIC)) {
+        throw new ZaloApiError("Buffer is not a valid decrypted ZDB4.0 container");
+    }
+
+    const count = zdbPlaintext.readUInt32BE(COUNT_OFFSET);
+    let offset = COUNT_OFFSET + 4;
+    const entries: ZdbTocEntry[] = [];
+
+    for (let i = 0; i < count; i++) {
+        if (offset + 4 > zdbPlaintext.length) {
+            throw new ZaloApiError("Truncated ZDB4.0 header while reading entry name length");
+        }
+        const nameLen = zdbPlaintext.readUInt32BE(offset);
+        if (offset + 4 + nameLen + 4 > zdbPlaintext.length) {
+            throw new ZaloApiError("Truncated ZDB4.0 header while reading entry metadata");
+        }
+        const name = zdbPlaintext
+            .toString("utf8", offset + 4, offset + 4 + nameLen)
+            .replace(/\0+$/, "");
+        const size = zdbPlaintext.readUInt32BE(offset + 4 + nameLen);
+        entries.push({ name, size });
+        offset += 4 + nameLen + 4;
+    }
+
+    return { entries, xzOffset: offset };
+}
