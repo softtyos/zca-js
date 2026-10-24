@@ -95,6 +95,20 @@ export type {
     GroupMessageStatusMemberItem,
     GroupMessageStatusThreadInfo,
 } from "./apis/group/getGroupMessageStatus.js";
+export type { CheckQuotaCommunityMemberResponse } from "./apis/group/checkQuotaCommunityMember.js";
+export type { GetE2eeGroupListResponse } from "./apis/group/getE2eeGroupList.js";
+export type { GetMultiGroupCloudMessagesResponse } from "./apis/group/getMultiGroupCloudMessages.js";
+export type { GetGroupCloudMessagePathOptions, GetGroupCloudMessagePathResponse } from "./apis/group/getGroupCloudMessagePath.js";
+export type { AnalyseGroupResponse } from "./apis/group/analyseGroup.js";
+export type { DirectMessageStatusItem, GetDirectMessageStatusResponse } from "./apis/chat/getDirectMessageStatus.js";
+export type { GetSuggestedConversationsResponse } from "./apis/chat/getSuggestedConversations.js";
+export type { UpdatePinConversationsOptions, UpdatePinConversationsResponse } from "./apis/chat/updatePinConversations.js";
+export type { GetFriendProfilesV2Options, GetFriendProfilesV2Response } from "./apis/friend/getFriendProfilesV2.js";
+export type { GetFriendsActivePCWebResponse } from "./apis/friend/getFriendsActivePCWeb.js";
+export type { VerifyFriendOptions, VerifyFriendResponse } from "./apis/friend/verifyFriend.js";
+export type { GetPersonalMediaOptions } from "./apis/media/getPersonalMedia.js";
+export type { GetPersonalMediaPreviewResponse } from "./apis/media/getPersonalMediaPreview.js";
+export type { RemovePersonalMediaOptions, RemovePersonalMediaResponse } from "./apis/media/removePersonalMedia.js";
 export type { GetGroupInviteBoxInfoPayload, GetGroupInviteBoxInfoResponse } from "./apis/group/getGroupInviteBoxInfo.js";
 export type { GetGroupInviteBoxListPayload, GetGroupInviteBoxListResponse } from "./apis/group/getGroupInviteBoxList.js";
 export type { GetGroupLinkDetailResponse } from "./apis/group/getGroupLinkDetail.js";
