@@ -11,7 +11,7 @@
 - `api.profile`: Hồ sơ cá nhân, Emoji Status, xác thực tài khoản.
 - `api.sync`: Đồng bộ lịch sử tin nhắn từ Mobile (`requestSyncFromPhone`, `pullMobile`, `getSyncData`).
 - `api.zcloud`: ZCloud & ZFamily (`getCloudViewerKey`, `getUsageZCloud`, `verifyCloudMedia`).
-- `api.call`: Gọi thoại & Video 1-1 (`sendVoiceCall`, `cancelVoiceCall`, `endVoiceCall`).
+- `api.call`: Gọi thoại, Video 1-1 & Gọi nhóm — trọn bộ 28 API (`sendVoiceCall`, `requestVoiceCall`, `sendRequestVoiceCall`, `ringRingVoiceCall`, `answerVoiceCall`, `answerAckVoiceCall`, `cancelVoiceCall`, `endVoiceCall`, `holdVoiceCall`, `unholdVoiceCall`, `logEndVoiceCall`, `updateCallMediaState`, `requestAudioToVideoCall`, `requestShareScreenCall` & 14 API `*GroupCall*`).
 - `api.media`: Kho lưu trữ Media/File/Link nhóm & cá nhân (`getConversationMedia`, `getMediaStorePreview`, `getPersonalMedia`), `voiceToText`.
 - `api.sticker`: Nhãn dán, danh mục V2, gợi ý nhãn dán theo từ khóa.
 - `api.board`: Bảng tin nhóm, Tin ghim (`getListPinTopics`), Bình chọn (`getPollDetail`), Lịch hẹn (`getListReminder`).

@@ -1,11 +1,11 @@
 ---
-title: "Cookbook & Best Practices - 5 Kịch bản Thực chiến Production"
-description: "Hướng dẫn thực chiến: Lưu & khôi phục phiên đăng nhập (exportSession), gắn Proxy HTTP/SOCKS5 cho đa tài khoản, phân trang chống Rate-Limit, WebSocket 24/7 và xử lý lỗi ZaloApiError."
+title: "Cookbook & Best Practices - 6 Kịch bản Thực chiến Production"
+description: "Hướng dẫn thực chiến: Lưu & khôi phục phiên đăng nhập (exportSession), gắn Proxy HTTP/SOCKS5 cho đa tài khoản, phân trang chống Rate-Limit, WebSocket 24/7, xử lý lỗi ZaloApiError và điều khiển 28 API Gọi thoại/Video 1-1 & Nhóm."
 ---
 
 # 🛠️ Kịch bản Thực chiến (Cookbook & Production Best Practices)
 
-Tài liệu này tổng hợp **5 mẫu thiết kế chuẩn Production** khi vận hành hệ thống Bot / Worker Zalo thực tế với `@softtynet/zca-js`.
+Tài liệu này tổng hợp **6 mẫu thiết kế chuẩn Production** khi vận hành hệ thống Bot / Worker Zalo thực tế với `@softtynet/zca-js`.
 
 ---
 
@@ -165,4 +165,47 @@ try {
         // Ví dụ: code 215 (bị chặn), code 222 (đối phương đã gửi lời mời trước đó)
     }
 }
+```
+
+---
+
+## 6. Điều khiển Vòng đời Cuộc gọi Thoại / Video 1-1 & Gọi Nhóm (`api.call` — 28 APIs)
+
+Phân hệ `api.call` cung cấp trọn bộ **28 API Báo hiệu (`zpw_type = 24`)** từ cuộc gọi 1-1 (`11300` → `11311`, `12006`, `12056`, `12064`) đến cuộc gọi nhóm (`12433` → `12447`, `12043`, `12044`, `12097`, `12098`):
+
+```ts
+import { CallType } from "@softtynet/zca-js";
+
+// A. Khởi tạo cuộc gọi 1-1 nhanh (gộp tự động 11300 + 11301)
+const callRes = await api.call.sendVoiceCall(targetUid, {
+    callType: CallType.Audio, // Hoặc CallType.Video
+});
+console.log("Đã đổ chuông! Call ID:", callRes.callId, "RTP Server:", callRes.rtpServer);
+
+// B. Hoặc điều khiển từng bước (Step-by-step Signaling cho ZRTC Media Engine)
+const step1 = await api.call.requestVoiceCall(targetUid, { callType: CallType.Video });
+const step2 = await api.call.sendRequestVoiceCall(targetUid, {
+    callId: step1.callId,
+    sessId: step1.sessId,
+    callType: CallType.Video,
+    rtpServer: step1.rtpServer,
+    rtcpServer: step1.rtcpServer,
+    zrtpKey: step1.zrtpKey,
+});
+
+// C. Xử lý khi có cuộc gọi đến qua WebSocket (ringring -> answer -> conf -> endcall)
+api.listener.on("call_event", async (evt) => {
+    if (evt.action === "request") {
+        // 1. Báo máy đang đổ chuông (cmd 11302)
+        await api.call.ringRingVoiceCall(evt.fromUid, evt.callId);
+        // 2. Bắt máy (cmd 11303) hoặc từ chối (cmd 11306)
+        await api.call.answerVoiceCall(evt.fromUid, evt.callId);
+        // 3. Đồng bộ trạng thái bật/tắt Mic & Camera (cmd 12006)
+        await api.call.updateCallMediaState(evt.fromUid, evt.callId, { isMuteAudio: false, isOffVideo: true });
+    }
+});
+
+// D. Khởi tạo và quản lý Cuộc gọi Nhóm (Group Call)
+const grpRoom = await api.call.requestGroupCall(groupId, memberUids, { callType: CallType.GroupAudio });
+await api.call.sendRequestGroupCall(groupId, grpRoom.callId, memberUids);
 ```

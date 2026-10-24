@@ -97,10 +97,11 @@ dist
 # https://nextjs.org/blog/next-9-1#public-directory-support
 # public
 
-# vuepress build output
+# vuepress / vitepress build output
 .vuepress/dist
 docs/.vitepress/dist
 docs/.vitepress/cache
+docs/.vitepress/.temp
 
 # vuepress v2.x temp and cache directory
 .temp
@@ -131,12 +132,24 @@ docs/.vitepress/cache
 .yarn/install-state.gz
 .pnp.*
 
+# OS & Editor files
+.DS_Store
+**/.DS_Store
+Thumbs.db
+.idea/
+
+# Zalo Session, Auth, QR & ZDB 4.0 Sync Data (Sensitive)
 bun.lockb
 cookies.json
+*cookies*.json
 credentials.json
+*session*.json
+!**/credentials.example.json
 qr.png
-test/qr.png
+**/qr.png
 sync_data/
-test/sync_data/
+**/sync_data/
+*.db.crypt
+*.db.crypt.xz
 /.dev
 test/**/*.test.*

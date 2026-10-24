@@ -258,6 +258,31 @@ export type { UpdateRecentSearchOptions, UpdateRecentSearchResponse } from "./ap
 export type { VerifyCloudMediaOptions, VerifyCloudMediaResponse } from "./apis/zcloud/verifyCloudMedia.js";
 export type { VoiceToTextResponse } from "./apis/media/voiceToText.js";
 export type { Voice2TextEvent, Voice2TextEventData } from "./apis/listen.js";
+export type { AddUserGroupCallOptions, AddUserGroupCallResponse } from "./apis/call/addUserGroupCall.js";
+export type { AnswerAckVoiceCallOptions, AnswerAckVoiceCallResponse } from "./apis/call/answerAckVoiceCall.js";
+export type { AnswerGroupCallOptions, AnswerGroupCallResponse } from "./apis/call/answerGroupCall.js";
+export type { AnswerVoiceCallOptions, AnswerVoiceCallResponse } from "./apis/call/answerVoiceCall.js";
+export type { BroadcastGroupCallStateOptions, BroadcastGroupCallStateResponse } from "./apis/call/broadcastGroupCallState.js";
+export type { CancelGroupCallOptions, CancelGroupCallResponse } from "./apis/call/cancelGroupCall.js";
+export type { EndGroupCallOptions, EndGroupCallResponse } from "./apis/call/endGroupCall.js";
+export type { FinishGroupCallOptions, FinishGroupCallResponse } from "./apis/call/finishGroupCall.js";
+export type { GetGroupCallStateResponse } from "./apis/call/getGroupCallState.js";
+export type { HoldVoiceCallOptions, HoldVoiceCallResponse } from "./apis/call/holdVoiceCall.js";
+export type { JoinGroupCallOptions, JoinGroupCallResponse } from "./apis/call/joinGroupCall.js";
+export type { LogEndVoiceCallOptions, LogEndVoiceCallResponse } from "./apis/call/logEndVoiceCall.js";
+export type { NotifyGroupCallOptions, NotifyGroupCallResponse } from "./apis/call/notifyGroupCall.js";
+export type { PingGroupCallOptions, PingGroupCallResponse } from "./apis/call/pingGroupCall.js";
+export type { RequestAudioToVideoCallOptions, RequestAudioToVideoCallResponse } from "./apis/call/requestAudioToVideoCall.js";
+export type { RequestGroupCallOptions, RequestGroupCallResponse } from "./apis/call/requestGroupCall.js";
+export type { RequestShareScreenCallOptions, RequestShareScreenCallResponse } from "./apis/call/requestShareScreenCall.js";
+export type { RequestVoiceCallOptions, RequestVoiceCallResponse } from "./apis/call/requestVoiceCall.js";
+export type { RingRingGroupCallOptions, RingRingGroupCallResponse } from "./apis/call/ringRingGroupCall.js";
+export type { RingRingVoiceCallOptions, RingRingVoiceCallResponse } from "./apis/call/ringRingVoiceCall.js";
+export type { SendRequestGroupCallOptions, SendRequestGroupCallResponse } from "./apis/call/sendRequestGroupCall.js";
+export type { SendRequestVoiceCallOptions, SendRequestVoiceCallResponse } from "./apis/call/sendRequestVoiceCall.js";
+export type { ShareScreenGroupCallOptions, ShareScreenGroupCallResponse } from "./apis/call/shareScreenGroupCall.js";
+export type { UnholdVoiceCallOptions, UnholdVoiceCallResponse } from "./apis/call/unholdVoiceCall.js";
+export type { UpdateCallMediaStateOptions, UpdateCallMediaStateResponse } from "./apis/call/updateCallMediaState.js";
 
 // Others (Enum)
 export { CloseReason } from "./apis/listen.js";

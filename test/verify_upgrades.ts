@@ -335,6 +335,15 @@ async function runVerificationSuite() {
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, { status: 0 });
         }
 
+        if (u.pathname.startsWith("/api/voicecall/")) {
+            assert.equal(u.searchParams.get("zpw_type"), "24", `Endpoint ${u.pathname} phải dùng zpw_type=24`);
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                status: 0,
+                endpoint: u.pathname,
+                params: decodedParams,
+            });
+        }
+
         if (u.pathname === "/api/getCloudViewerKey") {
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
                 viewer_key: "vk-cloud-test-123",
@@ -852,7 +861,8 @@ async function runVerificationSuite() {
 
     // Khởi tạo 1 socket nội bộ ngắn để kích hoạt đúng hàm ws.onmessage thật của Listener
     const { WebSocketServer } = await import("ws");
-    const wss = new WebSocketServer({ port: 0 });
+    const wss = new WebSocketServer({ host: "127.0.0.1", port: 0 });
+    await new Promise<void>((r) => wss.once("listening", () => r()));
     const port = (wss.address() as { port: number }).port;
     (api.listener as unknown as { urls: string[] }).urls = [`ws://127.0.0.1:${port}`];
 
@@ -1283,8 +1293,121 @@ async function runVerificationSuite() {
     ctx.options.agent = undefined;
     ctx.options.polyfill = origPolyfill;
 
+    // 9.8 Kiểm tra trọn bộ 28 API Voice & Video Call (1-1 & Group Call) trong api.call
+    const callCalleeId = "5249661060655759359";
+    const reqCallRes = await api.call.requestVoiceCall(callCalleeId, { callType: CallType.Audio, callId: 123456 });
+    assert.equal(reqCallRes.callId, 123456);
+    assert.equal(reqCallRes.sessId, "5249661060655759359_123456_401");
+
+    const sendReqRes = await api.call.sendRequestVoiceCall(callCalleeId, {
+        callId: 123456,
+        session: reqCallRes.sessId,
+        rtpAddress: "171.244.25.120:4200",
+        rtcpAddress: "171.244.25.120:4200",
+        extendData: {
+            callType: 0,
+            rtp: [{ ip: "171.244.25.120", port: 4200 }],
+            rtcp: [{ ip: "171.244.25.120", port: 4200 }],
+        },
+    });
+    assert.equal((sendReqRes as { status: number }).status, 0);
+
+    const ringRes = await api.call.ringRingVoiceCall(callCalleeId, 123456);
+    assert.equal((ringRes as { endpoint: string }).endpoint, "/api/voicecall/ringring");
+
+    const ansRes = await api.call.answerVoiceCall(callCalleeId, 123456, {
+        sessionId: reqCallRes.sessId,
+        rtpAddress: "171.244.25.120:4200",
+        rtcpAddress: "171.244.25.120:4200",
+        extendData: { status: 0 },
+    });
+    assert.equal((ansRes as { endpoint: string }).endpoint, "/api/voicecall/answer");
+
+    const ackRes = await api.call.answerAckVoiceCall(callCalleeId, 123456);
+    assert.equal((ackRes as { endpoint: string }).endpoint, "/api/voicecall/answerack");
+
+    const holdReqRes = await api.call.holdVoiceCall(callCalleeId);
+    assert.equal((holdReqRes as { endpoint: string }).endpoint, "/api/voicecall/holdreq");
+    const holdRespRes = await api.call.holdVoiceCall(callCalleeId, { isResponse: true });
+    assert.equal((holdRespRes as { endpoint: string }).endpoint, "/api/voicecall/holdresp");
+
+    const unholdReqRes = await api.call.unholdVoiceCall(callCalleeId);
+    assert.equal((unholdReqRes as { endpoint: string }).endpoint, "/api/voicecall/unholdreq");
+    const unholdRespRes = await api.call.unholdVoiceCall(callCalleeId, { isResponse: true });
+    assert.equal((unholdRespRes as { endpoint: string }).endpoint, "/api/voicecall/unholdresp");
+
+    const mediaStateRes = await api.call.updateCallMediaState(callCalleeId, 123456, {
+        isOnCam: true,
+        isOnMic: false,
+    });
+    assert.equal((mediaStateRes as { endpoint: string }).endpoint, "/api/voicecall/conf");
+
+    const a2vRes = await api.call.requestAudioToVideoCall(callCalleeId, 123456);
+    assert.equal((a2vRes as { endpoint: string }).endpoint, "/api/voicecall/requestaudio2video");
+
+    const shareScreenRes = await api.call.requestShareScreenCall(callCalleeId, 123456, { status: 1 });
+    assert.equal((shareScreenRes as { endpoint: string }).endpoint, "/api/voicecall/requestsharescreen");
+
+    const logEndRes = await api.call.logEndVoiceCall(callCalleeId, 123456, { duration: 30, status: 0 });
+    assert.equal((logEndRes as { endpoint: string }).endpoint, "/api/voicecall/logendcall");
+
+    // Kiểm tra 14 API Group Call
+    const grpReqCall = await api.call.requestGroupCall("888999000", {
+        callId: 654321,
+        typeRequest: CallType.GroupVideo,
+        partners: [callCalleeId],
+    });
+    assert.equal((grpReqCall as { endpoint: string }).endpoint, "/api/voicecall/group/requestcall");
+
+    const grpSendReq = await api.call.sendRequestGroupCall("888999000", {
+        callId: 654321,
+        session: "grp_sess_1",
+        partners: [callCalleeId],
+    });
+    assert.equal((grpSendReq as { endpoint: string }).endpoint, "/api/voicecall/group/request");
+
+    const grpAddUser = await api.call.addUserGroupCall(654321, {
+        hostCall: TEST_UID,
+        session: "grp_sess_1",
+        partners: [callCalleeId],
+    });
+    assert.equal((grpAddUser as { endpoint: string }).endpoint, "/api/voicecall/group/adduser");
+
+    const grpAns = await api.call.answerGroupCall(654321, { hostCall: TEST_UID });
+    assert.equal((grpAns as { endpoint: string }).endpoint, "/api/voicecall/group/answer");
+
+    const grpRing = await api.call.ringRingGroupCall(654321, { hostCall: TEST_UID });
+    assert.equal((grpRing as { endpoint: string }).endpoint, "/api/voicecall/group/ringring");
+
+    const grpState = await api.call.getGroupCallState(654321, TEST_UID);
+    assert.equal((grpState as { endpoint: string }).endpoint, "/api/voicecall/group/state");
+
+    const grpPing = await api.call.pingGroupCall(654321, { hostCall: TEST_UID });
+    assert.equal((grpPing as { endpoint: string }).endpoint, "/api/voicecall/group/ping");
+
+    const grpBroadcast = await api.call.broadcastGroupCallState(654321, { hostCall: TEST_UID });
+    assert.equal((grpBroadcast as { endpoint: string }).endpoint, "/api/voicecall/group/broadcast");
+
+    const grpJoin = await api.call.joinGroupCall(654321, { hostCall: TEST_UID });
+    assert.equal((grpJoin as { endpoint: string }).endpoint, "/api/voicecall/group/join");
+
+    const grpShare = await api.call.shareScreenGroupCall(654321, { hostCall: TEST_UID });
+    assert.equal((grpShare as { endpoint: string }).endpoint, "/api/voicecall/group/sharescreen");
+
+    const grpNotify = await api.call.notifyGroupCall(654321, { hostCall: TEST_UID });
+    assert.equal((grpNotify as { endpoint: string }).endpoint, "/api/voicecall/group/notify");
+
+    const grpFinish = await api.call.finishGroupCall(654321, { hostCall: TEST_UID, duration: 120 });
+    assert.equal((grpFinish as { endpoint: string }).endpoint, "/api/voicecall/group/finish");
+
+    const grpCancel = await api.call.cancelGroupCall(654321, { hostCall: TEST_UID });
+    assert.equal((grpCancel as { endpoint: string }).endpoint, "/api/voicecall/group/cancel");
+
+    const grpEnd = await api.call.endGroupCall(654321, { hostCall: TEST_UID });
+    assert.equal((grpEnd as { endpoint: string }).endpoint, "/api/voicecall/group/endcall");
+
     console.log(
-        "✅ [9/9] preParseJsonIds 64-bit, ws-cipher storeAsString, exportSession, requestTimeout & 20 API nguyên bản mới: Chính xác 100%.",
+        "✅ [9/9] preParseJsonIds 64-bit, ws-cipher storeAsString, exportSession, requestTimeout & 28 API Call (1-1 & Group): Chính xác 100%.",
     );
     console.log("\n🎉 TẤT CẢ 9 HẠNG MỤC KIỂM ĐỊNH ĐỀU VƯỢT QUA 100%!");
 }

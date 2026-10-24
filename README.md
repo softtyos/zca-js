@@ -14,10 +14,10 @@
 
 ## Điểm nổi bật
 
-- **Kiến trúc 12 Domains (`224 API nguyên bản`)**: Tổ chức trực quan qua `api.auth`, `api.chat`, `api.group`, `api.friend`, `api.profile`, `api.sync`, `api.zcloud`, `api.call`, `api.media`, `api.sticker`, `api.board`, `api.business` (vẫn hỗ trợ gọi phẳng `api.<method>` tương thích ngược 100%).
+- **Kiến trúc 12 Domains (`250 API nguyên bản`)**: Tổ chức trực quan qua `api.auth`, `api.chat`, `api.group`, `api.friend`, `api.profile`, `api.sync`, `api.zcloud`, `api.call`, `api.media`, `api.sticker`, `api.board`, `api.business` (vẫn hỗ trợ gọi phẳng `api.<method>` tương thích ngược 100%).
 - **Đồng bộ lịch sử Mobile (`ZDB 4.0`) & Catch-up Sync**: Hỗ trợ đầy đủ luồng `requestSyncFromPhone` $\rightarrow$ `getSyncData` (giải mã RSA-2048 OAEP/PKCS1 + ZDB 4.0 64KB multi-chunk AES-256-CBC + Deflate) & `pullMobile`.
 - **ZCloud, MediaStore & Bảo toàn Số nguyên 64-bit (`preParseJsonIds`)**: Tự động giữ nguyên độ chính xác chuỗi 19 chữ số cho `owner_id`, `group_id`, `globalMsgId`, `cliMsgId` trước khi `JSON.parse()` và tích hợp bộ mã hóa `98yS` AES-256-CBC cho ZCloud/ZFamily.
-- **Tín hiệu Gọi Thoại & Video Call 1-1**: Điều khiển trọn vẹn vòng đời cuộc gọi (`11300` $\rightarrow$ `11306`: `sendVoiceCall`, `cancelVoiceCall`, `endVoiceCall`) và lắng nghe `call_event` thời gian thực.
+- **Tín hiệu Gọi Thoại, Video Call 1-1 & Gọi Nhóm (`28 API`)**: Điều khiển trọn vẹn vòng đời cuộc gọi 1-1 (`11300` $\rightarrow$ `11311`, `12006`, `12056`, `12064`) và cuộc gọi nhóm (`12433` $\rightarrow$ `12447`, `12043`, `12044`, `12097`, `12098`) cùng lắng nghe `call_event` thời gian thực.
 
 ---
 
@@ -55,18 +55,18 @@ const zalo = new Zalo({ imageMetadataGetter });
 
 | Phân hệ | Namespace | Số lượng API | Tài liệu chi tiết |
 | :--- | :--- | :---: | :--- |
-| **Xác thực & Phiên** | `api.auth` | 8 | [`docs/api/auth.md`](docs/api/auth.md) |
-| **Tin nhắn & Hội thoại** | `api.chat` | 35 | [`docs/api/chat.md`](docs/api/chat.md) |
-| **Nhóm & Cộng đồng** | `api.group` | 48 | [`docs/api/group.md`](docs/api/group.md) |
-| **Bạn bè & Danh bạ** | `api.friend` | 26 | [`docs/api/friend.md`](docs/api/friend.md) |
-| **Hồ sơ cá nhân** | `api.profile` | 18 | [`docs/api/profile.md`](docs/api/profile.md) |
+| **Xác thực & Phiên** | `api.auth` | 14 | [`docs/api/auth.md`](docs/api/auth.md) |
+| **Tin nhắn & Hội thoại** | `api.chat` | 41 | [`docs/api/chat.md`](docs/api/chat.md) |
+| **Nhóm & Cộng đồng** | `api.group` | 44 | [`docs/api/group.md`](docs/api/group.md) |
+| **Bạn bè & Danh bạ** | `api.friend` | 33 | [`docs/api/friend.md`](docs/api/friend.md) |
+| **Hồ sơ cá nhân** | `api.profile` | 16 | [`docs/api/profile.md`](docs/api/profile.md) |
 | **Đồng bộ Mobile ZDB 4.0** | `api.sync` | 5 | [`docs/api/sync.md`](docs/api/sync.md) |
 | **Đám mây ZCloud & ZFamily** | `api.zcloud` | 9 | [`docs/api/zcloud.md`](docs/api/zcloud.md) |
-| **Gọi thoại & Video 1-1** | `api.call` | 3 | [`docs/api/call.md`](docs/api/call.md) |
-| **Kho lưu trữ & Voice-to-Text** | `api.media` | 7 | [`docs/api/media.md`](docs/api/media.md) |
-| **Nhãn dán & Biểu cảm** | `api.sticker` | 8 | [`docs/api/sticker.md`](docs/api/sticker.md) |
+| **Gọi thoại, Video & Gọi nhóm** | `api.call` | 28 | [`docs/api/call.md`](docs/api/call.md) |
+| **Kho lưu trữ & Voice-to-Text** | `api.media` | 8 | [`docs/api/media.md`](docs/api/media.md) |
+| **Nhãn dán & Biểu cảm** | `api.sticker` | 10 | [`docs/api/sticker.md`](docs/api/sticker.md) |
 | **Bảng tin, Bình chọn & Lịch hẹn** | `api.board` | 16 | [`docs/api/board.md`](docs/api/board.md) |
-| **Zalo Business & Danh mục** | `api.business` | 41 | [`docs/api/business.md`](docs/api/business.md) |
+| **Zalo Business & Danh mục** | `api.business` | 26 | [`docs/api/business.md`](docs/api/business.md) |
 
 > Xem tổng quan toàn bộ tài liệu tại [`docs/api/index.md`](docs/api/index.md) hoặc chạy trang tài liệu VitePress cục bộ bằng lệnh `npm run docs:dev`.
 

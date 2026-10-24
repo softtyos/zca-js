@@ -4,6 +4,8 @@ import { apiFactory, resolveResponse } from "../../utils.js";
 export enum CallType {
     Audio = 1,
     Video = 3,
+    GroupAudio = 5,
+    GroupVideo = 6,
 }
 
 export type SendVoiceCallOptions = {

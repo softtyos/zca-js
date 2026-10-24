@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import apiData from "../api-data.json";
 
 const activePkg = ref<"npm" | "bun" | "pnpm" | "yarn">("npm");
 const installCommands: Record<string, string> = {
@@ -134,7 +135,7 @@ async function copySampleCode() {
         <!-- Metrics Banner (Unified Design Tokens) -->
         <div class="zca-metrics-grid">
             <div class="zca-metric-item">
-                <div class="zca-metric-val">225</div>
+                <div class="zca-metric-val">{{ apiData.totalApis }}</div>
                 <div class="zca-metric-lbl">API Nguyên bản</div>
                 <div class="zca-metric-sub">Phủ trọn vẹn Zalo PC 26.7.10</div>
             </div>

@@ -1,4 +1,4 @@
-# Tài Liệu Kiến Trúc & Cẩm Nang Toàn Tập 206 API (`@softtynet/zca-js` v2.2.8+)
+# Tài Liệu Kiến Trúc & Cẩm Nang Toàn Tập 250 API (`@softtynet/zca-js` v2.3.4+)
 
 > **Tài liệu lưu hành nội bộ (Internal Enterprise Documentation)**: Thư mục `docs/` đã được cấu hình loại trừ khỏi gói phát hành NPM (`.npmignore` & `package.json#files`), chỉ lưu trữ trên kho Git Private `softtyos/zca-js`.
 
@@ -39,16 +39,16 @@ src/
 │   │   └── status.handler.ts  # Xử lý cmd 502, 522, 504, 524, 602 (Seen, Delivered, Typing, ClearUnread)
 │   └── index.ts
 │
-└── apis/                      # [Tầng 5] 206 API phân nhóm vào 12 Phân hệ Nghiệp vụ (12 Domains)
-    ├── auth/                  # (13 API) Phiên đăng nhập, Thiết bị, Bảo mật, ZNoise/GID
-    ├── chat/                  # (38 API) Tin nhắn, Hội thoại, Đa thu hồi, Tìm kiếm gần đây
-    ├── group/                 # (35 API) Quản trị nhóm, Cộng đồng, Duyệt thành viên, Lịch sử nhóm
-    ├── friend/                # (30 API) Bạn bè, Danh bạ V2, Biệt danh V2, Chặn, Gợi ý kết bạn
+└── apis/                      # [Tầng 5] 250 API phân nhóm vào 12 Phân hệ Nghiệp vụ (12 Domains)
+    ├── auth/                  # (14 API) Phiên đăng nhập, exportSession, Thiết bị, Bảo mật, ZNoise/GID
+    ├── chat/                  # (41 API) Tin nhắn, Hội thoại, Đa thu hồi, Tìm kiếm gần đây
+    ├── group/                 # (44 API) Quản trị nhóm, Cộng đồng, Duyệt thành viên, Lịch sử nhóm V1-V4
+    ├── friend/                # (33 API) Bạn bè, Danh bạ V2, Biệt danh V2, Chặn, Gợi ý kết bạn
     ├── profile/               # (16 API) Hồ sơ cá nhân, MiniProfile, Xác thực tài khoản, Emoji Status
     ├── sync/                  # (5 API)  Đồng bộ tin nhắn từ điện thoại (RSA-2048 & ZDB4.0 .db.crypt)
     ├── zcloud/                # (9 API)  Hệ sinh thái ZCloud, MyCloud & ZFamily
-    ├── call/                  # (3 API)  Báo hiệu Gọi Thoại & Video (VoIP Signaling zpw_type=24)
-    ├── media/                 # (5 API)  Tải tệp đính kèm, Kho lưu trữ Media/File/Link, AI Voice-to-Text
+    ├── call/                  # (28 API) Báo hiệu Gọi Thoại, Video 1-1 & Gọi Nhóm (VoIP Signaling zpw_type=24)
+    ├── media/                 # (8 API)  Tải tệp đính kèm, Kho lưu trữ Media/File/Link, AI Voice-to-Text
     ├── sticker/               # (10 API) Kho nhãn dán V2, Gợi ý nhãn dán theo ngữ cảnh, Sticker Hello
     ├── board/                 # (16 API) Bình chọn (Poll), Ghi chú (Note), Nhắc hẹn (Reminder), Ghim đầu nhóm
     └── business/              # (26 API) Zalo Business, Danh mục sản phẩm, Tin nhắn nhanh, Ngân hàng, Nhãn

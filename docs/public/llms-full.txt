@@ -1,4 +1,4 @@
-# @softtynet/zca-js v2.3.4 — Full AI/LLM Technical Reference (225 APIs across 12 Domains)
+# @softtynet/zca-js v2.3.4 — Full AI/LLM Technical Reference (250 APIs across 12 Domains)
 
 Maintained by Softtynet Co., Ltd. | Docs: https://softtyos.github.io/zca-js-docs/ | NPM: npm install @softtynet/zca-js
 
@@ -2689,13 +2689,109 @@ export type VerifyCloudMediaResponse = {
 };
 ```
 
-## Domain: Gọi thoại & Video 1-1 (Call) (`api.call` — 3 APIs)
-Điều khiển tín hiệu cuộc gọi thoại và gọi video 1-1 (Commands 11300 → 11306: Request, Call, Ringing, Cancel, End).
+## Domain: Gọi thoại, Video & Gọi nhóm (Call) (`api.call` — 28 APIs)
+Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, video 1-1 và cuộc gọi nhóm (Group Call: Commands 11300 → 12447).
+
+### addUserGroupCall
+- **Call**: `await api.call.addUserGroupCall(callId: number, options: AddUserGroupCallOptions,)` (or `await api.addUserGroupCall(callId: number, options: AddUserGroupCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/adduser
+- **Description**: Mời thêm thành viên mới vào cuộc gọi nhóm đang diễn ra (cmd 12435 - /api/voicecall/group/adduser).
+```ts
+export type AddUserGroupCallOptions = {
+    calleeId?: string;
+    callType?: CallType | number;
+    hostCall: string;
+    data?: string | Record<string, unknown>;
+    session: string;
+    partners: string[];
+};
+
+export type AddUserGroupCallResponse = Record<string, unknown>;
+```
+
+### answerAckVoiceCall
+- **Call**: `await api.call.answerAckVoiceCall(calleeId: string, callId: number, options: AnswerAckVoiceCallOptions = {},)` (or `await api.answerAckVoiceCall(calleeId: string, callId: number, options: AnswerAckVoiceCallOptions = {},)`)
+- **Endpoint**: GET /api/voicecall/answerack
+- **Description**: Gửi xác nhận hoàn tất bắt tay nhận cuộc gọi 1-1 (cmd 11304 - /api/voicecall/answerack, signal 408).
+```ts
+export type AnswerAckVoiceCallOptions = {
+    status?: number;
+};
+
+export type AnswerAckVoiceCallResponse = Record<string, unknown>;
+```
+
+### answerGroupCall
+- **Call**: `await api.call.answerGroupCall(callId: number, options: AnswerGroupCallOptions,)` (or `await api.answerGroupCall(callId: number, options: AnswerGroupCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/answer
+- **Description**: Chấp nhận tham gia cuộc gọi nhóm khi nhận được lời mời (cmd 12436 - /api/voicecall/group/answer).
+```ts
+export type AnswerGroupCallOptions = {
+    calleeId?: string;
+    callType?: CallType | number;
+    hostCall: string;
+    data?: string | Record<string, unknown>;
+    partners?: string[];
+};
+
+export type AnswerGroupCallResponse = Record<string, unknown>;
+```
+
+### answerVoiceCall
+- **Call**: `await api.call.answerVoiceCall(callerId: string, callId: number, options: AnswerVoiceCallOptions = {},)` (or `await api.answerVoiceCall(callerId: string, callId: number, options: AnswerVoiceCallOptions = {},)`)
+- **Endpoint**: GET /api/voicecall/answer
+- **Description**: Chấp nhận (Bắt máy) cuộc gọi Thoại/Video 1-1 đến (cmd 11303 - /api/voicecall/answer, signal 402).
+```ts
+export type AnswerVoiceCallOptions = {
+    status?: number;
+    codec?: string;
+    rtcpAddress?: string;
+    rtpAddress?: string;
+    sessionId?: string;
+    extendData?: string | Record<string, unknown>;
+    subCommand?: number;
+};
+
+export type AnswerVoiceCallResponse = Record<string, unknown>;
+```
+
+### broadcastGroupCallState
+- **Call**: `await api.call.broadcastGroupCallState(callId: number, options: BroadcastGroupCallStateOptions,)` (or `await api.broadcastGroupCallState(callId: number, options: BroadcastGroupCallStateOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/broadcast
+- **Description**: Phát quảng bá trạng thái thiết bị (Mic, Camera, Screen Share) tới các thành viên trong cuộc gọi nhóm (cmd 12098 - /api/voicecall/group/broadcast).
+```ts
+export type BroadcastGroupCallStateOptions = {
+    hostCall: string;
+    userId?: string;
+    callState?: number;
+    audioState?: number;
+    videoState?: number;
+    params?: string | Record<string, unknown>;
+};
+
+export type BroadcastGroupCallStateResponse = Record<string, unknown>;
+```
+
+### cancelGroupCall
+- **Call**: `await api.call.cancelGroupCall(callId: number, options: CancelGroupCallOptions,)` (or `await api.cancelGroupCall(callId: number, options: CancelGroupCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/cancel
+- **Description**: Hủy lời mời cuộc gọi nhóm (cmd 12437 - /api/voicecall/group/cancel).
+```ts
+export type CancelGroupCallOptions = {
+    calleeId?: string;
+    callType?: CallType | number;
+    hostCall: string;
+    data?: string | Record<string, unknown>;
+    partners?: string[];
+};
+
+export type CancelGroupCallResponse = Record<string, unknown>;
+```
 
 ### cancelVoiceCall
 - **Call**: `await api.call.cancelVoiceCall(calleeId: string, callId: number, options: CancelVoiceCallOptions = {},)` (or `await api.cancelVoiceCall(calleeId: string, callId: number, options: CancelVoiceCallOptions = {},)`)
 - **Endpoint**: GET /api/voicecall/cancel
-- **Description**: Huỷ cuộc gọi đang đổ chuông trước khi người nhận bắt máy (/api/voicecall/cancel, command 11305).
+- **Description**: Hủy cuộc gọi 1-1 đang đổ chuông trước khi người nhận bắt máy (cmd 11305 - /api/voicecall/cancel, signal 405).
 ```ts
 export type CancelVoiceCallOptions = {
     callType?: CallType;
@@ -2705,10 +2801,26 @@ export type CancelVoiceCallOptions = {
 export type CancelVoiceCallResponse = Record<string, unknown>;
 ```
 
+### endGroupCall
+- **Call**: `await api.call.endGroupCall(callId: number, options: EndGroupCallOptions,)` (or `await api.endGroupCall(callId: number, options: EndGroupCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/endcall
+- **Description**: Rời khỏi cuộc gọi nhóm hoặc từ chối lời mời gọi nhóm (cmd 12438 - /api/voicecall/group/endcall).
+```ts
+export type EndGroupCallOptions = {
+    calleeId?: string;
+    callType?: CallType | number;
+    hostCall: string;
+    data?: string | Record<string, unknown>;
+    partners?: string[];
+};
+
+export type EndGroupCallResponse = Record<string, unknown>;
+```
+
 ### endVoiceCall
 - **Call**: `await api.call.endVoiceCall(calleeId: string, callId: number, options: EndVoiceCallOptions = {},)` (or `await api.endVoiceCall(calleeId: string, callId: number, options: EndVoiceCallOptions = {},)`)
 - **Endpoint**: GET /api/voicecall/endcall
-- **Description**: Kết thúc cuộc gọi thoại / video (/api/voicecall/endcall, command 11306).
+- **Description**: Kết thúc cuộc gọi 1-1 đang diễn ra hoặc từ chối cuộc gọi đến (cmd 11306 - /api/voicecall/endcall, signal 404).
 ```ts
 export type EndVoiceCallOptions = {
     status?: number;
@@ -2717,14 +2829,237 @@ export type EndVoiceCallOptions = {
 export type EndVoiceCallResponse = Record<string, unknown>;
 ```
 
+### finishGroupCall
+- **Call**: `await api.call.finishGroupCall(callId: number, options: FinishGroupCallOptions,)` (or `await api.finishGroupCall(callId: number, options: FinishGroupCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/finish
+- **Description**: Kết thúc hoàn toàn phòng gọi nhóm cho tất cả thành viên (cmd 12446 - /api/voicecall/group/finish).
+```ts
+export type FinishGroupCallOptions = {
+    callType?: CallType | number;
+    data?: string | Record<string, unknown>;
+    duration?: number;
+    hostCall: string;
+    partners?: string[];
+    status?: number;
+    joinTime?: number;
+};
+
+export type FinishGroupCallResponse = Record<string, unknown>;
+```
+
+### getGroupCallState
+- **Call**: `await api.call.getGroupCallState(callId: number, hostCall: string, callType: CallType | number = CallType.GroupAudio,)` (or `await api.getGroupCallState(callId: number, hostCall: string, callType: CallType | number = CallType.GroupAudio,)`)
+- **Endpoint**: GET /api/voicecall/group/state
+- **Description**: Truy vấn trạng thái hiện tại và danh sách thành viên trong phòng gọi nhóm (cmd 12445 - /api/voicecall/group/state).
+```ts
+export type GetGroupCallStateResponse = Record<string, unknown>;
+```
+
+### holdVoiceCall
+- **Call**: `await api.call.holdVoiceCall(toId: string, options: HoldVoiceCallOptions = {},)` (or `await api.holdVoiceCall(toId: string, options: HoldVoiceCallOptions = {},)`)
+- **Endpoint**: GET /api/voicecall/holdreq, /api/voicecall/holdresp, /api/voicecall/
+- **Description**: Tạm giữ (Hold) cuộc gọi 1-1 đang diễn ra hoặc phản hồi yêu cầu tạm giữ (cmd 11307 holdreq / cmd 11308 holdresp, signal 411/412).
+```ts
+export type HoldVoiceCallOptions = {
+    isResponse?: boolean;
+};
+
+export type HoldVoiceCallResponse = Record<string, unknown>;
+```
+
+### joinGroupCall
+- **Call**: `await api.call.joinGroupCall(callId: number, options: JoinGroupCallOptions,)` (or `await api.joinGroupCall(callId: number, options: JoinGroupCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/join
+- **Description**: Chủ động tham gia vào một cuộc gọi nhóm đang diễn ra từ banner nhóm (cmd 12043 - /api/voicecall/group/join).
+```ts
+export type JoinGroupCallOptions = {
+    userId?: string;
+    hostCall: string;
+    status?: number;
+    srcJoinCall?: number;
+    audioState?: number;
+    videoState?: number;
+    data?: string | Record<string, unknown>;
+};
+
+export type JoinGroupCallResponse = Record<string, unknown>;
+```
+
+### logEndVoiceCall
+- **Call**: `await api.call.logEndVoiceCall(partnerId: string, callId: number, options: LogEndVoiceCallOptions = {},)` (or `await api.logEndVoiceCall(partnerId: string, callId: number, options: LogEndVoiceCallOptions = {},)`)
+- **Endpoint**: GET /api/voicecall/logendcall
+- **Description**: Gửi thống kê chất lượng cuộc gọi (QoS/Billing stats) sau khi kết thúc cuộc gọi 1-1 (cmd 11311 - /api/voicecall/logendcall, signal 406).
+```ts
+export type LogEndVoiceCallOptions = {
+    status?: number;
+    logData?: string | Record<string, unknown>;
+    duration?: number;
+    role?: boolean | number;
+};
+
+export type LogEndVoiceCallResponse = Record<string, unknown>;
+```
+
+### notifyGroupCall
+- **Call**: `await api.call.notifyGroupCall(callId: number, options: NotifyGroupCallOptions,)` (or `await api.notifyGroupCall(callId: number, options: NotifyGroupCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/notify
+- **Description**: Gửi thông báo sự kiện cuộc gọi nhóm vào luồng chat nhóm (cmd 12447 - /api/voicecall/group/notify).
+```ts
+export type NotifyGroupCallOptions = {
+    hostCall: string;
+    callType?: CallType | number;
+    status?: number;
+    data?: string | Record<string, unknown>;
+};
+
+export type NotifyGroupCallResponse = Record<string, unknown>;
+```
+
+### pingGroupCall
+- **Call**: `await api.call.pingGroupCall(callId: number, options: PingGroupCallOptions,)` (or `await api.pingGroupCall(callId: number, options: PingGroupCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/ping
+- **Description**: Gửi nhịp tim (Heartbeat Ping) duy trì kết nối của thành viên trong phòng gọi nhóm (cmd 12097 - /api/voicecall/group/ping).
+```ts
+export type PingGroupCallOptions = {
+    hostCall: string;
+    userId?: string;
+    callState?: number;
+    audioState?: number;
+    videoState?: number;
+    params?: string | Record<string, unknown>;
+};
+
+export type PingGroupCallResponse = Record<string, unknown>;
+```
+
+### requestAudioToVideoCall
+- **Call**: `await api.call.requestAudioToVideoCall(uidTo: string, callId: number, options: RequestAudioToVideoCallOptions = {},)` (or `await api.requestAudioToVideoCall(uidTo: string, callId: number, options: RequestAudioToVideoCallOptions = {},)`)
+- **Endpoint**: GET /api/voicecall/requestaudio2video
+- **Description**: Yêu cầu nâng cấp từ cuộc gọi Thoại sang cuộc gọi Video hoặc phản hồi yêu cầu (cmd 12056 - /api/voicecall/requestaudio2video).
+```ts
+export type RequestAudioToVideoCallOptions = {
+    status?: number;
+};
+
+export type RequestAudioToVideoCallResponse = Record<string, unknown>;
+```
+
+### requestGroupCall
+- **Call**: `await api.call.requestGroupCall(groupId: string, options: RequestGroupCallOptions,)` (or `await api.requestGroupCall(groupId: string, options: RequestGroupCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/requestcall
+- **Description**: Bước 1 gọi nhóm (cmd 12433 - /api/voicecall/group/requestcall): Xin cấp phát phòng gọi nhóm (Group Call Room & RTP/ZRTC servers).
+```ts
+export type RequestGroupCallOptions = {
+    callId?: number;
+    typeRequest?: CallType | number;
+    data?: string | Record<string, unknown>;
+    partners: string[];
+};
+
+export type RequestGroupCallResponse = Record<string, unknown>;
+```
+
+### requestShareScreenCall
+- **Call**: `await api.call.requestShareScreenCall(uidTo: string, callId: number, options: RequestShareScreenCallOptions = {},)` (or `await api.requestShareScreenCall(uidTo: string, callId: number, options: RequestShareScreenCallOptions = {},)`)
+- **Endpoint**: GET /api/voicecall/requestsharescreen
+- **Description**: Yêu cầu bắt đầu hoặc kết thúc chia sẻ màn hình (Screen Share) trong cuộc gọi 1-1 (cmd 12064 - /api/voicecall/requestsharescreen).
+```ts
+export type RequestShareScreenCallOptions = {
+    status?: number;
+};
+
+export type RequestShareScreenCallResponse = Record<string, unknown>;
+```
+
+### requestVoiceCall
+- **Call**: `await api.call.requestVoiceCall(calleeId: string, options: RequestVoiceCallOptions = {},)` (or `await api.requestVoiceCall(calleeId: string, options: RequestVoiceCallOptions = {},)`)
+- **Endpoint**: GET /api/voicecall/requestcall
+- **Description**: Bước 1 gọi 1-1 (cmd 11300 - /api/voicecall/requestcall, signal 401): Xin cấp phát phòng gọi 1-1 (callId, sessId, rtpServer, rtcpServer, zrtpKey, codec).
+```ts
+export type RequestVoiceCallOptions = {
+    callType?: CallType;
+    callId?: number;
+    codec?: string;
+};
+
+export type RequestVoiceCallResponse = RequestCallServerInfo & {
+    callId: number;
+};
+```
+
+### ringRingGroupCall
+- **Call**: `await api.call.ringRingGroupCall(callId: number, options: RingRingGroupCallOptions,)` (or `await api.ringRingGroupCall(callId: number, options: RingRingGroupCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/ringring
+- **Description**: Báo hiệu thiết bị đang đổ chuông cho lời mời gọi nhóm (cmd 12439 - /api/voicecall/group/ringring).
+```ts
+export type RingRingGroupCallOptions = {
+    calleeId?: string;
+    callType?: CallType | number;
+    hostCall: string;
+    data?: string | Record<string, unknown>;
+    partners?: string[];
+};
+
+export type RingRingGroupCallResponse = Record<string, unknown>;
+```
+
+### ringRingVoiceCall
+- **Call**: `await api.call.ringRingVoiceCall(callerId: string, callId: number, options: RingRingVoiceCallOptions = {},)` (or `await api.ringRingVoiceCall(callerId: string, callId: number, options: RingRingVoiceCallOptions = {},)`)
+- **Endpoint**: GET /api/voicecall/ringring
+- **Description**: Báo hiệu thiết bị đang đổ chuông cho cuộc gọi 1-1 đến (cmd 11302 - /api/voicecall/ringring, signal 407).
+```ts
+export type RingRingVoiceCallOptions = {
+    status?: number;
+};
+
+export type RingRingVoiceCallResponse = Record<string, unknown>;
+```
+
+### sendRequestGroupCall
+- **Call**: `await api.call.sendRequestGroupCall(groupId: string, options: SendRequestGroupCallOptions,)` (or `await api.sendRequestGroupCall(groupId: string, options: SendRequestGroupCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/request
+- **Description**: Bước 2 gọi nhóm (cmd 12434 - /api/voicecall/group/request): Phát tín hiệu mời gọi nhóm tới danh sách thành viên.
+```ts
+export type SendRequestGroupCallOptions = {
+    calleeId?: string;
+    callId: number;
+    callType?: CallType | number;
+    data?: string | Record<string, unknown>;
+    session: string;
+    partners: string[];
+};
+
+export type SendRequestGroupCallResponse = Record<string, unknown>;
+```
+
+### sendRequestVoiceCall
+- **Call**: `await api.call.sendRequestVoiceCall(calleeId: string, options: SendRequestVoiceCallOptions,)` (or `await api.sendRequestVoiceCall(calleeId: string, options: SendRequestVoiceCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/request
+- **Description**: Bước 2 gọi 1-1 (cmd 11301 - /api/voicecall/request, signal 416): Gửi gói mời gọi (Invite) kèm extendData ZRTC để kích hoạt đổ chuông trên thiết bị người nhận.
+```ts
+export type SendRequestVoiceCallOptions = {
+    callId: number;
+    session: string;
+    rtpAddress: string;
+    rtcpAddress: string;
+    codec?: string;
+    extendData?: string | Record<string, unknown>;
+    subCommand?: number;
+};
+
+export type SendRequestVoiceCallResponse = Record<string, unknown>;
+```
+
 ### sendVoiceCall
 - **Call**: `await api.call.sendVoiceCall(calleeId: string, options: SendVoiceCallOptions = {},)` (or `await api.sendVoiceCall(calleeId: string, options: SendVoiceCallOptions = {},)`)
 - **Endpoint**: GET /api/voicecall/requestcall, /api/voicecall/request
-- **Description**: Khởi tạo cuộc gọi thoại / video (Signaling 2 bước: /api/voicecall/requestcall command 11300 + /api/voicecall/request command 11301) giúp đổ chuông trực tiếp trên thiết bị của người nhận.
+- **Description**: Khởi tạo cuộc gọi Thoại hoặc Video 1-1 trọn gói (tự động thực hiện 2 bước 11300 + 11301 làm đổ chuông máy người nhận).
 ```ts
 export enum CallType {
     Audio = 1,
     Video = 3,
+    GroupAudio = 5,
+    GroupVideo = 6,
 }
 
 export type SendVoiceCallOptions = {
@@ -2769,6 +3104,49 @@ export type SendVoiceCallResponse = {
     serverInfo?: RequestCallServerInfo;
     requestResult?: unknown;
 };
+```
+
+### shareScreenGroupCall
+- **Call**: `await api.call.shareScreenGroupCall(callId: number, options: ShareScreenGroupCallOptions,)` (or `await api.shareScreenGroupCall(callId: number, options: ShareScreenGroupCallOptions,)`)
+- **Endpoint**: GET /api/voicecall/group/sharescreen
+- **Description**: Bắt đầu hoặc dừng chia sẻ màn hình trong cuộc gọi nhóm (cmd 12044 - /api/voicecall/group/sharescreen).
+```ts
+export type ShareScreenGroupCallOptions = {
+    userId?: string;
+    hostCall: string;
+    status?: number;
+    audioState?: number;
+    videoState?: number;
+    data?: string | Record<string, unknown>;
+};
+
+export type ShareScreenGroupCallResponse = Record<string, unknown>;
+```
+
+### unholdVoiceCall
+- **Call**: `await api.call.unholdVoiceCall(toId: string, options: UnholdVoiceCallOptions = {},)` (or `await api.unholdVoiceCall(toId: string, options: UnholdVoiceCallOptions = {},)`)
+- **Endpoint**: GET /api/voicecall/unholdreq, /api/voicecall/unholdresp, /api/voicecall/
+- **Description**: Khôi phục (Unhold) cuộc gọi 1-1 đang tạm giữ hoặc phản hồi yêu cầu khôi phục (cmd 11309 unholdreq / cmd 11310 unholdresp, signal 413/414).
+```ts
+export type UnholdVoiceCallOptions = {
+    isResponse?: boolean;
+};
+
+export type UnholdVoiceCallResponse = Record<string, unknown>;
+```
+
+### updateCallMediaState
+- **Call**: `await api.call.updateCallMediaState(calleeId: string, callId: number, options: UpdateCallMediaStateOptions,)` (or `await api.updateCallMediaState(calleeId: string, callId: number, options: UpdateCallMediaStateOptions,)`)
+- **Endpoint**: GET /api/voicecall/conf
+- **Description**: Đồng bộ trạng thái bật/tắt Mic và Camera trong cuộc gọi 1-1 (cmd 12006 - /api/voicecall/conf).
+```ts
+export type UpdateCallMediaStateOptions = {
+    isOnCam: boolean | number;
+    isOnMic: boolean | number;
+    data?: string | Record<string, unknown>;
+};
+
+export type UpdateCallMediaStateResponse = Record<string, unknown>;
 ```
 
 ## Domain: Kho lưu trữ & Chuyển giọng nói (Media) (`api.media` — 8 APIs)
