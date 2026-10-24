@@ -9,6 +9,14 @@ const NPM_REGISTRY = ZALO_DOMAINS.NPM_REGISTRY;
 export async function checkUpdate(ctx: ContextBase) {
     if (!ctx.options.checkUpdate) return;
 
+    const isAgentUndiciDispatcher = Boolean(
+        ctx.options.agent && typeof (ctx.options.agent as { dispatch?: unknown }).dispatch === "function",
+    );
+    const resolvedDispatcher =
+        ctx.options.dispatcher ?? (isAgentUndiciDispatcher ? ctx.options.agent : undefined);
+    const resolvedAgent =
+        ctx.options.agent && !isAgentUndiciDispatcher ? ctx.options.agent : undefined;
+
     const _options = {
         ...(isBun
             ? {
@@ -16,7 +24,13 @@ export async function checkUpdate(ctx: ContextBase) {
                   // @ts-ignore
                   proxy: ctx.options.agent?.proxy?.href,
               }
-            : { agent: ctx.options.agent }),
+            : {
+                  ...(resolvedAgent ? { agent: resolvedAgent } : {}),
+                  ...(resolvedDispatcher ? { dispatcher: resolvedDispatcher } : {}),
+              }),
+        ...(typeof AbortSignal !== "undefined" && typeof AbortSignal.timeout === "function"
+            ? { signal: AbortSignal.timeout(3000) }
+            : {}),
     };
     const response = await ctx.options.polyfill(NPM_REGISTRY, _options as RequestInit).catch(() => null);
     if (!response || !response.ok) return;

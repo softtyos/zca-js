@@ -2,10 +2,22 @@
 
 <p align="left">
   <a href="https://www.npmjs.com/package/@softtynet/zca-js"><img src="https://img.shields.io/npm/v/@softtynet/zca-js.svg?label=%40softtynet%2Fzca-js&color=0068ff" alt="npm version" /></a>
+  <a href="https://softtyos.github.io/zca-js-docs/"><img src="https://img.shields.io/badge/Docs-VitePress-646cff.svg" alt="Documentation" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT" /></a>
 </p>
 
-**`@softtynet/zca-js`** là bộ thư viện client hỗ trợ kết nối và tương tác Zalo dành cho Node.js, TypeScript và Bun, được duy trì nội bộ bởi **Softtynet Co., Ltd.**
+**`@softtynet/zca-js`** là bộ thư viện SDK kết nối và tương tác Zalo dành cho **Node.js**, **TypeScript** và **Bun**, được phát triển và duy trì bởi **Softtynet Co., Ltd.** dựa trên phân tích giao thức Zalo PC `26.7.10`.
+
+- **Trang tài liệu chính thức (Documentation)**: [**https://softtyos.github.io/zca-js-docs/**](https://softtyos.github.io/zca-js-docs/)
+
+---
+
+## Điểm nổi bật
+
+- **Kiến trúc 12 Domains (`224 API nguyên bản`)**: Tổ chức trực quan qua `api.auth`, `api.chat`, `api.group`, `api.friend`, `api.profile`, `api.sync`, `api.zcloud`, `api.call`, `api.media`, `api.sticker`, `api.board`, `api.business` (vẫn hỗ trợ gọi phẳng `api.<method>` tương thích ngược 100%).
+- **Đồng bộ lịch sử Mobile (`ZDB 4.0`) & Catch-up Sync**: Hỗ trợ đầy đủ luồng `requestSyncFromPhone` $\rightarrow$ `getSyncData` (giải mã RSA-2048 OAEP/PKCS1 + ZDB 4.0 64KB multi-chunk AES-256-CBC + Deflate) & `pullMobile`.
+- **ZCloud, MediaStore & Bảo toàn Số nguyên 64-bit (`preParseJsonIds`)**: Tự động giữ nguyên độ chính xác chuỗi 19 chữ số cho `owner_id`, `group_id`, `globalMsgId`, `cliMsgId` trước khi `JSON.parse()` và tích hợp bộ mã hóa `98yS` AES-256-CBC cho ZCloud/ZFamily.
+- **Tín hiệu Gọi Thoại & Video Call 1-1**: Điều khiển trọn vẹn vòng đời cuộc gọi (`11300` $\rightarrow$ `11306`: `sendVoiceCall`, `cancelVoiceCall`, `endVoiceCall`) và lắng nghe `call_event` thời gian thực.
 
 ---
 
@@ -18,8 +30,6 @@ bun add @softtynet/zca-js
 ```
 
 ### Cấu hình `imageMetadataGetter` (Tùy chọn khi gửi ảnh từ file nội bộ)
-
-Nếu ứng dụng cần gửi ảnh hoặc GIF từ đường dẫn file trên máy, bạn có thể truyền hàm `imageMetadataGetter` (ví dụ sử dụng `sharp`):
 
 ```ts
 import { Zalo } from "@softtynet/zca-js";
@@ -41,6 +51,27 @@ const zalo = new Zalo({ imageMetadataGetter });
 
 ---
 
+## Kiến trúc 12 Phân hệ (Domains)
+
+| Phân hệ | Namespace | Số lượng API | Tài liệu chi tiết |
+| :--- | :--- | :---: | :--- |
+| **Xác thực & Phiên** | `api.auth` | 8 | [`docs/api/auth.md`](docs/api/auth.md) |
+| **Tin nhắn & Hội thoại** | `api.chat` | 35 | [`docs/api/chat.md`](docs/api/chat.md) |
+| **Nhóm & Cộng đồng** | `api.group` | 48 | [`docs/api/group.md`](docs/api/group.md) |
+| **Bạn bè & Danh bạ** | `api.friend` | 26 | [`docs/api/friend.md`](docs/api/friend.md) |
+| **Hồ sơ cá nhân** | `api.profile` | 18 | [`docs/api/profile.md`](docs/api/profile.md) |
+| **Đồng bộ Mobile ZDB 4.0** | `api.sync` | 5 | [`docs/api/sync.md`](docs/api/sync.md) |
+| **Đám mây ZCloud & ZFamily** | `api.zcloud` | 9 | [`docs/api/zcloud.md`](docs/api/zcloud.md) |
+| **Gọi thoại & Video 1-1** | `api.call` | 3 | [`docs/api/call.md`](docs/api/call.md) |
+| **Kho lưu trữ & Voice-to-Text** | `api.media` | 7 | [`docs/api/media.md`](docs/api/media.md) |
+| **Nhãn dán & Biểu cảm** | `api.sticker` | 8 | [`docs/api/sticker.md`](docs/api/sticker.md) |
+| **Bảng tin, Bình chọn & Lịch hẹn** | `api.board` | 16 | [`docs/api/board.md`](docs/api/board.md) |
+| **Zalo Business & Danh mục** | `api.business` | 41 | [`docs/api/business.md`](docs/api/business.md) |
+
+> Xem tổng quan toàn bộ tài liệu tại [`docs/api/index.md`](docs/api/index.md) hoặc chạy trang tài liệu VitePress cục bộ bằng lệnh `npm run docs:dev`.
+
+---
+
 ## Sử dụng cơ bản
 
 ### 1. Đăng nhập bằng mã QR
@@ -53,7 +84,7 @@ const api = await zalo.loginQR();
 console.log("Đã đăng nhập:", api.getOwnId());
 ```
 
-### 2. Lắng nghe tin nhắn
+### 2. Lắng nghe sự kiện WebSocket thời gian thực
 
 ```ts
 import { Zalo, ThreadType } from "@softtynet/zca-js";
@@ -74,25 +105,36 @@ api.listener.on("message", (message) => {
 api.listener.start({ retryOnClose: true });
 ```
 
-### 3. Gửi tin nhắn văn bản & Sticker
+### 3. Gọi API theo Domain Namespace
 
 ```ts
-// Trả lời tin nhắn văn bản
-await api.sendMessage(
-    {
-        msg: "Xin chào!",
-        quote: message.data,
-    },
-    message.threadId,
-    message.type,
-);
+// Nhóm & Lịch sử tin nhắn Cloud
+const groupInfo = await api.group.getGroupInfo("888999000");
+const history = await api.group.getGroupChatHistory("888999000", { count: 50, cursor: 0 });
+const msgStatus = await api.group.getGroupMessageStatus("888999000", ["1000000000000000001"]);
 
-// Tìm và gửi Sticker
-const stickerIds = await api.getStickers("xin chào");
-if (stickerIds.length > 0) {
-    const stickerObject = await api.getStickersDetail(stickerIds[0]);
-    await api.sendMessageSticker(stickerObject, message.threadId, message.type);
-}
+// Kho lưu trữ Media / File / Link
+const mediaPreview = await api.media.getMediaStorePreview("888999000", 50);
+const mediaList = await api.media.getConversationMedia({
+    groupId: "888999000",
+    mediaType: "media",
+    limit: 50,
+});
+
+// Giải mã thông tin thành viên hàng loạt
+const profiles = await api.group.getGroupMembersInfo(["1000000000000000001"]);
+```
+
+---
+
+## Chạy trang Tài liệu (VitePress Docs)
+
+```bash
+# Khởi chạy máy chủ tài liệu VitePress cục bộ (http://localhost:5173)
+npm run docs:dev
+
+# Sinh lại tài liệu từ mã nguồn src/apis/* và đóng gói tĩnh
+npm run docs:build
 ```
 
 ---

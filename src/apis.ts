@@ -8,6 +8,7 @@ import { addQuickMessageFactory } from "./apis/business/addQuickMessage.js";
 import { addReactionFactory } from "./apis/chat/addReaction.js";
 import { addUnreadMarkFactory } from "./apis/chat/addUnreadMark.js";
 import { addUserToGroupFactory } from "./apis/group/addUserToGroup.js";
+import { analyseGroupFactory } from "./apis/group/analyseGroup.js";
 import { blockUserFactory } from "./apis/friend/blockUser.js";
 import { blockViewFeedFactory } from "./apis/friend/blockViewFeed.js";
 import { cancelPullMobileFactory } from "./apis/sync/cancelPullMobile.js";
@@ -17,6 +18,7 @@ import { changeFriendAliasFactory } from "./apis/friend/changeFriendAlias.js";
 import { changeGroupAvatarFactory } from "./apis/group/changeGroupAvatar.js";
 import { changeGroupNameFactory } from "./apis/group/changeGroupName.js";
 import { changeGroupOwnerFactory } from "./apis/group/changeGroupOwner.js";
+import { checkQuotaCommunityMemberFactory } from "./apis/group/checkQuotaCommunityMember.js";
 import { clearUnreadFriendRequestsFactory } from "./apis/friend/clearUnreadFriendRequests.js";
 import { createAutoReplyFactory } from "./apis/business/createAutoReply.js";
 import { createBankAccountFactory } from "./apis/business/createBankAccount.js";
@@ -43,6 +45,7 @@ import { editReminderFactory } from "./apis/board/editReminder.js";
 import { enableGroupLinkFactory } from "./apis/group/enableGroupLink.js";
 import { encryptGidsFactory } from "./apis/auth/encryptGids.js";
 import { endVoiceCallFactory } from "./apis/call/endVoiceCall.js";
+import { exportSessionFactory } from "./apis/auth/exportSession.js";
 import { fetchAccountInfoFactory } from "./apis/profile/fetchAccountInfo.js";
 import { findUserFactory } from "./apis/friend/findUser.js";
 import { findUserByUsernameFactory } from "./apis/friend/findUserByUsername.js";
@@ -66,6 +69,8 @@ import { getCloudViewerKeyFactory } from "./apis/zcloud/getCloudViewerKey.js";
 import { getContextFactory } from "./apis/auth/getContext.js";
 import { getConversationMediaFactory } from "./apis/media/getConversationMedia.js";
 import { getCookieFactory } from "./apis/auth/getCookie.js";
+import { getDirectMessageStatusFactory } from "./apis/chat/getDirectMessageStatus.js";
+import { getE2eeGroupListFactory } from "./apis/group/getE2eeGroupList.js";
 import { getEmojiStatusConfigFactory } from "./apis/profile/getEmojiStatusConfig.js";
 import { getExtraFriendInfoFactory } from "./apis/friend/getExtraFriendInfo.js";
 import { getExtraGroupInfoFactory } from "./apis/group/getExtraGroupInfo.js";
@@ -74,13 +79,16 @@ import { getFamilyUsageFactory } from "./apis/zcloud/getFamilyUsage.js";
 import { getFamilyViewerKeyFactory } from "./apis/zcloud/getFamilyViewerKey.js";
 import { getFriendBoardListFactory } from "./apis/friend/getFriendBoardList.js";
 import { getFriendOnlinesFactory } from "./apis/friend/getFriendOnlines.js";
+import { getFriendProfilesV2Factory } from "./apis/friend/getFriendProfilesV2.js";
 import { getFriendRecommendationsFactory } from "./apis/friend/getFriendRecommendations.js";
 import { getFriendRequestStatusFactory } from "./apis/friend/getFriendRequestStatus.js";
+import { getFriendsActivePCWebFactory } from "./apis/friend/getFriendsActivePCWeb.js";
 import { getFriendsEmojiStatusFactory } from "./apis/friend/getFriendsEmojiStatus.js";
 import { getFullAvatarFactory } from "./apis/profile/getFullAvatar.js";
 import { getGroupBlockedMemberFactory } from "./apis/group/getGroupBlockedMember.js";
 import { getGroupChatHistoryFactory } from "./apis/group/getGroupChatHistory.js";
 import { getGroupCloudMessageJumpFactory } from "./apis/group/getGroupCloudMessageJump.js";
+import { getGroupCloudMessagePathFactory } from "./apis/group/getGroupCloudMessagePath.js";
 import { getGroupHistoryLegacyFactory } from "./apis/group/getGroupHistoryLegacy.js";
 import { getGroupInfoFactory } from "./apis/group/getGroupInfo.js";
 import { getGroupInfoV2Factory } from "./apis/group/getGroupInfoV2.js";
@@ -104,12 +112,15 @@ import { getListPinTopicsFactory } from "./apis/board/getListPinTopics.js";
 import { getListReminderFactory } from "./apis/board/getListReminder.js";
 import { getMediaStorePreviewFactory } from "./apis/media/getMediaStorePreview.js";
 import { getMiniProfileFactory } from "./apis/profile/getMiniProfile.js";
+import { getMultiGroupCloudMessagesFactory } from "./apis/group/getMultiGroupCloudMessages.js";
 import { getMultiUsersByPhonesFactory } from "./apis/friend/getMultiUsersByPhones.js";
 import { getMuteFactory } from "./apis/chat/getMute.js";
 import { getNoisedIdsFactory } from "./apis/auth/getNoisedIds.js";
 import { getOwnIdFactory } from "./apis/auth/getOwnId.js";
 import { getPendingGroupMembersFactory } from "./apis/group/getPendingGroupMembers.js";
 import { getPersonalizedStickerListFactory } from "./apis/sticker/getPersonalizedStickerList.js";
+import { getPersonalMediaFactory } from "./apis/media/getPersonalMedia.js";
+import { getPersonalMediaPreviewFactory } from "./apis/media/getPersonalMediaPreview.js";
 import { getPhonebookV2Factory } from "./apis/friend/getPhonebookV2.js";
 import { getPinConversationsFactory } from "./apis/chat/getPinConversations.js";
 import { getPollDetailFactory } from "./apis/board/getPollDetail.js";
@@ -133,6 +144,7 @@ import { getStickersFactory } from "./apis/sticker/getStickers.js";
 import { getStickersDetailFactory } from "./apis/sticker/getStickersDetail.js";
 import { getStickerSuggestionFactory } from "./apis/sticker/getStickerSuggestion.js";
 import { getStickerSuggestKeywordsFactory } from "./apis/sticker/getStickerSuggestKeywords.js";
+import { getSuggestedConversationsFactory } from "./apis/chat/getSuggestedConversations.js";
 import { getSyncDataFactory } from "./apis/sync/getSyncData.js";
 import { getUnreadMarkFactory } from "./apis/chat/getUnreadMark.js";
 import { getUsageMyCloudFactory } from "./apis/zcloud/getUsageMyCloud.js";
@@ -157,6 +169,7 @@ import { removeFriendFactory } from "./apis/friend/removeFriend.js";
 import { removeFriendAliasFactory } from "./apis/friend/removeFriendAlias.js";
 import { removeGroupBlockedMemberFactory } from "./apis/group/removeGroupBlockedMember.js";
 import { removeGroupDeputyFactory } from "./apis/group/removeGroupDeputy.js";
+import { removePersonalMediaFactory } from "./apis/media/removePersonalMedia.js";
 import { removeQuickMessageFactory } from "./apis/business/removeQuickMessage.js";
 import { removeReminderFactory } from "./apis/board/removeReminder.js";
 import { removeUnreadMarkFactory } from "./apis/chat/removeUnreadMark.js";
@@ -198,6 +211,7 @@ import { updateGroupSettingsFactory } from "./apis/group/updateGroupSettings.js"
 import { updateHiddenConversPinFactory } from "./apis/chat/updateHiddenConversPin.js";
 import { updateLabelsFactory } from "./apis/business/updateLabels.js";
 import { updateLangFactory } from "./apis/auth/updateLang.js";
+import { updatePinConversationsFactory } from "./apis/chat/updatePinConversations.js";
 import { updateProductCatalogFactory } from "./apis/business/updateProductCatalog.js";
 import { updateProfileFactory } from "./apis/profile/updateProfile.js";
 import { updateProfileBioFactory } from "./apis/profile/updateProfileBio.js";
@@ -208,6 +222,7 @@ import { upgradeGroupToCommunityFactory } from "./apis/group/upgradeGroupToCommu
 import { uploadAttachmentFactory } from "./apis/media/uploadAttachment.js";
 import { uploadProductPhotoFactory } from "./apis/business/uploadProductPhoto.js";
 import { verifyCloudMediaFactory } from "./apis/zcloud/verifyCloudMedia.js";
+import { verifyFriendFactory } from "./apis/friend/verifyFriend.js";
 import { voiceToTextFactory } from "./apis/media/voiceToText.js";
 import { votePollFactory } from "./apis/board/votePoll.js";
 import { customFactory } from "./apis/custom.js";
@@ -216,6 +231,7 @@ import type { ZPWServiceMap, ContextSession } from "./context.js";
 export type AuthDomainAPI = {
     readonly decryptGids: ReturnType<typeof decryptGidsFactory>;
     readonly encryptGids: ReturnType<typeof encryptGidsFactory>;
+    readonly exportSession: ReturnType<typeof exportSessionFactory>;
     readonly getContext: ReturnType<typeof getContextFactory>;
     readonly getCookie: ReturnType<typeof getCookieFactory>;
     readonly getListDevice: ReturnType<typeof getListDeviceFactory>;
@@ -291,12 +307,14 @@ export type ChatDomainAPI = {
     readonly forwardMessage: ReturnType<typeof forwardMessageFactory>;
     readonly getArchivedChatList: ReturnType<typeof getArchivedChatListFactory>;
     readonly getAutoDeleteChat: ReturnType<typeof getAutoDeleteChatFactory>;
+    readonly getDirectMessageStatus: ReturnType<typeof getDirectMessageStatusFactory>;
     readonly getHiddenConversations: ReturnType<typeof getHiddenConversationsFactory>;
     readonly getLastSeen: ReturnType<typeof getLastSeenFactory>;
     readonly getLastSeenReaction: ReturnType<typeof getLastSeenReactionFactory>;
     readonly getMute: ReturnType<typeof getMuteFactory>;
     readonly getPinConversations: ReturnType<typeof getPinConversationsFactory>;
     readonly getRecentSearchList: ReturnType<typeof getRecentSearchListFactory>;
+    readonly getSuggestedConversations: ReturnType<typeof getSuggestedConversationsFactory>;
     readonly getUnreadMark: ReturnType<typeof getUnreadMarkFactory>;
     readonly parseLink: ReturnType<typeof parseLinkFactory>;
     readonly preloadConversations: ReturnType<typeof preloadConversationsFactory>;
@@ -321,6 +339,7 @@ export type ChatDomainAPI = {
     readonly updateArchivedChatList: ReturnType<typeof updateArchivedChatListFactory>;
     readonly updateAutoDeleteChat: ReturnType<typeof updateAutoDeleteChatFactory>;
     readonly updateHiddenConversPin: ReturnType<typeof updateHiddenConversPinFactory>;
+    readonly updatePinConversations: ReturnType<typeof updatePinConversationsFactory>;
     readonly updateRecentSearch: ReturnType<typeof updateRecentSearchFactory>;
 };
 
@@ -340,8 +359,10 @@ export type FriendDomainAPI = {
     readonly getExtraFriendInfo: ReturnType<typeof getExtraFriendInfoFactory>;
     readonly getFriendBoardList: ReturnType<typeof getFriendBoardListFactory>;
     readonly getFriendOnlines: ReturnType<typeof getFriendOnlinesFactory>;
+    readonly getFriendProfilesV2: ReturnType<typeof getFriendProfilesV2Factory>;
     readonly getFriendRecommendations: ReturnType<typeof getFriendRecommendationsFactory>;
     readonly getFriendRequestStatus: ReturnType<typeof getFriendRequestStatusFactory>;
+    readonly getFriendsActivePCWeb: ReturnType<typeof getFriendsActivePCWebFactory>;
     readonly getFriendsEmojiStatus: ReturnType<typeof getFriendsEmojiStatusFactory>;
     readonly getLastReadContactTab: ReturnType<typeof getLastReadContactTabFactory>;
     readonly getMultiUsersByPhones: ReturnType<typeof getMultiUsersByPhonesFactory>;
@@ -355,25 +376,30 @@ export type FriendDomainAPI = {
     readonly sendFriendRequest: ReturnType<typeof sendFriendRequestFactory>;
     readonly unblockUser: ReturnType<typeof unblockUserFactory>;
     readonly undoFriendRequest: ReturnType<typeof undoFriendRequestFactory>;
+    readonly verifyFriend: ReturnType<typeof verifyFriendFactory>;
 };
 
 export type GroupDomainAPI = {
     readonly addGroupBlockedMember: ReturnType<typeof addGroupBlockedMemberFactory>;
     readonly addGroupDeputy: ReturnType<typeof addGroupDeputyFactory>;
     readonly addUserToGroup: ReturnType<typeof addUserToGroupFactory>;
+    readonly analyseGroup: ReturnType<typeof analyseGroupFactory>;
     readonly changeGroupAvatar: ReturnType<typeof changeGroupAvatarFactory>;
     readonly changeGroupName: ReturnType<typeof changeGroupNameFactory>;
     readonly changeGroupOwner: ReturnType<typeof changeGroupOwnerFactory>;
+    readonly checkQuotaCommunityMember: ReturnType<typeof checkQuotaCommunityMemberFactory>;
     readonly createGroup: ReturnType<typeof createGroupFactory>;
     readonly deleteGroupInviteBox: ReturnType<typeof deleteGroupInviteBoxFactory>;
     readonly disableGroupLink: ReturnType<typeof disableGroupLinkFactory>;
     readonly disperseGroup: ReturnType<typeof disperseGroupFactory>;
     readonly enableGroupLink: ReturnType<typeof enableGroupLinkFactory>;
     readonly getAllGroups: ReturnType<typeof getAllGroupsFactory>;
+    readonly getE2eeGroupList: ReturnType<typeof getE2eeGroupListFactory>;
     readonly getExtraGroupInfo: ReturnType<typeof getExtraGroupInfoFactory>;
     readonly getGroupBlockedMember: ReturnType<typeof getGroupBlockedMemberFactory>;
     readonly getGroupChatHistory: ReturnType<typeof getGroupChatHistoryFactory>;
     readonly getGroupCloudMessageJump: ReturnType<typeof getGroupCloudMessageJumpFactory>;
+    readonly getGroupCloudMessagePath: ReturnType<typeof getGroupCloudMessagePathFactory>;
     readonly getGroupHistoryLegacy: ReturnType<typeof getGroupHistoryLegacyFactory>;
     readonly getGroupInfo: ReturnType<typeof getGroupInfoFactory>;
     readonly getGroupInfoV2: ReturnType<typeof getGroupInfoV2Factory>;
@@ -384,6 +410,7 @@ export type GroupDomainAPI = {
     readonly getGroupListV3: ReturnType<typeof getGroupListV3Factory>;
     readonly getGroupMembersInfo: ReturnType<typeof getGroupMembersInfoFactory>;
     readonly getGroupMessageStatus: ReturnType<typeof getGroupMessageStatusFactory>;
+    readonly getMultiGroupCloudMessages: ReturnType<typeof getMultiGroupCloudMessagesFactory>;
     readonly getPendingGroupMembers: ReturnType<typeof getPendingGroupMembersFactory>;
     readonly getQuotaCommunity: ReturnType<typeof getQuotaCommunityFactory>;
     readonly getRelatedFriendGroup: ReturnType<typeof getRelatedFriendGroupFactory>;
@@ -402,7 +429,10 @@ export type GroupDomainAPI = {
 export type MediaDomainAPI = {
     readonly getConversationMedia: ReturnType<typeof getConversationMediaFactory>;
     readonly getMediaStorePreview: ReturnType<typeof getMediaStorePreviewFactory>;
+    readonly getPersonalMedia: ReturnType<typeof getPersonalMediaFactory>;
+    readonly getPersonalMediaPreview: ReturnType<typeof getPersonalMediaPreviewFactory>;
     readonly removeConversationMedia: ReturnType<typeof removeConversationMediaFactory>;
+    readonly removePersonalMedia: ReturnType<typeof removePersonalMediaFactory>;
     readonly uploadAttachment: ReturnType<typeof uploadAttachmentFactory>;
     readonly voiceToText: ReturnType<typeof voiceToTextFactory>;
 };
@@ -484,6 +514,7 @@ export class API {
             const createNamespace = (api: API): AuthDomainAPI => ({
                 get decryptGids() { return api.decryptGids; },
                 get encryptGids() { return api.encryptGids; },
+                get exportSession() { return api.exportSession; },
                 get getContext() { return api.getContext; },
                 get getCookie() { return api.getCookie; },
                 get getListDevice() { return api.getListDevice; },
@@ -583,12 +614,14 @@ export class API {
                 get forwardMessage() { return api.forwardMessage; },
                 get getArchivedChatList() { return api.getArchivedChatList; },
                 get getAutoDeleteChat() { return api.getAutoDeleteChat; },
+                get getDirectMessageStatus() { return api.getDirectMessageStatus; },
                 get getHiddenConversations() { return api.getHiddenConversations; },
                 get getLastSeen() { return api.getLastSeen; },
                 get getLastSeenReaction() { return api.getLastSeenReaction; },
                 get getMute() { return api.getMute; },
                 get getPinConversations() { return api.getPinConversations; },
                 get getRecentSearchList() { return api.getRecentSearchList; },
+                get getSuggestedConversations() { return api.getSuggestedConversations; },
                 get getUnreadMark() { return api.getUnreadMark; },
                 get parseLink() { return api.parseLink; },
                 get preloadConversations() { return api.preloadConversations; },
@@ -613,6 +646,7 @@ export class API {
                 get updateArchivedChatList() { return api.updateArchivedChatList; },
                 get updateAutoDeleteChat() { return api.updateAutoDeleteChat; },
                 get updateHiddenConversPin() { return api.updateHiddenConversPin; },
+                get updatePinConversations() { return api.updatePinConversations; },
                 get updateRecentSearch() { return api.updateRecentSearch; },
             });
             this._domains.chat = createNamespace(this);
@@ -638,8 +672,10 @@ export class API {
                 get getExtraFriendInfo() { return api.getExtraFriendInfo; },
                 get getFriendBoardList() { return api.getFriendBoardList; },
                 get getFriendOnlines() { return api.getFriendOnlines; },
+                get getFriendProfilesV2() { return api.getFriendProfilesV2; },
                 get getFriendRecommendations() { return api.getFriendRecommendations; },
                 get getFriendRequestStatus() { return api.getFriendRequestStatus; },
+                get getFriendsActivePCWeb() { return api.getFriendsActivePCWeb; },
                 get getFriendsEmojiStatus() { return api.getFriendsEmojiStatus; },
                 get getLastReadContactTab() { return api.getLastReadContactTab; },
                 get getMultiUsersByPhones() { return api.getMultiUsersByPhones; },
@@ -653,6 +689,7 @@ export class API {
                 get sendFriendRequest() { return api.sendFriendRequest; },
                 get unblockUser() { return api.unblockUser; },
                 get undoFriendRequest() { return api.undoFriendRequest; },
+                get verifyFriend() { return api.verifyFriend; },
             });
             this._domains.friend = createNamespace(this);
         }
@@ -665,19 +702,23 @@ export class API {
                 get addGroupBlockedMember() { return api.addGroupBlockedMember; },
                 get addGroupDeputy() { return api.addGroupDeputy; },
                 get addUserToGroup() { return api.addUserToGroup; },
+                get analyseGroup() { return api.analyseGroup; },
                 get changeGroupAvatar() { return api.changeGroupAvatar; },
                 get changeGroupName() { return api.changeGroupName; },
                 get changeGroupOwner() { return api.changeGroupOwner; },
+                get checkQuotaCommunityMember() { return api.checkQuotaCommunityMember; },
                 get createGroup() { return api.createGroup; },
                 get deleteGroupInviteBox() { return api.deleteGroupInviteBox; },
                 get disableGroupLink() { return api.disableGroupLink; },
                 get disperseGroup() { return api.disperseGroup; },
                 get enableGroupLink() { return api.enableGroupLink; },
                 get getAllGroups() { return api.getAllGroups; },
+                get getE2eeGroupList() { return api.getE2eeGroupList; },
                 get getExtraGroupInfo() { return api.getExtraGroupInfo; },
                 get getGroupBlockedMember() { return api.getGroupBlockedMember; },
                 get getGroupChatHistory() { return api.getGroupChatHistory; },
                 get getGroupCloudMessageJump() { return api.getGroupCloudMessageJump; },
+                get getGroupCloudMessagePath() { return api.getGroupCloudMessagePath; },
                 get getGroupHistoryLegacy() { return api.getGroupHistoryLegacy; },
                 get getGroupInfo() { return api.getGroupInfo; },
                 get getGroupInfoV2() { return api.getGroupInfoV2; },
@@ -688,6 +729,7 @@ export class API {
                 get getGroupListV3() { return api.getGroupListV3; },
                 get getGroupMembersInfo() { return api.getGroupMembersInfo; },
                 get getGroupMessageStatus() { return api.getGroupMessageStatus; },
+                get getMultiGroupCloudMessages() { return api.getMultiGroupCloudMessages; },
                 get getPendingGroupMembers() { return api.getPendingGroupMembers; },
                 get getQuotaCommunity() { return api.getQuotaCommunity; },
                 get getRelatedFriendGroup() { return api.getRelatedFriendGroup; },
@@ -712,7 +754,10 @@ export class API {
             const createNamespace = (api: API): MediaDomainAPI => ({
                 get getConversationMedia() { return api.getConversationMedia; },
                 get getMediaStorePreview() { return api.getMediaStorePreview; },
+                get getPersonalMedia() { return api.getPersonalMedia; },
+                get getPersonalMediaPreview() { return api.getPersonalMediaPreview; },
                 get removeConversationMedia() { return api.removeConversationMedia; },
+                get removePersonalMedia() { return api.removePersonalMedia; },
                 get uploadAttachment() { return api.uploadAttachment; },
                 get voiceToText() { return api.voiceToText; },
             });
@@ -833,6 +878,10 @@ export class API {
         return (this._cache.addUserToGroup ??= addUserToGroupFactory(this.ctx, this)) as ReturnType<typeof addUserToGroupFactory>;
     }
 
+    public get analyseGroup(): ReturnType<typeof analyseGroupFactory> {
+        return (this._cache.analyseGroup ??= analyseGroupFactory(this.ctx, this)) as ReturnType<typeof analyseGroupFactory>;
+    }
+
     public get blockUser(): ReturnType<typeof blockUserFactory> {
         return (this._cache.blockUser ??= blockUserFactory(this.ctx, this)) as ReturnType<typeof blockUserFactory>;
     }
@@ -867,6 +916,10 @@ export class API {
 
     public get changeGroupOwner(): ReturnType<typeof changeGroupOwnerFactory> {
         return (this._cache.changeGroupOwner ??= changeGroupOwnerFactory(this.ctx, this)) as ReturnType<typeof changeGroupOwnerFactory>;
+    }
+
+    public get checkQuotaCommunityMember(): ReturnType<typeof checkQuotaCommunityMemberFactory> {
+        return (this._cache.checkQuotaCommunityMember ??= checkQuotaCommunityMemberFactory(this.ctx, this)) as ReturnType<typeof checkQuotaCommunityMemberFactory>;
     }
 
     public get clearUnreadFriendRequests(): ReturnType<typeof clearUnreadFriendRequestsFactory> {
@@ -973,6 +1026,10 @@ export class API {
         return (this._cache.endVoiceCall ??= endVoiceCallFactory(this.ctx, this)) as ReturnType<typeof endVoiceCallFactory>;
     }
 
+    public get exportSession(): ReturnType<typeof exportSessionFactory> {
+        return (this._cache.exportSession ??= exportSessionFactory(this.ctx, this)) as ReturnType<typeof exportSessionFactory>;
+    }
+
     public get fetchAccountInfo(): ReturnType<typeof fetchAccountInfoFactory> {
         return (this._cache.fetchAccountInfo ??= fetchAccountInfoFactory(this.ctx, this)) as ReturnType<typeof fetchAccountInfoFactory>;
     }
@@ -1065,6 +1122,14 @@ export class API {
         return (this._cache.getCookie ??= getCookieFactory(this.ctx, this)) as ReturnType<typeof getCookieFactory>;
     }
 
+    public get getDirectMessageStatus(): ReturnType<typeof getDirectMessageStatusFactory> {
+        return (this._cache.getDirectMessageStatus ??= getDirectMessageStatusFactory(this.ctx, this)) as ReturnType<typeof getDirectMessageStatusFactory>;
+    }
+
+    public get getE2eeGroupList(): ReturnType<typeof getE2eeGroupListFactory> {
+        return (this._cache.getE2eeGroupList ??= getE2eeGroupListFactory(this.ctx, this)) as ReturnType<typeof getE2eeGroupListFactory>;
+    }
+
     public get getEmojiStatusConfig(): ReturnType<typeof getEmojiStatusConfigFactory> {
         return (this._cache.getEmojiStatusConfig ??= getEmojiStatusConfigFactory(this.ctx, this)) as ReturnType<typeof getEmojiStatusConfigFactory>;
     }
@@ -1097,12 +1162,20 @@ export class API {
         return (this._cache.getFriendOnlines ??= getFriendOnlinesFactory(this.ctx, this)) as ReturnType<typeof getFriendOnlinesFactory>;
     }
 
+    public get getFriendProfilesV2(): ReturnType<typeof getFriendProfilesV2Factory> {
+        return (this._cache.getFriendProfilesV2 ??= getFriendProfilesV2Factory(this.ctx, this)) as ReturnType<typeof getFriendProfilesV2Factory>;
+    }
+
     public get getFriendRecommendations(): ReturnType<typeof getFriendRecommendationsFactory> {
         return (this._cache.getFriendRecommendations ??= getFriendRecommendationsFactory(this.ctx, this)) as ReturnType<typeof getFriendRecommendationsFactory>;
     }
 
     public get getFriendRequestStatus(): ReturnType<typeof getFriendRequestStatusFactory> {
         return (this._cache.getFriendRequestStatus ??= getFriendRequestStatusFactory(this.ctx, this)) as ReturnType<typeof getFriendRequestStatusFactory>;
+    }
+
+    public get getFriendsActivePCWeb(): ReturnType<typeof getFriendsActivePCWebFactory> {
+        return (this._cache.getFriendsActivePCWeb ??= getFriendsActivePCWebFactory(this.ctx, this)) as ReturnType<typeof getFriendsActivePCWebFactory>;
     }
 
     public get getFriendsEmojiStatus(): ReturnType<typeof getFriendsEmojiStatusFactory> {
@@ -1123,6 +1196,10 @@ export class API {
 
     public get getGroupCloudMessageJump(): ReturnType<typeof getGroupCloudMessageJumpFactory> {
         return (this._cache.getGroupCloudMessageJump ??= getGroupCloudMessageJumpFactory(this.ctx, this)) as ReturnType<typeof getGroupCloudMessageJumpFactory>;
+    }
+
+    public get getGroupCloudMessagePath(): ReturnType<typeof getGroupCloudMessagePathFactory> {
+        return (this._cache.getGroupCloudMessagePath ??= getGroupCloudMessagePathFactory(this.ctx, this)) as ReturnType<typeof getGroupCloudMessagePathFactory>;
     }
 
     public get getGroupHistoryLegacy(): ReturnType<typeof getGroupHistoryLegacyFactory> {
@@ -1217,6 +1294,10 @@ export class API {
         return (this._cache.getMiniProfile ??= getMiniProfileFactory(this.ctx, this)) as ReturnType<typeof getMiniProfileFactory>;
     }
 
+    public get getMultiGroupCloudMessages(): ReturnType<typeof getMultiGroupCloudMessagesFactory> {
+        return (this._cache.getMultiGroupCloudMessages ??= getMultiGroupCloudMessagesFactory(this.ctx, this)) as ReturnType<typeof getMultiGroupCloudMessagesFactory>;
+    }
+
     public get getMultiUsersByPhones(): ReturnType<typeof getMultiUsersByPhonesFactory> {
         return (this._cache.getMultiUsersByPhones ??= getMultiUsersByPhonesFactory(this.ctx, this)) as ReturnType<typeof getMultiUsersByPhonesFactory>;
     }
@@ -1239,6 +1320,14 @@ export class API {
 
     public get getPersonalizedStickerList(): ReturnType<typeof getPersonalizedStickerListFactory> {
         return (this._cache.getPersonalizedStickerList ??= getPersonalizedStickerListFactory(this.ctx, this)) as ReturnType<typeof getPersonalizedStickerListFactory>;
+    }
+
+    public get getPersonalMedia(): ReturnType<typeof getPersonalMediaFactory> {
+        return (this._cache.getPersonalMedia ??= getPersonalMediaFactory(this.ctx, this)) as ReturnType<typeof getPersonalMediaFactory>;
+    }
+
+    public get getPersonalMediaPreview(): ReturnType<typeof getPersonalMediaPreviewFactory> {
+        return (this._cache.getPersonalMediaPreview ??= getPersonalMediaPreviewFactory(this.ctx, this)) as ReturnType<typeof getPersonalMediaPreviewFactory>;
     }
 
     public get getPhonebookV2(): ReturnType<typeof getPhonebookV2Factory> {
@@ -1331,6 +1420,10 @@ export class API {
 
     public get getStickerSuggestKeywords(): ReturnType<typeof getStickerSuggestKeywordsFactory> {
         return (this._cache.getStickerSuggestKeywords ??= getStickerSuggestKeywordsFactory(this.ctx, this)) as ReturnType<typeof getStickerSuggestKeywordsFactory>;
+    }
+
+    public get getSuggestedConversations(): ReturnType<typeof getSuggestedConversationsFactory> {
+        return (this._cache.getSuggestedConversations ??= getSuggestedConversationsFactory(this.ctx, this)) as ReturnType<typeof getSuggestedConversationsFactory>;
     }
 
     public get getSyncData(): ReturnType<typeof getSyncDataFactory> {
@@ -1427,6 +1520,10 @@ export class API {
 
     public get removeGroupDeputy(): ReturnType<typeof removeGroupDeputyFactory> {
         return (this._cache.removeGroupDeputy ??= removeGroupDeputyFactory(this.ctx, this)) as ReturnType<typeof removeGroupDeputyFactory>;
+    }
+
+    public get removePersonalMedia(): ReturnType<typeof removePersonalMediaFactory> {
+        return (this._cache.removePersonalMedia ??= removePersonalMediaFactory(this.ctx, this)) as ReturnType<typeof removePersonalMediaFactory>;
     }
 
     public get removeQuickMessage(): ReturnType<typeof removeQuickMessageFactory> {
@@ -1593,6 +1690,10 @@ export class API {
         return (this._cache.updateLang ??= updateLangFactory(this.ctx, this)) as ReturnType<typeof updateLangFactory>;
     }
 
+    public get updatePinConversations(): ReturnType<typeof updatePinConversationsFactory> {
+        return (this._cache.updatePinConversations ??= updatePinConversationsFactory(this.ctx, this)) as ReturnType<typeof updatePinConversationsFactory>;
+    }
+
     public get updateProductCatalog(): ReturnType<typeof updateProductCatalogFactory> {
         return (this._cache.updateProductCatalog ??= updateProductCatalogFactory(this.ctx, this)) as ReturnType<typeof updateProductCatalogFactory>;
     }
@@ -1631,6 +1732,10 @@ export class API {
 
     public get verifyCloudMedia(): ReturnType<typeof verifyCloudMediaFactory> {
         return (this._cache.verifyCloudMedia ??= verifyCloudMediaFactory(this.ctx, this)) as ReturnType<typeof verifyCloudMediaFactory>;
+    }
+
+    public get verifyFriend(): ReturnType<typeof verifyFriendFactory> {
+        return (this._cache.verifyFriend ??= verifyFriendFactory(this.ctx, this)) as ReturnType<typeof verifyFriendFactory>;
     }
 
     public get voiceToText(): ReturnType<typeof voiceToTextFactory> {

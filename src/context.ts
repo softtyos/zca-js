@@ -168,24 +168,53 @@ export type Options = {
     agent?: Agent;
 
     /**
+     * Bộ điều phối kết nối (Undici `Dispatcher` / `ProxyAgent`) dành cho `globalThis.fetch` mặc định của Node.js 18+.
+     */
+    dispatcher?: unknown;
+
+    /**
      * Optional fetch implementation for polyfills in non-standard environments.
      * If using proxy, `node-fetch` is highly recommended.
      */
     polyfill: typeof fetch;
 
     imageMetadataGetter?: ImageMetadataGetter;
+
+    /**
+     * Thời gian chờ tối đa cho mỗi HTTP request tính bằng mili-giây (mặc định: `30000`ms = 30s, đặt `0` để tắt).
+     */
+    requestTimeout?: number;
 };
 
 const _5_MINUTES = ZALO_DEFAULTS.UPLOAD.CALLBACK_TTL_MS;
 class CallbacksMap extends Map<string, UploadCallback> {
+    private timers = new Map<string, ReturnType<typeof setTimeout>>();
+
     /**
      * @param ttl Time to live in milliseconds. Default is 5 minutes.
      */
     set(key: string, value: UploadCallback, ttl: number = _5_MINUTES): this {
-        setTimeout(() => {
-            this.delete(key);
+        const existing = this.timers.get(key);
+        if (existing) clearTimeout(existing);
+
+        const timer = setTimeout(() => {
+            this.timers.delete(key);
+            super.delete(key);
         }, ttl);
+        if (typeof timer === "object" && timer !== null && "unref" in timer && typeof timer.unref === "function") {
+            timer.unref();
+        }
+        this.timers.set(key, timer);
         return super.set(key, value);
+    }
+
+    override delete(key: string): boolean {
+        const existing = this.timers.get(key);
+        if (existing) {
+            clearTimeout(existing);
+            this.timers.delete(key);
+        }
+        return super.delete(key);
     }
 }
 
@@ -219,6 +248,7 @@ export const createContext = (
             checkUpdate: ZALO_DEFAULTS.OPTIONS.CHECK_UPDATE,
             logging: ZALO_DEFAULTS.OPTIONS.LOGGING,
             polyfill: global.fetch,
+            requestTimeout: 30000,
         },
         secretKey: null,
     }) as ContextBase;

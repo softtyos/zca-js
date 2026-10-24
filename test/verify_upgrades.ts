@@ -22,6 +22,7 @@ import {
     generateRSAKeyPair,
 } from "../src/index.js";
 import { createContext, type ContextSession } from "../src/context.js";
+import { decodeEventData } from "../src/crypto/ws-cipher.js";
 import { decodeAES, encodeAES, rsaDecryptPkcs1Manual } from "../src/utils.js";
 
 /**
@@ -86,7 +87,7 @@ async function encryptWsPayloadAesGcm(cipherKeyB64: string, dataObj: unknown): P
     const key = await crypto.subtle.importKey(
         "raw",
         Buffer.from(cipherKeyB64, "base64"),
-        { name: "AES-GCM", iv, tagLength: 128, additionalData: aad },
+        { name: "AES-GCM" },
         false,
         ["encrypt"],
     );
@@ -571,6 +572,126 @@ async function runVerificationSuite() {
             });
         }
 
+        if (u.pathname === "/api/group/quota/members-comm") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                status: 1,
+                canUpgrade: true,
+                grId: decodedParams.grId,
+                uid: decodedParams.uid,
+            });
+        }
+
+        if (u.pathname === "/api/group/getlg/e2ee") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                version: 1,
+                e2eeGroups: ["888999000"],
+            });
+        }
+
+        if (u.pathname === "/api/cm/mget") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                groupMsgs: {
+                    "888999000": [{ msgId: "9001", content: "Batch cloud msg" }],
+                },
+            });
+        }
+
+        if (u.pathname === "/api/cm/getpath") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                lastMsgId: "5000",
+                hasMore: false,
+                groupMsgs: [
+                    {
+                        msgId: "5002",
+                        cliMsgId: "5002",
+                        uidFrom: "3000000000000000009",
+                        idTo: "888999000",
+                        msgType: "webchat",
+                        content: "Path message",
+                    },
+                ],
+            });
+        }
+
+        if (u.pathname === "/api/group/analyse") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                grid: decodedParams.grid,
+                activeMembers: 42,
+            });
+        }
+
+        if (u.pathname === "/api/message/getStatusMsg") {
+            const parsedParam = JSON.parse(decodedParams.param);
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                statusInfos: parsedParam.data.map((d: { tId: string }) => ({
+                    tId: d.tId,
+                    seen: "1002",
+                    deliver: "1002",
+                })),
+            });
+        }
+
+        if (u.pathname === "/api/suggestconvers/list") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                conversations: [{ id: "1000000000000000001", name: "Suggested Friend" }],
+            });
+        }
+
+        if (u.pathname === "/api/pinconvers/update" || u.pathname === "/api/pinconvers/updatev2") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                version: 2,
+                conversations: decodedParams.conversations,
+            });
+        }
+
+        if (u.pathname === "/api/social/friend/getprofiles/v2") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                profiles: {
+                    "1000000000000000001": {
+                        id: "1000000000000000001",
+                        displayName: "Friend V2",
+                        zaloName: "Friend V2",
+                        avatar: "",
+                    },
+                },
+                phonebook_version: 1,
+            });
+        }
+
+        if (u.pathname === "/api/social/friend/active-pcweb") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                uids: ["1000000000000000001"],
+            });
+        }
+
+        if (u.pathname === "/api/social/friend/verify") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                profiles: { "1000000000000000001": { isFr: 1 } },
+                unchangeds_profile: [],
+            });
+        }
+
+        if (u.pathname === "/api/media/oneone/list") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                items: [{ id: 101, type: decodedParams.media_type, owner_id: TEST_UID }],
+                isLimitPermission: false,
+                last_id: 101,
+                has_more: 0,
+            });
+        }
+
+        if (u.pathname === "/api/media/oneone/preview") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, [
+                { id: 102, type: "media", owner_id: TEST_UID },
+            ]);
+        }
+
+        if (u.pathname === "/api/media/oneone/remove") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                removedIds: [decodedParams.media_id],
+            });
+        }
+
         throw new Error(`Unexpected request URL in test: ${urlStr}`);
     }) as typeof fetch;
 
@@ -1044,8 +1165,8 @@ async function runVerificationSuite() {
 
     const legacyHistoryRes = await api.group.getGroupHistoryLegacy("g888999000", 20);
     assert.ok(capturedRequests.some((r) => r.url.includes("/api/group/history")), "Phải gọi đúng /api/group/history");
-    assert.equal(legacyHistoryRes.groupMsgs.length, 1);
-    assert.equal(legacyHistoryRes.groupMsgs[0].data.uidFrom, "3000000000000000005");
+    assert.equal(legacyHistoryRes.groupMsgs?.length, 1);
+    assert.equal(legacyHistoryRes.groupMsgs?.[0]?.data.uidFrom, "3000000000000000005");
 
     // 9.4 Kiểm tra getGroupChatHistory phân trang với cursor và useOldEndpoint (/api/cm/getoldv2)
     const recentChatRes = await api.group.getGroupChatHistory("g888999000", { count: 50, cursor: 0 });
@@ -1063,8 +1184,107 @@ async function runVerificationSuite() {
     assert.equal(oldChatRes.groupMsgs.length, 1);
     assert.equal(oldChatRes.groupMsgs[0].data.uidFrom, "3000000000000000004");
 
+    // 9.5 Kiểm tra 14 API nguyên bản bổ sung (Group, Chat, Friend, Personal Media Store)
+    const quotaMemberRes = await api.group.checkQuotaCommunityMember("g888999000", "1000000000000000001");
+    assert.equal(quotaMemberRes.canUpgrade, true);
+
+    const e2eeGroupRes = await api.group.getE2eeGroupList();
+    assert.deepEqual(e2eeGroupRes.e2eeGroups, ["888999000"]);
+
+    const multiCloudRes = await api.group.getMultiGroupCloudMessages(["g888999000"]);
+    assert.ok(multiCloudRes.groupMsgs?.["888999000"]);
+
+    const cloudPathRes = await api.group.getGroupCloudMessagePath({
+        groupId: "g888999000",
+        globalMsgId: "5002",
+        count: 20,
+        reverse: true,
+    });
+    assert.equal(cloudPathRes.groupMsgs.length, 1);
+    assert.equal(cloudPathRes.groupMsgs[0].data.uidFrom, "3000000000000000009");
+
+    const analyseRes = await api.group.analyseGroup("g888999000");
+    assert.equal(analyseRes.activeMembers, 42);
+
+    const directStatusRes = await api.chat.getDirectMessageStatus(["1000000000000000001"]);
+    assert.equal(directStatusRes.statusInfos.length, 1);
+    assert.equal(directStatusRes.statusInfos[0].tId, "1000000000000000001");
+    assert.equal(directStatusRes.statusInfos[0].seen, "1002");
+
+    const suggestConvRes = await api.chat.getSuggestedConversations();
+    assert.equal(suggestConvRes.conversations?.length, 1);
+
+    const updatePinRes = await api.chat.updatePinConversations({
+        conversations: ["g888999000"],
+        actionType: 1,
+    });
+    assert.deepEqual(updatePinRes.conversations, ["g888999000"]);
+
+    const friendProfilesV2Res = await api.friend.getFriendProfilesV2(["1000000000000000001"]);
+    assert.equal(friendProfilesV2Res.profiles["1000000000000000001"]?.displayName, "Friend V2");
+
+    const activePCWebRes = await api.friend.getFriendsActivePCWeb();
+    assert.deepEqual(activePCWebRes.uids, ["1000000000000000001"]);
+
+    const verifyFriendRes = await api.friend.verifyFriend("1000000000000000001");
+    assert.ok(verifyFriendRes.profiles?.["1000000000000000001"]);
+
+    const personalMediaRes = await api.media.getPersonalMedia({ mediaType: "media", limit: 20 });
+    assert.equal(personalMediaRes.items.length, 1);
+
+    const personalPreviewRes = await api.media.getPersonalMediaPreview(50);
+    assert.equal(personalPreviewRes.length, 1);
+
+    const removePersonalRes = await api.media.removePersonalMedia({ mediaType: "media", mediaId: 101 });
+    assert.deepEqual(removePersonalRes.removedIds, [101]);
+
+    // 9.6 Kiểm tra exportSession, requestTimeout mặc định & decodeEventData 64-bit string (ws-cipher)
+    const exportedSession = api.auth.exportSession();
+    assert.equal(exportedSession.uid, TEST_UID);
+    assert.equal(exportedSession.imei, TEST_IMEI);
+    assert.equal(exportedSession.language, "vi");
+    assert.ok(Array.isArray(exportedSession.cookie), "cookie xuất ra phải là mảng SerializedCookie[]");
+    assert.equal(ctx.options.requestTimeout, 30000, "requestTimeout mặc định phải là 30000ms");
+
+    const wsEventDecoded = await decodeEventData({
+        encrypt: 0,
+        data: '{"owner_id":4829384719283746192,"big_num":9223372036854775807}',
+    });
+    assert.equal(typeof wsEventDecoded.owner_id, "string");
+    assert.equal(wsEventDecoded.owner_id, "4829384719283746192");
+    assert.equal(typeof wsEventDecoded.big_num, "string");
+    assert.equal(wsEventDecoded.big_num, "9223372036854775807");
+
+    // 9.7 Kiểm tra CallbacksMap TTL cleanup, sendWs readyState guard & Proxy Agent/Dispatcher resolution
+    ctx.uploadCallbacks.set("test_file_1", () => {}, 60000);
+    assert.equal(ctx.uploadCallbacks.has("test_file_1"), true);
+    ctx.uploadCallbacks.delete("test_file_1");
+    assert.equal(ctx.uploadCallbacks.has("test_file_1"), false);
+
+    let lastFetchInit: Record<string, unknown> | undefined;
+    const origPolyfill = ctx.options.polyfill;
+    ctx.options.polyfill = (async (_url: string | URL | Request, init?: RequestInit) => {
+        lastFetchInit = init as Record<string, unknown>;
+        return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, { e2eeGroups: [] });
+    }) as typeof fetch;
+
+    const fakeHttpAgent = { keepAlive: true } as unknown as NonNullable<typeof ctx.options.agent>;
+    ctx.options.agent = fakeHttpAgent;
+    await api.group.getE2eeGroupList();
+    assert.equal(lastFetchInit?.agent, fakeHttpAgent, "Khi truyền http.Agent phải gán vào init.agent");
+    assert.equal(lastFetchInit?.dispatcher, undefined, "Không được gán http.Agent vào init.dispatcher của Undici");
+
+    const fakeUndiciDispatcher = { dispatch: () => {} } as unknown as NonNullable<typeof ctx.options.agent>;
+    ctx.options.agent = fakeUndiciDispatcher;
+    await api.group.getE2eeGroupList();
+    assert.equal(lastFetchInit?.dispatcher, fakeUndiciDispatcher, "Khi truyền Undici Dispatcher phải gán vào init.dispatcher");
+    assert.equal(lastFetchInit?.agent, undefined, "Không được gán Undici Dispatcher vào init.agent");
+
+    ctx.options.agent = undefined;
+    ctx.options.polyfill = origPolyfill;
+
     console.log(
-        "✅ [9/9] preParseJsonIds 64-bit & các API Group nguyên bản (getGroupMessageStatus, getGroupInfoV2, getGroupListV3, getGroupHistoryLegacy, getGroupChatHistory): Chính xác 100%.",
+        "✅ [9/9] preParseJsonIds 64-bit, ws-cipher storeAsString, exportSession, requestTimeout & 20 API nguyên bản mới: Chính xác 100%.",
     );
     console.log("\n🎉 TẤT CẢ 9 HẠNG MỤC KIỂM ĐỊNH ĐỀU VƯỢT QUA 100%!");
 }
