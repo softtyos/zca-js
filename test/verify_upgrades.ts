@@ -184,7 +184,9 @@ async function runVerificationSuite() {
         capturedRequests.push({ url: urlStr, method, body: init?.body });
 
         const u = new URL(urlStr);
-        const encryptedParams = u.searchParams.get("params");
+        const encryptedParams =
+            u.searchParams.get("params") ??
+            (init?.body instanceof URLSearchParams ? init.body.get("params") : null);
         const decodedParams = encryptedParams ? JSON.parse(decodeAES(TEST_SECRET_KEY, encryptedParams)!) : null;
 
         if (u.pathname === "/api/preloadconvers/get-last-msgs") {
@@ -336,6 +338,236 @@ async function runVerificationSuite() {
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
                 viewer_key: "vk-cloud-test-123",
                 enk: "enk-cloud-test-456",
+            });
+        }
+
+        if (u.pathname === "/api/group/getmg-v2") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                removedsGroup: [],
+                unchangedsGroup: [],
+                gridInfoMap: {
+                    "888999000": {
+                        groupId: "888999000",
+                        name: "Cộng đồng Ẩn Thành Viên",
+                        totalMember: 500,
+                        creatorId: "1000000000000000001",
+                        adminIds: ["1000000000000000002"],
+                        memVerList: ["1000000000000000001_0", "1000000000000000002_0", `${TEST_UID}_0`],
+                        setting: {
+                            lockViewMember: 1,
+                            joinAppr: 0,
+                            enableMsgHistory: 1,
+                        },
+                    },
+                },
+            });
+        }
+
+        if (u.pathname === "/api/group/getgi/v2") {
+            const mpage = Number(decodedParams.mpage ?? 1);
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                groupId: "888999000",
+                name: "Cộng đồng Ẩn Thành Viên",
+                totalMember: 500,
+                creatorId: "1000000000000000001",
+                adminIds: ["1000000000000000002"],
+                currentMems:
+                    mpage === 1
+                        ? [{ id: "1000000000000000001", dName: "Admin 1", zaloName: "Admin 1", avatar: "" }]
+                        : [{ id: "2000000000000000001", dName: "Mem V2", zaloName: "Mem V2", avatar: "" }],
+                memberIds: mpage === 1 ? ["1000000000000000001"] : ["2000000000000000001"],
+                hasMoreMember: mpage === 1 ? 1 : 0,
+                setting: { lockViewMember: 1 },
+            });
+        }
+
+        if (u.pathname === "/api/group/getlg/v3") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                groups: [{ groupId: "888999000", name: "Cộng đồng Ẩn Thành Viên", totalMember: 500 }],
+                hasMore: 0,
+                total: 1,
+            });
+        }
+
+        if (u.pathname === "/api/mediastore/preview") {
+            // Mô phỏng chính xác JSON thực tế của Zalo: owner_id là số nguyên 64-bit 19 chữ số không có dấu ngoặc kép!
+            const rawInnerJson =
+                '{"error_code":0,"error_message":"Successful.","data":[{"id":1,"type":"media","owner_id":4829384719283746192,"group_id":888999000,"global_msg_id":999111222}]}';
+            const encrypted = encodeAES(TEST_SECRET_KEY, rawInnerJson);
+            return new Response(
+                JSON.stringify({ error_code: 0, error_message: "Successful.", data: encrypted }),
+                { status: 200, headers: { "content-type": "application/json" } },
+            );
+        }
+
+        if (u.pathname === "/api/mediastore/list") {
+            const mediaType = decodedParams.media_type;
+            const ownerNum =
+                mediaType === "media"
+                    ? "4829384719283746193"
+                    : mediaType === "file"
+                      ? "4829384719283746194"
+                      : "4829384719283746195";
+            const rawInnerJson = `{"error_code":0,"error_message":"Successful.","data":{"items":[{"id":10,"type":"${mediaType}","owner_id":${ownerNum},"group_id":888999000}],"isLimitPermission":false,"last_id":10,"has_more":0}}`;
+            const encrypted = encodeAES(TEST_SECRET_KEY, rawInnerJson);
+            return new Response(
+                JSON.stringify({ error_code: 0, error_message: "Successful.", data: encrypted }),
+                { status: 200, headers: { "content-type": "application/json" } },
+            );
+        }
+
+        if (u.pathname === "/api/cm/getrecentv2") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                lastMsgId: "5001",
+                hasMore: true,
+                groupMsgs: [
+                    {
+                        msgId: "5002",
+                        cliMsgId: "5002",
+                        uidFrom: "3000000000000000001",
+                        idTo: "888999000",
+                        msgType: "webchat",
+                        content: "Hello",
+                        quote: { ownerId: "3000000000000000002", msg: "Old msg" },
+                        mentions: [{ uid: "3000000000000000003", pos: 0, len: 5, type: 0 }],
+                    },
+                ],
+            });
+        }
+
+        if (u.pathname === "/api/cm/getoldv2") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                lastMsgId: "4000",
+                hasMore: false,
+                groupMsgs: [
+                    {
+                        msgId: "4001",
+                        cliMsgId: "4001",
+                        uidFrom: "3000000000000000004",
+                        idTo: "888999000",
+                        msgType: "webchat",
+                        content: "Older message",
+                    },
+                ],
+            });
+        }
+
+        if (u.pathname === "/api/group/history") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                groupMsgs: [
+                    {
+                        msgId: "3999",
+                        cliMsgId: "3999",
+                        uidFrom: "3000000000000000005",
+                        idTo: "888999000",
+                        msgType: "webchat",
+                        content: "Legacy history msg",
+                    },
+                ],
+            });
+        }
+
+        if (u.pathname === "/api/board/pin/list") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                items: [
+                    {
+                        type: 2,
+                        creatorId: "1000000000000000001",
+                        params: JSON.stringify({ senderUid: "5000000000000000001", title: "Pinned" }),
+                    },
+                ],
+                version: 1,
+            });
+        }
+
+        if (u.pathname === "/api/board/list") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                items: [
+                    {
+                        boardType: 1,
+                        data: {
+                            poll_id: 999,
+                            creator: "1000000000000000001",
+                            options: [{ option_id: 1, content: "Opt 1", voters: ["6000000000000000001"] }],
+                        },
+                    },
+                ],
+                count: 1,
+            });
+        }
+
+        if (u.pathname === "/api/poll/detail") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                poll_id: 999,
+                creator: "1000000000000000001",
+                options: [
+                    {
+                        option_id: 1,
+                        content: "Opt 1",
+                        voters: ["6000000000000000001", "6000000000000000002"],
+                    },
+                ],
+            });
+        }
+
+        if (u.pathname === "/api/board/listReminder") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, [
+                { reminderId: "rem-1", creatorUid: "7000000000000000001" },
+            ]);
+        }
+
+        if (u.pathname === "/api/board/topic/listResponseEvent") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                acceptMember: ["7000000000000000002"],
+                rejectMember: ["7000000000000000003"],
+            });
+        }
+
+        if (u.pathname === "/api/friend/group/related") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                groupRelateds: {
+                    "8000000000000000001": ["888999000", "111111"],
+                    "8000000000000000002": ["222222"],
+                },
+            });
+        }
+
+        if (u.pathname === "/api/group/getStatusMsg") {
+            const parsedParam = JSON.parse(decodedParams.param);
+            const reqItem = parsedParam.data[0];
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                statusInfos: [
+                    {
+                        tId: reqItem.tId,
+                        ids: reqItem.ids.map((id: string) => ({
+                            id,
+                            seen: "5002",
+                            deliver: "5002",
+                        })),
+                    },
+                ],
+            });
+        }
+
+        if (u.pathname === "/api/social/group/members") {
+            const pmap: string[] = decodedParams.friend_pversion_map || [];
+            const profiles: Record<string, unknown> = {};
+            for (const entry of pmap) {
+                const uid = entry.split("_")[0];
+                profiles[uid] = {
+                    id: uid,
+                    displayName: `User ${uid.slice(-4)}`,
+                    zaloName: `Zalo ${uid.slice(-4)}`,
+                    avatar: "https://ava.zalo.me/1.jpg",
+                    accountStatus: 0,
+                    type: 0,
+                    lastUpdateTime: 1700000000,
+                    globalId: `gid_${uid}`,
+                };
+            }
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                profiles,
+                unchangeds_profile: [],
             });
         }
 
@@ -772,8 +1004,69 @@ async function runVerificationSuite() {
     const cachedKey = await api.zcloud.getCloudViewerKey();
     assert.equal(cachedKey.viewer_key, "vk-cloud-test-123");
 
-    console.log("✅ [8/8] Kiến trúc Domain-Driven (12 Domains, Lazy Memoized Getters, ViewerKey Cache & Single Source Constants): Hoạt động chính xác.");
-    console.log("\n🎉 TẤT CẢ 8 HẠNG MỤC KIỂM ĐỊNH ĐỀU VƯỢT QUA 100%!");
+    console.log("✅ [8/9] Kiến trúc Domain-Driven (12 Domains, Lazy Memoized Getters, ViewerKey Cache & Single Source Constants): Hoạt động chính xác.");
+
+    // -------------------------------------------------------------------------
+    // TEST 9: preParseJsonIds 64-bit & Các API Group nguyên bản mới (getGroupMessageStatus, getGroupInfoV2, getGroupListV3, getGroupHistoryLegacy, getGroupChatHistory)
+    // -------------------------------------------------------------------------
+    assert.equal(api.group.getGroupMessageStatus, api.getGroupMessageStatus);
+    assert.equal(api.group.getGroupInfoV2, api.getGroupInfoV2);
+    assert.equal(api.group.getGroupListV3, api.getGroupListV3);
+    assert.equal(api.group.getGroupHistoryLegacy, api.getGroupHistoryLegacy);
+
+    // 9.1 Kiểm tra preParseJsonIds giữ nguyên độ chính xác 64-bit integer (19 chữ số) của owner_id và group_id
+    const mediaPreviewRes = await api.media.getMediaStorePreview("888999000", 50);
+    assert.equal(mediaPreviewRes[0].owner_id, "4829384719283746192", "owner_id 19 chữ số không được mất độ chính xác IEEE-754");
+    const mediaListRes = await api.media.getConversationMedia({ groupId: "888999000", mediaType: "media" });
+    assert.equal(mediaListRes.items[0].owner_id, "4829384719283746193", "owner_id 19 chữ số trong /api/mediastore/list phải giữ chính xác");
+
+    // 9.2 Kiểm tra getGroupMessageStatus (cmd 12017) - cả request payload và response
+    const msgStatusRes = await api.group.getGroupMessageStatus("g888999000", ["8000000000000000001", "8000000000000000002"]);
+    const statusReq = capturedRequests.find((r) => r.url.includes("/api/group/getStatusMsg"));
+    assert.ok(statusReq, "Phải gửi request tới /api/group/getStatusMsg");
+    assert.equal(statusReq.method, "POST");
+    assert.equal(msgStatusRes.statusInfos.length, 1);
+    assert.equal(msgStatusRes.statusInfos[0].tId, "888999000", "Phải tự động bỏ tiền tố g ở tId");
+    assert.equal(msgStatusRes.statusInfos[0].ids.length, 2);
+    assert.equal(msgStatusRes.statusInfos[0].ids[0].id, "8000000000000000001");
+    assert.equal(msgStatusRes.statusInfos[0].ids[0].seen, "5002");
+
+    // 9.3 Kiểm tra getGroupInfoV2 (cmd 11162) & getGroupListV3 (cmd 11161) & getGroupHistoryLegacy (cmd 11240)
+    const groupInfoV2Res = await api.group.getGroupInfoV2("g888999000", { mpage: 1, mcount: 100 });
+    assert.ok(capturedRequests.some((r) => r.url.includes("/api/group/getgi/v2")), "Phải gọi đúng /api/group/getgi/v2");
+    assert.equal(groupInfoV2Res.groupId, "888999000");
+    assert.equal(groupInfoV2Res.setting?.lockViewMember, 1);
+
+    const groupListV3Res = await api.group.getGroupListV3({ page: 1, count: 100 });
+    assert.ok(capturedRequests.some((r) => r.url.includes("/api/group/getlg/v3")), "Phải gọi đúng /api/group/getlg/v3");
+    assert.equal(groupListV3Res.total, 1);
+    assert.equal(groupListV3Res.groups?.[0]?.groupId, "888999000");
+
+    const legacyHistoryRes = await api.group.getGroupHistoryLegacy("g888999000", 20);
+    assert.ok(capturedRequests.some((r) => r.url.includes("/api/group/history")), "Phải gọi đúng /api/group/history");
+    assert.equal(legacyHistoryRes.groupMsgs.length, 1);
+    assert.equal(legacyHistoryRes.groupMsgs[0].data.uidFrom, "3000000000000000005");
+
+    // 9.4 Kiểm tra getGroupChatHistory phân trang với cursor và useOldEndpoint (/api/cm/getoldv2)
+    const recentChatRes = await api.group.getGroupChatHistory("g888999000", { count: 50, cursor: 0 });
+    assert.ok(capturedRequests.some((r) => r.url.includes("/api/cm/getrecentv2")), "Phải gọi đúng /api/cm/getrecentv2");
+    assert.equal(recentChatRes.groupMsgs.length, 1);
+    assert.equal(recentChatRes.groupMsgs[0].data.uidFrom, "3000000000000000001");
+    assert.equal(recentChatRes.nextCursor, "5001");
+
+    const oldChatRes = await api.group.getGroupChatHistory("888999000", {
+        count: 50,
+        cursor: recentChatRes.nextCursor,
+        useOldEndpoint: true,
+    });
+    assert.ok(capturedRequests.some((r) => r.url.includes("/api/cm/getoldv2")), "Phải gọi đúng /api/cm/getoldv2");
+    assert.equal(oldChatRes.groupMsgs.length, 1);
+    assert.equal(oldChatRes.groupMsgs[0].data.uidFrom, "3000000000000000004");
+
+    console.log(
+        "✅ [9/9] preParseJsonIds 64-bit & các API Group nguyên bản (getGroupMessageStatus, getGroupInfoV2, getGroupListV3, getGroupHistoryLegacy, getGroupChatHistory): Chính xác 100%.",
+    );
+    console.log("\n🎉 TẤT CẢ 9 HẠNG MỤC KIỂM ĐỊNH ĐỀU VƯỢT QUA 100%!");
 }
 
 runVerificationSuite().catch((err) => {

@@ -64,4 +64,17 @@ export const ZALO_ENDPOINTS = {
         LIST: "/api/recentsearch/list",
         UPDATE: "/api/recentsearch/update",
     },
+    GROUP: {
+        GET_LIST_V3: "/api/group/getlg/v3",
+        GET_LIST_V4: "/api/group/getlg/v4",
+        GET_INFO_V1: "/api/group/getgi",
+        GET_INFO_V2: "/api/group/getgi/v2",
+        GET_MULTI_INFO_V1: "/api/group/getmg",
+        GET_MULTI_INFO_V2: "/api/group/getmg-v2",
+        GET_STATUS_MSG: "/api/group/getStatusMsg",
+        HISTORY_LEGACY: "/api/group/history",
+        CLOUD_MSG_RECENT_V2: "/api/cm/getrecentv2",
+        CLOUD_MSG_OLD_V2: "/api/cm/getoldv2",
+        CLOUD_MSG_JUMP_V2: "/api/cm/rgetv2",
+    },
 } as const;

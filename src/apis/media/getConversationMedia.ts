@@ -15,11 +15,21 @@ export type GetConversationMediaOptions = {
 export type MediaStoreItem = {
     id: number | string;
     type: string;
+    sub_type?: number;
+    owner_id?: string;
+    group_id?: string;
+    global_msg_id?: string | number;
+    client_msg_id?: string | number;
     title?: string;
     src_url?: string;
     thumb_url?: string;
     previewThumb?: string | null;
     created_time?: number;
+    file_size?: number;
+    checksum?: string;
+    width?: number;
+    height?: number;
+    duration?: number;
     [key: string]: unknown;
 };
 

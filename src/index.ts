@@ -84,8 +84,17 @@ export type { GetFriendRecommendationsResponse, FriendRecommendationsCollapseMsg
 export type { GetFriendRequestStatusResponse } from "./apis/friend/getFriendRequestStatus.js";
 export type { GetFullAvatarResponse } from "./apis/profile/getFullAvatar.js";
 export type { GetGroupBlockedMemberPayload, GetGroupBlockedMemberResponse } from "./apis/group/getGroupBlockedMember.js";
-export type { GetGroupChatHistoryResponse } from "./apis/group/getGroupChatHistory.js";
+export type { GetGroupChatHistoryOptions, GetGroupChatHistoryResponse } from "./apis/group/getGroupChatHistory.js";
+export type { GetGroupHistoryLegacyResponse } from "./apis/group/getGroupHistoryLegacy.js";
 export type { GroupInfoPendingApprove, GroupInfoResponse } from "./apis/group/getGroupInfo.js";
+export type { GetGroupInfoV2Options, GetGroupInfoV2Response } from "./apis/group/getGroupInfoV2.js";
+export type { GetGroupListV3Options, GetGroupListV3Response } from "./apis/group/getGroupListV3.js";
+export type {
+    GetGroupMessageStatusQueryItem,
+    GetGroupMessageStatusResponse,
+    GroupMessageStatusMemberItem,
+    GroupMessageStatusThreadInfo,
+} from "./apis/group/getGroupMessageStatus.js";
 export type { GetGroupInviteBoxInfoPayload, GetGroupInviteBoxInfoResponse } from "./apis/group/getGroupInviteBoxInfo.js";
 export type { GetGroupInviteBoxListPayload, GetGroupInviteBoxListResponse } from "./apis/group/getGroupInviteBoxList.js";
 export type { GetGroupLinkDetailResponse } from "./apis/group/getGroupLinkDetail.js";
@@ -195,7 +204,12 @@ export type { GetBlockFriendsResponse } from "./apis/friend/getBlockFriends.js";
 export type { GetCloudInfoResponse } from "./apis/zcloud/getCloudInfo.js";
 export type { GetCloudSettingsResponse } from "./apis/zcloud/getCloudSettings.js";
 export type { GetCloudViewerKeyResponse } from "./apis/zcloud/getCloudViewerKey.js";
-export type { GetConversationMediaOptions, GetConversationMediaResponse } from "./apis/media/getConversationMedia.js";
+export type {
+    GetConversationMediaOptions,
+    GetConversationMediaResponse,
+    MediaStoreItem,
+    MediaStoreType,
+} from "./apis/media/getConversationMedia.js";
 export type { GetEmojiStatusConfigResponse } from "./apis/profile/getEmojiStatusConfig.js";
 export type { GetExtraFriendInfoResponse } from "./apis/friend/getExtraFriendInfo.js";
 export type { GetExtraGroupInfoResponse } from "./apis/group/getExtraGroupInfo.js";
@@ -250,5 +264,6 @@ export {
     parseZdbHeader,
     encryptZCloudAES,
     decryptZCloudAES,
+    preParseJsonIds,
     type ZdbTocEntry,
 } from "./utils.js";

@@ -81,12 +81,16 @@ import { getFullAvatarFactory } from "./apis/profile/getFullAvatar.js";
 import { getGroupBlockedMemberFactory } from "./apis/group/getGroupBlockedMember.js";
 import { getGroupChatHistoryFactory } from "./apis/group/getGroupChatHistory.js";
 import { getGroupCloudMessageJumpFactory } from "./apis/group/getGroupCloudMessageJump.js";
+import { getGroupHistoryLegacyFactory } from "./apis/group/getGroupHistoryLegacy.js";
 import { getGroupInfoFactory } from "./apis/group/getGroupInfo.js";
+import { getGroupInfoV2Factory } from "./apis/group/getGroupInfoV2.js";
 import { getGroupInviteBoxInfoFactory } from "./apis/group/getGroupInviteBoxInfo.js";
 import { getGroupInviteBoxListFactory } from "./apis/group/getGroupInviteBoxList.js";
 import { getGroupLinkDetailFactory } from "./apis/group/getGroupLinkDetail.js";
 import { getGroupLinkInfoFactory } from "./apis/group/getGroupLinkInfo.js";
+import { getGroupListV3Factory } from "./apis/group/getGroupListV3.js";
 import { getGroupMembersInfoFactory } from "./apis/group/getGroupMembersInfo.js";
+import { getGroupMessageStatusFactory } from "./apis/group/getGroupMessageStatus.js";
 import { getHiddenConversationsFactory } from "./apis/chat/getHiddenConversations.js";
 import { getLabelsFactory } from "./apis/business/getLabels.js";
 import { getLastReadContactTabFactory } from "./apis/friend/getLastReadContactTab.js";
@@ -370,12 +374,16 @@ export type GroupDomainAPI = {
     readonly getGroupBlockedMember: ReturnType<typeof getGroupBlockedMemberFactory>;
     readonly getGroupChatHistory: ReturnType<typeof getGroupChatHistoryFactory>;
     readonly getGroupCloudMessageJump: ReturnType<typeof getGroupCloudMessageJumpFactory>;
+    readonly getGroupHistoryLegacy: ReturnType<typeof getGroupHistoryLegacyFactory>;
     readonly getGroupInfo: ReturnType<typeof getGroupInfoFactory>;
+    readonly getGroupInfoV2: ReturnType<typeof getGroupInfoV2Factory>;
     readonly getGroupInviteBoxInfo: ReturnType<typeof getGroupInviteBoxInfoFactory>;
     readonly getGroupInviteBoxList: ReturnType<typeof getGroupInviteBoxListFactory>;
     readonly getGroupLinkDetail: ReturnType<typeof getGroupLinkDetailFactory>;
     readonly getGroupLinkInfo: ReturnType<typeof getGroupLinkInfoFactory>;
+    readonly getGroupListV3: ReturnType<typeof getGroupListV3Factory>;
     readonly getGroupMembersInfo: ReturnType<typeof getGroupMembersInfoFactory>;
+    readonly getGroupMessageStatus: ReturnType<typeof getGroupMessageStatusFactory>;
     readonly getPendingGroupMembers: ReturnType<typeof getPendingGroupMembersFactory>;
     readonly getQuotaCommunity: ReturnType<typeof getQuotaCommunityFactory>;
     readonly getRelatedFriendGroup: ReturnType<typeof getRelatedFriendGroupFactory>;
@@ -670,12 +678,16 @@ export class API {
                 get getGroupBlockedMember() { return api.getGroupBlockedMember; },
                 get getGroupChatHistory() { return api.getGroupChatHistory; },
                 get getGroupCloudMessageJump() { return api.getGroupCloudMessageJump; },
+                get getGroupHistoryLegacy() { return api.getGroupHistoryLegacy; },
                 get getGroupInfo() { return api.getGroupInfo; },
+                get getGroupInfoV2() { return api.getGroupInfoV2; },
                 get getGroupInviteBoxInfo() { return api.getGroupInviteBoxInfo; },
                 get getGroupInviteBoxList() { return api.getGroupInviteBoxList; },
                 get getGroupLinkDetail() { return api.getGroupLinkDetail; },
                 get getGroupLinkInfo() { return api.getGroupLinkInfo; },
+                get getGroupListV3() { return api.getGroupListV3; },
                 get getGroupMembersInfo() { return api.getGroupMembersInfo; },
+                get getGroupMessageStatus() { return api.getGroupMessageStatus; },
                 get getPendingGroupMembers() { return api.getPendingGroupMembers; },
                 get getQuotaCommunity() { return api.getQuotaCommunity; },
                 get getRelatedFriendGroup() { return api.getRelatedFriendGroup; },
@@ -1113,8 +1125,16 @@ export class API {
         return (this._cache.getGroupCloudMessageJump ??= getGroupCloudMessageJumpFactory(this.ctx, this)) as ReturnType<typeof getGroupCloudMessageJumpFactory>;
     }
 
+    public get getGroupHistoryLegacy(): ReturnType<typeof getGroupHistoryLegacyFactory> {
+        return (this._cache.getGroupHistoryLegacy ??= getGroupHistoryLegacyFactory(this.ctx, this)) as ReturnType<typeof getGroupHistoryLegacyFactory>;
+    }
+
     public get getGroupInfo(): ReturnType<typeof getGroupInfoFactory> {
         return (this._cache.getGroupInfo ??= getGroupInfoFactory(this.ctx, this)) as ReturnType<typeof getGroupInfoFactory>;
+    }
+
+    public get getGroupInfoV2(): ReturnType<typeof getGroupInfoV2Factory> {
+        return (this._cache.getGroupInfoV2 ??= getGroupInfoV2Factory(this.ctx, this)) as ReturnType<typeof getGroupInfoV2Factory>;
     }
 
     public get getGroupInviteBoxInfo(): ReturnType<typeof getGroupInviteBoxInfoFactory> {
@@ -1133,8 +1153,16 @@ export class API {
         return (this._cache.getGroupLinkInfo ??= getGroupLinkInfoFactory(this.ctx, this)) as ReturnType<typeof getGroupLinkInfoFactory>;
     }
 
+    public get getGroupListV3(): ReturnType<typeof getGroupListV3Factory> {
+        return (this._cache.getGroupListV3 ??= getGroupListV3Factory(this.ctx, this)) as ReturnType<typeof getGroupListV3Factory>;
+    }
+
     public get getGroupMembersInfo(): ReturnType<typeof getGroupMembersInfoFactory> {
         return (this._cache.getGroupMembersInfo ??= getGroupMembersInfoFactory(this.ctx, this)) as ReturnType<typeof getGroupMembersInfoFactory>;
+    }
+
+    public get getGroupMessageStatus(): ReturnType<typeof getGroupMessageStatusFactory> {
+        return (this._cache.getGroupMessageStatus ??= getGroupMessageStatusFactory(this.ctx, this)) as ReturnType<typeof getGroupMessageStatusFactory>;
     }
 
     public get getHiddenConversations(): ReturnType<typeof getHiddenConversationsFactory> {
