@@ -1,6 +1,11 @@
-# Nhóm & Cộng đồng (Group)
+---
+title: "Nhóm & Cộng đồng (Group) (api.group) - 44 APIs"
+description: "Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch sử tin nhắn Cloud, trạng thái tin nhắn thành viên và phân quyền. Tra cứu chi tiết 44 phương thức thuộc phân hệ api.group trong bộ SDK @softtynet/zca-js."
+---
 
-> Namespace: `api.group` (hoặc gọi trực tiếp `api.<methodName>`) — **44 API**
+# 👥 Nhóm & Cộng đồng (Group)
+
+> Namespace: `api.group` (hoặc gọi trực tiếp `api.<methodName>`) — **44 API nguyên bản**
 
 Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch sử tin nhắn Cloud, trạng thái tin nhắn thành viên và phân quyền.
 
@@ -8,60 +13,65 @@ Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch 
 
 | Phương thức | HTTP | Endpoint Zalo | Mô tả |
 | :--- | :---: | :--- | :--- |
-| [`addGroupBlockedMember`](#addgroupblockedmember) | `GET` | `/api/group/blockedmems/add` | Add group blocked member |
-| [`addGroupDeputy`](#addgroupdeputy) | `GET` | `/api/group/admins/add` | Add group deputy |
-| [`addUserToGroup`](#addusertogroup) | `POST` | `/api/group/invite/v2` | Add user to existing group |
+| [`addGroupBlockedMember`](#addgroupblockedmember) | `GET` | `/api/group/blockedmems/add` | Chặn một hoặc nhiều thành viên khỏi nhóm (không cho tham gia lại). |
+| [`addGroupDeputy`](#addgroupdeputy) | `GET` | `/api/group/admins/add` | Bổ nhiệm thành viên làm Phó nhóm (Quản trị viên). |
+| [`addUserToGroup`](#addusertogroup) | `POST` | `/api/group/invite/v2` | Thêm trực tiếp một hoặc nhiều người dùng vào nhóm. |
 | [`analyseGroup`](#analysegroup) | `GET` | `/api/group/analyse` | Lấy dữ liệu phân tích/thống kê của nhóm qua `/api/group/analyse` (command 12407) |
-| [`changeGroupAvatar`](#changegroupavatar) | `POST` | `/api/group/upavatar` | Change group avatar |
-| [`changeGroupName`](#changegroupname) | `POST` | `/api/group/updateinfo` | Change group name |
-| [`changeGroupOwner`](#changegroupowner) | `GET` | `/api/group/change-owner` | Change group owner |
+| [`changeGroupAvatar`](#changegroupavatar) | `POST` | `/api/group/upavatar` | Thay đổi ảnh đại diện (Avatar) của nhóm. |
+| [`changeGroupName`](#changegroupname) | `POST` | `/api/group/updateinfo` | Đổi tên hiển thị của nhóm chat hoặc Cộng đồng. |
+| [`changeGroupOwner`](#changegroupowner) | `GET` | `/api/group/change-owner` | Chuyển nhượng quyền Trưởng nhóm (Owner) cho một thành viên khác trong nhóm. |
 | [`checkQuotaCommunityMember`](#checkquotacommunitymember) | `GET` | `/api/group/quota/members-comm` | Kiểm tra điều kiện/hạn mức thành viên Cộng đồng đối với một thành viên cụ thể trong nhóm (command 12182) |
-| [`createGroup`](#creategroup) | `POST` | `/api/group/create/v2` | Create a new group |
-| [`deleteGroupInviteBox`](#deletegroupinvitebox) | `GET` | `/api/group/inv-box/mdel-inv` | Delete group invite box |
-| [`disableGroupLink`](#disablegrouplink) | `GET` | `/api/group/link/disable` | Disable group link |
-| [`disperseGroup`](#dispersegroup) | `POST` | `/api/group/disperse` | Disperse Group |
-| [`enableGroupLink`](#enablegrouplink) | `GET` | `/api/group/link/new` | Enable and create new group link |
+| [`createGroup`](#creategroup) | `POST` | `/api/group/create/v2` | Tạo một nhóm chat mới kèm tên nhóm, danh sách thành viên ban đầu và ảnh đại diện. |
+| [`deleteGroupInviteBox`](#deletegroupinvitebox) | `GET` | `/api/group/inv-box/mdel-inv` | Xóa lời mời tham gia nhóm trong hộp thư lời mời nhóm. |
+| [`disableGroupLink`](#disablegrouplink) | `GET` | `/api/group/link/disable` | Vô hiệu hóa (Tắt) đường dẫn tham gia nhóm bằng liên kết (Invite Link). |
+| [`disperseGroup`](#dispersegroup) | `POST` | `/api/group/disperse` | Giải tán nhóm chat vĩnh viễn (yêu cầu quyền Trưởng nhóm). |
+| [`enableGroupLink`](#enablegrouplink) | `GET` | `/api/group/link/new` | Kích hoạt hoặc tạo mới đường dẫn liên kết mời tham gia nhóm. |
 | [`getAllGroups`](#getallgroups) | `GET` | `/api/group/getlg/v4` | API `getAllGroups` thuộc phân hệ `group`. |
 | [`getE2eeGroupList`](#gete2eegrouplist) | `GET` | `/api/group/getlg/e2ee` | Lấy danh sách các nhóm đang bật mã hóa đầu cuối E2EE (command 12146) |
 | [`getExtraGroupInfo`](#getextragroupinfo) | `POST` | `/api/group/userctx/multiget` | Lấy ngữ cảnh và vai trò mở rộng của người dùng đối với nhiều nhóm (command 12607) |
-| [`getGroupBlockedMember`](#getgroupblockedmember) | `GET` | `/api/group/blockedmems/list` | Get group blocked member |
+| [`getGroupBlockedMember`](#getgroupblockedmember) | `GET` | `/api/group/blockedmems/list` | Lấy danh sách các tài khoản đang bị chặn khỏi nhóm. |
 | [`getGroupChatHistory`](#getgroupchathistory) | `GET` | `/api/cm/getoldv2`<br/>`/api/cm/getrecentv2` | Lấy lịch sử tin nhắn nhóm từ Zalo Cloud Message (hỗ trợ cả `/api/cm/getrecentv2` cmd 12506 và `/api/cm/getoldv2` cmd 12507) |
 | [`getGroupCloudMessageJump`](#getgroupcloudmessagejump) | `GET` | `/api/cm/rgetv2` | Nhảy tới vị trí một tin nhắn nhóm cụ thể trên Zalo Cloud Message và lấy ngữ cảnh xung quanh (command 12508) |
 | [`getGroupCloudMessagePath`](#getgroupcloudmessagepath) | `GET` | `/api/cm/getpath` | Lấy chuỗi tin nhắn nhóm theo đường dẫn nhảy tới một tin nhắn cụ thể (`globalMsgId` / `rGlobalMsgId`) qua `/api/cm/getpath` (command 12504) |
 | [`getGroupHistoryLegacy`](#getgrouphistorylegacy) | `GET` | `/api/group/history` | Lấy lịch sử tin nhắn nhóm qua endpoint `/api/group/history` trên miền `group` (command 11240) |
-| [`getGroupInfo`](#getgroupinfo) | `POST` | `/api/group/getmg-v2` | Get group information |
+| [`getGroupInfo`](#getgroupinfo) | `POST` | `/api/group/getmg-v2` | Lấy thông tin chi tiết của một hoặc nhiều nhóm (tên nhóm, cài đặt lockViewMember, creatorId, adminIds, memVerList) qua /api/group/getmg-v2. |
 | [`getGroupInfoV2`](#getgroupinfov2) | `GET` | `/api/group/getgi`<br/>`/api/group/getgi/v2` | Lấy thông tin nhóm và danh sách thành viên theo trang qua `/api/group/getgi/v2` hoặc `/api/group/getgi` (command 11162) |
-| [`getGroupInviteBoxInfo`](#getgroupinviteboxinfo) | `GET` | `/api/group/inv-box/inv-info` | Get group invite box info |
-| [`getGroupInviteBoxList`](#getgroupinviteboxlist) | `GET` | `/api/group/inv-box/list` | Get group invite box list |
-| [`getGroupLinkDetail`](#getgrouplinkdetail) | `GET` | `/api/group/link/detail` | Get group link detail |
-| [`getGroupLinkInfo`](#getgrouplinkinfo) | `GET` | `/api/group/link/ginfo` | Get group link info |
+| [`getGroupInviteBoxInfo`](#getgroupinviteboxinfo) | `GET` | `/api/group/inv-box/inv-info` | Lấy thông tin chi tiết của một lời mời vào nhóm cụ thể. |
+| [`getGroupInviteBoxList`](#getgroupinviteboxlist) | `GET` | `/api/group/inv-box/list` | Lấy danh sách tất cả lời mời tham gia nhóm đang chờ trong hộp thư. |
+| [`getGroupLinkDetail`](#getgrouplinkdetail) | `GET` | `/api/group/link/detail` | Lấy chi tiết đường dẫn mời tham gia nhóm (Link邀請) của một nhóm mà bạn đang tham gia. |
+| [`getGroupLinkInfo`](#getgrouplinkinfo) | `GET` | `/api/group/link/ginfo` | Tra cứu thông tin nhóm và danh sách thành viên theo trang từ đường dẫn nhóm công khai (https://zalo.me/g/...). |
 | [`getGroupListV3`](#getgrouplistv3) | `GET` | `/api/group/getlg/v3` | Lấy danh sách nhóm theo trang kèm thông tin thành viên đại diện (`currentMems`) và gợi ý nhóm (`suggestGroup`) qua `/api/group/getlg/v3` (command 11161) |
-| [`getGroupMembersInfo`](#getgroupmembersinfo) | `GET` | `/api/social/group/members` | Get group information |
+| [`getGroupMembersInfo`](#getgroupmembersinfo) | `GET` | `/api/social/group/members` | Giải mã hàng loạt thông tin hồ sơ thành viên (displayName, zaloName, avatar, globalId) từ danh sách UID qua /api/social/group/members. |
 | [`getGroupMessageStatus`](#getgroupmessagestatus) | `POST` | `/api/group/getStatusMsg` | Truy vấn trạng thái Đã nhận (`deliver`) và Đã xem (`seen`) tin nhắn của danh sách thành viên trong nhóm (command 12017) |
 | [`getMultiGroupCloudMessages`](#getmultigroupcloudmessages) | `GET` | `/api/cm/mget` | Đồng bộ nhanh tin nhắn Cloud của nhiều nhóm cùng lúc theo danh sách `groupIds` (command 12503 - `syncCloudMsgFirstLogin`) |
-| [`getPendingGroupMembers`](#getpendinggroupmembers) | `GET` | `/api/group/pending-mems/list` | Get pending group members |
+| [`getPendingGroupMembers`](#getpendinggroupmembers) | `GET` | `/api/group/pending-mems/list` | Lấy danh sách các yêu cầu xin vào nhóm đang chờ Quản trị viên phê duyệt. |
 | [`getQuotaCommunity`](#getquotacommunity) | `GET` | `/api/group/quota/community` | Kiểm tra hạn mức nâng cấp nhóm lên Cộng đồng của tài khoản (command 12181) |
-| [`getRelatedFriendGroup`](#getrelatedfriendgroup) | `POST` | `/api/friend/group/related` | Get related friend group |
-| [`inviteUserToGroups`](#inviteusertogroups) | `GET` | `/api/group/invite/multi` | Invite user to group |
-| [`joinGroupInviteBox`](#joingroupinvitebox) | `GET` | `/api/group/inv-box/join` | Join group invite box |
-| [`joinGroupLink`](#joingrouplink) | `GET` | `/api/group/link/join` | Join group via invite link |
-| [`leaveGroup`](#leavegroup) | `POST` | `/api/group/leave` | Leave group |
-| [`removeGroupBlockedMember`](#removegroupblockedmember) | `GET` | `/api/group/blockedmems/remove` | Remove group blocked member |
-| [`removeGroupDeputy`](#removegroupdeputy) | `GET` | `/api/group/admins/remove` | Remove group deputy |
-| [`removeUserFromGroup`](#removeuserfromgroup) | `POST` | `/api/group/kickout` | Remove user from existing group |
-| [`reviewPendingMemberRequest`](#reviewpendingmemberrequest) | `GET` | `/api/group/pending-mems/review` | Review pending member(s) request |
-| [`updateGroupSettings`](#updategroupsettings) | `GET` | `/api/group/setting/update` | Update group settings |
-| [`upgradeGroupToCommunity`](#upgradegrouptocommunity) | `GET` | `/api/group/upgrade/community` | Upgrade group to community |
+| [`getRelatedFriendGroup`](#getrelatedfriendgroup) | `POST` | `/api/friend/group/related` | Kiểm tra danh sách các nhóm chung giữa tài khoản hiện tại và danh sách UID truyền vào qua /api/friend/group/related. |
+| [`inviteUserToGroups`](#inviteusertogroups) | `GET` | `/api/group/invite/multi` | Gửi lời mời tham gia một hoặc nhiều nhóm tới người dùng. |
+| [`joinGroupInviteBox`](#joingroupinvitebox) | `GET` | `/api/group/inv-box/join` | Chấp nhận lời mời tham gia nhóm từ hộp thư lời mời. |
+| [`joinGroupLink`](#joingrouplink) | `GET` | `/api/group/link/join` | Tham gia vào nhóm thông qua đường dẫn liên kết mời (Group Link). |
+| [`leaveGroup`](#leavegroup) | `POST` | `/api/group/leave` | Rời khỏi một hoặc nhiều nhóm chat (hỗ trợ rời nhóm im lặng silent). |
+| [`removeGroupBlockedMember`](#removegroupblockedmember) | `GET` | `/api/group/blockedmems/remove` | Gỡ chặn (Unblock) cho người dùng khỏi danh sách chặn của nhóm. |
+| [`removeGroupDeputy`](#removegroupdeputy) | `GET` | `/api/group/admins/remove` | Cách chức Phó nhóm (thu hồi quyền Quản trị viên) của thành viên. |
+| [`removeUserFromGroup`](#removeuserfromgroup) | `POST` | `/api/group/kickout` | Mời ra khỏi nhóm (Kick) một hoặc nhiều thành viên. |
+| [`reviewPendingMemberRequest`](#reviewpendingmemberrequest) | `GET` | `/api/group/pending-mems/review` | Phê duyệt (Chấp nhận hoặc Từ chối) yêu cầu xin tham gia nhóm của thành viên mới. |
+| [`updateGroupSettings`](#updategroupsettings) | `GET` | `/api/group/setting/update` | Cập nhật các thiết lập quyền hạn của nhóm (ẩn thành viên lockViewMember, duyệt thành viên joinAppr, khóa nhắn tin lockSendMsg...). |
+| [`upgradeGroupToCommunity`](#upgradegrouptocommunity) | `GET` | `/api/group/upgrade/community` | Nâng cấp nhóm thường lên Cộng đồng (Community - tối đa 1000 thành viên). |
 
 ---
 
 ## `addGroupBlockedMember`
 
-Add group blocked member
+Chặn một hoặc nhiều thành viên khỏi nhóm (không cho tham gia lại).
 
-- **Endpoint**: `GET /api/group/blockedmems/add`
-- **Domain call**: `api.group.addGroupBlockedMember(memberId: string | string[], groupId: string)`
-- **Alias phẳng**: `api.addGroupBlockedMember(memberId: string | string[], groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/blockedmems/add</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.addGroupBlockedMember(memberId: string | string[], groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.addGroupBlockedMember(memberId: string | string[], groupId: string)
+```
 
 ### Tham số
 
@@ -78,11 +88,16 @@ export type AddGroupBlockedMemberResponse = "";
 
 ## `addGroupDeputy`
 
-Add group deputy
+Bổ nhiệm thành viên làm Phó nhóm (Quản trị viên).
 
-- **Endpoint**: `GET /api/group/admins/add`
-- **Domain call**: `api.group.addGroupDeputy(memberId: string | string[], groupId: string)`
-- **Alias phẳng**: `api.addGroupDeputy(memberId: string | string[], groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/admins/add</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.addGroupDeputy(memberId: string | string[], groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.addGroupDeputy(memberId: string | string[], groupId: string)
+```
 
 ### Tham số
 
@@ -99,11 +114,16 @@ export type AddGroupDeputyResponse = "";
 
 ## `addUserToGroup`
 
-Add user to existing group
+Thêm trực tiếp một hoặc nhiều người dùng vào nhóm.
 
-- **Endpoint**: `POST /api/group/invite/v2`
-- **Domain call**: `api.group.addUserToGroup(memberId: string | string[], groupId: string)`
-- **Alias phẳng**: `api.addUserToGroup(memberId: string | string[], groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/invite/v2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.addUserToGroup(memberId: string | string[], groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.addUserToGroup(memberId: string | string[], groupId: string)
+```
 
 ### Tham số
 
@@ -125,9 +145,14 @@ export type AddUserToGroupResponse = {
 
 Lấy dữ liệu phân tích/thống kê của nhóm qua `/api/group/analyse` (command 12407)
 
-- **Endpoint**: `GET /api/group/analyse`
-- **Domain call**: `api.group.analyseGroup(groupId: string)`
-- **Alias phẳng**: `api.analyseGroup(groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/analyse</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.analyseGroup(groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.analyseGroup(groupId: string)
+```
 
 ### Tham số
 
@@ -145,11 +170,16 @@ export type AnalyseGroupResponse = {
 
 ## `changeGroupAvatar`
 
-Change group avatar
+Thay đổi ảnh đại diện (Avatar) của nhóm.
 
-- **Endpoint**: `POST /api/group/upavatar`
-- **Domain call**: `api.group.changeGroupAvatar(avatarSource: AttachmentSource, groupId: string)`
-- **Alias phẳng**: `api.changeGroupAvatar(avatarSource: AttachmentSource, groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/upavatar</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.changeGroupAvatar(avatarSource: AttachmentSource, groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.changeGroupAvatar(avatarSource: AttachmentSource, groupId: string)
+```
 
 ### Tham số
 
@@ -166,11 +196,16 @@ export type ChangeGroupAvatarResponse = "";
 
 ## `changeGroupName`
 
-Change group name
+Đổi tên hiển thị của nhóm chat hoặc Cộng đồng.
 
-- **Endpoint**: `POST /api/group/updateinfo`
-- **Domain call**: `api.group.changeGroupName(name: string, groupId: string)`
-- **Alias phẳng**: `api.changeGroupName(name: string, groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/updateinfo</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.changeGroupName(name: string, groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.changeGroupName(name: string, groupId: string)
+```
 
 ### Tham số
 
@@ -189,11 +224,16 @@ export type ChangeGroupNameResponse = {
 
 ## `changeGroupOwner`
 
-Change group owner
+Chuyển nhượng quyền Trưởng nhóm (Owner) cho một thành viên khác trong nhóm.
 
-- **Endpoint**: `GET /api/group/change-owner`
-- **Domain call**: `api.group.changeGroupOwner(memberId: string, groupId: string)`
-- **Alias phẳng**: `api.changeGroupOwner(memberId: string, groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/change-owner</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.changeGroupOwner(memberId: string, groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.changeGroupOwner(memberId: string, groupId: string)
+```
 
 ### Tham số
 
@@ -214,9 +254,14 @@ export type ChangeGroupOwnerResponse = {
 
 Kiểm tra điều kiện/hạn mức thành viên Cộng đồng đối với một thành viên cụ thể trong nhóm (command 12182)
 
-- **Endpoint**: `GET /api/group/quota/members-comm`
-- **Domain call**: `api.group.checkQuotaCommunityMember(groupId: string, uid: string)`
-- **Alias phẳng**: `api.checkQuotaCommunityMember(groupId: string, uid: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/quota/members-comm</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.checkQuotaCommunityMember(groupId: string, uid: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.checkQuotaCommunityMember(groupId: string, uid: string)
+```
 
 ### Tham số
 
@@ -237,11 +282,16 @@ export type CheckQuotaCommunityMemberResponse = {
 
 ## `createGroup`
 
-Create a new group
+Tạo một nhóm chat mới kèm tên nhóm, danh sách thành viên ban đầu và ảnh đại diện.
 
-- **Endpoint**: `POST /api/group/create/v2`
-- **Domain call**: `api.group.createGroup(options: CreateGroupOptions)`
-- **Alias phẳng**: `api.createGroup(options: CreateGroupOptions)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/create/v2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.createGroup(options: CreateGroupOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.createGroup(options: CreateGroupOptions)
+```
 
 ### Tham số
 
@@ -283,11 +333,16 @@ export type CreateGroupOptions = {
 
 ## `deleteGroupInviteBox`
 
-Delete group invite box
+Xóa lời mời tham gia nhóm trong hộp thư lời mời nhóm.
 
-- **Endpoint**: `GET /api/group/inv-box/mdel-inv`
-- **Domain call**: `api.group.deleteGroupInviteBox(groupId: string | string[], blockFutureInvite: boolean = false)`
-- **Alias phẳng**: `api.deleteGroupInviteBox(groupId: string | string[], blockFutureInvite: boolean = false)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/inv-box/mdel-inv</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.deleteGroupInviteBox(groupId: string | string[], blockFutureInvite: boolean = false)
+// Hoặc gọi phẳng (Flat Alias):
+await api.deleteGroupInviteBox(groupId: string | string[], blockFutureInvite: boolean = false)
+```
 
 ### Tham số
 
@@ -311,11 +366,16 @@ export type DeleteGroupInviteBoxResponse = {
 
 ## `disableGroupLink`
 
-Disable group link
+Vô hiệu hóa (Tắt) đường dẫn tham gia nhóm bằng liên kết (Invite Link).
 
-- **Endpoint**: `GET /api/group/link/disable`
-- **Domain call**: `api.group.disableGroupLink(groupId: string)`
-- **Alias phẳng**: `api.disableGroupLink(groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/link/disable</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.disableGroupLink(groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.disableGroupLink(groupId: string)
+```
 
 ### Tham số
 
@@ -331,11 +391,16 @@ export type DisableGroupLinkResponse = "";
 
 ## `disperseGroup`
 
-Disperse Group
+Giải tán nhóm chat vĩnh viễn (yêu cầu quyền Trưởng nhóm).
 
-- **Endpoint**: `POST /api/group/disperse`
-- **Domain call**: `api.group.disperseGroup(groupId: string)`
-- **Alias phẳng**: `api.disperseGroup(groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/disperse</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.disperseGroup(groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.disperseGroup(groupId: string)
+```
 
 ### Tham số
 
@@ -351,11 +416,16 @@ export type DisperseGroupResponse = "";
 
 ## `enableGroupLink`
 
-Enable and create new group link
+Kích hoạt hoặc tạo mới đường dẫn liên kết mời tham gia nhóm.
 
-- **Endpoint**: `GET /api/group/link/new`
-- **Domain call**: `api.group.enableGroupLink(groupId: string)`
-- **Alias phẳng**: `api.enableGroupLink(groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/link/new</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.enableGroupLink(groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.enableGroupLink(groupId: string)
+```
 
 ### Tham số
 
@@ -377,9 +447,14 @@ export type EnableGroupLinkResponse = {
 
 API `getAllGroups` thuộc phân hệ `group`.
 
-- **Endpoint**: `GET /api/group/getlg/v4`
-- **Domain call**: `api.group.getAllGroups()`
-- **Alias phẳng**: `api.getAllGroups()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/getlg/v4</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getAllGroups()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getAllGroups()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -398,9 +473,14 @@ export type GetAllGroupsResponse = {
 
 Lấy danh sách các nhóm đang bật mã hóa đầu cuối E2EE (command 12146)
 
-- **Endpoint**: `GET /api/group/getlg/e2ee`
-- **Domain call**: `api.group.getE2eeGroupList()`
-- **Alias phẳng**: `api.getE2eeGroupList()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/getlg/e2ee</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getE2eeGroupList()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getE2eeGroupList()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -419,9 +499,14 @@ export type GetE2eeGroupListResponse = {
 
 Lấy ngữ cảnh và vai trò mở rộng của người dùng đối với nhiều nhóm (command 12607)
 
-- **Endpoint**: `POST /api/group/userctx/multiget`
-- **Domain call**: `api.group.getExtraGroupInfo(groupIds: string[])`
-- **Alias phẳng**: `api.getExtraGroupInfo(groupIds: string[])`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/userctx/multiget</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getExtraGroupInfo(groupIds: string[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.getExtraGroupInfo(groupIds: string[])
+```
 
 ### Tham số
 
@@ -443,11 +528,16 @@ export type GetExtraGroupInfoResponse = Record<string, ExtraContextInfo>;
 
 ## `getGroupBlockedMember`
 
-Get group blocked member
+Lấy danh sách các tài khoản đang bị chặn khỏi nhóm.
 
-- **Endpoint**: `GET /api/group/blockedmems/list`
-- **Domain call**: `api.group.getGroupBlockedMember(payload: GetGroupBlockedMemberPayload, groupId: string)`
-- **Alias phẳng**: `api.getGroupBlockedMember(payload: GetGroupBlockedMemberPayload, groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/blockedmems/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupBlockedMember(payload: GetGroupBlockedMemberPayload, groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupBlockedMember(payload: GetGroupBlockedMemberPayload, groupId: string)
+```
 
 ### Tham số
 
@@ -488,9 +578,14 @@ export type GetGroupBlockedMemberResponse = {
 
 Lấy lịch sử tin nhắn nhóm từ Zalo Cloud Message (hỗ trợ cả `/api/cm/getrecentv2` cmd 12506 và `/api/cm/getoldv2` cmd 12507)
 
-- **Endpoint**: `GET /api/cm/getoldv2`, `GET /api/cm/getrecentv2`
-- **Domain call**: `api.group.getGroupChatHistory(groupId: string, countOrOptions: number | GetGroupChatHistoryOptions = 50,)`
-- **Alias phẳng**: `api.getGroupChatHistory(groupId: string, countOrOptions: number | GetGroupChatHistoryOptions = 50,)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/cm/getoldv2</span> <span class="zca-endpoint-pill">/api/cm/getrecentv2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupChatHistory(groupId: string, countOrOptions: number | GetGroupChatHistoryOptions = 50,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupChatHistory(groupId: string, countOrOptions: number | GetGroupChatHistoryOptions = 50,)
+```
 
 ### Tham số
 
@@ -556,9 +651,14 @@ export type GetGroupChatHistoryResponse = {
 
 Nhảy tới vị trí một tin nhắn nhóm cụ thể trên Zalo Cloud Message và lấy ngữ cảnh xung quanh (command 12508)
 
-- **Endpoint**: `GET /api/cm/rgetv2`
-- **Domain call**: `api.group.getGroupCloudMessageJump(groupId: string, globalMsgId: string | number, count: number = 20, msgJump: number = 1, msgIds: Array<string | number> = [],)`
-- **Alias phẳng**: `api.getGroupCloudMessageJump(groupId: string, globalMsgId: string | number, count: number = 20, msgJump: number = 1, msgIds: Array<string | number> = [],)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/cm/rgetv2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupCloudMessageJump(groupId: string, globalMsgId: string | number, count: number = 20, msgJump: number = 1, msgIds: Array<string | number> = [],)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupCloudMessageJump(groupId: string, globalMsgId: string | number, count: number = 20, msgJump: number = 1, msgIds: Array<string | number> = [],)
+```
 
 ### Tham số
 
@@ -580,9 +680,14 @@ export type GetGroupCloudMessageJumpResponse = GetGroupChatHistoryResponse;
 
 Lấy chuỗi tin nhắn nhóm theo đường dẫn nhảy tới một tin nhắn cụ thể (`globalMsgId` / `rGlobalMsgId`) qua `/api/cm/getpath` (command 12504)
 
-- **Endpoint**: `GET /api/cm/getpath`
-- **Domain call**: `api.group.getGroupCloudMessagePath(options: GetGroupCloudMessagePathOptions)`
-- **Alias phẳng**: `api.getGroupCloudMessagePath(options: GetGroupCloudMessagePathOptions)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/cm/getpath</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupCloudMessagePath(options: GetGroupCloudMessagePathOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupCloudMessagePath(options: GetGroupCloudMessagePathOptions)
+```
 
 ### Tham số
 
@@ -617,9 +722,14 @@ export type GetGroupCloudMessagePathResponse = {
 
 Lấy lịch sử tin nhắn nhóm qua endpoint `/api/group/history` trên miền `group` (command 11240)
 
-- **Endpoint**: `GET /api/group/history`
-- **Domain call**: `api.group.getGroupHistoryLegacy(groupId: string, count: number = 20)`
-- **Alias phẳng**: `api.getGroupHistoryLegacy(groupId: string, count: number = 20)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/history</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupHistoryLegacy(groupId: string, count: number = 20)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupHistoryLegacy(groupId: string, count: number = 20)
+```
 
 ### Tham số
 
@@ -640,11 +750,16 @@ export type GetGroupHistoryLegacyResponse = {
 
 ## `getGroupInfo`
 
-Get group information
+Lấy thông tin chi tiết của một hoặc nhiều nhóm (tên nhóm, cài đặt lockViewMember, creatorId, adminIds, memVerList) qua /api/group/getmg-v2.
 
-- **Endpoint**: `POST /api/group/getmg-v2`
-- **Domain call**: `api.group.getGroupInfo(groupId: string | string[])`
-- **Alias phẳng**: `api.getGroupInfo(groupId: string | string[])`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/getmg-v2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupInfo(groupId: string | string[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupInfo(groupId: string | string[])
+```
 
 ### Tham số
 
@@ -676,9 +791,14 @@ export type GroupInfoPendingApprove = {
 
 Lấy thông tin nhóm và danh sách thành viên theo trang qua `/api/group/getgi/v2` hoặc `/api/group/getgi` (command 11162)
 
-- **Endpoint**: `GET /api/group/getgi`, `GET /api/group/getgi/v2`
-- **Domain call**: `api.group.getGroupInfoV2(groupId: string, pageOrOptions: number | GetGroupInfoV2Options = 1,)`
-- **Alias phẳng**: `api.getGroupInfoV2(groupId: string, pageOrOptions: number | GetGroupInfoV2Options = 1,)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/getgi</span> <span class="zca-endpoint-pill">/api/group/getgi/v2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupInfoV2(groupId: string, pageOrOptions: number | GetGroupInfoV2Options = 1,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupInfoV2(groupId: string, pageOrOptions: number | GetGroupInfoV2Options = 1,)
+```
 
 ### Tham số
 
@@ -722,11 +842,16 @@ export type GetGroupInfoV2Response = GroupInfo & {
 
 ## `getGroupInviteBoxInfo`
 
-Get group invite box info
+Lấy thông tin chi tiết của một lời mời vào nhóm cụ thể.
 
-- **Endpoint**: `GET /api/group/inv-box/inv-info`
-- **Domain call**: `api.group.getGroupInviteBoxInfo(payload: GetGroupInviteBoxInfoPayload)`
-- **Alias phẳng**: `api.getGroupInviteBoxInfo(payload: GetGroupInviteBoxInfoPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/inv-box/inv-info</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupInviteBoxInfo(payload: GetGroupInviteBoxInfoPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupInviteBoxInfo(payload: GetGroupInviteBoxInfoPayload)
+```
 
 ### Tham số
 
@@ -772,11 +897,16 @@ export type GetGroupInviteBoxInfoResponse = {
 
 ## `getGroupInviteBoxList`
 
-Get group invite box list
+Lấy danh sách tất cả lời mời tham gia nhóm đang chờ trong hộp thư.
 
-- **Endpoint**: `GET /api/group/inv-box/list`
-- **Domain call**: `api.group.getGroupInviteBoxList(payload?: GetGroupInviteBoxListPayload)`
-- **Alias phẳng**: `api.getGroupInviteBoxList(payload?: GetGroupInviteBoxListPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/inv-box/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupInviteBoxList(payload?: GetGroupInviteBoxListPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupInviteBoxList(payload?: GetGroupInviteBoxListPayload)
+```
 
 ### Tham số
 
@@ -828,11 +958,16 @@ export type GetGroupInviteBoxListResponse = {
 
 ## `getGroupLinkDetail`
 
-Get group link detail
+Lấy chi tiết đường dẫn mời tham gia nhóm (Link邀請) của một nhóm mà bạn đang tham gia.
 
-- **Endpoint**: `GET /api/group/link/detail`
-- **Domain call**: `api.group.getGroupLinkDetail(groupId: string)`
-- **Alias phẳng**: `api.getGroupLinkDetail(groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/link/detail</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupLinkDetail(groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupLinkDetail(groupId: string)
+```
 
 ### Tham số
 
@@ -855,11 +990,16 @@ export type GetGroupLinkDetailResponse = {
 
 ## `getGroupLinkInfo`
 
-Get group link info
+Tra cứu thông tin nhóm và danh sách thành viên theo trang từ đường dẫn nhóm công khai (https://zalo.me/g/...).
 
-- **Endpoint**: `GET /api/group/link/ginfo`
-- **Domain call**: `api.group.getGroupLinkInfo(payload: GetGroupLinkInfoPayload)`
-- **Alias phẳng**: `api.getGroupLinkInfo(payload: GetGroupLinkInfoPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/link/ginfo</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupLinkInfo(payload: GetGroupLinkInfoPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupLinkInfo(payload: GetGroupLinkInfoPayload)
+```
 
 ### Tham số
 
@@ -909,9 +1049,14 @@ export type GetGroupLinkInfoResponse = {
 
 Lấy danh sách nhóm theo trang kèm thông tin thành viên đại diện (`currentMems`) và gợi ý nhóm (`suggestGroup`) qua `/api/group/getlg/v3` (command 11161)
 
-- **Endpoint**: `GET /api/group/getlg/v3`
-- **Domain call**: `api.group.getGroupListV3(pageOrOptions: number | GetGroupListV3Options = 1)`
-- **Alias phẳng**: `api.getGroupListV3(pageOrOptions: number | GetGroupListV3Options = 1)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/getlg/v3</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupListV3(pageOrOptions: number | GetGroupListV3Options = 1)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupListV3(pageOrOptions: number | GetGroupListV3Options = 1)
+```
 
 ### Tham số
 
@@ -944,11 +1089,16 @@ export type GetGroupListV3Response = {
 
 ## `getGroupMembersInfo`
 
-Get group information
+Giải mã hàng loạt thông tin hồ sơ thành viên (displayName, zaloName, avatar, globalId) từ danh sách UID qua /api/social/group/members.
 
-- **Endpoint**: `GET /api/social/group/members`
-- **Domain call**: `api.group.getGroupMembersInfo(memberId: string | string[])`
-- **Alias phẳng**: `api.getGroupMembersInfo(memberId: string | string[])`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/group/members</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupMembersInfo(memberId: string | string[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupMembersInfo(memberId: string | string[])
+```
 
 ### Tham số
 
@@ -982,9 +1132,14 @@ export type GetGroupMembersInfoResponse = {
 
 Truy vấn trạng thái Đã nhận (`deliver`) và Đã xem (`seen`) tin nhắn của danh sách thành viên trong nhóm (command 12017)
 
-- **Endpoint**: `POST /api/group/getStatusMsg`
-- **Domain call**: `api.group.getGroupMessageStatus(groupIdOrItems: string | GetGroupMessageStatusQueryItem[], memberIds: string[] = [],)`
-- **Alias phẳng**: `api.getGroupMessageStatus(groupIdOrItems: string | GetGroupMessageStatusQueryItem[], memberIds: string[] = [],)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/getStatusMsg</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getGroupMessageStatus(groupIdOrItems: string | GetGroupMessageStatusQueryItem[], memberIds: string[] = [],)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getGroupMessageStatus(groupIdOrItems: string | GetGroupMessageStatusQueryItem[], memberIds: string[] = [],)
+```
 
 ### Tham số
 
@@ -1030,9 +1185,14 @@ export type GetGroupMessageStatusResponse = {
 
 Đồng bộ nhanh tin nhắn Cloud của nhiều nhóm cùng lúc theo danh sách `groupIds` (command 12503 - `syncCloudMsgFirstLogin`)
 
-- **Endpoint**: `GET /api/cm/mget`
-- **Domain call**: `api.group.getMultiGroupCloudMessages(groupIds: string[], nretry: number = 0)`
-- **Alias phẳng**: `api.getMultiGroupCloudMessages(groupIds: string[], nretry: number = 0)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/cm/mget</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getMultiGroupCloudMessages(groupIds: string[], nretry: number = 0)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getMultiGroupCloudMessages(groupIds: string[], nretry: number = 0)
+```
 
 ### Tham số
 
@@ -1052,11 +1212,16 @@ export type GetMultiGroupCloudMessagesResponse = {
 
 ## `getPendingGroupMembers`
 
-Get pending group members
+Lấy danh sách các yêu cầu xin vào nhóm đang chờ Quản trị viên phê duyệt.
 
-- **Endpoint**: `GET /api/group/pending-mems/list`
-- **Domain call**: `api.group.getPendingGroupMembers(groupId: string)`
-- **Alias phẳng**: `api.getPendingGroupMembers(groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/pending-mems/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getPendingGroupMembers(groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getPendingGroupMembers(groupId: string)
+```
 
 ### Tham số
 
@@ -1084,9 +1249,14 @@ export type GetPendingGroupMembersResponse = {
 
 Kiểm tra hạn mức nâng cấp nhóm lên Cộng đồng của tài khoản (command 12181)
 
-- **Endpoint**: `GET /api/group/quota/community`
-- **Domain call**: `api.group.getQuotaCommunity(groupId: string | null = null, language: string = "vi")`
-- **Alias phẳng**: `api.getQuotaCommunity(groupId: string | null = null, language: string = "vi")`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/quota/community</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getQuotaCommunity(groupId: string | null = null, language: string = "vi")
+// Hoặc gọi phẳng (Flat Alias):
+await api.getQuotaCommunity(groupId: string | null = null, language: string = "vi")
+```
 
 ### Tham số
 
@@ -1109,11 +1279,16 @@ export type GetQuotaCommunityResponse = {
 
 ## `getRelatedFriendGroup`
 
-Get related friend group
+Kiểm tra danh sách các nhóm chung giữa tài khoản hiện tại và danh sách UID truyền vào qua /api/friend/group/related.
 
-- **Endpoint**: `POST /api/friend/group/related`
-- **Domain call**: `api.group.getRelatedFriendGroup(friendId: string | string[])`
-- **Alias phẳng**: `api.getRelatedFriendGroup(friendId: string | string[])`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/group/related</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.getRelatedFriendGroup(friendId: string | string[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.getRelatedFriendGroup(friendId: string | string[])
+```
 
 ### Tham số
 
@@ -1133,11 +1308,16 @@ export type GetRelatedFriendGroupResponse = {
 
 ## `inviteUserToGroups`
 
-Invite user to group
+Gửi lời mời tham gia một hoặc nhiều nhóm tới người dùng.
 
-- **Endpoint**: `GET /api/group/invite/multi`
-- **Domain call**: `api.group.inviteUserToGroups(userId: string, groupId: string | string[])`
-- **Alias phẳng**: `api.inviteUserToGroups(userId: string, groupId: string | string[])`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/invite/multi</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.inviteUserToGroups(userId: string, groupId: string | string[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.inviteUserToGroups(userId: string, groupId: string | string[])
+```
 
 ### Tham số
 
@@ -1162,11 +1342,16 @@ export type InviteUserToGroupsResponse = {
 
 ## `joinGroupInviteBox`
 
-Join group invite box
+Chấp nhận lời mời tham gia nhóm từ hộp thư lời mời.
 
-- **Endpoint**: `GET /api/group/inv-box/join`
-- **Domain call**: `api.group.joinGroupInviteBox(groupId: string)`
-- **Alias phẳng**: `api.joinGroupInviteBox(groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/inv-box/join</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.joinGroupInviteBox(groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.joinGroupInviteBox(groupId: string)
+```
 
 ### Tham số
 
@@ -1182,11 +1367,16 @@ export type JoinGroupInviteBoxResponse = "";
 
 ## `joinGroupLink`
 
-Join group via invite link
+Tham gia vào nhóm thông qua đường dẫn liên kết mời (Group Link).
 
-- **Endpoint**: `GET /api/group/link/join`
-- **Domain call**: `api.group.joinGroupLink(link: string)`
-- **Alias phẳng**: `api.joinGroupLink(link: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/link/join</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.joinGroupLink(link: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.joinGroupLink(link: string)
+```
 
 ### Tham số
 
@@ -1202,11 +1392,16 @@ export type JoinGroupLinkResponse = "";
 
 ## `leaveGroup`
 
-Leave group
+Rời khỏi một hoặc nhiều nhóm chat (hỗ trợ rời nhóm im lặng silent).
 
-- **Endpoint**: `POST /api/group/leave`
-- **Domain call**: `api.group.leaveGroup(groupId: string, silent: boolean = false)`
-- **Alias phẳng**: `api.leaveGroup(groupId: string, silent: boolean = false)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/leave</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.leaveGroup(groupId: string, silent: boolean = false)
+// Hoặc gọi phẳng (Flat Alias):
+await api.leaveGroup(groupId: string, silent: boolean = false)
+```
 
 ### Tham số
 
@@ -1225,11 +1420,16 @@ export type LeaveGroupResponse = {
 
 ## `removeGroupBlockedMember`
 
-Remove group blocked member
+Gỡ chặn (Unblock) cho người dùng khỏi danh sách chặn của nhóm.
 
-- **Endpoint**: `GET /api/group/blockedmems/remove`
-- **Domain call**: `api.group.removeGroupBlockedMember(memberId: string | string[], groupId: string)`
-- **Alias phẳng**: `api.removeGroupBlockedMember(memberId: string | string[], groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/blockedmems/remove</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.removeGroupBlockedMember(memberId: string | string[], groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.removeGroupBlockedMember(memberId: string | string[], groupId: string)
+```
 
 ### Tham số
 
@@ -1246,11 +1446,16 @@ export type RemoveGroupBlockedMemberResponse = "";
 
 ## `removeGroupDeputy`
 
-Remove group deputy
+Cách chức Phó nhóm (thu hồi quyền Quản trị viên) của thành viên.
 
-- **Endpoint**: `GET /api/group/admins/remove`
-- **Domain call**: `api.group.removeGroupDeputy(memberId: string | string[], groupId: string)`
-- **Alias phẳng**: `api.removeGroupDeputy(memberId: string | string[], groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/admins/remove</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.removeGroupDeputy(memberId: string | string[], groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.removeGroupDeputy(memberId: string | string[], groupId: string)
+```
 
 ### Tham số
 
@@ -1267,11 +1472,16 @@ export type RemoveGroupDeputyResponse = "";
 
 ## `removeUserFromGroup`
 
-Remove user from existing group
+Mời ra khỏi nhóm (Kick) một hoặc nhiều thành viên.
 
-- **Endpoint**: `POST /api/group/kickout`
-- **Domain call**: `api.group.removeUserFromGroup(memberId: string | string[], groupId: string)`
-- **Alias phẳng**: `api.removeUserFromGroup(memberId: string | string[], groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/kickout</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.removeUserFromGroup(memberId: string | string[], groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.removeUserFromGroup(memberId: string | string[], groupId: string)
+```
 
 ### Tham số
 
@@ -1290,11 +1500,16 @@ export type RemoveUserFromGroupResponse = {
 
 ## `reviewPendingMemberRequest`
 
-Review pending member(s) request
+Phê duyệt (Chấp nhận hoặc Từ chối) yêu cầu xin tham gia nhóm của thành viên mới.
 
-- **Endpoint**: `GET /api/group/pending-mems/review`
-- **Domain call**: `api.group.reviewPendingMemberRequest(payload: ReviewPendingMemberRequestPayload, groupId: string)`
-- **Alias phẳng**: `api.reviewPendingMemberRequest(payload: ReviewPendingMemberRequestPayload, groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/pending-mems/review</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.reviewPendingMemberRequest(payload: ReviewPendingMemberRequestPayload, groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.reviewPendingMemberRequest(payload: ReviewPendingMemberRequestPayload, groupId: string)
+```
 
 ### Tham số
 
@@ -1325,11 +1540,16 @@ export type ReviewPendingMemberRequestResponse = {
 
 ## `updateGroupSettings`
 
-Update group settings
+Cập nhật các thiết lập quyền hạn của nhóm (ẩn thành viên lockViewMember, duyệt thành viên joinAppr, khóa nhắn tin lockSendMsg...).
 
-- **Endpoint**: `GET /api/group/setting/update`
-- **Domain call**: `api.group.updateGroupSettings(options: UpdateGroupSettingsOptions, groupId: string)`
-- **Alias phẳng**: `api.updateGroupSettings(options: UpdateGroupSettingsOptions, groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/setting/update</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.updateGroupSettings(options: UpdateGroupSettingsOptions, groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateGroupSettings(options: UpdateGroupSettingsOptions, groupId: string)
+```
 
 ### Tham số
 
@@ -1390,11 +1610,16 @@ export type UpdateGroupSettingsResponse = "";
 
 ## `upgradeGroupToCommunity`
 
-Upgrade group to community
+Nâng cấp nhóm thường lên Cộng đồng (Community - tối đa 1000 thành viên).
 
-- **Endpoint**: `GET /api/group/upgrade/community`
-- **Domain call**: `api.group.upgradeGroupToCommunity(groupId: string)`
-- **Alias phẳng**: `api.upgradeGroupToCommunity(groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/upgrade/community</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.upgradeGroupToCommunity(groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.upgradeGroupToCommunity(groupId: string)
+```
 
 ### Tham số
 

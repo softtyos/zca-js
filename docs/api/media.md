@@ -1,6 +1,11 @@
-# Kho lưu trữ & Chuyển giọng nói (Media)
+---
+title: "Kho lưu trữ & Chuyển giọng nói (Media) (api.media) - 8 APIs"
+description: "Truy vấn Kho Lưu Trữ Ảnh/Video, File, Link của nhóm và Cloud của tôi (Send2Me), cùng chuyển đổi Voice-to-Text AI. Tra cứu chi tiết 8 phương thức thuộc phân hệ api.media trong bộ SDK @softtynet/zca-js."
+---
 
-> Namespace: `api.media` (hoặc gọi trực tiếp `api.<methodName>`) — **8 API**
+# 🖼️ Kho lưu trữ & Chuyển giọng nói (Media)
+
+> Namespace: `api.media` (hoặc gọi trực tiếp `api.<methodName>`) — **8 API nguyên bản**
 
 Truy vấn Kho Lưu Trữ Ảnh/Video, File, Link của nhóm và Cloud của tôi (Send2Me), cùng chuyển đổi Voice-to-Text AI.
 
@@ -14,7 +19,7 @@ Truy vấn Kho Lưu Trữ Ảnh/Video, File, Link của nhóm và Cloud của t�
 | [`getPersonalMediaPreview`](#getpersonalmediapreview) | `POST` | `/api/media/oneone/preview` | Lấy danh sách xem trước nhanh Kho Lưu Trữ trong Cloud của tôi (Send2Me) (command 12221) |
 | [`removeConversationMedia`](#removeconversationmedia) | `POST` | `/api/mediastore/remove` | Xóa mục Ảnh/Video, File hoặc Link khỏi Kho Lưu Trữ của nhóm (command 11842) |
 | [`removePersonalMedia`](#removepersonalmedia) | `POST` | `/api/media/oneone/remove` | Xóa mục lưu trữ trong Kho Lưu Trữ Cloud của tôi (Send2Me) (command 12222) |
-| [`uploadAttachment`](#uploadattachment) | `POST` | `N/A` | Upload an attachment to a thread |
+| [`uploadAttachment`](#uploadattachment) | `POST` | `Internal` | Tải tệp đính kèm (Ảnh, Video, File) lên máy chủ Zalo để lấy thông tin fileUrl / fileId trước khi gửi. |
 | [`voiceToText`](#voicetotext) | `POST` | `/api/aifeatures/voice2text` | Gửi yêu cầu chuyển đổi tin nhắn thoại sang văn bản bằng Zalo AI (command 13394). Kết quả văn bản sau khi xử lý xong sẽ được đẩy về qua sự kiện `api.listener.on("voice2text_event", ...)` khớp với `req_id`. |
 
 ---
@@ -23,9 +28,14 @@ Truy vấn Kho Lưu Trữ Ảnh/Video, File, Link của nhóm và Cloud của t�
 
 Lấy danh sách Kho Lưu Trữ (Ảnh/Video `"media"`, File `"file"`, hoặc Link `"link"`) trong hội thoại nhóm (command 11841)
 
-- **Endpoint**: `GET /api/mediastore/list`
-- **Domain call**: `api.media.getConversationMedia(options: GetConversationMediaOptions)`
-- **Alias phẳng**: `api.getConversationMedia(options: GetConversationMediaOptions)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/mediastore/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.media.getConversationMedia(options: GetConversationMediaOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getConversationMedia(options: GetConversationMediaOptions)
+```
 
 ### Tham số
 
@@ -80,9 +90,14 @@ export type GetConversationMediaResponse = {
 
 Lấy danh sách xem trước nhanh Kho Lưu Trữ (Ảnh/Video, File, Link) của nhóm (command 11843)
 
-- **Endpoint**: `POST /api/mediastore/preview`
-- **Domain call**: `api.media.getMediaStorePreview(groupId: string, limit: number = 50)`
-- **Alias phẳng**: `api.getMediaStorePreview(groupId: string, limit: number = 50)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/mediastore/preview</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.media.getMediaStorePreview(groupId: string, limit: number = 50)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getMediaStorePreview(groupId: string, limit: number = 50)
+```
 
 ### Tham số
 
@@ -101,9 +116,14 @@ export type GetMediaStorePreviewResponse = MediaStoreItem[];
 
 Lấy danh sách Kho Lưu Trữ Ảnh/Video (`"media"`), File (`"file"`), hoặc Link (`"link"`) trong Cloud của tôi (Send2Me) (command 12220)
 
-- **Endpoint**: `GET /api/media/oneone/list`
-- **Domain call**: `api.media.getPersonalMedia(options: GetPersonalMediaOptions = {})`
-- **Alias phẳng**: `api.getPersonalMedia(options: GetPersonalMediaOptions = {})`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/media/oneone/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.media.getPersonalMedia(options: GetPersonalMediaOptions = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.getPersonalMedia(options: GetPersonalMediaOptions = {})
+```
 
 ### Tham số
 
@@ -126,9 +146,14 @@ export type GetPersonalMediaOptions = {
 
 Lấy danh sách xem trước nhanh Kho Lưu Trữ trong Cloud của tôi (Send2Me) (command 12221)
 
-- **Endpoint**: `POST /api/media/oneone/preview`
-- **Domain call**: `api.media.getPersonalMediaPreview(limit: number = 50)`
-- **Alias phẳng**: `api.getPersonalMediaPreview(limit: number = 50)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/media/oneone/preview</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.media.getPersonalMediaPreview(limit: number = 50)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getPersonalMediaPreview(limit: number = 50)
+```
 
 ### Tham số
 
@@ -146,9 +171,14 @@ export type GetPersonalMediaPreviewResponse = MediaStoreItem[];
 
 Xóa mục Ảnh/Video, File hoặc Link khỏi Kho Lưu Trữ của nhóm (command 11842)
 
-- **Endpoint**: `POST /api/mediastore/remove`
-- **Domain call**: `api.media.removeConversationMedia(options: RemoveConversationMediaOptions)`
-- **Alias phẳng**: `api.removeConversationMedia(options: RemoveConversationMediaOptions)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/mediastore/remove</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.media.removeConversationMedia(options: RemoveConversationMediaOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.removeConversationMedia(options: RemoveConversationMediaOptions)
+```
 
 ### Tham số
 
@@ -172,9 +202,14 @@ export type RemoveConversationMediaResponse = unknown;
 
 Xóa mục lưu trữ trong Kho Lưu Trữ Cloud của tôi (Send2Me) (command 12222)
 
-- **Endpoint**: `POST /api/media/oneone/remove`
-- **Domain call**: `api.media.removePersonalMedia(options: RemovePersonalMediaOptions)`
-- **Alias phẳng**: `api.removePersonalMedia(options: RemovePersonalMediaOptions)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/media/oneone/remove</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.media.removePersonalMedia(options: RemovePersonalMediaOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.removePersonalMedia(options: RemovePersonalMediaOptions)
+```
 
 ### Tham số
 
@@ -197,10 +232,16 @@ export type RemovePersonalMediaResponse = {
 
 ## `uploadAttachment`
 
-Upload an attachment to a thread
+Tải tệp đính kèm (Ảnh, Video, File) lên máy chủ Zalo để lấy thông tin fileUrl / fileId trước khi gửi.
 
-- **Domain call**: `api.media.uploadAttachment(sources: AttachmentSource | AttachmentSource[], threadId: string, type: ThreadType = ThreadType.User,)`
-- **Alias phẳng**: `api.uploadAttachment(sources: AttachmentSource | AttachmentSource[], threadId: string, type: ThreadType = ThreadType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.media.uploadAttachment(sources: AttachmentSource | AttachmentSource[], threadId: string, type: ThreadType = ThreadType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.uploadAttachment(sources: AttachmentSource | AttachmentSource[], threadId: string, type: ThreadType = ThreadType.User,)
+```
 
 ### Tham số
 
@@ -329,9 +370,14 @@ type AttachmentData =
 
 Gửi yêu cầu chuyển đổi tin nhắn thoại sang văn bản bằng Zalo AI (command 13394). Kết quả văn bản sau khi xử lý xong sẽ được đẩy về qua sự kiện `api.listener.on("voice2text_event", ...)` khớp với `req_id`.
 
-- **Endpoint**: `POST /api/aifeatures/voice2text`
-- **Domain call**: `api.media.voiceToText(voiceUrl: string)`
-- **Alias phẳng**: `api.voiceToText(voiceUrl: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/aifeatures/voice2text</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.media.voiceToText(voiceUrl: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.voiceToText(voiceUrl: string)
+```
 
 ### Tham số
 

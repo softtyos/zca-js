@@ -22,6 +22,7 @@ import {
     generateRSAKeyPair,
 } from "../src/index.js";
 import { createContext, type ContextSession } from "../src/context.js";
+import { decodeEventData } from "../src/crypto/ws-cipher.js";
 import { decodeAES, encodeAES, rsaDecryptPkcs1Manual } from "../src/utils.js";
 
 /**
@@ -86,7 +87,7 @@ async function encryptWsPayloadAesGcm(cipherKeyB64: string, dataObj: unknown): P
     const key = await crypto.subtle.importKey(
         "raw",
         Buffer.from(cipherKeyB64, "base64"),
-        { name: "AES-GCM", iv, tagLength: 128, additionalData: aad },
+        { name: "AES-GCM" },
         false,
         ["encrypt"],
     );
@@ -1164,8 +1165,8 @@ async function runVerificationSuite() {
 
     const legacyHistoryRes = await api.group.getGroupHistoryLegacy("g888999000", 20);
     assert.ok(capturedRequests.some((r) => r.url.includes("/api/group/history")), "Phải gọi đúng /api/group/history");
-    assert.equal(legacyHistoryRes.groupMsgs.length, 1);
-    assert.equal(legacyHistoryRes.groupMsgs[0].data.uidFrom, "3000000000000000005");
+    assert.equal(legacyHistoryRes.groupMsgs?.length, 1);
+    assert.equal(legacyHistoryRes.groupMsgs?.[0]?.data.uidFrom, "3000000000000000005");
 
     // 9.4 Kiểm tra getGroupChatHistory phân trang với cursor và useOldEndpoint (/api/cm/getoldv2)
     const recentChatRes = await api.group.getGroupChatHistory("g888999000", { count: 50, cursor: 0 });
@@ -1237,8 +1238,25 @@ async function runVerificationSuite() {
     const removePersonalRes = await api.media.removePersonalMedia({ mediaType: "media", mediaId: 101 });
     assert.deepEqual(removePersonalRes.removedIds, [101]);
 
+    // 9.6 Kiểm tra exportSession, requestTimeout mặc định & decodeEventData 64-bit string (ws-cipher)
+    const exportedSession = api.auth.exportSession();
+    assert.equal(exportedSession.uid, TEST_UID);
+    assert.equal(exportedSession.imei, TEST_IMEI);
+    assert.equal(exportedSession.language, "vi");
+    assert.ok(Array.isArray(exportedSession.cookie), "cookie xuất ra phải là mảng SerializedCookie[]");
+    assert.equal(ctx.options.requestTimeout, 30000, "requestTimeout mặc định phải là 30000ms");
+
+    const wsEventDecoded = await decodeEventData({
+        encrypt: 0,
+        data: '{"owner_id":4829384719283746192,"big_num":9223372036854775807}',
+    });
+    assert.equal(typeof wsEventDecoded.owner_id, "string");
+    assert.equal(wsEventDecoded.owner_id, "4829384719283746192");
+    assert.equal(typeof wsEventDecoded.big_num, "string");
+    assert.equal(wsEventDecoded.big_num, "9223372036854775807");
+
     console.log(
-        "✅ [9/9] preParseJsonIds 64-bit & 19 API nguyên bản mới (Group, Cloud Message, Chat, Friend, Personal Media Store): Chính xác 100%.",
+        "✅ [9/9] preParseJsonIds 64-bit, ws-cipher storeAsString, exportSession, requestTimeout & 20 API nguyên bản mới: Chính xác 100%.",
     );
     console.log("\n🎉 TẤT CẢ 9 HẠNG MỤC KIỂM ĐỊNH ĐỀU VƯỢT QUA 100%!");
 }

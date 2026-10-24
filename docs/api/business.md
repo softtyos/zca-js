@@ -1,6 +1,11 @@
-# Zalo Business, Nhãn & Danh mục (Business)
+---
+title: "Zalo Business, Nhãn & Danh mục (Business) (api.business) - 26 APIs"
+description: "Quản lý nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng. Tra cứu chi tiết 26 phương thức thuộc phân hệ api.business trong bộ SDK @softtynet/zca-js."
+---
 
-> Namespace: `api.business` (hoặc gọi trực tiếp `api.<methodName>`) — **26 API**
+# 💼 Zalo Business, Nhãn & Danh mục (Business)
+
+> Namespace: `api.business` (hoặc gọi trực tiếp `api.<methodName>`) — **26 API nguyên bản**
 
 Quản lý nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng.
 
@@ -8,42 +13,47 @@ Quản lý nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả
 
 | Phương thức | HTTP | Endpoint Zalo | Mô tả |
 | :--- | :---: | :--- | :--- |
-| [`addQuickMessage`](#addquickmessage) | `GET` | `/api/quickmessage/create` | Add quick message |
-| [`createAutoReply`](#createautoreply) | `POST` | `/api/autoreply/create` | Create auto reply |
-| [`createBankAccount`](#createbankaccount) | `POST` | `/api/transfer/create` | Create bank account - `-263` - Bank account already exists - `810` - Internal Zalo error, might be invalid input |
-| [`createCatalog`](#createcatalog) | `POST` | `/api/prodcatalog/catalog/create` | Create catalog? |
-| [`createProductCatalog`](#createproductcatalog) | `POST` | `/api/prodcatalog/product/create` | Create product catalog? |
-| [`deleteAutoReply`](#deleteautoreply) | `POST` | `/api/autoreply/delete` | Delete auto reply |
-| [`deleteBankAccount`](#deletebankaccount) | `POST` | `/api/transfer/delete` | Delete bank account - `114` - Invalid params - `-265` - Bank account not exists - `810` Internal Zalo error, maybe you're trying to delete a default bank account |
-| [`deleteCatalog`](#deletecatalog) | `POST` | `/api/prodcatalog/catalog/delete` | Delete catalog? |
-| [`deleteProductCatalog`](#deleteproductcatalog) | `POST` | `/api/prodcatalog/product/mdelete` | Delete product catalog? |
-| [`getAutoReplyList`](#getautoreplylist) | `GET` | `/api/autoreply/list` | Get auto reply list |
-| [`getBizAccount`](#getbizaccount) | `POST` | `/api/social/friend/get-bizacc` | Get biz account |
-| [`getCatalogList`](#getcataloglist) | `POST` | `/api/prodcatalog/catalog/list` | Get catalog list? |
-| [`getLabels`](#getlabels) | `GET` | `/api/convlabel/get` | Get all labels |
-| [`getListBank`](#getlistbank) | `GET` | `/api/transfer/conf` | Get list bank |
-| [`getListBankAccount`](#getlistbankaccount) | `GET` | `/api/transfer/list` | Get list bank accounts - `114` - Invalid params |
-| [`getProductCatalogList`](#getproductcataloglist) | `POST` | `/api/prodcatalog/product/list` | Get product catalog list? |
-| [`getQuickMessageList`](#getquickmessagelist) | `GET` | `/api/quickmessage/list` | Get quick message list |
-| [`registerCatalog`](#registercatalog) | `POST` | `/api/prodcatalog/catalog/register` | Register catalog? |
-| [`removeQuickMessage`](#removequickmessage) | `GET` | `/api/quickmessage/delete` | Remove quick message |
-| [`updateAutoReply`](#updateautoreply) | `POST` | `/api/autoreply/update` | Update auto reply |
-| [`updateBankAccount`](#updatebankaccount) | `POST` | `/api/transfer/update` | Update bank account |
-| [`updateCatalog`](#updatecatalog) | `POST` | `/api/prodcatalog/catalog/update` | Update catalog? |
-| [`updateLabels`](#updatelabels) | `POST` | `/api/convlabel/update` | Update labels |
-| [`updateProductCatalog`](#updateproductcatalog) | `POST` | `/api/prodcatalog/product/update` | Update product catalog? |
-| [`updateQuickMessage`](#updatequickmessage) | `GET` | `/api/quickmessage/update` | Update quick message |
-| [`uploadProductPhoto`](#uploadproductphoto) | `POST` | `/api/product/upload/photo` | Upload product photo for api quick message, product catalog or custom local storage |
+| [`addQuickMessage`](#addquickmessage) | `GET` | `/api/quickmessage/create` | Thêm mẫu Tin nhắn nhanh (Quick Message) mới cho tài khoản Zalo Business. |
+| [`createAutoReply`](#createautoreply) | `POST` | `/api/autoreply/create` | Tạo kịch bản Trả lời tự động (Auto Reply) theo khung giờ cho Zalo Business. |
+| [`createBankAccount`](#createbankaccount) | `POST` | `/api/transfer/create` | Thêm thông tin tài khoản ngân hàng mới vào danh bạ ngân hàng. |
+| [`createCatalog`](#createcatalog) | `POST` | `/api/prodcatalog/catalog/create` | Tạo Danh mục sản phẩm (Catalog) mới cho Zalo Business. |
+| [`createProductCatalog`](#createproductcatalog) | `POST` | `/api/prodcatalog/product/create` | Thêm sản phẩm mới vào Danh mục sản phẩm (Product Catalog). |
+| [`deleteAutoReply`](#deleteautoreply) | `POST` | `/api/autoreply/delete` | Xóa một kịch bản Trả lời tự động. |
+| [`deleteBankAccount`](#deletebankaccount) | `POST` | `/api/transfer/delete` | Xóa một tài khoản ngân hàng đã lưu. |
+| [`deleteCatalog`](#deletecatalog) | `POST` | `/api/prodcatalog/catalog/delete` | Xóa một Danh mục sản phẩm (Catalog). |
+| [`deleteProductCatalog`](#deleteproductcatalog) | `POST` | `/api/prodcatalog/product/mdelete` | Xóa một hoặc nhiều sản phẩm khỏi Danh mục sản phẩm. |
+| [`getAutoReplyList`](#getautoreplylist) | `GET` | `/api/autoreply/list` | Lấy danh sách các kịch bản Trả lời tự động của tài khoản. |
+| [`getBizAccount`](#getbizaccount) | `POST` | `/api/social/friend/get-bizacc` | Lấy thông tin cấu hình tài khoản Zalo Business (ZBusiness). |
+| [`getCatalogList`](#getcataloglist) | `POST` | `/api/prodcatalog/catalog/list` | Lấy danh sách các Danh mục sản phẩm (Catalogs) của tài khoản. |
+| [`getLabels`](#getlabels) | `GET` | `/api/convlabel/get` | Lấy toàn bộ danh sách Nhãn phân loại hội thoại (Conversation Labels) và các hội thoại được gắn nhãn. |
+| [`getListBank`](#getlistbank) | `GET` | `/api/transfer/conf` | Lấy danh sách mã ngân hàng (BIN / NAPAS) được Zalo hỗ trợ. |
+| [`getListBankAccount`](#getlistbankaccount) | `GET` | `/api/transfer/list` | Lấy danh sách các tài khoản ngân hàng đã lưu của người dùng. |
+| [`getProductCatalogList`](#getproductcataloglist) | `POST` | `/api/prodcatalog/product/list` | Lấy danh sách các sản phẩm nằm trong một Danh mục sản phẩm (Catalog). |
+| [`getQuickMessageList`](#getquickmessagelist) | `GET` | `/api/quickmessage/list` | Lấy danh sách các mẫu Tin nhắn nhanh (Quick Messages) đã tạo. |
+| [`registerCatalog`](#registercatalog) | `POST` | `/api/prodcatalog/catalog/register` | Đăng ký kích hoạt tính năng Danh mục sản phẩm (Catalog) cho tài khoản. |
+| [`removeQuickMessage`](#removequickmessage) | `GET` | `/api/quickmessage/delete` | Xóa một hoặc nhiều mẫu Tin nhắn nhanh. |
+| [`updateAutoReply`](#updateautoreply) | `POST` | `/api/autoreply/update` | Cập nhật nội dung và thời gian hoạt động của kịch bản Trả lời tự động. |
+| [`updateBankAccount`](#updatebankaccount) | `POST` | `/api/transfer/update` | Cập nhật thông tin tài khoản ngân hàng đã lưu. |
+| [`updateCatalog`](#updatecatalog) | `POST` | `/api/prodcatalog/catalog/update` | Cập nhật tên hoặc ảnh của Danh mục sản phẩm. |
+| [`updateLabels`](#updatelabels) | `POST` | `/api/convlabel/update` | Cập nhật danh sách Nhãn phân loại (Labels) và gán nhãn cho các cuộc trò chuyện. |
+| [`updateProductCatalog`](#updateproductcatalog) | `POST` | `/api/prodcatalog/product/update` | Cập nhật thông tin chi tiết, giá bán và hình ảnh của sản phẩm trong Danh mục. |
+| [`updateQuickMessage`](#updatequickmessage) | `GET` | `/api/quickmessage/update` | Chỉnh sửa phím tắt và nội dung của mẫu Tin nhắn nhanh. |
+| [`uploadProductPhoto`](#uploadproductphoto) | `POST` | `/api/product/upload/photo` | Tải ảnh sản phẩm lên máy chủ Zalo phục vụ cho Product Catalog hoặc Quick Message. |
 
 ---
 
 ## `addQuickMessage`
 
-Add quick message
+Thêm mẫu Tin nhắn nhanh (Quick Message) mới cho tài khoản Zalo Business.
 
-- **Endpoint**: `GET /api/quickmessage/create`
-- **Domain call**: `api.business.addQuickMessage(addPayload: AddQuickMessagePayload)`
-- **Alias phẳng**: `api.addQuickMessage(addPayload: AddQuickMessagePayload)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/quickmessage/create</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.addQuickMessage(addPayload: AddQuickMessagePayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.addQuickMessage(addPayload: AddQuickMessagePayload)
+```
 
 ### Tham số
 
@@ -68,11 +78,16 @@ export type AddQuickMessageResponse = {
 
 ## `createAutoReply`
 
-Create auto reply
+Tạo kịch bản Trả lời tự động (Auto Reply) theo khung giờ cho Zalo Business.
 
-- **Endpoint**: `POST /api/autoreply/create`
-- **Domain call**: `api.business.createAutoReply(payload: CreateAutoReplyPayload)`
-- **Alias phẳng**: `api.createAutoReply(payload: CreateAutoReplyPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/autoreply/create</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.createAutoReply(payload: CreateAutoReplyPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.createAutoReply(payload: CreateAutoReplyPayload)
+```
 
 ### Tham số
 
@@ -100,11 +115,16 @@ export type CreateAutoReplyResponse = {
 
 ## `createBankAccount`
 
-Create bank account - `-263` - Bank account already exists - `810` - Internal Zalo error, might be invalid input
+Thêm thông tin tài khoản ngân hàng mới vào danh bạ ngân hàng.
 
-- **Endpoint**: `POST /api/transfer/create`
-- **Domain call**: `api.business.createBankAccount(payload: CreateBankAccountPayload)`
-- **Alias phẳng**: `api.createBankAccount(payload: CreateBankAccountPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/transfer/create</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.createBankAccount(payload: CreateBankAccountPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.createBankAccount(payload: CreateBankAccountPayload)
+```
 
 ### Tham số
 
@@ -126,11 +146,16 @@ export type CreateBankAccountResponse = BankAccount;
 
 ## `createCatalog`
 
-Create catalog?
+Tạo Danh mục sản phẩm (Catalog) mới cho Zalo Business.
 
-- **Endpoint**: `POST /api/prodcatalog/catalog/create`
-- **Domain call**: `api.business.createCatalog(catalogName: string)`
-- **Alias phẳng**: `api.createCatalog(catalogName: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/create</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.createCatalog(catalogName: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.createCatalog(catalogName: string)
+```
 
 ### Tham số
 
@@ -150,11 +175,16 @@ export type CreateCatalogResponse = {
 
 ## `createProductCatalog`
 
-Create product catalog?
+Thêm sản phẩm mới vào Danh mục sản phẩm (Product Catalog).
 
-- **Endpoint**: `POST /api/prodcatalog/product/create`
-- **Domain call**: `api.business.createProductCatalog(payload: CreateProductCatalogPayload)`
-- **Alias phẳng**: `api.createProductCatalog(payload: CreateProductCatalogPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/product/create</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.createProductCatalog(payload: CreateProductCatalogPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.createProductCatalog(payload: CreateProductCatalogPayload)
+```
 
 ### Tham số
 
@@ -193,11 +223,16 @@ export type CreateProductCatalogResponse = {
 
 ## `deleteAutoReply`
 
-Delete auto reply
+Xóa một kịch bản Trả lời tự động.
 
-- **Endpoint**: `POST /api/autoreply/delete`
-- **Domain call**: `api.business.deleteAutoReply(id: number)`
-- **Alias phẳng**: `api.deleteAutoReply(id: number)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/autoreply/delete</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.deleteAutoReply(id: number)
+// Hoặc gọi phẳng (Flat Alias):
+await api.deleteAutoReply(id: number)
+```
 
 ### Tham số
 
@@ -216,11 +251,16 @@ export type DeleteAutoReplyResponse = {
 
 ## `deleteBankAccount`
 
-Delete bank account - `114` - Invalid params - `-265` - Bank account not exists - `810` Internal Zalo error, maybe you're trying to delete a default bank account
+Xóa một tài khoản ngân hàng đã lưu.
 
-- **Endpoint**: `POST /api/transfer/delete`
-- **Domain call**: `api.business.deleteBankAccount(payload: DeleteBankAccountPayload)`
-- **Alias phẳng**: `api.deleteBankAccount(payload: DeleteBankAccountPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/transfer/delete</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.deleteBankAccount(payload: DeleteBankAccountPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.deleteBankAccount(payload: DeleteBankAccountPayload)
+```
 
 ### Tham số
 
@@ -245,11 +285,16 @@ export type DeleteBankAccountResponse = {
 
 ## `deleteCatalog`
 
-Delete catalog?
+Xóa một Danh mục sản phẩm (Catalog).
 
-- **Endpoint**: `POST /api/prodcatalog/catalog/delete`
-- **Domain call**: `api.business.deleteCatalog(catalogId: string)`
-- **Alias phẳng**: `api.deleteCatalog(catalogId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/delete</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.deleteCatalog(catalogId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.deleteCatalog(catalogId: string)
+```
 
 ### Tham số
 
@@ -265,11 +310,16 @@ export type DeleteCatalogResponse = "";
 
 ## `deleteProductCatalog`
 
-Delete product catalog?
+Xóa một hoặc nhiều sản phẩm khỏi Danh mục sản phẩm.
 
-- **Endpoint**: `POST /api/prodcatalog/product/mdelete`
-- **Domain call**: `api.business.deleteProductCatalog(payload: DeleteProductCatalogPayload)`
-- **Alias phẳng**: `api.deleteProductCatalog(payload: DeleteProductCatalogPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/product/mdelete</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.deleteProductCatalog(payload: DeleteProductCatalogPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.deleteProductCatalog(payload: DeleteProductCatalogPayload)
+```
 
 ### Tham số
 
@@ -294,11 +344,16 @@ export type DeleteProductCatalogResponse = {
 
 ## `getAutoReplyList`
 
-Get auto reply list
+Lấy danh sách các kịch bản Trả lời tự động của tài khoản.
 
-- **Endpoint**: `GET /api/autoreply/list`
-- **Domain call**: `api.business.getAutoReplyList()`
-- **Alias phẳng**: `api.getAutoReplyList()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/autoreply/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.getAutoReplyList()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getAutoReplyList()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -313,11 +368,16 @@ export type GetAutoReplyListResponse = {
 
 ## `getBizAccount`
 
-Get biz account
+Lấy thông tin cấu hình tài khoản Zalo Business (ZBusiness).
 
-- **Endpoint**: `POST /api/social/friend/get-bizacc`
-- **Domain call**: `api.business.getBizAccount(friendId: string)`
-- **Alias phẳng**: `api.getBizAccount(friendId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/friend/get-bizacc</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.getBizAccount(friendId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getBizAccount(friendId: string)
+```
 
 ### Tham số
 
@@ -354,11 +414,16 @@ export type GetBizAccountResponse = {
 
 ## `getCatalogList`
 
-Get catalog list?
+Lấy danh sách các Danh mục sản phẩm (Catalogs) của tài khoản.
 
-- **Endpoint**: `POST /api/prodcatalog/catalog/list`
-- **Domain call**: `api.business.getCatalogList(payload?: GetCatalogListPayload)`
-- **Alias phẳng**: `api.getCatalogList(payload?: GetCatalogListPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.getCatalogList(payload?: GetCatalogListPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getCatalogList(payload?: GetCatalogListPayload)
+```
 
 ### Tham số
 
@@ -390,11 +455,16 @@ export type GetCatalogListResponse = {
 
 ## `getLabels`
 
-Get all labels
+Lấy toàn bộ danh sách Nhãn phân loại hội thoại (Conversation Labels) và các hội thoại được gắn nhãn.
 
-- **Endpoint**: `GET /api/convlabel/get`
-- **Domain call**: `api.business.getLabels()`
-- **Alias phẳng**: `api.getLabels()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/convlabel/get</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.getLabels()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getLabels()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -414,11 +484,16 @@ type RawResponseType = Omit<GetLabelsResponse, "labelData"> & {
 
 ## `getListBank`
 
-Get list bank
+Lấy danh sách mã ngân hàng (BIN / NAPAS) được Zalo hỗ trợ.
 
-- **Endpoint**: `GET /api/transfer/conf`
-- **Domain call**: `api.business.getListBank()`
-- **Alias phẳng**: `api.getListBank()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/transfer/conf</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.getListBank()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getListBank()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -432,11 +507,16 @@ export type GetListBankResponse = {
 
 ## `getListBankAccount`
 
-Get list bank accounts - `114` - Invalid params
+Lấy danh sách các tài khoản ngân hàng đã lưu của người dùng.
 
-- **Endpoint**: `GET /api/transfer/list`
-- **Domain call**: `api.business.getListBankAccount(page: number = 0, limit: number = 20)`
-- **Alias phẳng**: `api.getListBankAccount(page: number = 0, limit: number = 20)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/transfer/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.getListBankAccount(page: number = 0, limit: number = 20)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getListBankAccount(page: number = 0, limit: number = 20)
+```
 
 ### Tham số
 
@@ -457,11 +537,16 @@ export type GetListBankAccountResponse = {
 
 ## `getProductCatalogList`
 
-Get product catalog list?
+Lấy danh sách các sản phẩm nằm trong một Danh mục sản phẩm (Catalog).
 
-- **Endpoint**: `POST /api/prodcatalog/product/list`
-- **Domain call**: `api.business.getProductCatalogList(payload: GetProductCatalogListPayload)`
-- **Alias phẳng**: `api.getProductCatalogList(payload: GetProductCatalogListPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/product/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.getProductCatalogList(payload: GetProductCatalogListPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getProductCatalogList(payload: GetProductCatalogListPayload)
+```
 
 ### Tham số
 
@@ -495,11 +580,16 @@ export type GetProductCatalogListResponse = {
 
 ## `getQuickMessageList`
 
-Get quick message list
+Lấy danh sách các mẫu Tin nhắn nhanh (Quick Messages) đã tạo.
 
-- **Endpoint**: `GET /api/quickmessage/list`
-- **Domain call**: `api.business.getQuickMessageList()`
-- **Alias phẳng**: `api.getQuickMessageList()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/quickmessage/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.getQuickMessageList()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getQuickMessageList()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -515,11 +605,16 @@ export type GetQuickMessageListResponse = {
 
 ## `registerCatalog`
 
-Register catalog?
+Đăng ký kích hoạt tính năng Danh mục sản phẩm (Catalog) cho tài khoản.
 
-- **Endpoint**: `POST /api/prodcatalog/catalog/register`
-- **Domain call**: `api.business.registerCatalog(enable: boolean)`
-- **Alias phẳng**: `api.registerCatalog(enable: boolean)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/register</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.registerCatalog(enable: boolean)
+// Hoặc gọi phẳng (Flat Alias):
+await api.registerCatalog(enable: boolean)
+```
 
 ### Tham số
 
@@ -535,11 +630,16 @@ export type RegisterCatalogResponse = "";
 
 ## `removeQuickMessage`
 
-Remove quick message
+Xóa một hoặc nhiều mẫu Tin nhắn nhanh.
 
-- **Endpoint**: `GET /api/quickmessage/delete`
-- **Domain call**: `api.business.removeQuickMessage(itemIds: number | number[])`
-- **Alias phẳng**: `api.removeQuickMessage(itemIds: number | number[])`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/quickmessage/delete</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.removeQuickMessage(itemIds: number | number[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.removeQuickMessage(itemIds: number | number[])
+```
 
 ### Tham số
 
@@ -558,11 +658,16 @@ export type RemoveQuickMessageResponse = {
 
 ## `updateAutoReply`
 
-Update auto reply
+Cập nhật nội dung và thời gian hoạt động của kịch bản Trả lời tự động.
 
-- **Endpoint**: `POST /api/autoreply/update`
-- **Domain call**: `api.business.updateAutoReply(payload: UpdateAutoReplyPayload)`
-- **Alias phẳng**: `api.updateAutoReply(payload: UpdateAutoReplyPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/autoreply/update</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.updateAutoReply(payload: UpdateAutoReplyPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateAutoReply(payload: UpdateAutoReplyPayload)
+```
 
 ### Tham số
 
@@ -591,11 +696,16 @@ export type UpdateAutoReplyResponse = {
 
 ## `updateBankAccount`
 
-Update bank account
+Cập nhật thông tin tài khoản ngân hàng đã lưu.
 
-- **Endpoint**: `POST /api/transfer/update`
-- **Domain call**: `api.business.updateBankAccount(payload: UpdateBankAccountPayload)`
-- **Alias phẳng**: `api.updateBankAccount(payload: UpdateBankAccountPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/transfer/update</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.updateBankAccount(payload: UpdateBankAccountPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateBankAccount(payload: UpdateBankAccountPayload)
+```
 
 ### Tham số
 
@@ -618,11 +728,16 @@ export type UpdateBankAccountResponse = BankAccount;
 
 ## `updateCatalog`
 
-Update catalog?
+Cập nhật tên hoặc ảnh của Danh mục sản phẩm.
 
-- **Endpoint**: `POST /api/prodcatalog/catalog/update`
-- **Domain call**: `api.business.updateCatalog(payload: UpdateCatalogPayload)`
-- **Alias phẳng**: `api.updateCatalog(payload: UpdateCatalogPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/update</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.updateCatalog(payload: UpdateCatalogPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateCatalog(payload: UpdateCatalogPayload)
+```
 
 ### Tham số
 
@@ -647,11 +762,16 @@ export type UpdateCatalogResponse = {
 
 ## `updateLabels`
 
-Update labels
+Cập nhật danh sách Nhãn phân loại (Labels) và gán nhãn cho các cuộc trò chuyện.
 
-- **Endpoint**: `POST /api/convlabel/update`
-- **Domain call**: `api.business.updateLabels(payload: UpdateLabelsPayload)`
-- **Alias phẳng**: `api.updateLabels(payload: UpdateLabelsPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/convlabel/update</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.updateLabels(payload: UpdateLabelsPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateLabels(payload: UpdateLabelsPayload)
+```
 
 ### Tham số
 
@@ -676,11 +796,16 @@ export type UpdateLabelsResponse = {
 
 ## `updateProductCatalog`
 
-Update product catalog?
+Cập nhật thông tin chi tiết, giá bán và hình ảnh của sản phẩm trong Danh mục.
 
-- **Endpoint**: `POST /api/prodcatalog/product/update`
-- **Domain call**: `api.business.updateProductCatalog(payload: UpdateProductCatalogPayload)`
-- **Alias phẳng**: `api.updateProductCatalog(payload: UpdateProductCatalogPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/product/update</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.updateProductCatalog(payload: UpdateProductCatalogPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateProductCatalog(payload: UpdateProductCatalogPayload)
+```
 
 ### Tham số
 
@@ -721,11 +846,16 @@ export type UpdateProductCatalogResponse = {
 
 ## `updateQuickMessage`
 
-Update quick message
+Chỉnh sửa phím tắt và nội dung của mẫu Tin nhắn nhanh.
 
-- **Endpoint**: `GET /api/quickmessage/update`
-- **Domain call**: `api.business.updateQuickMessage(updatePayload: UpdateQuickMessagePayload, itemId: number)`
-- **Alias phẳng**: `api.updateQuickMessage(updatePayload: UpdateQuickMessagePayload, itemId: number)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/quickmessage/update</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.updateQuickMessage(updatePayload: UpdateQuickMessagePayload, itemId: number)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateQuickMessage(updatePayload: UpdateQuickMessagePayload, itemId: number)
+```
 
 ### Tham số
 
@@ -751,11 +881,16 @@ export type UpdateQuickMessageResponse = {
 
 ## `uploadProductPhoto`
 
-Upload product photo for api quick message, product catalog or custom local storage
+Tải ảnh sản phẩm lên máy chủ Zalo phục vụ cho Product Catalog hoặc Quick Message.
 
-- **Endpoint**: `POST /api/product/upload/photo`
-- **Domain call**: `api.business.uploadProductPhoto(payload: UploadProductPhotoPayload)`
-- **Alias phẳng**: `api.uploadProductPhoto(payload: UploadProductPhotoPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/product/upload/photo</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.uploadProductPhoto(payload: UploadProductPhotoPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.uploadProductPhoto(payload: UploadProductPhotoPayload)
+```
 
 ### Tham số
 

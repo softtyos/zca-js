@@ -45,6 +45,7 @@ import { editReminderFactory } from "./apis/board/editReminder.js";
 import { enableGroupLinkFactory } from "./apis/group/enableGroupLink.js";
 import { encryptGidsFactory } from "./apis/auth/encryptGids.js";
 import { endVoiceCallFactory } from "./apis/call/endVoiceCall.js";
+import { exportSessionFactory } from "./apis/auth/exportSession.js";
 import { fetchAccountInfoFactory } from "./apis/profile/fetchAccountInfo.js";
 import { findUserFactory } from "./apis/friend/findUser.js";
 import { findUserByUsernameFactory } from "./apis/friend/findUserByUsername.js";
@@ -230,6 +231,7 @@ import type { ZPWServiceMap, ContextSession } from "./context.js";
 export type AuthDomainAPI = {
     readonly decryptGids: ReturnType<typeof decryptGidsFactory>;
     readonly encryptGids: ReturnType<typeof encryptGidsFactory>;
+    readonly exportSession: ReturnType<typeof exportSessionFactory>;
     readonly getContext: ReturnType<typeof getContextFactory>;
     readonly getCookie: ReturnType<typeof getCookieFactory>;
     readonly getListDevice: ReturnType<typeof getListDeviceFactory>;
@@ -512,6 +514,7 @@ export class API {
             const createNamespace = (api: API): AuthDomainAPI => ({
                 get decryptGids() { return api.decryptGids; },
                 get encryptGids() { return api.encryptGids; },
+                get exportSession() { return api.exportSession; },
                 get getContext() { return api.getContext; },
                 get getCookie() { return api.getCookie; },
                 get getListDevice() { return api.getListDevice; },
@@ -1021,6 +1024,10 @@ export class API {
 
     public get endVoiceCall(): ReturnType<typeof endVoiceCallFactory> {
         return (this._cache.endVoiceCall ??= endVoiceCallFactory(this.ctx, this)) as ReturnType<typeof endVoiceCallFactory>;
+    }
+
+    public get exportSession(): ReturnType<typeof exportSessionFactory> {
+        return (this._cache.exportSession ??= exportSessionFactory(this.ctx, this)) as ReturnType<typeof exportSessionFactory>;
     }
 
     public get fetchAccountInfo(): ReturnType<typeof fetchAccountInfoFactory> {

@@ -1,6 +1,11 @@
-# Gọi thoại & Video 1-1 (Call)
+---
+title: "Gọi thoại & Video 1-1 (Call) (api.call) - 3 APIs"
+description: "Điều khiển tín hiệu cuộc gọi thoại và gọi video 1-1 (Commands 11300 → 11306: Request, Call, Ringing, Cancel, End). Tra cứu chi tiết 3 phương thức thuộc phân hệ api.call trong bộ SDK @softtynet/zca-js."
+---
 
-> Namespace: `api.call` (hoặc gọi trực tiếp `api.<methodName>`) — **3 API**
+# 📞 Gọi thoại & Video 1-1 (Call)
+
+> Namespace: `api.call` (hoặc gọi trực tiếp `api.<methodName>`) — **3 API nguyên bản**
 
 Điều khiển tín hiệu cuộc gọi thoại và gọi video 1-1 (Commands 11300 → 11306: Request, Call, Ringing, Cancel, End).
 
@@ -18,9 +23,14 @@
 
 Huỷ cuộc gọi đang đổ chuông trước khi người nhận bắt máy (`/api/voicecall/cancel`, command `11305`).
 
-- **Endpoint**: `GET /api/voicecall/cancel`
-- **Domain call**: `api.call.cancelVoiceCall(calleeId: string, callId: number, options: CancelVoiceCallOptions = {},)`
-- **Alias phẳng**: `api.cancelVoiceCall(calleeId: string, callId: number, options: CancelVoiceCallOptions = {},)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/voicecall/cancel</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.call.cancelVoiceCall(calleeId: string, callId: number, options: CancelVoiceCallOptions = {},)
+// Hoặc gọi phẳng (Flat Alias):
+await api.cancelVoiceCall(calleeId: string, callId: number, options: CancelVoiceCallOptions = {},)
+```
 
 ### Tham số
 
@@ -45,9 +55,14 @@ export type CancelVoiceCallResponse = Record<string, unknown>;
 
 Kết thúc cuộc gọi thoại / video (`/api/voicecall/endcall`, command `11306`).
 
-- **Endpoint**: `GET /api/voicecall/endcall`
-- **Domain call**: `api.call.endVoiceCall(calleeId: string, callId: number, options: EndVoiceCallOptions = {},)`
-- **Alias phẳng**: `api.endVoiceCall(calleeId: string, callId: number, options: EndVoiceCallOptions = {},)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/voicecall/endcall</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.call.endVoiceCall(calleeId: string, callId: number, options: EndVoiceCallOptions = {},)
+// Hoặc gọi phẳng (Flat Alias):
+await api.endVoiceCall(calleeId: string, callId: number, options: EndVoiceCallOptions = {},)
+```
 
 ### Tham số
 
@@ -71,9 +86,14 @@ export type EndVoiceCallResponse = Record<string, unknown>;
 
 Khởi tạo cuộc gọi thoại / video (Signaling 2 bước: `/api/voicecall/requestcall` command `11300` + `/api/voicecall/request` command `11301`) giúp đổ chuông trực tiếp trên thiết bị của người nhận.
 
-- **Endpoint**: `GET /api/voicecall/requestcall`, `GET /api/voicecall/request`
-- **Domain call**: `api.call.sendVoiceCall(calleeId: string, options: SendVoiceCallOptions = {},)`
-- **Alias phẳng**: `api.sendVoiceCall(calleeId: string, options: SendVoiceCallOptions = {},)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/voicecall/requestcall</span> <span class="zca-endpoint-pill">/api/voicecall/request</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.call.sendVoiceCall(calleeId: string, options: SendVoiceCallOptions = {},)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendVoiceCall(calleeId: string, options: SendVoiceCallOptions = {},)
+```
 
 ### Tham số
 

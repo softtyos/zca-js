@@ -1,6 +1,6 @@
-import type { Credentials } from "../src";
+import type { Credentials } from "../src/index.js";
 
-import { Zalo } from "../src";
+import { Zalo } from "../src/index.js";
 import fs from "node:fs";
 
 const zalo = new Zalo();

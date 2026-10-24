@@ -174,6 +174,11 @@ export type Options = {
     polyfill: typeof fetch;
 
     imageMetadataGetter?: ImageMetadataGetter;
+
+    /**
+     * Thời gian chờ tối đa cho mỗi HTTP request tính bằng mili-giây (mặc định: `30000`ms = 30s, đặt `0` để tắt).
+     */
+    requestTimeout?: number;
 };
 
 const _5_MINUTES = ZALO_DEFAULTS.UPLOAD.CALLBACK_TTL_MS;
@@ -219,6 +224,7 @@ export const createContext = (
             checkUpdate: ZALO_DEFAULTS.OPTIONS.CHECK_UPDATE,
             logging: ZALO_DEFAULTS.OPTIONS.LOGGING,
             polyfill: global.fetch,
+            requestTimeout: 30000,
         },
         secretKey: null,
     }) as ContextBase;

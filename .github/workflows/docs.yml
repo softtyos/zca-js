@@ -1,56 +1,35 @@
-name: Deploy VitePress Docs to GitHub Pages
+name: Auto Build & Deploy Docs
 
 on:
   push:
-    branches: [main, lib]
+    branches:
+      - main
+      - lib
+    paths:
+      - 'src/apis/**'
+      - 'docs/**'
+      - 'scripts/generateDocs.js'
+      - 'scripts/deployDocs.js'
+      - '.github/workflows/docs.yml'
   workflow_dispatch:
 
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
-concurrency:
-  group: pages
-  cancel-in-progress: false
-
 jobs:
-  build:
+  deploy-docs:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          cache: npm
-
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+          node-version: '20.x'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Generate & Build with VitePress
+      - name: Generate & Deploy VitePress Docs to softtyos/zca-js-docs
+        run: npm run docs:deploy
         env:
-          VITEPRESS_BASE: /zca-js/
-        run: npm run docs:build
-
-      - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: docs/.vitepress/dist
-
-  deploy:
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    needs: build
-    runs-on: ubuntu-latest
-    name: Deploy
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          DOCS_DEPLOY_TOKEN: ${{ secrets.DOCS_DEPLOY_TOKEN }}

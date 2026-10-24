@@ -1,32 +1,75 @@
 import { defineConfig } from "vitepress";
 
+const SITE_URL = "https://softtyos.github.io/zca-js-docs";
+
 export default defineConfig({
     lang: "vi-VN",
     title: "@softtynet/zca-js",
-    description: "Tài liệu chính thức bộ SDK Zalo API (@softtynet/zca-js) dành cho Node.js, TypeScript và Bun",
+    titleTemplate: ":title | Softtynet Zalo SDK",
+    description: "Tài liệu chính thức bộ SDK Zalo API (@softtynet/zca-js v2.3.4) phát triển bởi Softtynet Co., Ltd. dành cho Node.js, TypeScript và Bun (225 APIs, 12 Domains).",
     base: process.env.VITEPRESS_BASE || "/",
     ignoreDeadLinks: true,
+    lastUpdated: true,
+    sitemap: {
+        hostname: "https://softtyos.github.io/zca-js-docs/",
+    },
+    head: [
+        ["link", { rel: "icon", type: "image/svg+xml", href: "/zca-js-docs/favicon.svg" }],
+        ["meta", { name: "author", content: "Softtynet Co., Ltd." }],
+        ["meta", { name: "keywords", content: "zalo api, @softtynet/zca-js, zca-js, softtynet, zalo sdk, zalo bot nodejs, zalo typescript, zalo zdb sync, zalo cloud message" }],
+        ["meta", { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" }],
+        ["meta", { property: "og:type", content: "website" }],
+        ["meta", { property: "og:site_name", content: "@softtynet/zca-js — Softtynet Zalo SDK" }],
+        ["meta", { property: "og:locale", content: "vi_VN" }],
+        ["meta", { property: "og:image", content: "https://softtyos.github.io/zca-js-docs/og-banner.svg" }],
+        ["meta", { name: "twitter:card", content: "summary_large_image" }],
+        ["meta", { name: "twitter:image", content: "https://softtyos.github.io/zca-js-docs/og-banner.svg" }],
+        ["link", { rel: "alternate", type: "text/plain", title: "LLM Summary Context (llms.txt)", href: "https://softtyos.github.io/zca-js-docs/llms.txt" }],
+        ["link", { rel: "alternate", type: "text/plain", title: "LLM Full API Reference (llms-full.txt)", href: "https://softtyos.github.io/zca-js-docs/llms-full.txt" }],
+        ["script", { type: "application/ld+json" }, "{\"@context\":\"https://schema.org\",\"@type\":\"SoftwareSourceCode\",\"name\":\"@softtynet/zca-js\",\"version\":\"2.3.4\",\"description\":\"Bộ thư viện SDK Zalo API hiện đại dành cho Node.js, TypeScript và Bun với 225 API nguyên bản trên 12 Domains, phát triển bởi Softtynet Co., Ltd.\",\"programmingLanguage\":[\"TypeScript\",\"JavaScript\"],\"runtimePlatform\":[\"Node.js\",\"Bun\"],\"codeRepository\":\"https://github.com/softtyos/zca-js\",\"url\":\"https://softtyos.github.io/zca-js-docs/\",\"license\":\"https://opensource.org/licenses/MIT\",\"author\":{\"@type\":\"Organization\",\"name\":\"Softtynet Co., Ltd.\",\"url\":\"https://github.com/softtyos\"},\"keywords\":[\"zalo api\",\"zca-js\",\"@softtynet/zca-js\",\"softtynet\",\"zalo sdk nodejs\",\"zalo bot typescript\",\"zalo pc protocol\",\"zalo cloud message\"]}"],
+    ],
+    transformPageData(pageData) {
+        const canonicalUrl = `${SITE_URL}/${pageData.relativePath}`
+            .replace(/index\.md$/, "")
+            .replace(/\.md$/, ".html");
+
+        pageData.frontmatter.head ??= [];
+        pageData.frontmatter.head.push(
+            ["link", { rel: "canonical", href: canonicalUrl }],
+            ["meta", { property: "og:url", content: canonicalUrl }],
+            ["meta", { property: "og:title", content: pageData.frontmatter.title || pageData.title || "@softtynet/zca-js" }],
+            ["meta", { property: "og:description", content: pageData.frontmatter.description || pageData.description || "Bộ SDK Zalo API Hiện Đại Cho Node.js, TypeScript & Bun bởi Softtynet Co., Ltd." }],
+        );
+    },
     themeConfig: {
+        logo: "/logo.svg",
+        siteTitle: "@softtynet/zca-js",
         nav: [
             { text: "Trang chủ", link: "/" },
-            { text: "Hướng dẫn", link: "/guide/getting-started" },
-            { text: "API Reference (224)", link: "/api/" },
-            { text: "Đồng bộ & Gọi thoại", link: "/INTEGRATION_GUIDE_SYNC_AND_CALL" },
+            { text: "Hướng dẫn & Thực chiến", link: "/guide/getting-started" },
+            { text: "⚡ API Explorer (225)", link: "/api/" },
+            { text: "📦 Models & Enums", link: "/api/models" },
+            { text: "🤖 llms.txt", link: "https://softtyos.github.io/zca-js-docs/llms.txt" },
         ],
         search: {
             provider: "local",
         },
+        outline: {
+            level: [2, 3],
+            label: "Mục lục trang",
+        },
         sidebar: [
             {
-                text: "Bắt đầu & Kiến trúc",
+                text: "🚀 Bắt đầu & Thực chiến",
                 items: [
                     { text: "Cài đặt & Bắt đầu nhanh", link: "/guide/getting-started" },
+                    { text: "🛠️ Kịch bản Thực chiến (Cookbook)", link: "/guide/cookbook" },
                     { text: "Kiến trúc 12 Domains & 64-bit ID", link: "/guide/architecture" },
                     { text: "Lắng nghe WebSocket (Listener)", link: "/guide/listeners" },
                 ],
             },
             {
-                text: "Tài liệu Chuyên sâu (R&D)",
+                text: "📚 Tài liệu Chuyên sâu (R&D)",
                 items: [
                     { text: "Tích hợp Đồng bộ ZDB 4.0 & Call", link: "/INTEGRATION_GUIDE_SYNC_AND_CALL" },
                     { text: "Kiến trúc Tổng thể & Giao thức", link: "/ARCHITECTURE_AND_API_REFERENCE" },
@@ -34,56 +77,57 @@ export default defineConfig({
                 ],
             },
             {
-                text: "Tra cứu API (12 Domains)",
+                text: "⚡ Tra cứu API & Models (12 Domains)",
                 items: [
-                    { text: "Tổng quan 12 Domains", link: "/api/" },
+                    { text: "🔍 API Explorer (225 APIs)", link: "/api/" },
+                    { text: "📦 Models, Enums & Errors", link: "/api/models" },
                     ...[
           {
-                    "text": "Xác thực & Phiên (Auth) (13)",
+                    "text": "🔐 Xác thực & Phiên (Auth) (14)",
                     "link": "/api/auth"
           },
           {
-                    "text": "Tin nhắn & Hội thoại (Chat) (41)",
+                    "text": "💬 Tin nhắn & Hội thoại (Chat) (41)",
                     "link": "/api/chat"
           },
           {
-                    "text": "Nhóm & Cộng đồng (Group) (44)",
+                    "text": "👥 Nhóm & Cộng đồng (Group) (44)",
                     "link": "/api/group"
           },
           {
-                    "text": "Bạn bè & Danh bạ (Friend) (33)",
+                    "text": "🤝 Bạn bè & Danh bạ (Friend) (33)",
                     "link": "/api/friend"
           },
           {
-                    "text": "Hồ sơ cá nhân (Profile) (16)",
+                    "text": "🪪 Hồ sơ cá nhân (Profile) (16)",
                     "link": "/api/profile"
           },
           {
-                    "text": "Đồng bộ Mobile ZDB 4.0 (Sync) (5)",
+                    "text": "🔄 Đồng bộ Mobile ZDB 4.0 (Sync) (5)",
                     "link": "/api/sync"
           },
           {
-                    "text": "Đám mây ZCloud & ZFamily (ZCloud) (9)",
+                    "text": "☁️ Đám mây ZCloud & ZFamily (ZCloud) (9)",
                     "link": "/api/zcloud"
           },
           {
-                    "text": "Gọi thoại & Video 1-1 (Call) (3)",
+                    "text": "📞 Gọi thoại & Video 1-1 (Call) (3)",
                     "link": "/api/call"
           },
           {
-                    "text": "Kho lưu trữ & Chuyển giọng nói (Media) (8)",
+                    "text": "🖼️ Kho lưu trữ & Chuyển giọng nói (Media) (8)",
                     "link": "/api/media"
           },
           {
-                    "text": "Nhãn dán & Biểu cảm (Sticker) (10)",
+                    "text": "✨ Nhãn dán & Biểu cảm (Sticker) (10)",
                     "link": "/api/sticker"
           },
           {
-                    "text": "Bảng tin, Ghi chú, Bình chọn & Lịch hẹn (Board) (16)",
+                    "text": "📌 Bảng tin, Ghi chú, Bình chọn & Lịch hẹn (Board) (16)",
                     "link": "/api/board"
           },
           {
-                    "text": "Zalo Business, Nhãn & Danh mục (Business) (26)",
+                    "text": "💼 Zalo Business, Nhãn & Danh mục (Business) (26)",
                     "link": "/api/business"
           }
 ],
@@ -94,8 +138,8 @@ export default defineConfig({
             { icon: "github", link: "https://github.com/softtyos/zca-js" },
         ],
         footer: {
-            message: "Phát hành theo giấy phép MIT License.",
-            copyright: "Copyright © 2026 Softtynet Co., Ltd.",
+            message: "Phát hành theo giấy phép MIT License • Tích hợp chuẩn AI SEO (/llms.txt & /llms-full.txt)",
+            copyright: "Copyright © 2026 Softtynet Co., Ltd. All rights reserved.",
         },
     },
 });

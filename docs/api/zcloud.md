@@ -1,6 +1,11 @@
-# Đám mây ZCloud & ZFamily (ZCloud)
+---
+title: "Đám mây ZCloud & ZFamily (ZCloud) (api.zcloud) - 9 APIs"
+description: "Truy vấn dung lượng My Cloud / ZCloud, ZFamily, khóa giải mã ViewerKey (98yS AES-256-CBC) và xác thực Media. Tra cứu chi tiết 9 phương thức thuộc phân hệ api.zcloud trong bộ SDK @softtynet/zca-js."
+---
 
-> Namespace: `api.zcloud` (hoặc gọi trực tiếp `api.<methodName>`) — **9 API**
+# ☁️ Đám mây ZCloud & ZFamily (ZCloud)
+
+> Namespace: `api.zcloud` (hoặc gọi trực tiếp `api.<methodName>`) — **9 API nguyên bản**
 
 Truy vấn dung lượng My Cloud / ZCloud, ZFamily, khóa giải mã ViewerKey (98yS AES-256-CBC) và xác thực Media.
 
@@ -8,15 +13,15 @@ Truy vấn dung lượng My Cloud / ZCloud, ZFamily, khóa giải mã ViewerKey 
 
 | Phương thức | HTTP | Endpoint Zalo | Mô tả |
 | :--- | :---: | :--- | :--- |
-| [`getCloudInfo`](#getcloudinfo) | `GET` | `N/A` | Lấy thông tin gói thuê bao Zalo Cloud (command 12754) |
-| [`getCloudSettings`](#getcloudsettings) | `GET` | `N/A` | Lấy cấu hình giới hạn tệp và cài đặt ZCloud của tài khoản (command 12756) |
-| [`getCloudViewerKey`](#getcloudviewerkey) | `GET` | `N/A` | Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho hệ thống ZCloud / MyCloud (command 12741). Tự động cache trong bộ nhớ `ctx.zcloudViewerKeyCache` (TTL 15 phút) để tối ưu hiệu năng khi gọi liên tiếp. |
-| [`getFamilyProfile`](#getfamilyprofile) | `GET` | `N/A` | Lấy thông tin nhóm gia đình ZFamily (command 12757) |
-| [`getFamilyUsage`](#getfamilyusage) | `GET` | `N/A` | Kiểm tra dung lượng sử dụng gói ZCloud Gia đình (Family Usage - command 12758) |
-| [`getFamilyViewerKey`](#getfamilyviewerkey) | `GET` | `N/A` | Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho gói gia đình ZFamily (command 12759). Tự động cache trong bộ nhớ `ctx.zfamilyViewerKeyCache` (TTL 15 phút) để tối ưu hiệu năng khi gọi liên tiếp. |
-| [`getUsageMyCloud`](#getusagemycloud) | `GET` | `N/A` | Kiểm tra hạn mức và dung lượng sử dụng Cloud của tôi (MyCloud - command 12748) |
-| [`getUsageZCloud`](#getusagezcloud) | `GET` | `N/A` | Kiểm tra dung lượng sử dụng ZCloud V2 (bao gồm MyCloud và Sao lưu tin nhắn - command 12749) |
-| [`verifyCloudMedia`](#verifycloudmedia) | `GET` | `N/A` | Kiểm tra và lấy danh sách mục Media lưu trữ trên ZCloud (command 12740 / 12761) |
+| [`getCloudInfo`](#getcloudinfo) | `GET` | `Internal` | Lấy thông tin gói thuê bao Zalo Cloud (command 12754) |
+| [`getCloudSettings`](#getcloudsettings) | `GET` | `Internal` | Lấy cấu hình giới hạn tệp và cài đặt ZCloud của tài khoản (command 12756) |
+| [`getCloudViewerKey`](#getcloudviewerkey) | `GET` | `Internal` | Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho hệ thống ZCloud / MyCloud (command 12741). Tự động cache trong bộ nhớ `ctx.zcloudViewerKeyCache` (TTL 15 phút) để tối ưu hiệu năng khi gọi liên tiếp. |
+| [`getFamilyProfile`](#getfamilyprofile) | `GET` | `Internal` | Lấy thông tin nhóm gia đình ZFamily (command 12757) |
+| [`getFamilyUsage`](#getfamilyusage) | `GET` | `Internal` | Kiểm tra dung lượng sử dụng gói ZCloud Gia đình (Family Usage - command 12758) |
+| [`getFamilyViewerKey`](#getfamilyviewerkey) | `GET` | `Internal` | Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho gói gia đình ZFamily (command 12759). Tự động cache trong bộ nhớ `ctx.zfamilyViewerKeyCache` (TTL 15 phút) để tối ưu hiệu năng khi gọi liên tiếp. |
+| [`getUsageMyCloud`](#getusagemycloud) | `GET` | `Internal` | Kiểm tra hạn mức và dung lượng sử dụng Cloud của tôi (MyCloud - command 12748) |
+| [`getUsageZCloud`](#getusagezcloud) | `GET` | `Internal` | Kiểm tra dung lượng sử dụng ZCloud V2 (bao gồm MyCloud và Sao lưu tin nhắn - command 12749) |
+| [`verifyCloudMedia`](#verifycloudmedia) | `GET` | `Internal` | Kiểm tra và lấy danh sách mục Media lưu trữ trên ZCloud (command 12740 / 12761) |
 
 ---
 
@@ -24,8 +29,14 @@ Truy vấn dung lượng My Cloud / ZCloud, ZFamily, khóa giải mã ViewerKey 
 
 Lấy thông tin gói thuê bao Zalo Cloud (command 12754)
 
-- **Domain call**: `api.zcloud.getCloudInfo(viewerKeyInfo?: GetCloudViewerKeyResponse)`
-- **Alias phẳng**: `api.getCloudInfo(viewerKeyInfo?: GetCloudViewerKeyResponse)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.zcloud.getCloudInfo(viewerKeyInfo?: GetCloudViewerKeyResponse)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getCloudInfo(viewerKeyInfo?: GetCloudViewerKeyResponse)
+```
 
 ### Tham số
 
@@ -43,8 +54,14 @@ export type GetCloudInfoResponse = Record<string, unknown>;
 
 Lấy cấu hình giới hạn tệp và cài đặt ZCloud của tài khoản (command 12756)
 
-- **Domain call**: `api.zcloud.getCloudSettings(viewerKeyInfo?: GetCloudViewerKeyResponse)`
-- **Alias phẳng**: `api.getCloudSettings(viewerKeyInfo?: GetCloudViewerKeyResponse)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.zcloud.getCloudSettings(viewerKeyInfo?: GetCloudViewerKeyResponse)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getCloudSettings(viewerKeyInfo?: GetCloudViewerKeyResponse)
+```
 
 ### Tham số
 
@@ -69,8 +86,14 @@ export type GetCloudSettingsResponse = {
 
 Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho hệ thống ZCloud / MyCloud (command 12741). Tự động cache trong bộ nhớ `ctx.zcloudViewerKeyCache` (TTL 15 phút) để tối ưu hiệu năng khi gọi liên tiếp.
 
-- **Domain call**: `api.zcloud.getCloudViewerKey(forceRefresh = false)`
-- **Alias phẳng**: `api.getCloudViewerKey(forceRefresh = false)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.zcloud.getCloudViewerKey(forceRefresh = false)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getCloudViewerKey(forceRefresh = false)
+```
 
 ### Tham số
 
@@ -91,8 +114,14 @@ export type GetCloudViewerKeyResponse = {
 
 Lấy thông tin nhóm gia đình ZFamily (command 12757)
 
-- **Domain call**: `api.zcloud.getFamilyProfile(familyKeyInfo?: GetFamilyViewerKeyResponse)`
-- **Alias phẳng**: `api.getFamilyProfile(familyKeyInfo?: GetFamilyViewerKeyResponse)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.zcloud.getFamilyProfile(familyKeyInfo?: GetFamilyViewerKeyResponse)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getFamilyProfile(familyKeyInfo?: GetFamilyViewerKeyResponse)
+```
 
 ### Tham số
 
@@ -110,8 +139,14 @@ export type GetFamilyProfileResponse = Record<string, unknown>;
 
 Kiểm tra dung lượng sử dụng gói ZCloud Gia đình (Family Usage - command 12758)
 
-- **Domain call**: `api.zcloud.getFamilyUsage(viewerKeyInfo?: GetCloudViewerKeyResponse)`
-- **Alias phẳng**: `api.getFamilyUsage(viewerKeyInfo?: GetCloudViewerKeyResponse)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.zcloud.getFamilyUsage(viewerKeyInfo?: GetCloudViewerKeyResponse)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getFamilyUsage(viewerKeyInfo?: GetCloudViewerKeyResponse)
+```
 
 ### Tham số
 
@@ -133,8 +168,14 @@ export type GetFamilyUsageResponse = {
 
 Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho gói gia đình ZFamily (command 12759). Tự động cache trong bộ nhớ `ctx.zfamilyViewerKeyCache` (TTL 15 phút) để tối ưu hiệu năng khi gọi liên tiếp.
 
-- **Domain call**: `api.zcloud.getFamilyViewerKey(forceRefresh = false)`
-- **Alias phẳng**: `api.getFamilyViewerKey(forceRefresh = false)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.zcloud.getFamilyViewerKey(forceRefresh = false)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getFamilyViewerKey(forceRefresh = false)
+```
 
 ### Tham số
 
@@ -155,8 +196,14 @@ export type GetFamilyViewerKeyResponse = {
 
 Kiểm tra hạn mức và dung lượng sử dụng Cloud của tôi (MyCloud - command 12748)
 
-- **Domain call**: `api.zcloud.getUsageMyCloud(viewerKeyInfo?: GetCloudViewerKeyResponse)`
-- **Alias phẳng**: `api.getUsageMyCloud(viewerKeyInfo?: GetCloudViewerKeyResponse)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.zcloud.getUsageMyCloud(viewerKeyInfo?: GetCloudViewerKeyResponse)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getUsageMyCloud(viewerKeyInfo?: GetCloudViewerKeyResponse)
+```
 
 ### Tham số
 
@@ -178,8 +225,14 @@ export type GetUsageMyCloudResponse = {
 
 Kiểm tra dung lượng sử dụng ZCloud V2 (bao gồm MyCloud và Sao lưu tin nhắn - command 12749)
 
-- **Domain call**: `api.zcloud.getUsageZCloud(viewerKeyInfo?: GetCloudViewerKeyResponse)`
-- **Alias phẳng**: `api.getUsageZCloud(viewerKeyInfo?: GetCloudViewerKeyResponse)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.zcloud.getUsageZCloud(viewerKeyInfo?: GetCloudViewerKeyResponse)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getUsageZCloud(viewerKeyInfo?: GetCloudViewerKeyResponse)
+```
 
 ### Tham số
 
@@ -205,8 +258,14 @@ export type GetUsageZCloudResponse = {
 
 Kiểm tra và lấy danh sách mục Media lưu trữ trên ZCloud (command 12740 / 12761)
 
-- **Domain call**: `api.zcloud.verifyCloudMedia(options: VerifyCloudMediaOptions = {}, viewerKeyInfo?: GetCloudViewerKeyResponse,)`
-- **Alias phẳng**: `api.verifyCloudMedia(options: VerifyCloudMediaOptions = {}, viewerKeyInfo?: GetCloudViewerKeyResponse,)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.zcloud.verifyCloudMedia(options: VerifyCloudMediaOptions = {}, viewerKeyInfo?: GetCloudViewerKeyResponse,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.verifyCloudMedia(options: VerifyCloudMediaOptions = {}, viewerKeyInfo?: GetCloudViewerKeyResponse,)
+```
 
 ### Tham số
 

@@ -1,6 +1,11 @@
-# Tin nhắn & Hội thoại (Chat)
+---
+title: "Tin nhắn & Hội thoại (Chat) (api.chat) - 41 APIs"
+description: "Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nhắn, ghim/ẩn/lưu trữ hội thoại và trạng thái Đã nhận/Đã xem. Tra cứu chi tiết 41 phương thức thuộc phân hệ api.chat trong bộ SDK @softtynet/zca-js."
+---
 
-> Namespace: `api.chat` (hoặc gọi trực tiếp `api.<methodName>`) — **41 API**
+# 💬 Tin nhắn & Hội thoại (Chat)
+
+> Namespace: `api.chat` (hoặc gọi trực tiếp `api.<methodName>`) — **41 API nguyên bản**
 
 Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nhắn, ghim/ẩn/lưu trữ hội thoại và trạng thái Đã nhận/Đã xem.
 
@@ -8,45 +13,45 @@ Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nh�
 
 | Phương thức | HTTP | Endpoint Zalo | Mô tả |
 | :--- | :---: | :--- | :--- |
-| [`addReaction`](#addreaction) | `POST` | `/api/message/reaction`<br/>`/api/group/reaction` | Add reaction to a message |
-| [`addUnreadMark`](#addunreadmark) | `POST` | `/api/conv/addUnreadMark` | Add unread mark to conversation |
-| [`deleteChat`](#deletechat) | `POST` | `/api/message/deleteconver`<br/>`/api/group/deleteconver` | Delete chat |
-| [`deleteMessage`](#deletemessage) | `POST` | `/api/message/delete`<br/>`/api/group/deletemsg` | Delete a message |
-| [`forwardMessage`](#forwardmessage) | `POST` | `/api/message/mforward`<br/>`/api/group/mforward` | Forward message to multiple threads |
-| [`getArchivedChatList`](#getarchivedchatlist) | `GET` | `/api/archivedchat/list` | Get arcnived chat list |
-| [`getAutoDeleteChat`](#getautodeletechat) | `GET` | `/api/conv/autodelete/getConvers` | Get auto delete chat |
+| [`addReaction`](#addreaction) | `POST` | `/api/message/reaction`<br/>`/api/group/reaction` | Thả biểu cảm (Reaction: Tim, Like, Haha, Wow, Buồn, Giận) vào một tin nhắn cá nhân hoặc nhóm. |
+| [`addUnreadMark`](#addunreadmark) | `POST` | `/api/conv/addUnreadMark` | Đánh dấu hội thoại là chưa đọc (Unread). |
+| [`deleteChat`](#deletechat) | `POST` | `/api/message/deleteconver`<br/>`/api/group/deleteconver` | Xóa lịch sử cuộc trò chuyện cá nhân hoặc nhóm ở phía tài khoản hiện tại. |
+| [`deleteMessage`](#deletemessage) | `POST` | `/api/message/delete`<br/>`/api/group/deletemsg` | Xóa một tin nhắn cụ thể (chỉ xóa ở phía tôi hoặc thu hồi). |
+| [`forwardMessage`](#forwardmessage) | `POST` | `/api/message/mforward`<br/>`/api/group/mforward` | Chuyển tiếp (Forward) tin nhắn văn bản hoặc đính kèm tới nhiều hội thoại cùng lúc. |
+| [`getArchivedChatList`](#getarchivedchatlist) | `GET` | `/api/archivedchat/list` | Lấy danh sách các hội thoại đã được lưu trữ (Archived Chats). |
+| [`getAutoDeleteChat`](#getautodeletechat) | `GET` | `/api/conv/autodelete/getConvers` | Lấy danh sách các hội thoại đang bật chế độ tin nhắn tự xóa. |
 | [`getDirectMessageStatus`](#getdirectmessagestatus) | `POST` | `/api/message/getStatusMsg` | Truy vấn trạng thái Đã nhận (`deliver`) và Đã xem (`seen`) tin nhắn trong các hội thoại cá nhân 1-1 (command 12016) |
-| [`getHiddenConversations`](#gethiddenconversations) | `GET` | `/api/hiddenconvers/get-all` | Get hidden conversations |
+| [`getHiddenConversations`](#gethiddenconversations) | `GET` | `/api/hiddenconvers/get-all` | Lấy danh sách các cuộc trò chuyện đang được ẩn bằng mã PIN. |
 | [`getLastSeen`](#getlastseen) | `GET` | `/api/preloadconvers/get-last-seen` | Lấy thông tin trạng thái đã xem cuối cùng của danh sách nhóm và cá nhân (command 12009) |
 | [`getLastSeenReaction`](#getlastseenreaction) | `GET` | `/api/react/gLastSn` | Lấy trạng thái đã xem cảm xúc (Reaction) cuối cùng của danh sách nhóm và cá nhân (command 12450) |
-| [`getMute`](#getmute) | `GET` | `/api/social/profile/getmute` | Get mute |
-| [`getPinConversations`](#getpinconversations) | `GET` | `/api/pinconvers/list` | Get pin conversations |
+| [`getMute`](#getmute) | `GET` | `/api/social/profile/getmute` | Lấy danh sách các cuộc trò chuyện đang tắt thông báo (Mute). |
+| [`getPinConversations`](#getpinconversations) | `GET` | `/api/pinconvers/list` | Lấy danh sách các cuộc trò chuyện đang được ghim trên đầu danh sách chat. |
 | [`getRecentSearchList`](#getrecentsearchlist) | `GET` | `/api/recentsearch/list` | Lấy danh sách lịch sử tìm kiếm gần đây trên Zalo (command 12125) |
 | [`getSuggestedConversations`](#getsuggestedconversations) | `GET` | `/api/suggestconvers/list` | Lấy danh sách các cuộc hội thoại được gợi ý (command 11233) |
-| [`getUnreadMark`](#getunreadmark) | `GET` | `/api/conv/getUnreadMark` | Get unread mark |
-| [`parseLink`](#parselink) | `GET` | `/api/message/parselink` | Parse link |
-| [`preloadConversations`](#preloadconversations) | `GET` | `/api/preloadconvers/get-last-msgs` | Preload last messages and unread-cleared states across active conversations. Useful for initial state loading and catching up missed messages after reconnect. |
-| [`removeUnreadMark`](#removeunreadmark) | `POST` | `/api/conv/removeUnreadMark` | Remove unread mark from conversation |
-| [`resetHiddenConversPin`](#resethiddenconverspin) | `GET` | `/api/hiddenconvers/reset` | Reset hidden conversation pin |
-| [`sendBankCard`](#sendbankcard) | `POST` | `/api/transfer/card` | Send bank card |
-| [`sendCard`](#sendcard) | `POST` | `/api/message/forward`<br/>`/api/group/forward` | Send a card to a User - Group |
-| [`sendDeliveredEvent`](#senddeliveredevent) | `POST` | `/api/message/deliveredv2`<br/>`/api/group/deliveredv2` | Send message delivered event |
-| [`sendLink`](#sendlink) | `POST` | `/api/message/link`<br/>`/api/group/sendlink` | Send link |
-| [`sendMessage`](#sendmessage) | `POST` | `/api/message`<br/>`/api/group`<br/>`/api/message/`<br/>`/api/group/` | Send a message to a thread |
-| [`sendReport`](#sendreport) | `POST` | `/api/report/abuse-v2`<br/>`/api/social/profile/reportabuse` | Send report to Zalo |
-| [`sendSeenEvent`](#sendseenevent) | `POST` | `/api/message/seenv2`<br/>`/api/group/seenv2` | Send message seen event |
-| [`sendSticker`](#sendsticker) | `POST` | `/api/message/sticker`<br/>`/api/group/sticker` | Send a sticker to a thread |
-| [`sendTypingEvent`](#sendtypingevent) | `POST` | `/api/message/typing`<br/>`/api/group/typing` | Send typing event |
-| [`sendVideo`](#sendvideo) | `POST` | `/api/message/forward`<br/>`/api/group/forward` | Send a video to a User - Group - **Standard Videos**: - 3840x2160 (4K UHD): Width 3840px, Height 2160px. - 1920x1080 (Full HD): Width 1920px, Height 1080px. - 1280x720 (HD): Width 1280px, Height 720px. - **Document-Oriented Videos** (Portrait): - 3840x2160 (4K UHD): Width 3840px, Height 2160px. - 720x1280 (HD): Width 720px, Height 1280px. - 1440x2560 (2K): Width 1440px, Height 2560px. |
-| [`sendVoice`](#sendvoice) | `POST` | `/api/message/forward`<br/>`/api/group/forward` | Send a voice to a User - Group |
-| [`setHiddenConversations`](#sethiddenconversations) | `POST` | `/api/hiddenconvers/add-remove` | Set hidden conversations |
-| [`setMute`](#setmute) | `POST` | `/api/social/profile/setmute` | Set mute |
-| [`setPinnedConversations`](#setpinnedconversations) | `POST` | `/api/pinconvers/updatev2` | Pin and unpin conversations of threads) |
-| [`undo`](#undo) | `POST` | `/api/message/undo`<br/>`/api/group/undomsg` | Undo a message |
+| [`getUnreadMark`](#getunreadmark) | `GET` | `/api/conv/getUnreadMark` | Lấy danh sách các cuộc trò chuyện đang được đánh dấu là chưa đọc. |
+| [`parseLink`](#parselink) | `GET` | `/api/message/parselink` | Phân tích siêu dữ liệu (Title, Description, Thumbnail) của một đường dẫn URL trước khi gửi. |
+| [`preloadConversations`](#preloadconversations) | `GET` | `/api/preloadconvers/get-last-msgs` | Tải trước tin nhắn cuối cùng và trạng thái đã đọc của các hội thoại đang hoạt động (command 10053). |
+| [`removeUnreadMark`](#removeunreadmark) | `POST` | `/api/conv/removeUnreadMark` | Gỡ bỏ đánh dấu chưa đọc trên cuộc trò chuyện. |
+| [`resetHiddenConversPin`](#resethiddenconverspin) | `GET` | `/api/hiddenconvers/reset` | Đặt lại (Reset) mã PIN bảo vệ trò chuyện ẩn. |
+| [`sendBankCard`](#sendbankcard) | `POST` | `/api/transfer/card` | Gửi danh thiếp thông tin tài khoản ngân hàng (Bank Card) vào cuộc trò chuyện. |
+| [`sendCard`](#sendcard) | `POST` | `/api/message/forward`<br/>`/api/group/forward` | Gửi danh thiếp liên hệ Zalo (Contact Card / QR) vào hội thoại cá nhân hoặc nhóm. |
+| [`sendDeliveredEvent`](#senddeliveredevent) | `POST` | `/api/message/deliveredv2`<br/>`/api/group/deliveredv2` | Gửi tín hiệu xác nhận Đã nhận (Delivered) cho một hoặc nhiều tin nhắn. |
+| [`sendLink`](#sendlink) | `POST` | `/api/message/link`<br/>`/api/group/sendlink` | Gửi tin nhắn kèm bản xem trước liên kết (Link Preview) vào hội thoại. |
+| [`sendMessage`](#sendmessage) | `POST` | `/api/message`<br/>`/api/group`<br/>`/api/message/`<br/>`/api/group/` | Gửi tin nhắn văn bản, trích dẫn (Quote), nhắc tên (@Mention) hoặc tệp đính kèm (Ảnh/File/GIF) tới cá nhân hoặc nhóm. |
+| [`sendReport`](#sendreport) | `POST` | `/api/report/abuse-v2`<br/>`/api/social/profile/reportabuse` | Gửi báo cáo vi phạm (Report Abuse) đối với người dùng hoặc cuộc trò chuyện. |
+| [`sendSeenEvent`](#sendseenevent) | `POST` | `/api/message/seenv2`<br/>`/api/group/seenv2` | Gửi tín hiệu xác nhận Đã xem (Seen) cho các tin nhắn trong hội thoại. |
+| [`sendSticker`](#sendsticker) | `POST` | `/api/message/sticker`<br/>`/api/group/sticker` | Gửi nhãn dán (Sticker) vào cuộc trò chuyện cá nhân hoặc nhóm. |
+| [`sendTypingEvent`](#sendtypingevent) | `POST` | `/api/message/typing`<br/>`/api/group/typing` | Gửi tín hiệu trạng thái Đang soạn tin nhắn (Typing...) tới người nhận hoặc nhóm. |
+| [`sendVideo`](#sendvideo) | `POST` | `/api/message/forward`<br/>`/api/group/forward` | Gửi tệp video kèm ảnh thu nhỏ (Thumbnail) và thời lượng vào hội thoại cá nhân hoặc nhóm. |
+| [`sendVoice`](#sendvoice) | `POST` | `/api/message/forward`<br/>`/api/group/forward` | Gửi tin nhắn thoại (Voice / Audio MP3 / AAC) vào hội thoại cá nhân hoặc nhóm. |
+| [`setHiddenConversations`](#sethiddenconversations) | `POST` | `/api/hiddenconvers/add-remove` | Ẩn hoặc bỏ ẩn một hoặc nhiều cuộc trò chuyện bằng mã PIN. |
+| [`setMute`](#setmute) | `POST` | `/api/social/profile/setmute` | Bật hoặc tắt chế độ im lặng (Mute thông báo) cho cuộc trò chuyện theo khoảng thời gian. |
+| [`setPinnedConversations`](#setpinnedconversations) | `POST` | `/api/pinconvers/updatev2` | Ghim hoặc bỏ ghim cuộc trò chuyện lên đầu danh sách. |
+| [`undo`](#undo) | `POST` | `/api/message/undo`<br/>`/api/group/undomsg` | Thu hồi (Undo) một tin nhắn đã gửi với tất cả mọi người trong cuộc trò chuyện. |
 | [`undoMultiMessage`](#undomultimessage) | `POST` | `/api/group/multi_undomsg`<br/>`/api/message/multi_undo` | Thu hồi hàng loạt nhiều tin nhắn cùng lúc trong hội thoại cá nhân hoặc nhóm (command 12115 / 12116) |
-| [`updateArchivedChatList`](#updatearchivedchatlist) | `POST` | `/api/archivedchat/update` | Archive conversations |
-| [`updateAutoDeleteChat`](#updateautodeletechat) | `POST` | `/api/conv/autodelete/updateConvers` | Auto delete chat |
-| [`updateHiddenConversPin`](#updatehiddenconverspin) | `GET` | `/api/hiddenconvers/update-pin` | Update hidden conversation pin |
+| [`updateArchivedChatList`](#updatearchivedchatlist) | `POST` | `/api/archivedchat/update` | Đưa cuộc trò chuyện vào mục Lưu trữ (Archive) hoặc khôi phục ra ngoài. |
+| [`updateAutoDeleteChat`](#updateautodeletechat) | `POST` | `/api/conv/autodelete/updateConvers` | Cấu hình thời gian tự động xóa tin nhắn cho cuộc trò chuyện (1 ngày, 7 ngày, 30 ngày hoặc tắt). |
+| [`updateHiddenConversPin`](#updatehiddenconverspin) | `GET` | `/api/hiddenconvers/update-pin` | Đặt mới hoặc thay đổi mã PIN bảo mật cho tính năng Trò chuyện ẩn. |
 | [`updatePinConversations`](#updatepinconversations) | `POST` | `/api/pinconvers/updatev2`<br/>`/api/pinconvers/update` | Cập nhật danh sách hội thoại ghim qua `/api/pinconvers/update` (command 12121) hoặc `/api/pinconvers/updatev2` (command 12122) |
 | [`updateRecentSearch`](#updaterecentsearch) | `POST` | `/api/recentsearch/update` | Cập nhật danh sách lịch sử tìm kiếm gần đây trên Zalo (command 12126) |
 
@@ -54,11 +59,16 @@ Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nh�
 
 ## `addReaction`
 
-Add reaction to a message
+Thả biểu cảm (Reaction: Tim, Like, Haha, Wow, Buồn, Giận) vào một tin nhắn cá nhân hoặc nhóm.
 
-- **Endpoint**: `POST /api/message/reaction`, `POST /api/group/reaction`
-- **Domain call**: `api.chat.addReaction(icon: Reactions | CustomReaction, dest: AddReactionDestination)`
-- **Alias phẳng**: `api.addReaction(icon: Reactions | CustomReaction, dest: AddReactionDestination)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/reaction</span> <span class="zca-endpoint-pill">/api/group/reaction</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.addReaction(icon: Reactions | CustomReaction, dest: AddReactionDestination)
+// Hoặc gọi phẳng (Flat Alias):
+await api.addReaction(icon: Reactions | CustomReaction, dest: AddReactionDestination)
+```
 
 ### Tham số
 
@@ -92,11 +102,16 @@ export type AddReactionDestination = {
 
 ## `addUnreadMark`
 
-Add unread mark to conversation
+Đánh dấu hội thoại là chưa đọc (Unread).
 
-- **Endpoint**: `POST /api/conv/addUnreadMark`
-- **Domain call**: `api.chat.addUnreadMark(threadId: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.addUnreadMark(threadId: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/conv/addUnreadMark</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.addUnreadMark(threadId: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.addUnreadMark(threadId: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -118,11 +133,16 @@ export type AddUnreadMarkResponse = {
 
 ## `deleteChat`
 
-Delete chat
+Xóa lịch sử cuộc trò chuyện cá nhân hoặc nhóm ở phía tài khoản hiện tại.
 
-- **Endpoint**: `POST /api/message/deleteconver`, `POST /api/group/deleteconver`
-- **Domain call**: `api.chat.deleteChat(lastMessage: DeleteChatLastMessage, threadId: string, type: ThreadType = ThreadType.User,)`
-- **Alias phẳng**: `api.deleteChat(lastMessage: DeleteChatLastMessage, threadId: string, type: ThreadType = ThreadType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/deleteconver</span> <span class="zca-endpoint-pill">/api/group/deleteconver</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.deleteChat(lastMessage: DeleteChatLastMessage, threadId: string, type: ThreadType = ThreadType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.deleteChat(lastMessage: DeleteChatLastMessage, threadId: string, type: ThreadType = ThreadType.User,)
+```
 
 ### Tham số
 
@@ -157,11 +177,16 @@ export type DeleteChatLastMessage = {
 
 ## `deleteMessage`
 
-Delete a message
+Xóa một tin nhắn cụ thể (chỉ xóa ở phía tôi hoặc thu hồi).
 
-- **Endpoint**: `POST /api/message/delete`, `POST /api/group/deletemsg`
-- **Domain call**: `api.chat.deleteMessage(dest: DeleteMessageDestination, onlyMe = false)`
-- **Alias phẳng**: `api.deleteMessage(dest: DeleteMessageDestination, onlyMe = false)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/delete</span> <span class="zca-endpoint-pill">/api/group/deletemsg</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.deleteMessage(dest: DeleteMessageDestination, onlyMe = false)
+// Hoặc gọi phẳng (Flat Alias):
+await api.deleteMessage(dest: DeleteMessageDestination, onlyMe = false)
+```
 
 ### Tham số
 
@@ -190,11 +215,16 @@ export type DeleteMessageDestination = {
 
 ## `forwardMessage`
 
-Forward message to multiple threads
+Chuyển tiếp (Forward) tin nhắn văn bản hoặc đính kèm tới nhiều hội thoại cùng lúc.
 
-- **Endpoint**: `POST /api/message/mforward`, `POST /api/group/mforward`
-- **Domain call**: `api.chat.forwardMessage(payload: ForwardMessagePayload, threadIds: string[], type: ThreadType = ThreadType.User,)`
-- **Alias phẳng**: `api.forwardMessage(payload: ForwardMessagePayload, threadIds: string[], type: ThreadType = ThreadType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/mforward</span> <span class="zca-endpoint-pill">/api/group/mforward</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.forwardMessage(payload: ForwardMessagePayload, threadIds: string[], type: ThreadType = ThreadType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.forwardMessage(payload: ForwardMessagePayload, threadIds: string[], type: ThreadType = ThreadType.User,)
+```
 
 ### Tham số
 
@@ -236,11 +266,16 @@ export type ForwardMessageResponse = {
 
 ## `getArchivedChatList`
 
-Get arcnived chat list
+Lấy danh sách các hội thoại đã được lưu trữ (Archived Chats).
 
-- **Endpoint**: `GET /api/archivedchat/list`
-- **Domain call**: `api.chat.getArchivedChatList()`
-- **Alias phẳng**: `api.getArchivedChatList()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/archivedchat/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getArchivedChatList()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getArchivedChatList()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -255,11 +290,16 @@ export type GetArchivedChatListResponse = {
 
 ## `getAutoDeleteChat`
 
-Get auto delete chat
+Lấy danh sách các hội thoại đang bật chế độ tin nhắn tự xóa.
 
-- **Endpoint**: `GET /api/conv/autodelete/getConvers`
-- **Domain call**: `api.chat.getAutoDeleteChat()`
-- **Alias phẳng**: `api.getAutoDeleteChat()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/conv/autodelete/getConvers</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getAutoDeleteChat()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getAutoDeleteChat()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -280,9 +320,14 @@ export type GetAutoDeleteChatResponse = {
 
 Truy vấn trạng thái Đã nhận (`deliver`) và Đã xem (`seen`) tin nhắn trong các hội thoại cá nhân 1-1 (command 12016)
 
-- **Endpoint**: `POST /api/message/getStatusMsg`
-- **Domain call**: `api.chat.getDirectMessageStatus(data: Array<string | { tId: string; [key: string]: unknown }>)`
-- **Alias phẳng**: `api.getDirectMessageStatus(data: Array<string | { tId: string; [key: string]: unknown }>)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/getStatusMsg</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getDirectMessageStatus(data: Array<string | { tId: string; [key: string]: unknown }>)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getDirectMessageStatus(data: Array<string | { tId: string; [key: string]: unknown }>)
+```
 
 ### Tham số
 
@@ -308,11 +353,16 @@ export type GetDirectMessageStatusResponse = {
 
 ## `getHiddenConversations`
 
-Get hidden conversations
+Lấy danh sách các cuộc trò chuyện đang được ẩn bằng mã PIN.
 
-- **Endpoint**: `GET /api/hiddenconvers/get-all`
-- **Domain call**: `api.chat.getHiddenConversations()`
-- **Alias phẳng**: `api.getHiddenConversations()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/hiddenconvers/get-all</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getHiddenConversations()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getHiddenConversations()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -335,9 +385,14 @@ export type GetHiddenConversationsResponse = {
 
 Lấy thông tin trạng thái đã xem cuối cùng của danh sách nhóm và cá nhân (command 12009)
 
-- **Endpoint**: `GET /api/preloadconvers/get-last-seen`
-- **Domain call**: `api.chat.getLastSeen(options: GetLastSeenOptions = {})`
-- **Alias phẳng**: `api.getLastSeen(options: GetLastSeenOptions = {})`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/preloadconvers/get-last-seen</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getLastSeen(options: GetLastSeenOptions = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.getLastSeen(options: GetLastSeenOptions = {})
+```
 
 ### Tham số
 
@@ -365,9 +420,14 @@ export type GetLastSeenResponse = {
 
 Lấy trạng thái đã xem cảm xúc (Reaction) cuối cùng của danh sách nhóm và cá nhân (command 12450)
 
-- **Endpoint**: `GET /api/react/gLastSn`
-- **Domain call**: `api.chat.getLastSeenReaction(options: GetLastSeenReactionOptions = {})`
-- **Alias phẳng**: `api.getLastSeenReaction(options: GetLastSeenReactionOptions = {})`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/react/gLastSn</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getLastSeenReaction(options: GetLastSeenReactionOptions = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.getLastSeenReaction(options: GetLastSeenReactionOptions = {})
+```
 
 ### Tham số
 
@@ -391,11 +451,16 @@ export type GetLastSeenReactionResponse = {
 
 ## `getMute`
 
-Get mute
+Lấy danh sách các cuộc trò chuyện đang tắt thông báo (Mute).
 
-- **Endpoint**: `GET /api/social/profile/getmute`
-- **Domain call**: `api.chat.getMute()`
-- **Alias phẳng**: `api.getMute()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/getmute</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getMute()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getMute()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -419,11 +484,16 @@ export type GetMuteResponse = {
 
 ## `getPinConversations`
 
-Get pin conversations
+Lấy danh sách các cuộc trò chuyện đang được ghim trên đầu danh sách chat.
 
-- **Endpoint**: `GET /api/pinconvers/list`
-- **Domain call**: `api.chat.getPinConversations()`
-- **Alias phẳng**: `api.getPinConversations()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/pinconvers/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getPinConversations()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getPinConversations()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -440,9 +510,14 @@ export type GetPinConversationsResponse = {
 
 Lấy danh sách lịch sử tìm kiếm gần đây trên Zalo (command 12125)
 
-- **Endpoint**: `GET /api/recentsearch/list`
-- **Domain call**: `api.chat.getRecentSearchList(version: number = 0)`
-- **Alias phẳng**: `api.getRecentSearchList(version: number = 0)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/recentsearch/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getRecentSearchList(version: number = 0)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getRecentSearchList(version: number = 0)
+```
 
 ### Tham số
 
@@ -464,9 +539,14 @@ export type GetRecentSearchListResponse = {
 
 Lấy danh sách các cuộc hội thoại được gợi ý (command 11233)
 
-- **Endpoint**: `GET /api/suggestconvers/list`
-- **Domain call**: `api.chat.getSuggestedConversations(language?: string)`
-- **Alias phẳng**: `api.getSuggestedConversations(language?: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/suggestconvers/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getSuggestedConversations(language?: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getSuggestedConversations(language?: string)
+```
 
 ### Tham số
 
@@ -485,11 +565,16 @@ export type GetSuggestedConversationsResponse = {
 
 ## `getUnreadMark`
 
-Get unread mark
+Lấy danh sách các cuộc trò chuyện đang được đánh dấu là chưa đọc.
 
-- **Endpoint**: `GET /api/conv/getUnreadMark`
-- **Domain call**: `api.chat.getUnreadMark()`
-- **Alias phẳng**: `api.getUnreadMark()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/conv/getUnreadMark</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getUnreadMark()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getUnreadMark()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -514,11 +599,16 @@ export type GetUnreadMarkResponse = {
 
 ## `parseLink`
 
-Parse link
+Phân tích siêu dữ liệu (Title, Description, Thumbnail) của một đường dẫn URL trước khi gửi.
 
-- **Endpoint**: `GET /api/message/parselink`
-- **Domain call**: `api.chat.parseLink(link: string)`
-- **Alias phẳng**: `api.parseLink(link: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/parselink</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.parseLink(link: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.parseLink(link: string)
+```
 
 ### Tham số
 
@@ -554,11 +644,16 @@ export type ParseLinkResponse = {
 
 ## `preloadConversations`
 
-Preload last messages and unread-cleared states across active conversations. Useful for initial state loading and catching up missed messages after reconnect.
+Tải trước tin nhắn cuối cùng và trạng thái đã đọc của các hội thoại đang hoạt động (command 10053).
 
-- **Endpoint**: `GET /api/preloadconvers/get-last-msgs`
-- **Domain call**: `api.chat.preloadConversations(threadIdLocalMsgId: Record<string, string | number> = {})`
-- **Alias phẳng**: `api.preloadConversations(threadIdLocalMsgId: Record<string, string | number> = {})`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/preloadconvers/get-last-msgs</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.preloadConversations(threadIdLocalMsgId: Record<string, string | number> = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.preloadConversations(threadIdLocalMsgId: Record<string, string | number> = {})
+```
 
 ### Tham số
 
@@ -598,11 +693,16 @@ export type PreloadConversationsResponse = PreloadConversationsRawResponse & {
 
 ## `removeUnreadMark`
 
-Remove unread mark from conversation
+Gỡ bỏ đánh dấu chưa đọc trên cuộc trò chuyện.
 
-- **Endpoint**: `POST /api/conv/removeUnreadMark`
-- **Domain call**: `api.chat.removeUnreadMark(threadId: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.removeUnreadMark(threadId: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/conv/removeUnreadMark</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.removeUnreadMark(threadId: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.removeUnreadMark(threadId: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -624,11 +724,16 @@ export type RemoveUnreadMarkResponse = {
 
 ## `resetHiddenConversPin`
 
-Reset hidden conversation pin
+Đặt lại (Reset) mã PIN bảo vệ trò chuyện ẩn.
 
-- **Endpoint**: `GET /api/hiddenconvers/reset`
-- **Domain call**: `api.chat.resetHiddenConversPin()`
-- **Alias phẳng**: `api.resetHiddenConversPin()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/hiddenconvers/reset</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.resetHiddenConversPin()
+// Hoặc gọi phẳng (Flat Alias):
+await api.resetHiddenConversPin()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -640,11 +745,16 @@ export type ResetHiddenConversPinResponse = "";
 
 ## `sendBankCard`
 
-Send bank card
+Gửi danh thiếp thông tin tài khoản ngân hàng (Bank Card) vào cuộc trò chuyện.
 
-- **Endpoint**: `POST /api/transfer/card`
-- **Domain call**: `api.chat.sendBankCard(payload: SendBankCardPayload, threadId: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.sendBankCard(payload: SendBankCardPayload, threadId: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/transfer/card</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.sendBankCard(payload: SendBankCardPayload, threadId: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendBankCard(payload: SendBankCardPayload, threadId: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -668,11 +778,16 @@ export type SendBankCardResponse = "";
 
 ## `sendCard`
 
-Send a card to a User - Group
+Gửi danh thiếp liên hệ Zalo (Contact Card / QR) vào hội thoại cá nhân hoặc nhóm.
 
-- **Endpoint**: `POST /api/message/forward`, `POST /api/group/forward`
-- **Domain call**: `api.chat.sendCard(options: SendCardOptions, threadId: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.sendCard(options: SendCardOptions, threadId: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/forward</span> <span class="zca-endpoint-pill">/api/group/forward</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.sendCard(options: SendCardOptions, threadId: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendCard(options: SendCardOptions, threadId: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -700,11 +815,16 @@ export type SendCardResponse = {
 
 ## `sendDeliveredEvent`
 
-Send message delivered event
+Gửi tín hiệu xác nhận Đã nhận (Delivered) cho một hoặc nhiều tin nhắn.
 
-- **Endpoint**: `POST /api/message/deliveredv2`, `POST /api/group/deliveredv2`
-- **Domain call**: `api.chat.sendDeliveredEvent(isSeen: boolean, messages: SendDeliveredEventMessageParams | SendDeliveredEventMessageParams[], type: ThreadType = ThreadType.User,)`
-- **Alias phẳng**: `api.sendDeliveredEvent(isSeen: boolean, messages: SendDeliveredEventMessageParams | SendDeliveredEventMessageParams[], type: ThreadType = ThreadType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/deliveredv2</span> <span class="zca-endpoint-pill">/api/group/deliveredv2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.sendDeliveredEvent(isSeen: boolean, messages: SendDeliveredEventMessageParams | SendDeliveredEventMessageParams[], type: ThreadType = ThreadType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendDeliveredEvent(isSeen: boolean, messages: SendDeliveredEventMessageParams | SendDeliveredEventMessageParams[], type: ThreadType = ThreadType.User,)
+```
 
 ### Tham số
 
@@ -752,11 +872,16 @@ type MsgInfos = {
 
 ## `sendLink`
 
-Send link
+Gửi tin nhắn kèm bản xem trước liên kết (Link Preview) vào hội thoại.
 
-- **Endpoint**: `POST /api/message/link`, `POST /api/group/sendlink`
-- **Domain call**: `api.chat.sendLink(options: SendLinkOptions, threadId: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.sendLink(options: SendLinkOptions, threadId: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/link</span> <span class="zca-endpoint-pill">/api/group/sendlink</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.sendLink(options: SendLinkOptions, threadId: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendLink(options: SendLinkOptions, threadId: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -782,11 +907,16 @@ export type SendLinkResponse = {
 
 ## `sendMessage`
 
-Send a message to a thread
+Gửi tin nhắn văn bản, trích dẫn (Quote), nhắc tên (@Mention) hoặc tệp đính kèm (Ảnh/File/GIF) tới cá nhân hoặc nhóm.
 
-- **Endpoint**: `POST /api/message`, `POST /api/group`, `POST /api/message/`, `POST /api/group/`
-- **Domain call**: `api.chat.sendMessage(message: MessageContent | string, threadId: string, type: ThreadType = ThreadType.User,)`
-- **Alias phẳng**: `api.sendMessage(message: MessageContent | string, threadId: string, type: ThreadType = ThreadType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message</span> <span class="zca-endpoint-pill">/api/group</span> <span class="zca-endpoint-pill">/api/message/</span> <span class="zca-endpoint-pill">/api/group/</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.sendMessage(message: MessageContent | string, threadId: string, type: ThreadType = ThreadType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendMessage(message: MessageContent | string, threadId: string, type: ThreadType = ThreadType.User,)
+```
 
 ### Tham số
 
@@ -908,11 +1038,16 @@ export type MessageContent = {
 
 ## `sendReport`
 
-Send report to Zalo
+Gửi báo cáo vi phạm (Report Abuse) đối với người dùng hoặc cuộc trò chuyện.
 
-- **Endpoint**: `POST /api/report/abuse-v2`, `POST /api/social/profile/reportabuse`
-- **Domain call**: `api.chat.sendReport(options: SendReportOptions, threadId: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.sendReport(options: SendReportOptions, threadId: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/report/abuse-v2</span> <span class="zca-endpoint-pill">/api/social/profile/reportabuse</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.sendReport(options: SendReportOptions, threadId: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendReport(options: SendReportOptions, threadId: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -948,11 +1083,16 @@ export type SendReportResponse = {
 
 ## `sendSeenEvent`
 
-Send message seen event
+Gửi tín hiệu xác nhận Đã xem (Seen) cho các tin nhắn trong hội thoại.
 
-- **Endpoint**: `POST /api/message/seenv2`, `POST /api/group/seenv2`
-- **Domain call**: `api.chat.sendSeenEvent(messages: SendSeenEventMessageParams | SendSeenEventMessageParams[], type: ThreadType = ThreadType.User,)`
-- **Alias phẳng**: `api.sendSeenEvent(messages: SendSeenEventMessageParams | SendSeenEventMessageParams[], type: ThreadType = ThreadType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/seenv2</span> <span class="zca-endpoint-pill">/api/group/seenv2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.sendSeenEvent(messages: SendSeenEventMessageParams | SendSeenEventMessageParams[], type: ThreadType = ThreadType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendSeenEvent(messages: SendSeenEventMessageParams | SendSeenEventMessageParams[], type: ThreadType = ThreadType.User,)
+```
 
 ### Tham số
 
@@ -1001,11 +1141,16 @@ type MsgInfos = {
 
 ## `sendSticker`
 
-Send a sticker to a thread
+Gửi nhãn dán (Sticker) vào cuộc trò chuyện cá nhân hoặc nhóm.
 
-- **Endpoint**: `POST /api/message/sticker`, `POST /api/group/sticker`
-- **Domain call**: `api.chat.sendSticker(sticker: SendStickerPayload, threadId: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.sendSticker(sticker: SendStickerPayload, threadId: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/sticker</span> <span class="zca-endpoint-pill">/api/group/sticker</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.sendSticker(sticker: SendStickerPayload, threadId: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendSticker(sticker: SendStickerPayload, threadId: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -1031,11 +1176,16 @@ export type SendStickerResponse = {
 
 ## `sendTypingEvent`
 
-Send typing event
+Gửi tín hiệu trạng thái Đang soạn tin nhắn (Typing...) tới người nhận hoặc nhóm.
 
-- **Endpoint**: `POST /api/message/typing`, `POST /api/group/typing`
-- **Domain call**: `api.chat.sendTypingEvent(threadId: string, type: ThreadType = ThreadType.User, destType: DestType = DestType.User,)`
-- **Alias phẳng**: `api.sendTypingEvent(threadId: string, type: ThreadType = ThreadType.User, destType: DestType = DestType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/typing</span> <span class="zca-endpoint-pill">/api/group/typing</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.sendTypingEvent(threadId: string, type: ThreadType = ThreadType.User, destType: DestType = DestType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendTypingEvent(threadId: string, type: ThreadType = ThreadType.User, destType: DestType = DestType.User,)
+```
 
 ### Tham số
 
@@ -1055,11 +1205,16 @@ export type SendTypingEventResponse = {
 
 ## `sendVideo`
 
-Send a video to a User - Group - **Standard Videos**: - 3840x2160 (4K UHD): Width 3840px, Height 2160px. - 1920x1080 (Full HD): Width 1920px, Height 1080px. - 1280x720 (HD): Width 1280px, Height 720px. - **Document-Oriented Videos** (Portrait): - 3840x2160 (4K UHD): Width 3840px, Height 2160px. - 720x1280 (HD): Width 720px, Height 1280px. - 1440x2560 (2K): Width 1440px, Height 2560px.
+Gửi tệp video kèm ảnh thu nhỏ (Thumbnail) và thời lượng vào hội thoại cá nhân hoặc nhóm.
 
-- **Endpoint**: `POST /api/message/forward`, `POST /api/group/forward`
-- **Domain call**: `api.chat.sendVideo(options: SendVideoOptions, threadId: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.sendVideo(options: SendVideoOptions, threadId: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/forward</span> <span class="zca-endpoint-pill">/api/group/forward</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.sendVideo(options: SendVideoOptions, threadId: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendVideo(options: SendVideoOptions, threadId: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -1110,11 +1265,16 @@ export type SendVideoResponse = {
 
 ## `sendVoice`
 
-Send a voice to a User - Group
+Gửi tin nhắn thoại (Voice / Audio MP3 / AAC) vào hội thoại cá nhân hoặc nhóm.
 
-- **Endpoint**: `POST /api/message/forward`, `POST /api/group/forward`
-- **Domain call**: `api.chat.sendVoice(options: SendVoiceOptions, threadId: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.sendVoice(options: SendVoiceOptions, threadId: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/forward</span> <span class="zca-endpoint-pill">/api/group/forward</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.sendVoice(options: SendVoiceOptions, threadId: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendVoice(options: SendVoiceOptions, threadId: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -1142,11 +1302,16 @@ export type SendVoiceResponse = {
 
 ## `setHiddenConversations`
 
-Set hidden conversations
+Ẩn hoặc bỏ ẩn một hoặc nhiều cuộc trò chuyện bằng mã PIN.
 
-- **Endpoint**: `POST /api/hiddenconvers/add-remove`
-- **Domain call**: `api.chat.setHiddenConversations(hidden: boolean, threadId: string | string[], type: ThreadType = ThreadType.User,)`
-- **Alias phẳng**: `api.setHiddenConversations(hidden: boolean, threadId: string | string[], type: ThreadType = ThreadType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/hiddenconvers/add-remove</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.setHiddenConversations(hidden: boolean, threadId: string | string[], type: ThreadType = ThreadType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.setHiddenConversations(hidden: boolean, threadId: string | string[], type: ThreadType = ThreadType.User,)
+```
 
 ### Tham số
 
@@ -1164,11 +1329,16 @@ export type SetHiddenConversationsResponse = "";
 
 ## `setMute`
 
-Set mute
+Bật hoặc tắt chế độ im lặng (Mute thông báo) cho cuộc trò chuyện theo khoảng thời gian.
 
-- **Endpoint**: `POST /api/social/profile/setmute`
-- **Domain call**: `api.chat.setMute(params: SetMuteParams = {}, threadID: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.setMute(params: SetMuteParams = {}, threadID: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/profile/setmute</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.setMute(params: SetMuteParams = {}, threadID: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.setMute(params: SetMuteParams = {}, threadID: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -1206,11 +1376,16 @@ export enum MuteAction {
 
 ## `setPinnedConversations`
 
-Pin and unpin conversations of threads)
+Ghim hoặc bỏ ghim cuộc trò chuyện lên đầu danh sách.
 
-- **Endpoint**: `POST /api/pinconvers/updatev2`
-- **Domain call**: `api.chat.setPinnedConversations(pinned: boolean, threadId: string | string[], type: ThreadType = ThreadType.User,)`
-- **Alias phẳng**: `api.setPinnedConversations(pinned: boolean, threadId: string | string[], type: ThreadType = ThreadType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/pinconvers/updatev2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.setPinnedConversations(pinned: boolean, threadId: string | string[], type: ThreadType = ThreadType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.setPinnedConversations(pinned: boolean, threadId: string | string[], type: ThreadType = ThreadType.User,)
+```
 
 ### Tham số
 
@@ -1228,11 +1403,16 @@ export type SetPinnedConversationsResponse = "";
 
 ## `undo`
 
-Undo a message
+Thu hồi (Undo) một tin nhắn đã gửi với tất cả mọi người trong cuộc trò chuyện.
 
-- **Endpoint**: `POST /api/message/undo`, `POST /api/group/undomsg`
-- **Domain call**: `api.chat.undo(payload: UndoPayload, threadId: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.undo(payload: UndoPayload, threadId: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/undo</span> <span class="zca-endpoint-pill">/api/group/undomsg</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.undo(payload: UndoPayload, threadId: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.undo(payload: UndoPayload, threadId: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -1259,9 +1439,14 @@ export type UndoResponse = {
 
 Thu hồi hàng loạt nhiều tin nhắn cùng lúc trong hội thoại cá nhân hoặc nhóm (command 12115 / 12116)
 
-- **Endpoint**: `POST /api/group/multi_undomsg`, `POST /api/message/multi_undo`
-- **Domain call**: `api.chat.undoMultiMessage(msgs: UndoMultiMessageItem[], threadId: string, type: ThreadType = ThreadType.User,)`
-- **Alias phẳng**: `api.undoMultiMessage(msgs: UndoMultiMessageItem[], threadId: string, type: ThreadType = ThreadType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/multi_undomsg</span> <span class="zca-endpoint-pill">/api/message/multi_undo</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.undoMultiMessage(msgs: UndoMultiMessageItem[], threadId: string, type: ThreadType = ThreadType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.undoMultiMessage(msgs: UndoMultiMessageItem[], threadId: string, type: ThreadType = ThreadType.User,)
+```
 
 ### Tham số
 
@@ -1286,11 +1471,16 @@ export type UndoMultiMessageResponse = Record<string, unknown>;
 
 ## `updateArchivedChatList`
 
-Archive conversations
+Đưa cuộc trò chuyện vào mục Lưu trữ (Archive) hoặc khôi phục ra ngoài.
 
-- **Endpoint**: `POST /api/archivedchat/update`
-- **Domain call**: `api.chat.updateArchivedChatList(isArchived: boolean, conversations: UpdateArchivedChatListTarget | UpdateArchivedChatListTarget[])`
-- **Alias phẳng**: `api.updateArchivedChatList(isArchived: boolean, conversations: UpdateArchivedChatListTarget | UpdateArchivedChatListTarget[])`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/archivedchat/update</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.updateArchivedChatList(isArchived: boolean, conversations: UpdateArchivedChatListTarget | UpdateArchivedChatListTarget[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateArchivedChatList(isArchived: boolean, conversations: UpdateArchivedChatListTarget | UpdateArchivedChatListTarget[])
+```
 
 ### Tham số
 
@@ -1309,11 +1499,16 @@ export type UpdateArchivedChatListResponse = { needResync: boolean; version: num
 
 ## `updateAutoDeleteChat`
 
-Auto delete chat
+Cấu hình thời gian tự động xóa tin nhắn cho cuộc trò chuyện (1 ngày, 7 ngày, 30 ngày hoặc tắt).
 
-- **Endpoint**: `POST /api/conv/autodelete/updateConvers`
-- **Domain call**: `api.chat.updateAutoDeleteChat(ttl: ChatTTL, threadId: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.updateAutoDeleteChat(ttl: ChatTTL, threadId: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/conv/autodelete/updateConvers</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.updateAutoDeleteChat(ttl: ChatTTL, threadId: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateAutoDeleteChat(ttl: ChatTTL, threadId: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -1338,11 +1533,16 @@ export type UpdateAutoDeleteChatResponse = "";
 
 ## `updateHiddenConversPin`
 
-Update hidden conversation pin
+Đặt mới hoặc thay đổi mã PIN bảo mật cho tính năng Trò chuyện ẩn.
 
-- **Endpoint**: `GET /api/hiddenconvers/update-pin`
-- **Domain call**: `api.chat.updateHiddenConversPin(pin: string)`
-- **Alias phẳng**: `api.updateHiddenConversPin(pin: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/hiddenconvers/update-pin</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.updateHiddenConversPin(pin: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateHiddenConversPin(pin: string)
+```
 
 ### Tham số
 
@@ -1360,9 +1560,14 @@ export type UpdateHiddenConversPinResponse = "";
 
 Cập nhật danh sách hội thoại ghim qua `/api/pinconvers/update` (command 12121) hoặc `/api/pinconvers/updatev2` (command 12122)
 
-- **Endpoint**: `POST /api/pinconvers/updatev2`, `POST /api/pinconvers/update`
-- **Domain call**: `api.chat.updatePinConversations(options: UpdatePinConversationsOptions)`
-- **Alias phẳng**: `api.updatePinConversations(options: UpdatePinConversationsOptions)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/pinconvers/updatev2</span> <span class="zca-endpoint-pill">/api/pinconvers/update</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.updatePinConversations(options: UpdatePinConversationsOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updatePinConversations(options: UpdatePinConversationsOptions)
+```
 
 ### Tham số
 
@@ -1403,9 +1608,14 @@ export type UpdatePinConversationsResponse = {
 
 Cập nhật danh sách lịch sử tìm kiếm gần đây trên Zalo (command 12126)
 
-- **Endpoint**: `POST /api/recentsearch/update`
-- **Domain call**: `api.chat.updateRecentSearch(options: UpdateRecentSearchOptions = {})`
-- **Alias phẳng**: `api.updateRecentSearch(options: UpdateRecentSearchOptions = {})`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/recentsearch/update</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.updateRecentSearch(options: UpdateRecentSearchOptions = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateRecentSearch(options: UpdateRecentSearchOptions = {})
+```
 
 ### Tham số
 

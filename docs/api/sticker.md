@@ -1,6 +1,11 @@
-# Nhãn dán & Biểu cảm (Sticker)
+---
+title: "Nhãn dán & Biểu cảm (Sticker) (api.sticker) - 10 APIs"
+description: "Tìm kiếm nhãn dán, danh mục nhãn dán V2, nhãn dán gợi ý theo ngữ cảnh và nhãn dán cá nhân hóa. Tra cứu chi tiết 10 phương thức thuộc phân hệ api.sticker trong bộ SDK @softtynet/zca-js."
+---
 
-> Namespace: `api.sticker` (hoặc gọi trực tiếp `api.<methodName>`) — **10 API**
+# ✨ Nhãn dán & Biểu cảm (Sticker)
+
+> Namespace: `api.sticker` (hoặc gọi trực tiếp `api.<methodName>`) — **10 API nguyên bản**
 
 Tìm kiếm nhãn dán, danh mục nhãn dán V2, nhãn dán gợi ý theo ngữ cảnh và nhãn dán cá nhân hóa.
 
@@ -11,13 +16,13 @@ Tìm kiếm nhãn dán, danh mục nhãn dán V2, nhãn dán gợi ý theo ngữ
 | [`getPersonalizedStickerList`](#getpersonalizedstickerlist) | `GET` | `/api/message/sticker/personalized/list` | Lấy danh sách Sticker cá nhân hóa của tài khoản (command 11745) |
 | [`getStickerCategoriesV2`](#getstickercategoriesv2) | `GET` | `/api/message/sticker/category/list/v2` | Lấy danh sách danh mục bộ nhãn dán (Sticker Categories V2 - command 12020) |
 | [`getStickerCategoryData`](#getstickercategorydata) | `GET` | `/api/message/sticker/category/detail` | Lấy thông tin chi tiết một bộ nhãn dán theo `cid` (command 11156) |
-| [`getStickerCategoryDetail`](#getstickercategorydetail) | `GET` | `/api/message/sticker/category/sticker_detail` | Get sticker category detail |
+| [`getStickerCategoryDetail`](#getstickercategorydetail) | `GET` | `/api/message/sticker/category/sticker_detail` | Lấy danh sách toàn bộ nhãn dán nằm trong một bộ nhãn dán (Category/Pack ID). |
 | [`getStickerHello`](#getstickerhello) | `GET` | `/api/message/sticker/suggestion` | Lấy danh sách Sticker chào hỏi gợi ý khi bắt đầu trò chuyện mới (command 11751) |
 | [`getStickerSuggestKeywords`](#getstickersuggestkeywords) | `GET` | `/api/message/sticker/suggest/keywords` | Lấy bộ từ khóa gợi ý Sticker tự động khi gõ tin nhắn (command 11740) |
 | [`getStickerSuggestion`](#getstickersuggestion) | `GET` | `/api/message/sticker/suggest/stickers` | Gợi ý Sticker/GIF theo từ khóa đang nhập (command 11741) |
-| [`getStickers`](#getstickers) | `GET` | `/api/message/sticker` | Get stickers by keyword |
-| [`getStickersDetail`](#getstickersdetail) | `GET` | `/api/message/sticker/sticker_detail` | Get stickers detail by sticker IDs |
-| [`searchSticker`](#searchsticker) | `GET` | `/api/message/sticker/search` | Search stickers |
+| [`getStickers`](#getstickers) | `GET` | `/api/message/sticker` | Tìm kiếm danh sách ID nhãn dán theo từ khóa tiếng Việt/tiếng Anh. |
+| [`getStickersDetail`](#getstickersdetail) | `GET` | `/api/message/sticker/sticker_detail` | Lấy thông tin chi tiết (URL ảnh động, loại sticker, cateId) của một hoặc nhiều Sticker ID. |
+| [`searchSticker`](#searchsticker) | `GET` | `/api/message/sticker/search` | Tìm kiếm nhãn dán nâng cao theo từ khóa. |
 
 ---
 
@@ -25,9 +30,14 @@ Tìm kiếm nhãn dán, danh mục nhãn dán V2, nhãn dán gợi ý theo ngữ
 
 Lấy danh sách Sticker cá nhân hóa của tài khoản (command 11745)
 
-- **Endpoint**: `GET /api/message/sticker/personalized/list`
-- **Domain call**: `api.sticker.getPersonalizedStickerList()`
-- **Alias phẳng**: `api.getPersonalizedStickerList()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/personalized/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sticker.getPersonalizedStickerList()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getPersonalizedStickerList()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -44,9 +54,14 @@ export type GetPersonalizedStickerListResponse = {
 
 Lấy danh sách danh mục bộ nhãn dán (Sticker Categories V2 - command 12020)
 
-- **Endpoint**: `GET /api/message/sticker/category/list/v2`
-- **Domain call**: `api.sticker.getStickerCategoriesV2()`
-- **Alias phẳng**: `api.getStickerCategoriesV2()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/category/list/v2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sticker.getStickerCategoriesV2()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getStickerCategoriesV2()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -76,9 +91,14 @@ export type GetStickerCategoriesV2Response = {
 
 Lấy thông tin chi tiết một bộ nhãn dán theo `cid` (command 11156)
 
-- **Endpoint**: `GET /api/message/sticker/category/detail`
-- **Domain call**: `api.sticker.getStickerCategoryData(cid: number)`
-- **Alias phẳng**: `api.getStickerCategoryData(cid: number)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/category/detail</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sticker.getStickerCategoryData(cid: number)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getStickerCategoryData(cid: number)
+```
 
 ### Tham số
 
@@ -94,11 +114,16 @@ export type GetStickerCategoryDataResponse = StickerCategoryV2Item;
 
 ## `getStickerCategoryDetail`
 
-Get sticker category detail
+Lấy danh sách toàn bộ nhãn dán nằm trong một bộ nhãn dán (Category/Pack ID).
 
-- **Endpoint**: `GET /api/message/sticker/category/sticker_detail`
-- **Domain call**: `api.sticker.getStickerCategoryDetail(cateId: number)`
-- **Alias phẳng**: `api.getStickerCategoryDetail(cateId: number)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/category/sticker_detail</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sticker.getStickerCategoryDetail(cateId: number)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getStickerCategoryDetail(cateId: number)
+```
 
 ### Tham số
 
@@ -116,9 +141,14 @@ export type GetStickerCategoryDetailResponse = StickerDetail[];
 
 Lấy danh sách Sticker chào hỏi gợi ý khi bắt đầu trò chuyện mới (command 11751)
 
-- **Endpoint**: `GET /api/message/sticker/suggestion`
-- **Domain call**: `api.sticker.getStickerHello()`
-- **Alias phẳng**: `api.getStickerHello()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/suggestion</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sticker.getStickerHello()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getStickerHello()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -147,9 +177,14 @@ export type GetStickerHelloResponse = Record<string, unknown> | StickerHelloItem
 
 Lấy bộ từ khóa gợi ý Sticker tự động khi gõ tin nhắn (command 11740)
 
-- **Endpoint**: `GET /api/message/sticker/suggest/keywords`
-- **Domain call**: `api.sticker.getStickerSuggestKeywords()`
-- **Alias phẳng**: `api.getStickerSuggestKeywords()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/suggest/keywords</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sticker.getStickerSuggestKeywords()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getStickerSuggestKeywords()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -173,9 +208,14 @@ export type GetStickerSuggestKeywordsResponse = {
 
 Gợi ý Sticker/GIF theo từ khóa đang nhập (command 11741)
 
-- **Endpoint**: `GET /api/message/sticker/suggest/stickers`
-- **Domain call**: `api.sticker.getStickerSuggestion(options: GetStickerSuggestionOptions | string)`
-- **Alias phẳng**: `api.getStickerSuggestion(options: GetStickerSuggestionOptions | string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/suggest/stickers</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sticker.getStickerSuggestion(options: GetStickerSuggestionOptions | string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getStickerSuggestion(options: GetStickerSuggestionOptions | string)
+```
 
 ### Tham số
 
@@ -202,11 +242,16 @@ export type GetStickerSuggestionResponse = {
 
 ## `getStickers`
 
-Get stickers by keyword
+Tìm kiếm danh sách ID nhãn dán theo từ khóa tiếng Việt/tiếng Anh.
 
-- **Endpoint**: `GET /api/message/sticker`
-- **Domain call**: `api.sticker.getStickers(keyword: string)`
-- **Alias phẳng**: `api.getStickers(keyword: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sticker.getStickers(keyword: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getStickers(keyword: string)
+```
 
 ### Tham số
 
@@ -216,11 +261,16 @@ Get stickers by keyword
 
 ## `getStickersDetail`
 
-Get stickers detail by sticker IDs
+Lấy thông tin chi tiết (URL ảnh động, loại sticker, cateId) của một hoặc nhiều Sticker ID.
 
-- **Endpoint**: `GET /api/message/sticker/sticker_detail`
-- **Domain call**: `api.sticker.getStickersDetail(stickerIds: number | number[])`
-- **Alias phẳng**: `api.getStickersDetail(stickerIds: number | number[])`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/sticker_detail</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sticker.getStickersDetail(stickerIds: number | number[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.getStickersDetail(stickerIds: number | number[])
+```
 
 ### Tham số
 
@@ -236,11 +286,16 @@ export type StickerDetailResponse = StickerDetail[];
 
 ## `searchSticker`
 
-Search stickers
+Tìm kiếm nhãn dán nâng cao theo từ khóa.
 
-- **Endpoint**: `GET /api/message/sticker/search`
-- **Domain call**: `api.sticker.searchSticker(keyword: string, limit: number = 50)`
-- **Alias phẳng**: `api.searchSticker(keyword: string, limit: number = 50)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/search</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sticker.searchSticker(keyword: string, limit: number = 50)
+// Hoặc gọi phẳng (Flat Alias):
+await api.searchSticker(keyword: string, limit: number = 50)
+```
 
 ### Tham số
 

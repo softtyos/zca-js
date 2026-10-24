@@ -1,6 +1,11 @@
-# Bảng tin, Ghi chú, Bình chọn & Lịch hẹn (Board)
+---
+title: "Bảng tin, Ghi chú, Bình chọn & Lịch hẹn (Board) (api.board) - 16 APIs"
+description: "Quản lý Tin ghim (Pin Topics), Ghi chú nhóm (Notes), Bình chọn (Polls) và Lịch hẹn (Reminders). Tra cứu chi tiết 16 phương thức thuộc phân hệ api.board trong bộ SDK @softtynet/zca-js."
+---
 
-> Namespace: `api.board` (hoặc gọi trực tiếp `api.<methodName>`) — **16 API**
+# 📌 Bảng tin, Ghi chú, Bình chọn & Lịch hẹn (Board)
+
+> Namespace: `api.board` (hoặc gọi trực tiếp `api.<methodName>`) — **16 API nguyên bản**
 
 Quản lý Tin ghim (Pin Topics), Ghi chú nhóm (Notes), Bình chọn (Polls) và Lịch hẹn (Reminders).
 
@@ -8,36 +13,37 @@ Quản lý Tin ghim (Pin Topics), Ghi chú nhóm (Notes), Bình chọn (Polls) v
 
 | Phương thức | HTTP | Endpoint Zalo | Mô tả |
 | :--- | :---: | :--- | :--- |
-| [`addPollOptions`](#addpolloptions) | `GET` | `/api/poll/option/add` | Add new option to poll |
-| [`createNote`](#createnote) | `POST` | `/api/board/topic/createv2` | Create a note in a group |
-| [`createPoll`](#createpoll) | `POST` | `/api/poll/create` | Create a poll in a group. |
-| [`createReminder`](#createreminder) | `POST` | `/api/board/oneone/create`<br/>`/api/board/topic/createv2` | Create a reminder in a group |
-| [`editNote`](#editnote) | `POST` | `/api/board/topic/updatev2` | Edit an existing note in a group |
-| [`editReminder`](#editreminder) | `POST` | `/api/board/oneone/update`<br/>`/api/board/topic/updatev2` | Edit an existing reminder |
-| [`getListBoard`](#getlistboard) | `GET` | `/api/board/list` | Get list board items in a group |
+| [`addPollOptions`](#addpolloptions) | `GET` | `/api/poll/option/add` | Thêm phương án lựa chọn mới vào một cuộc Bình chọn (Poll) đang mở trong nhóm. |
+| [`createNote`](#createnote) | `POST` | `/api/board/topic/createv2` | Tạo một Ghi chú (Note) mới trên Bảng tin nhóm và tùy chọn ghim lên đầu. |
+| [`createPoll`](#createpoll) | `POST` | `/api/poll/create` | Tạo một cuộc Bình chọn (Poll) mới trong nhóm với nhiều phương án và cấu hình ẩn danh/đa lựa chọn. |
+| [`createReminder`](#createreminder) | `POST` | `/api/board/oneone/create`<br/>`/api/board/topic/createv2` | Tạo một Lịch hẹn (Reminder) mới trong hội thoại cá nhân hoặc nhóm. |
+| [`editNote`](#editnote) | `POST` | `/api/board/topic/updatev2` | Chỉnh sửa nội dung ghi chú đã tạo trên Bảng tin nhóm. |
+| [`editReminder`](#editreminder) | `POST` | `/api/board/oneone/update`<br/>`/api/board/topic/updatev2` | Chỉnh sửa nội dung và thời gian của một Lịch hẹn (Reminder). |
+| [`getListBoard`](#getlistboard) | `GET` | `/api/board/list` | Lấy danh sách các mục trên Bảng tin nhóm (bao gồm Ghi chú, Bình chọn và Tin nhắn ghim) qua /api/board/list. |
 | [`getListPinTopics`](#getlistpintopics) | `GET` | `/api/board/pin/list` | Lấy danh sách chủ đề / tin nhắn đã ghim trong bảng tin nhóm (command 12001) |
-| [`getListReminder`](#getlistreminder) | `GET` | `/api/board/oneone/list`<br/>`/api/board/listReminder` | Get list reminder |
-| [`getPollDetail`](#getpolldetail) | `POST` | `/api/poll/detail` | Get poll detail |
-| [`getReminder`](#getreminder) | `GET` | `/api/board/topic/getReminder` | Get reminder details from a group |
-| [`getReminderResponses`](#getreminderresponses) | `GET` | `/api/board/topic/listResponseEvent` | Get reminder responses |
-| [`lockPoll`](#lockpoll) | `POST` | `/api/poll/end` | Lock a poll, preventing further votes. |
-| [`removeReminder`](#removereminder) | `POST` | `/api/board/oneone/remove`<br/>`/api/board/topic/remove` | Remove a reminder in a (user/group) |
-| [`sharePoll`](#sharepoll) | `POST` | `/api/poll/share` | Share a poll |
-| [`votePoll`](#votepoll) | `GET` | `/api/poll/vote` | Vote on a poll |
+| [`getListReminder`](#getlistreminder) | `GET` | `/api/board/oneone/list`<br/>`/api/board/listReminder` | Lấy danh sách các Lịch hẹn (Reminders) trong hội thoại cá nhân hoặc nhóm. |
+| [`getPollDetail`](#getpolldetail) | `POST` | `/api/poll/detail` | Lấy thông tin chi tiết và toàn bộ danh sách UID thành viên đã bỏ phiếu (voters) trong cuộc Bình chọn qua /api/poll/detail. |
+| [`getReminder`](#getreminder) | `GET` | `/api/board/topic/getReminder` | Lấy thông tin chi tiết của một Lịch hẹn (Reminder) trong nhóm. |
+| [`getReminderResponses`](#getreminderresponses) | `GET` | `/api/board/topic/listResponseEvent` | Lấy danh sách UID các thành viên đã bấm Tham gia (acceptMember) hoặc Từ chối (rejectMember) một Lịch hẹn. |
+| [`lockPoll`](#lockpoll) | `POST` | `/api/poll/end` | Khóa (Kết thúc) một cuộc Bình chọn trong nhóm. |
+| [`removeReminder`](#removereminder) | `POST` | `/api/board/oneone/remove`<br/>`/api/board/topic/remove` | Xóa một Lịch hẹn trong hội thoại cá nhân hoặc nhóm. |
+| [`sharePoll`](#sharepoll) | `POST` | `/api/poll/share` | Chia sẻ lại cuộc Bình chọn vào luồng tin nhắn nhóm. |
+| [`votePoll`](#votepoll) | `GET` | `/api/poll/vote` | Bỏ phiếu bình chọn cho một hoặc nhiều phương án trong cuộc Bình chọn nhóm. |
 
 ---
 
 ## `addPollOptions`
 
-Add new option to poll
+Thêm phương án lựa chọn mới vào một cuộc Bình chọn (Poll) đang mở trong nhóm.
 
-- **Endpoint**: `GET /api/poll/option/add`
-- **Domain call**: `api.board.addPollOptions(payload: AddPollOptionsPayload)`
-- **Alias phẳng**: `api.addPollOptions(payload: AddPollOptionsPayload)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/poll/option/add</span></div>
 
-### Tham số
-
-- `payload`: 
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.addPollOptions(payload: AddPollOptionsPayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.addPollOptions(payload: AddPollOptionsPayload)
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -62,11 +68,16 @@ export type AddPollOptionsResponse = {
 
 ## `createNote`
 
-Create a note in a group
+Tạo một Ghi chú (Note) mới trên Bảng tin nhóm và tùy chọn ghim lên đầu.
 
-- **Endpoint**: `POST /api/board/topic/createv2`
-- **Domain call**: `api.board.createNote(options: CreateNoteOptions, groupId: string)`
-- **Alias phẳng**: `api.createNote(options: CreateNoteOptions, groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/board/topic/createv2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.createNote(options: CreateNoteOptions, groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.createNote(options: CreateNoteOptions, groupId: string)
+```
 
 ### Tham số
 
@@ -90,11 +101,16 @@ export type CreateNoteResponse = NoteDetail;
 
 ## `createPoll`
 
-Create a poll in a group.
+Tạo một cuộc Bình chọn (Poll) mới trong nhóm với nhiều phương án và cấu hình ẩn danh/đa lựa chọn.
 
-- **Endpoint**: `POST /api/poll/create`
-- **Domain call**: `api.board.createPoll(options: CreatePollOptions, groupId: string)`
-- **Alias phẳng**: `api.createPoll(options: CreatePollOptions, groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/poll/create</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.createPoll(options: CreatePollOptions, groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.createPoll(options: CreatePollOptions, groupId: string)
+```
 
 ### Tham số
 
@@ -148,11 +164,16 @@ export type CreatePollResponse = PollDetail;
 
 ## `createReminder`
 
-Create a reminder in a group
+Tạo một Lịch hẹn (Reminder) mới trong hội thoại cá nhân hoặc nhóm.
 
-- **Endpoint**: `POST /api/board/oneone/create`, `POST /api/board/topic/createv2`
-- **Domain call**: `api.board.createReminder(options: CreateReminderOptions, threadId: string, type: ThreadType = ThreadType.User,)`
-- **Alias phẳng**: `api.createReminder(options: CreateReminderOptions, threadId: string, type: ThreadType = ThreadType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/board/oneone/create</span> <span class="zca-endpoint-pill">/api/board/topic/createv2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.createReminder(options: CreateReminderOptions, threadId: string, type: ThreadType = ThreadType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.createReminder(options: CreateReminderOptions, threadId: string, type: ThreadType = ThreadType.User,)
+```
 
 ### Tham số
 
@@ -181,11 +202,16 @@ export type CreateReminderResponse = CreateReminderUser | CreateReminderGroup;
 
 ## `editNote`
 
-Edit an existing note in a group
+Chỉnh sửa nội dung ghi chú đã tạo trên Bảng tin nhóm.
 
-- **Endpoint**: `POST /api/board/topic/updatev2`
-- **Domain call**: `api.board.editNote(options: EditNoteOptions, groupId: string)`
-- **Alias phẳng**: `api.editNote(options: EditNoteOptions, groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/board/topic/updatev2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.editNote(options: EditNoteOptions, groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.editNote(options: EditNoteOptions, groupId: string)
+```
 
 ### Tham số
 
@@ -217,11 +243,16 @@ export type EditNoteResponse = NoteDetail;
 
 ## `editReminder`
 
-Edit an existing reminder
+Chỉnh sửa nội dung và thời gian của một Lịch hẹn (Reminder).
 
-- **Endpoint**: `POST /api/board/oneone/update`, `POST /api/board/topic/updatev2`
-- **Domain call**: `api.board.editReminder(options: EditReminderOptions, threadId: string, type: ThreadType = ThreadType.User,)`
-- **Alias phẳng**: `api.editReminder(options: EditReminderOptions, threadId: string, type: ThreadType = ThreadType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/board/oneone/update</span> <span class="zca-endpoint-pill">/api/board/topic/updatev2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.editReminder(options: EditReminderOptions, threadId: string, type: ThreadType = ThreadType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.editReminder(options: EditReminderOptions, threadId: string, type: ThreadType = ThreadType.User,)
+```
 
 ### Tham số
 
@@ -251,11 +282,16 @@ export type EditReminderResponse = EditReminderUser | EditReminderGroup;
 
 ## `getListBoard`
 
-Get list board items in a group
+Lấy danh sách các mục trên Bảng tin nhóm (bao gồm Ghi chú, Bình chọn và Tin nhắn ghim) qua /api/board/list.
 
-- **Endpoint**: `GET /api/board/list`
-- **Domain call**: `api.board.getListBoard(options: ListBoardOptions, groupId: string)`
-- **Alias phẳng**: `api.getListBoard(options: ListBoardOptions, groupId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/board/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.getListBoard(options: ListBoardOptions, groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getListBoard(options: ListBoardOptions, groupId: string)
+```
 
 ### Tham số
 
@@ -301,9 +337,14 @@ type RawListBoard = {
 
 Lấy danh sách chủ đề / tin nhắn đã ghim trong bảng tin nhóm (command 12001)
 
-- **Endpoint**: `GET /api/board/pin/list`
-- **Domain call**: `api.board.getListPinTopics(groupId: string, boardVersion: number = 0)`
-- **Alias phẳng**: `api.getListPinTopics(groupId: string, boardVersion: number = 0)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/board/pin/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.getListPinTopics(groupId: string, boardVersion: number = 0)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getListPinTopics(groupId: string, boardVersion: number = 0)
+```
 
 ### Tham số
 
@@ -323,11 +364,16 @@ export type GetListPinTopicsResponse = {
 
 ## `getListReminder`
 
-Get list reminder
+Lấy danh sách các Lịch hẹn (Reminders) trong hội thoại cá nhân hoặc nhóm.
 
-- **Endpoint**: `GET /api/board/oneone/list`, `GET /api/board/listReminder`
-- **Domain call**: `api.board.getListReminder(options: ListReminderOptions, threadId: string, type: ThreadType = ThreadType.User,)`
-- **Alias phẳng**: `api.getListReminder(options: ListReminderOptions, threadId: string, type: ThreadType = ThreadType.User,)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/board/oneone/list</span> <span class="zca-endpoint-pill">/api/board/listReminder</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.getListReminder(options: ListReminderOptions, threadId: string, type: ThreadType = ThreadType.User,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getListReminder(options: ListReminderOptions, threadId: string, type: ThreadType = ThreadType.User,)
+```
 
 ### Tham số
 
@@ -372,11 +418,16 @@ export type GetListReminderResponse = (ReminderListUser & ReminderListGroup)[];
 
 ## `getPollDetail`
 
-Get poll detail
+Lấy thông tin chi tiết và toàn bộ danh sách UID thành viên đã bỏ phiếu (voters) trong cuộc Bình chọn qua /api/poll/detail.
 
-- **Endpoint**: `POST /api/poll/detail`
-- **Domain call**: `api.board.getPollDetail(pollId: number)`
-- **Alias phẳng**: `api.getPollDetail(pollId: number)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/poll/detail</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.getPollDetail(pollId: number)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getPollDetail(pollId: number)
+```
 
 ### Tham số
 
@@ -392,11 +443,16 @@ export type PollDetailResponse = PollDetail;
 
 ## `getReminder`
 
-Get reminder details from a group
+Lấy thông tin chi tiết của một Lịch hẹn (Reminder) trong nhóm.
 
-- **Endpoint**: `GET /api/board/topic/getReminder`
-- **Domain call**: `api.board.getReminder(reminderId: string)`
-- **Alias phẳng**: `api.getReminder(reminderId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/board/topic/getReminder</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.getReminder(reminderId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getReminder(reminderId: string)
+```
 
 ### Tham số
 
@@ -412,11 +468,16 @@ export type GetReminderResponse = ReminderGroup;
 
 ## `getReminderResponses`
 
-Get reminder responses
+Lấy danh sách UID các thành viên đã bấm Tham gia (acceptMember) hoặc Từ chối (rejectMember) một Lịch hẹn.
 
-- **Endpoint**: `GET /api/board/topic/listResponseEvent`
-- **Domain call**: `api.board.getReminderResponses(reminderId: string)`
-- **Alias phẳng**: `api.getReminderResponses(reminderId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/board/topic/listResponseEvent</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.getReminderResponses(reminderId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getReminderResponses(reminderId: string)
+```
 
 ### Tham số
 
@@ -435,11 +496,16 @@ export type GetReminderResponsesResponse = {
 
 ## `lockPoll`
 
-Lock a poll, preventing further votes.
+Khóa (Kết thúc) một cuộc Bình chọn trong nhóm.
 
-- **Endpoint**: `POST /api/poll/end`
-- **Domain call**: `api.board.lockPoll(pollId: number)`
-- **Alias phẳng**: `api.lockPoll(pollId: number)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/poll/end</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.lockPoll(pollId: number)
+// Hoặc gọi phẳng (Flat Alias):
+await api.lockPoll(pollId: number)
+```
 
 ### Tham số
 
@@ -455,11 +521,16 @@ export type LockPollResponse = "";
 
 ## `removeReminder`
 
-Remove a reminder in a (user/group)
+Xóa một Lịch hẹn trong hội thoại cá nhân hoặc nhóm.
 
-- **Endpoint**: `POST /api/board/oneone/remove`, `POST /api/board/topic/remove`
-- **Domain call**: `api.board.removeReminder(reminderId: string, threadId: string, type: ThreadType = ThreadType.User)`
-- **Alias phẳng**: `api.removeReminder(reminderId: string, threadId: string, type: ThreadType = ThreadType.User)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/board/oneone/remove</span> <span class="zca-endpoint-pill">/api/board/topic/remove</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.removeReminder(reminderId: string, threadId: string, type: ThreadType = ThreadType.User)
+// Hoặc gọi phẳng (Flat Alias):
+await api.removeReminder(reminderId: string, threadId: string, type: ThreadType = ThreadType.User)
+```
 
 ### Tham số
 
@@ -477,11 +548,16 @@ export type RemoveReminderResponse = "" | number;
 
 ## `sharePoll`
 
-Share a poll
+Chia sẻ lại cuộc Bình chọn vào luồng tin nhắn nhóm.
 
-- **Endpoint**: `POST /api/poll/share`
-- **Domain call**: `api.board.sharePoll(pollId: number)`
-- **Alias phẳng**: `api.sharePoll(pollId: number)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/poll/share</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.sharePoll(pollId: number)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sharePoll(pollId: number)
+```
 
 ### Tham số
 
@@ -497,11 +573,16 @@ export type SharePollResponse = "";
 
 ## `votePoll`
 
-Vote on a poll
+Bỏ phiếu bình chọn cho một hoặc nhiều phương án trong cuộc Bình chọn nhóm.
 
-- **Endpoint**: `GET /api/poll/vote`
-- **Domain call**: `api.board.votePoll(pollId: number, optionId: number | number[])`
-- **Alias phẳng**: `api.votePoll(pollId: number, optionId: number | number[])`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/poll/vote</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.board.votePoll(pollId: number, optionId: number | number[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.votePoll(pollId: number, optionId: number | number[])
+```
 
 ### Tham số
 

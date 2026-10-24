@@ -1,6 +1,11 @@
-# Bạn bè & Danh bạ (Friend)
+---
+title: "Bạn bè & Danh bạ (Friend) (api.friend) - 33 APIs"
+description: "Quản lý danh sách bạn bè, lời mời kết bạn, gợi ý kết bạn, biệt danh (alias), chặn và kiểm tra trạng thái hoạt động PC/Web. Tra cứu chi tiết 33 phương thức thuộc phân hệ api.friend trong bộ SDK @softtynet/zca-js."
+---
 
-> Namespace: `api.friend` (hoặc gọi trực tiếp `api.<methodName>`) — **33 API**
+# 🤝 Bạn bè & Danh bạ (Friend)
+
+> Namespace: `api.friend` (hoặc gọi trực tiếp `api.<methodName>`) — **33 API nguyên bản**
 
 Quản lý danh sách bạn bè, lời mời kết bạn, gợi ý kết bạn, biệt danh (alias), chặn và kiểm tra trạng thái hoạt động PC/Web.
 
@@ -8,49 +13,54 @@ Quản lý danh sách bạn bè, lời mời kết bạn, gợi ý kết bạn, 
 
 | Phương thức | HTTP | Endpoint Zalo | Mô tả |
 | :--- | :---: | :--- | :--- |
-| [`acceptFriendRequest`](#acceptfriendrequest) | `POST` | `/api/friend/accept` | Accept a friend request from a User |
-| [`blockUser`](#blockuser) | `POST` | `/api/friend/block` | Block a User |
-| [`blockViewFeed`](#blockviewfeed) | `POST` | `/api/friend/feed/block` | Block/Unblock friend view feed by ID |
-| [`changeFriendAlias`](#changefriendalias) | `GET` | `/api/alias/update` | Change friend's alias |
+| [`acceptFriendRequest`](#acceptfriendrequest) | `POST` | `/api/friend/accept` | Đồng ý lời mời kết bạn từ một người dùng. |
+| [`blockUser`](#blockuser) | `POST` | `/api/friend/block` | Chặn tin nhắn từ một người dùng theo UID. |
+| [`blockViewFeed`](#blockviewfeed) | `POST` | `/api/friend/feed/block` | Chặn hoặc mở chặn quyền xem Nhật ký (Timeline Feed) đối với một người bạn. |
+| [`changeFriendAlias`](#changefriendalias) | `GET` | `/api/alias/update` | Đặt hoặc đổi tên gợi nhớ (Biệt danh / Alias) cho bạn bè. |
 | [`clearUnreadFriendRequests`](#clearunreadfriendrequests) | `POST` | `/api/friend/recommendsv2/read-requests` | Đánh dấu đã xem danh sách lời mời kết bạn chưa đọc (command 12232) |
-| [`findUser`](#finduser) | `GET` | `/api/friend/profile/get` | Find user by phone number |
-| [`findUserByUsername`](#finduserbyusername) | `GET` | `/api/friend/search/by-user-name` | Find user by username |
-| [`getAliasList`](#getaliaslist) | `GET` | `/api/alias/list` | Get alias list |
+| [`findUser`](#finduser) | `GET` | `/api/friend/profile/get` | Tìm kiếm thông tin tài khoản Zalo thông qua số điện thoại. |
+| [`findUserByUsername`](#finduserbyusername) | `GET` | `/api/friend/search/by-user-name` | Tìm kiếm thông tin tài khoản Zalo thông qua Username. |
+| [`getAliasList`](#getaliaslist) | `GET` | `/api/alias/list` | Lấy danh sách toàn bộ tên gợi nhớ (Alias) đã đặt cho bạn bè. |
 | [`getAliasListV2`](#getaliaslistv2) | `GET` | `/api/alias/list/v2` | Lấy danh sách tên gợi nhớ (Alias) của bạn bè chuẩn V2 có hỗ trợ phân trang (command 12205) |
-| [`getAllFriends`](#getallfriends) | `GET` | `/api/social/friend/getfriends` | Get all friends |
+| [`getAllFriends`](#getallfriends) | `GET` | `/api/social/friend/getfriends` | Lấy toàn bộ danh sách bạn bè trong danh bạ tài khoản hiện tại. |
 | [`getBlockFriends`](#getblockfriends) | `GET` | `/api/friend/blocklistv2` | Lấy danh sách người dùng đang bị chặn chuẩn V2 (command 11429) |
-| [`getCloseFriends`](#getclosefriends) | `GET` | `/api/social/friend/getclosedfriends` | Get close friends |
+| [`getCloseFriends`](#getclosefriends) | `GET` | `/api/social/friend/getclosedfriends` | Lấy danh sách bạn thân (Close Friends). |
 | [`getExtraFriendInfo`](#getextrafriendinfo) | `POST` | `/api/friend/context/multiget` | Lấy ngữ cảnh và vai trò mở rộng (ví dụ `role: ["boss"]`) của danh sách bạn bè (command 11442) |
-| [`getFriendBoardList`](#getfriendboardlist) | `GET` | `/api/friendboard/list` | Get friend board list |
-| [`getFriendOnlines`](#getfriendonlines) | `GET` | `/api/social/friend/onlines` | Get friend onlines? |
+| [`getFriendBoardList`](#getfriendboardlist) | `GET` | `/api/friendboard/list` | Lấy thông tin bảng tin chung với một người bạn. |
+| [`getFriendOnlines`](#getfriendonlines) | `GET` | `/api/social/friend/onlines` | Lấy danh sách bạn bè đang trực tuyến (Online) kèm trạng thái thiết bị. |
 | [`getFriendProfilesV2`](#getfriendprofilesv2) | `POST` | `/api/social/friend/getprofiles/v2` | Lấy hàng loạt hồ sơ chi tiết của danh sách bạn bè kèm trạng thái online qua `/api/social/friend/getprofiles/v2` (command 11140) |
-| [`getFriendRecommendations`](#getfriendrecommendations) | `GET` | `/api/friend/recommendsv2/list` | Get friend recommendations/received friend requests |
-| [`getFriendRequestStatus`](#getfriendrequeststatus) | `GET` | `/api/friend/reqstatus` | Get friend request status |
+| [`getFriendRecommendations`](#getfriendrecommendations) | `GET` | `/api/friend/recommendsv2/list` | Lấy danh sách gợi ý kết bạn và lời mời kết bạn đã nhận. |
+| [`getFriendRequestStatus`](#getfriendrequeststatus) | `GET` | `/api/friend/reqstatus` | Kiểm tra trạng thái quan hệ bạn bè và lời mời kết bạn với một UID. |
 | [`getFriendsActivePCWeb`](#getfriendsactivepcweb) | `GET` | `/api/social/friend/active-pcweb` | Lấy danh sách bạn bè đang hoạt động trên Zalo PC / Web qua `/api/social/friend/active-pcweb` (command 12072) |
 | [`getFriendsEmojiStatus`](#getfriendsemojistatus) | `GET` | `/api/v1/emoji-status/friends` | Lấy danh sách trạng thái Emoji (Emoji Status) hiện tại của bạn bè (command 16301) |
 | [`getLastReadContactTab`](#getlastreadcontacttab) | `GET` | `/api/friend/last-read-contact-tab` | Lấy dấu thời gian lần cuối đọc tab Danh bạ (command 12230) |
-| [`getMultiUsersByPhones`](#getmultiusersbyphones) | `GET` | `/api/friend/profile/multiget` | Get multiple user(s) by their phone numbers. |
+| [`getMultiUsersByPhones`](#getmultiusersbyphones) | `GET` | `/api/friend/profile/multiget` | Tra cứu hàng loạt thông tin tài khoản Zalo từ danh sách nhiều số điện thoại cùng lúc. |
 | [`getPhonebookV2`](#getphonebookv2) | `GET` | `/api/social/friend/phonebook/v2` | Lấy danh bạ bạn bè đồng bộ từ số điện thoại chuẩn V2 (command 12428) |
-| [`getSentFriendRequest`](#getsentfriendrequest) | `GET` | `/api/friend/requested/list` | Get friend requested |
-| [`lastOnline`](#lastonline) | `GET` | `/api/social/profile/lastOnline` | Get last online |
+| [`getSentFriendRequest`](#getsentfriendrequest) | `GET` | `/api/friend/requested/list` | Lấy danh sách các lời mời kết bạn mà tài khoản hiện tại đã gửi đi nhưng chưa được phản hồi. |
+| [`lastOnline`](#lastonline) | `GET` | `/api/social/profile/lastOnline` | Kiểm tra thời điểm truy cập (Online) gần nhất của một người dùng. |
 | [`readContactTab`](#readcontacttab) | `POST` | `/api/friend/read-contact-tab` | Đánh dấu đã đọc tab Danh bạ (command 12231) |
-| [`rejectFriendRequest`](#rejectfriendrequest) | `POST` | `/api/friend/reject` | Reject a friend request from a User |
-| [`removeFriend`](#removefriend) | `POST` | `/api/friend/remove` | Remove friend |
-| [`removeFriendAlias`](#removefriendalias) | `GET` | `/api/alias/remove` | Remove friend's alias |
-| [`sendFriendRequest`](#sendfriendrequest) | `POST` | `/api/friend/sendreq` | Send a friend request to a user. 215 if the user might have blocked you, 222 if user has already sent you a friend request, your request will be treated as acceptance instead. |
-| [`unblockUser`](#unblockuser) | `POST` | `/api/friend/unblock` | Unblock a User |
-| [`undoFriendRequest`](#undofriendrequest) | `POST` | `/api/friend/undo` | Undo send a friend request to a user. |
+| [`rejectFriendRequest`](#rejectfriendrequest) | `POST` | `/api/friend/reject` | Từ chối lời mời kết bạn từ một người dùng. |
+| [`removeFriend`](#removefriend) | `POST` | `/api/friend/remove` | Hủy kết bạn (Xóa bạn) với một người dùng trong danh bạ. |
+| [`removeFriendAlias`](#removefriendalias) | `GET` | `/api/alias/remove` | Xóa tên gợi nhớ (Biệt danh / Alias) đã đặt cho một người bạn. |
+| [`sendFriendRequest`](#sendfriendrequest) | `POST` | `/api/friend/sendreq` | Gửi lời mời kết bạn kèm lời chào tới một người dùng theo UID. |
+| [`unblockUser`](#unblockuser) | `POST` | `/api/friend/unblock` | Bỏ chặn tin nhắn đối với một người dùng. |
+| [`undoFriendRequest`](#undofriendrequest) | `POST` | `/api/friend/undo` | Thu hồi (Hủy) lời mời kết bạn đã gửi trước đó. |
 | [`verifyFriend`](#verifyfriend) | `POST` | `/api/social/friend/verify` | Kiểm tra và xác thực danh sách bạn bè qua `/api/social/friend/verify` (command 11138) |
 
 ---
 
 ## `acceptFriendRequest`
 
-Accept a friend request from a User
+Đồng ý lời mời kết bạn từ một người dùng.
 
-- **Endpoint**: `POST /api/friend/accept`
-- **Domain call**: `api.friend.acceptFriendRequest(friendId: string)`
-- **Alias phẳng**: `api.acceptFriendRequest(friendId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/accept</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.acceptFriendRequest(friendId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.acceptFriendRequest(friendId: string)
+```
 
 ### Tham số
 
@@ -66,11 +76,16 @@ export type AcceptFriendRequestResponse = "";
 
 ## `blockUser`
 
-Block a User
+Chặn tin nhắn từ một người dùng theo UID.
 
-- **Endpoint**: `POST /api/friend/block`
-- **Domain call**: `api.friend.blockUser(userId: string)`
-- **Alias phẳng**: `api.blockUser(userId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/block</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.blockUser(userId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.blockUser(userId: string)
+```
 
 ### Tham số
 
@@ -86,11 +101,16 @@ export type BlockUserResponse = "";
 
 ## `blockViewFeed`
 
-Block/Unblock friend view feed by ID
+Chặn hoặc mở chặn quyền xem Nhật ký (Timeline Feed) đối với một người bạn.
 
-- **Endpoint**: `POST /api/friend/feed/block`
-- **Domain call**: `api.friend.blockViewFeed(isBlockFeed: boolean, userId: string)`
-- **Alias phẳng**: `api.blockViewFeed(isBlockFeed: boolean, userId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/feed/block</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.blockViewFeed(isBlockFeed: boolean, userId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.blockViewFeed(isBlockFeed: boolean, userId: string)
+```
 
 ### Tham số
 
@@ -107,11 +127,16 @@ export type BlockViewFeedResponse = "";
 
 ## `changeFriendAlias`
 
-Change friend's alias
+Đặt hoặc đổi tên gợi nhớ (Biệt danh / Alias) cho bạn bè.
 
-- **Endpoint**: `GET /api/alias/update`
-- **Domain call**: `api.friend.changeFriendAlias(alias: string, friendId: string)`
-- **Alias phẳng**: `api.changeFriendAlias(alias: string, friendId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/alias/update</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.changeFriendAlias(alias: string, friendId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.changeFriendAlias(alias: string, friendId: string)
+```
 
 ### Tham số
 
@@ -130,9 +155,14 @@ export type ChangeFriendAliasResponse = "";
 
 Đánh dấu đã xem danh sách lời mời kết bạn chưa đọc (command 12232)
 
-- **Endpoint**: `POST /api/friend/recommendsv2/read-requests`
-- **Domain call**: `api.friend.clearUnreadFriendRequests(uidsSeen: string[] = [])`
-- **Alias phẳng**: `api.clearUnreadFriendRequests(uidsSeen: string[] = [])`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/recommendsv2/read-requests</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.clearUnreadFriendRequests(uidsSeen: string[] = [])
+// Hoặc gọi phẳng (Flat Alias):
+await api.clearUnreadFriendRequests(uidsSeen: string[] = [])
+```
 
 ### Tham số
 
@@ -148,11 +178,16 @@ export type ClearUnreadFriendRequestsResponse = Record<string, unknown> | string
 
 ## `findUser`
 
-Find user by phone number
+Tìm kiếm thông tin tài khoản Zalo thông qua số điện thoại.
 
-- **Endpoint**: `GET /api/friend/profile/get`
-- **Domain call**: `api.friend.findUser(phoneNumber: string, avatarSize: AvatarSize = AvatarSize.Large)`
-- **Alias phẳng**: `api.findUser(phoneNumber: string, avatarSize: AvatarSize = AvatarSize.Large)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/profile/get</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.findUser(phoneNumber: string, avatarSize: AvatarSize = AvatarSize.Large)
+// Hoặc gọi phẳng (Flat Alias):
+await api.findUser(phoneNumber: string, avatarSize: AvatarSize = AvatarSize.Large)
+```
 
 ### Tham số
 
@@ -169,11 +204,16 @@ export type FindUserResponse = UserBasic;
 
 ## `findUserByUsername`
 
-Find user by username
+Tìm kiếm thông tin tài khoản Zalo thông qua Username.
 
-- **Endpoint**: `GET /api/friend/search/by-user-name`
-- **Domain call**: `api.friend.findUserByUsername(username: string, avatarSize: AvatarSize = AvatarSize.Large)`
-- **Alias phẳng**: `api.findUserByUsername(username: string, avatarSize: AvatarSize = AvatarSize.Large)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/search/by-user-name</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.findUserByUsername(username: string, avatarSize: AvatarSize = AvatarSize.Large)
+// Hoặc gọi phẳng (Flat Alias):
+await api.findUserByUsername(username: string, avatarSize: AvatarSize = AvatarSize.Large)
+```
 
 ### Tham số
 
@@ -190,11 +230,16 @@ export type FindUserByUsernameResponse = UserBasic;
 
 ## `getAliasList`
 
-Get alias list
+Lấy danh sách toàn bộ tên gợi nhớ (Alias) đã đặt cho bạn bè.
 
-- **Endpoint**: `GET /api/alias/list`
-- **Domain call**: `api.friend.getAliasList(count: number = 100, page: number = 1)`
-- **Alias phẳng**: `api.getAliasList(count: number = 100, page: number = 1)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/alias/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getAliasList(count: number = 100, page: number = 1)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getAliasList(count: number = 100, page: number = 1)
+```
 
 ### Tham số
 
@@ -219,9 +264,14 @@ export type GetAliasListResponse = {
 
 Lấy danh sách tên gợi nhớ (Alias) của bạn bè chuẩn V2 có hỗ trợ phân trang (command 12205)
 
-- **Endpoint**: `GET /api/alias/list/v2`
-- **Domain call**: `api.friend.getAliasListV2(page: number = 1, count: number = 100)`
-- **Alias phẳng**: `api.getAliasListV2(page: number = 1, count: number = 100)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/alias/list/v2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getAliasListV2(page: number = 1, count: number = 100)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getAliasListV2(page: number = 1, count: number = 100)
+```
 
 ### Tham số
 
@@ -247,11 +297,16 @@ export type GetAliasListV2Response = {
 
 ## `getAllFriends`
 
-Get all friends
+Lấy toàn bộ danh sách bạn bè trong danh bạ tài khoản hiện tại.
 
-- **Endpoint**: `GET /api/social/friend/getfriends`
-- **Domain call**: `api.friend.getAllFriends(count: number = 20000, page: number = 1, avatarSize: AvatarSize = AvatarSize.Small)`
-- **Alias phẳng**: `api.getAllFriends(count: number = 20000, page: number = 1, avatarSize: AvatarSize = AvatarSize.Small)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/friend/getfriends</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getAllFriends(count: number = 20000, page: number = 1, avatarSize: AvatarSize = AvatarSize.Small)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getAllFriends(count: number = 20000, page: number = 1, avatarSize: AvatarSize = AvatarSize.Small)
+```
 
 ### Tham số
 
@@ -271,9 +326,14 @@ export type GetAllFriendsResponse = User[];
 
 Lấy danh sách người dùng đang bị chặn chuẩn V2 (command 11429)
 
-- **Endpoint**: `GET /api/friend/blocklistv2`
-- **Domain call**: `api.friend.getBlockFriends(page: number = 1, count: number = 50, avatarSize: number = 120)`
-- **Alias phẳng**: `api.getBlockFriends(page: number = 1, count: number = 50, avatarSize: number = 120)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/blocklistv2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getBlockFriends(page: number = 1, count: number = 50, avatarSize: number = 120)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getBlockFriends(page: number = 1, count: number = 50, avatarSize: number = 120)
+```
 
 ### Tham số
 
@@ -295,11 +355,16 @@ export type GetBlockFriendsResponse = {
 
 ## `getCloseFriends`
 
-Get close friends
+Lấy danh sách bạn thân (Close Friends).
 
-- **Endpoint**: `GET /api/social/friend/getclosedfriends`
-- **Domain call**: `api.friend.getCloseFriends()`
-- **Alias phẳng**: `api.getCloseFriends()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/friend/getclosedfriends</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getCloseFriends()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getCloseFriends()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -313,9 +378,14 @@ export type GetCloseFriendsResponse = User[];
 
 Lấy ngữ cảnh và vai trò mở rộng (ví dụ `role: ["boss"]`) của danh sách bạn bè (command 11442)
 
-- **Endpoint**: `POST /api/friend/context/multiget`
-- **Domain call**: `api.friend.getExtraFriendInfo(friendIds: string[])`
-- **Alias phẳng**: `api.getExtraFriendInfo(friendIds: string[])`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/context/multiget</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getExtraFriendInfo(friendIds: string[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.getExtraFriendInfo(friendIds: string[])
+```
 
 ### Tham số
 
@@ -331,11 +401,16 @@ export type GetExtraFriendInfoResponse = Record<string, ExtraContextInfo>;
 
 ## `getFriendBoardList`
 
-Get friend board list
+Lấy thông tin bảng tin chung với một người bạn.
 
-- **Endpoint**: `GET /api/friendboard/list`
-- **Domain call**: `api.friend.getFriendBoardList(conversationId: string)`
-- **Alias phẳng**: `api.getFriendBoardList(conversationId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friendboard/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getFriendBoardList(conversationId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getFriendBoardList(conversationId: string)
+```
 
 ### Tham số
 
@@ -354,11 +429,16 @@ export type GetFriendBoardListResponse = {
 
 ## `getFriendOnlines`
 
-Get friend onlines?
+Lấy danh sách bạn bè đang trực tuyến (Online) kèm trạng thái thiết bị.
 
-- **Endpoint**: `GET /api/social/friend/onlines`
-- **Domain call**: `api.friend.getFriendOnlines()`
-- **Alias phẳng**: `api.getFriendOnlines()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/friend/onlines</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getFriendOnlines()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getFriendOnlines()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -381,9 +461,14 @@ export type GetFriendOnlinesResponse = {
 
 Lấy hàng loạt hồ sơ chi tiết của danh sách bạn bè kèm trạng thái online qua `/api/social/friend/getprofiles/v2` (command 11140)
 
-- **Endpoint**: `POST /api/social/friend/getprofiles/v2`
-- **Domain call**: `api.friend.getFriendProfilesV2(friendIds: string | string[], options: GetFriendProfilesV2Options = {},)`
-- **Alias phẳng**: `api.getFriendProfilesV2(friendIds: string | string[], options: GetFriendProfilesV2Options = {},)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/friend/getprofiles/v2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getFriendProfilesV2(friendIds: string | string[], options: GetFriendProfilesV2Options = {},)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getFriendProfilesV2(friendIds: string | string[], options: GetFriendProfilesV2Options = {},)
+```
 
 ### Tham số
 
@@ -424,11 +509,16 @@ export type GetFriendProfilesV2Response = {
 
 ## `getFriendRecommendations`
 
-Get friend recommendations/received friend requests
+Lấy danh sách gợi ý kết bạn và lời mời kết bạn đã nhận.
 
-- **Endpoint**: `GET /api/friend/recommendsv2/list`
-- **Domain call**: `api.friend.getFriendRecommendations()`
-- **Alias phẳng**: `api.getFriendRecommendations()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/recommendsv2/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getFriendRecommendations()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getFriendRecommendations()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -483,11 +573,16 @@ export type GetFriendRecommendationsResponse = {
 
 ## `getFriendRequestStatus`
 
-Get friend request status
+Kiểm tra trạng thái quan hệ bạn bè và lời mời kết bạn với một UID.
 
-- **Endpoint**: `GET /api/friend/reqstatus`
-- **Domain call**: `api.friend.getFriendRequestStatus(friendId: string)`
-- **Alias phẳng**: `api.getFriendRequestStatus(friendId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/reqstatus</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getFriendRequestStatus(friendId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getFriendRequestStatus(friendId: string)
+```
 
 ### Tham số
 
@@ -511,9 +606,14 @@ export type GetFriendRequestStatusResponse = {
 
 Lấy danh sách bạn bè đang hoạt động trên Zalo PC / Web qua `/api/social/friend/active-pcweb` (command 12072)
 
-- **Endpoint**: `GET /api/social/friend/active-pcweb`
-- **Domain call**: `api.friend.getFriendsActivePCWeb()`
-- **Alias phẳng**: `api.getFriendsActivePCWeb()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/friend/active-pcweb</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getFriendsActivePCWeb()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getFriendsActivePCWeb()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -531,9 +631,14 @@ export type GetFriendsActivePCWebResponse = {
 
 Lấy danh sách trạng thái Emoji (Emoji Status) hiện tại của bạn bè (command 16301)
 
-- **Endpoint**: `GET /api/v1/emoji-status/friends`
-- **Domain call**: `api.friend.getFriendsEmojiStatus(options: GetFriendsEmojiStatusOptions = {})`
-- **Alias phẳng**: `api.getFriendsEmojiStatus(options: GetFriendsEmojiStatusOptions = {})`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/v1/emoji-status/friends</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getFriendsEmojiStatus(options: GetFriendsEmojiStatusOptions = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.getFriendsEmojiStatus(options: GetFriendsEmojiStatusOptions = {})
+```
 
 ### Tham số
 
@@ -567,9 +672,14 @@ export type GetFriendsEmojiStatusResponse = {
 
 Lấy dấu thời gian lần cuối đọc tab Danh bạ (command 12230)
 
-- **Endpoint**: `GET /api/friend/last-read-contact-tab`
-- **Domain call**: `api.friend.getLastReadContactTab()`
-- **Alias phẳng**: `api.getLastReadContactTab()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/last-read-contact-tab</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getLastReadContactTab()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getLastReadContactTab()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -583,11 +693,16 @@ export type GetLastReadContactTabResponse = {
 
 ## `getMultiUsersByPhones`
 
-Get multiple user(s) by their phone numbers.
+Tra cứu hàng loạt thông tin tài khoản Zalo từ danh sách nhiều số điện thoại cùng lúc.
 
-- **Endpoint**: `GET /api/friend/profile/multiget`
-- **Domain call**: `api.friend.getMultiUsersByPhones(phoneNumbers: string | string[], avatarSize: AvatarSize = AvatarSize.Large)`
-- **Alias phẳng**: `api.getMultiUsersByPhones(phoneNumbers: string | string[], avatarSize: AvatarSize = AvatarSize.Large)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/profile/multiget</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getMultiUsersByPhones(phoneNumbers: string | string[], avatarSize: AvatarSize = AvatarSize.Large)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getMultiUsersByPhones(phoneNumbers: string | string[], avatarSize: AvatarSize = AvatarSize.Large)
+```
 
 ### Tham số
 
@@ -608,9 +723,14 @@ export type GetMultiUsersByPhonesResponse = {
 
 Lấy danh bạ bạn bè đồng bộ từ số điện thoại chuẩn V2 (command 12428)
 
-- **Endpoint**: `GET /api/social/friend/phonebook/v2`
-- **Domain call**: `api.friend.getPhonebookV2(phonebookVersion: number = 0)`
-- **Alias phẳng**: `api.getPhonebookV2(phonebookVersion: number = 0)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/friend/phonebook/v2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getPhonebookV2(phonebookVersion: number = 0)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getPhonebookV2(phonebookVersion: number = 0)
+```
 
 ### Tham số
 
@@ -630,11 +750,16 @@ export type GetPhonebookV2Response = {
 
 ## `getSentFriendRequest`
 
-Get friend requested
+Lấy danh sách các lời mời kết bạn mà tài khoản hiện tại đã gửi đi nhưng chưa được phản hồi.
 
-- **Endpoint**: `GET /api/friend/requested/list`
-- **Domain call**: `api.friend.getSentFriendRequest()`
-- **Alias phẳng**: `api.getSentFriendRequest()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/requested/list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.getSentFriendRequest()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getSentFriendRequest()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -662,11 +787,16 @@ export type GetSentFriendRequestResponse = {
 
 ## `lastOnline`
 
-Get last online
+Kiểm tra thời điểm truy cập (Online) gần nhất của một người dùng.
 
-- **Endpoint**: `GET /api/social/profile/lastOnline`
-- **Domain call**: `api.friend.lastOnline(uid: string)`
-- **Alias phẳng**: `api.lastOnline(uid: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/lastOnline</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.lastOnline(uid: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.lastOnline(uid: string)
+```
 
 ### Tham số
 
@@ -689,9 +819,14 @@ export type LastOnlineResponse = {
 
 Đánh dấu đã đọc tab Danh bạ (command 12231)
 
-- **Endpoint**: `POST /api/friend/read-contact-tab`
-- **Domain call**: `api.friend.readContactTab(ts: number = Date.now())`
-- **Alias phẳng**: `api.readContactTab(ts: number = Date.now())`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/read-contact-tab</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.readContactTab(ts: number = Date.now())
+// Hoặc gọi phẳng (Flat Alias):
+await api.readContactTab(ts: number = Date.now())
+```
 
 ### Tham số
 
@@ -707,15 +842,16 @@ export type ReadContactTabResponse = Record<string, unknown> | string;
 
 ## `rejectFriendRequest`
 
-Reject a friend request from a User
+Từ chối lời mời kết bạn từ một người dùng.
 
-- **Endpoint**: `POST /api/friend/reject`
-- **Domain call**: `api.friend.rejectFriendRequest(friendId: string)`
-- **Alias phẳng**: `api.rejectFriendRequest(friendId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/reject</span></div>
 
-### Tham số
-
-- `friendId`: 
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.rejectFriendRequest(friendId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.rejectFriendRequest(friendId: string)
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -727,11 +863,16 @@ export type RejectFriendRequestResponse = "";
 
 ## `removeFriend`
 
-Remove friend
+Hủy kết bạn (Xóa bạn) với một người dùng trong danh bạ.
 
-- **Endpoint**: `POST /api/friend/remove`
-- **Domain call**: `api.friend.removeFriend(friendId: string)`
-- **Alias phẳng**: `api.removeFriend(friendId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/remove</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.removeFriend(friendId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.removeFriend(friendId: string)
+```
 
 ### Tham số
 
@@ -747,11 +888,16 @@ export type RemoveFriendResponse = "";
 
 ## `removeFriendAlias`
 
-Remove friend's alias
+Xóa tên gợi nhớ (Biệt danh / Alias) đã đặt cho một người bạn.
 
-- **Endpoint**: `GET /api/alias/remove`
-- **Domain call**: `api.friend.removeFriendAlias(friendId: string)`
-- **Alias phẳng**: `api.removeFriendAlias(friendId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/alias/remove</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.removeFriendAlias(friendId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.removeFriendAlias(friendId: string)
+```
 
 ### Tham số
 
@@ -767,11 +913,16 @@ export type RemoveFriendAliasResponse = "";
 
 ## `sendFriendRequest`
 
-Send a friend request to a user. 215 if the user might have blocked you, 222 if user has already sent you a friend request, your request will be treated as acceptance instead.
+Gửi lời mời kết bạn kèm lời chào tới một người dùng theo UID.
 
-- **Endpoint**: `POST /api/friend/sendreq`
-- **Domain call**: `api.friend.sendFriendRequest(msg: string, userId: string)`
-- **Alias phẳng**: `api.sendFriendRequest(msg: string, userId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/sendreq</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.sendFriendRequest(msg: string, userId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.sendFriendRequest(msg: string, userId: string)
+```
 
 ### Tham số
 
@@ -788,11 +939,16 @@ export type SendFriendRequestResponse = "";
 
 ## `unblockUser`
 
-Unblock a User
+Bỏ chặn tin nhắn đối với một người dùng.
 
-- **Endpoint**: `POST /api/friend/unblock`
-- **Domain call**: `api.friend.unblockUser(userId: string)`
-- **Alias phẳng**: `api.unblockUser(userId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/unblock</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.unblockUser(userId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.unblockUser(userId: string)
+```
 
 ### Tham số
 
@@ -808,15 +964,16 @@ export type UnBlockUserResponse = "";
 
 ## `undoFriendRequest`
 
-Undo send a friend request to a user.
+Thu hồi (Hủy) lời mời kết bạn đã gửi trước đó.
 
-- **Endpoint**: `POST /api/friend/undo`
-- **Domain call**: `api.friend.undoFriendRequest(friendId: string)`
-- **Alias phẳng**: `api.undoFriendRequest(friendId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/undo</span></div>
 
-### Tham số
-
-- `options`: 
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.undoFriendRequest(friendId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.undoFriendRequest(friendId: string)
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -830,9 +987,14 @@ export type UndoFriendRequestResponse = "";
 
 Kiểm tra và xác thực danh sách bạn bè qua `/api/social/friend/verify` (command 11138)
 
-- **Endpoint**: `POST /api/social/friend/verify`
-- **Domain call**: `api.friend.verifyFriend(friendIds: string | string[], options: VerifyFriendOptions = {})`
-- **Alias phẳng**: `api.verifyFriend(friendIds: string | string[], options: VerifyFriendOptions = {})`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/friend/verify</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.friend.verifyFriend(friendIds: string | string[], options: VerifyFriendOptions = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.verifyFriend(friendIds: string | string[], options: VerifyFriendOptions = {})
+```
 
 ### Tham số
 

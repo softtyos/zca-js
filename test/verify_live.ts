@@ -3,6 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import {
     Zalo,
+    type API,
     LoginQRCallbackEventType,
     ThreadType,
     SyncEventType,
@@ -57,7 +58,7 @@ async function main() {
         logging: false,
     });
 
-    let api;
+    let api: API | undefined;
     let loggedInViaQR = false;
 
     if (fs.existsSync(CREDENTIALS_PATH) && !forceQR) {

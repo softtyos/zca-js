@@ -109,6 +109,7 @@ export type { VerifyFriendOptions, VerifyFriendResponse } from "./apis/friend/ve
 export type { GetPersonalMediaOptions } from "./apis/media/getPersonalMedia.js";
 export type { GetPersonalMediaPreviewResponse } from "./apis/media/getPersonalMediaPreview.js";
 export type { RemovePersonalMediaOptions, RemovePersonalMediaResponse } from "./apis/media/removePersonalMedia.js";
+export type { ExportedSession } from "./apis/auth/exportSession.js";
 export type { GetGroupInviteBoxInfoPayload, GetGroupInviteBoxInfoResponse } from "./apis/group/getGroupInviteBoxInfo.js";
 export type { GetGroupInviteBoxListPayload, GetGroupInviteBoxListResponse } from "./apis/group/getGroupInviteBoxList.js";
 export type { GetGroupLinkDetailResponse } from "./apis/group/getGroupLinkDetail.js";

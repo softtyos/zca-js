@@ -1,6 +1,11 @@
-# Hồ sơ cá nhân (Profile)
+---
+title: "Hồ sơ cá nhân (Profile) (api.profile) - 16 APIs"
+description: "Thông tin tài khoản, đổi ảnh đại diện, cài đặt quyền riêng tư, trạng thái cảm xúc (Emoji Status) và xác thực EKYC. Tra cứu chi tiết 16 phương thức thuộc phân hệ api.profile trong bộ SDK @softtynet/zca-js."
+---
 
-> Namespace: `api.profile` (hoặc gọi trực tiếp `api.<methodName>`) — **16 API**
+# 🪪 Hồ sơ cá nhân (Profile)
+
+> Namespace: `api.profile` (hoặc gọi trực tiếp `api.<methodName>`) — **16 API nguyên bản**
 
 Thông tin tài khoản, đổi ảnh đại diện, cài đặt quyền riêng tư, trạng thái cảm xúc (Emoji Status) và xác thực EKYC.
 
@@ -8,32 +13,37 @@ Thông tin tài khoản, đổi ảnh đại diện, cài đặt quyền riêng 
 
 | Phương thức | HTTP | Endpoint Zalo | Mô tả |
 | :--- | :---: | :--- | :--- |
-| [`changeAccountAvatar`](#changeaccountavatar) | `POST` | `/api/profile/upavatar` | Change account avatar |
-| [`deleteAvatar`](#deleteavatar) | `GET` | `/api/social/del-avatars` | Delete avatar from avatar list |
+| [`changeAccountAvatar`](#changeaccountavatar) | `POST` | `/api/profile/upavatar` | Thay đổi ảnh đại diện (Avatar) cho tài khoản cá nhân. |
+| [`deleteAvatar`](#deleteavatar) | `GET` | `/api/social/del-avatars` | Xóa một hoặc nhiều ảnh đại diện cũ trong kho ảnh đại diện. |
 | [`fetchAccountInfo`](#fetchaccountinfo) | `GET` | `/api/social/profile/me-v2` | API `fetchAccountInfo` thuộc phân hệ `profile`. |
-| [`getAvatarList`](#getavatarlist) | `GET` | `/api/social/avatar-list` | Get avatar list |
-| [`getAvatarUrlProfile`](#getavatarurlprofile) | `GET` | `/api/social/profile/avatar-url` | Get avatar url profile |
+| [`getAvatarList`](#getavatarlist) | `GET` | `/api/social/avatar-list` | Lấy danh sách lịch sử các ảnh đại diện đã từng sử dụng của tài khoản. |
+| [`getAvatarUrlProfile`](#getavatarurlprofile) | `GET` | `/api/social/profile/avatar-url` | Lấy đường dẫn ảnh đại diện của danh sách hồ sơ người dùng. |
 | [`getEmojiStatusConfig`](#getemojistatusconfig) | `GET` | `/api/v1/emoji-status/resource-config` | Lấy cấu hình và danh sách bộ biểu tượng Trạng thái Emoji (Emoji Status - command 16300) |
-| [`getFullAvatar`](#getfullavatar) | `GET` | `/api/social/profile/avatar` | Get full avatar |
+| [`getFullAvatar`](#getfullavatar) | `GET` | `/api/social/profile/avatar` | Lấy ảnh đại diện kích thước gốc (Full HD) của một người dùng theo UID. |
 | [`getMiniProfile`](#getminiprofile) | `POST` | `/api/social/friend/getminiprofiles` | Lấy nhanh thông tin hồ sơ rút gọn (Avatar, Global ID, gói Biz) của danh sách người dùng (command 12134) |
 | [`getProfileRank`](#getprofilerank) | `GET` | `/api/social/profile/getrank` | Lấy hạng tài khoản Zalo của một người dùng (ví dụ `"WHITE"`, `"GOLD"` - command 12012) |
 | [`getProfileVerificationStatus`](#getprofileverificationstatus) | `GET` | `/api/social/profile/verification/status` | Kiểm tra trạng thái xác thực định danh (eKYC) của tài khoản Zalo (command 12150) |
-| [`getSettings`](#getsettings) | `GET` | `N/A` | Get my account settings |
-| [`getUserInfo`](#getuserinfo) | `POST` | `/api/social/friend/getprofiles/v2` | Get user info using user id |
-| [`reuseAvatar`](#reuseavatar) | `GET` | `/api/social/reuse-avatar` | Reuse avatar |
-| [`updateProfile`](#updateprofile) | `POST` | `/api/social/profile/update` | Change account setting information You may leave the other biz fields empty if you don’t want to change them. |
-| [`updateProfileBio`](#updateprofilebio) | `POST` | `/api/social/profile/status` | Update profile bio |
-| [`updateSettings`](#updatesettings) | `GET` | `N/A` | Set account settings ViewBirthday * 0: hide * 1: show full day/month/year * 2: show day/month ShowOnlineStatus * 0: hide * 1: show DisplaySeenStatus * 0: hide * 1: show ReceiveMessage * 1: everyone * 2: only friends AcceptCall * 2: only friends * 3: everyone * 4: friends and person who contacted AddFriendViaPhone * 0: disable * 1: enable AddFriendViaQR * 0: disable * 1: enable AddFriendViaGroup * 0: disable * 1: enable AddFriendViaContact * 0: disable * 1: enable DisplayOnRecommendFriend * 0: disable * 1: enable ArchivedChat * 0: disable * 1: enable QuickMessage * 0: disable * 1: enable |
+| [`getSettings`](#getsettings) | `GET` | `Internal` | Lấy toàn bộ cấu hình quyền riêng tư và cài đặt của tài khoản hiện tại. |
+| [`getUserInfo`](#getuserinfo) | `POST` | `/api/social/friend/getprofiles/v2` | Lấy thông tin hồ sơ chi tiết (Tên, Ảnh bìa, Ngày sinh, Giới tính, Bio, Zalo Business) của một hoặc nhiều UID. |
+| [`reuseAvatar`](#reuseavatar) | `GET` | `/api/social/reuse-avatar` | Sử dụng lại một ảnh đại diện cũ từ kho lịch sử ảnh đại diện. |
+| [`updateProfile`](#updateprofile) | `POST` | `/api/social/profile/update` | Cập nhật thông tin cá nhân (Tên hiển thị, Ngày sinh, Giới tính) và thông tin Zalo Business. |
+| [`updateProfileBio`](#updateprofilebio) | `POST` | `/api/social/profile/status` | Cập nhật dòng tiểu sử (Status / Bio) trên trang cá nhân. |
+| [`updateSettings`](#updatesettings) | `GET` | `Internal` | Cập nhật cài đặt quyền riêng tư (Hiển thị ngày sinh, Trạng thái Online, Đã xem, Nguồn nhận tin nhắn/cuộc gọi, Nguồn kết bạn). |
 
 ---
 
 ## `changeAccountAvatar`
 
-Change account avatar
+Thay đổi ảnh đại diện (Avatar) cho tài khoản cá nhân.
 
-- **Endpoint**: `POST /api/profile/upavatar`
-- **Domain call**: `api.profile.changeAccountAvatar(avatarSource: AttachmentSource)`
-- **Alias phẳng**: `api.changeAccountAvatar(avatarSource: AttachmentSource)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/profile/upavatar</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.changeAccountAvatar(avatarSource: AttachmentSource)
+// Hoặc gọi phẳng (Flat Alias):
+await api.changeAccountAvatar(avatarSource: AttachmentSource)
+```
 
 ### Tham số
 
@@ -49,11 +59,16 @@ export type ChangeAccountAvatarResponse = "";
 
 ## `deleteAvatar`
 
-Delete avatar from avatar list
+Xóa một hoặc nhiều ảnh đại diện cũ trong kho ảnh đại diện.
 
-- **Endpoint**: `GET /api/social/del-avatars`
-- **Domain call**: `api.profile.deleteAvatar(photoId: string | string[])`
-- **Alias phẳng**: `api.deleteAvatar(photoId: string | string[])`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/del-avatars</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.deleteAvatar(photoId: string | string[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.deleteAvatar(photoId: string | string[])
+```
 
 ### Tham số
 
@@ -78,9 +93,14 @@ export type DeleteAvatarResponse = {
 
 API `fetchAccountInfo` thuộc phân hệ `profile`.
 
-- **Endpoint**: `GET /api/social/profile/me-v2`
-- **Domain call**: `api.profile.fetchAccountInfo()`
-- **Alias phẳng**: `api.fetchAccountInfo()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/me-v2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.fetchAccountInfo()
+// Hoặc gọi phẳng (Flat Alias):
+await api.fetchAccountInfo()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -92,11 +112,16 @@ export type FetchAccountInfoResponse = { profile: User };
 
 ## `getAvatarList`
 
-Get avatar list
+Lấy danh sách lịch sử các ảnh đại diện đã từng sử dụng của tài khoản.
 
-- **Endpoint**: `GET /api/social/avatar-list`
-- **Domain call**: `api.profile.getAvatarList(count: number = 50, page: number = 1)`
-- **Alias phẳng**: `api.getAvatarList(count: number = 50, page: number = 1)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/avatar-list</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.getAvatarList(count: number = 50, page: number = 1)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getAvatarList(count: number = 50, page: number = 1)
+```
 
 ### Tham số
 
@@ -123,11 +148,16 @@ export type GetAvatarListResponse = {
 
 ## `getAvatarUrlProfile`
 
-Get avatar url profile
+Lấy đường dẫn ảnh đại diện của danh sách hồ sơ người dùng.
 
-- **Endpoint**: `GET /api/social/profile/avatar-url`
-- **Domain call**: `api.profile.getAvatarUrlProfile(friendIds: string | string[], avatarSize: AvatarSize = AvatarSize.Large)`
-- **Alias phẳng**: `api.getAvatarUrlProfile(friendIds: string | string[], avatarSize: AvatarSize = AvatarSize.Large)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/avatar-url</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.getAvatarUrlProfile(friendIds: string | string[], avatarSize: AvatarSize = AvatarSize.Large)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getAvatarUrlProfile(friendIds: string | string[], avatarSize: AvatarSize = AvatarSize.Large)
+```
 
 ### Tham số
 
@@ -150,9 +180,14 @@ export type GetAvatarUrlProfileResponse = {
 
 Lấy cấu hình và danh sách bộ biểu tượng Trạng thái Emoji (Emoji Status - command 16300)
 
-- **Endpoint**: `GET /api/v1/emoji-status/resource-config`
-- **Domain call**: `api.profile.getEmojiStatusConfig(version: number = 0)`
-- **Alias phẳng**: `api.getEmojiStatusConfig(version: number = 0)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/v1/emoji-status/resource-config</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.getEmojiStatusConfig(version: number = 0)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getEmojiStatusConfig(version: number = 0)
+```
 
 ### Tham số
 
@@ -184,11 +219,16 @@ export type GetEmojiStatusConfigResponse = {
 
 ## `getFullAvatar`
 
-Get full avatar
+Lấy ảnh đại diện kích thước gốc (Full HD) của một người dùng theo UID.
 
-- **Endpoint**: `GET /api/social/profile/avatar`
-- **Domain call**: `api.profile.getFullAvatar(friendId: string)`
-- **Alias phẳng**: `api.getFullAvatar(friendId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/avatar</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.getFullAvatar(friendId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getFullAvatar(friendId: string)
+```
 
 ### Tham số
 
@@ -209,9 +249,14 @@ export type GetFullAvatarResponse = {
 
 Lấy nhanh thông tin hồ sơ rút gọn (Avatar, Global ID, gói Biz) của danh sách người dùng (command 12134)
 
-- **Endpoint**: `POST /api/social/friend/getminiprofiles`
-- **Domain call**: `api.profile.getMiniProfile(friendIds: string[], avatarSize: number = 120)`
-- **Alias phẳng**: `api.getMiniProfile(friendIds: string[], avatarSize: number = 120)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/friend/getminiprofiles</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.getMiniProfile(friendIds: string[], avatarSize: number = 120)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getMiniProfile(friendIds: string[], avatarSize: number = 120)
+```
 
 ### Tham số
 
@@ -242,9 +287,14 @@ export type GetMiniProfileResponse = Record<string, MiniProfileItem>;
 
 Lấy hạng tài khoản Zalo của một người dùng (ví dụ `"WHITE"`, `"GOLD"` - command 12012)
 
-- **Endpoint**: `GET /api/social/profile/getrank`
-- **Domain call**: `api.profile.getProfileRank(profileId?: string)`
-- **Alias phẳng**: `api.getProfileRank(profileId?: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/getrank</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.getProfileRank(profileId?: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getProfileRank(profileId?: string)
+```
 
 ### Tham số
 
@@ -265,9 +315,14 @@ export type GetProfileRankResponse = {
 
 Kiểm tra trạng thái xác thực định danh (eKYC) của tài khoản Zalo (command 12150)
 
-- **Endpoint**: `GET /api/social/profile/verification/status`
-- **Domain call**: `api.profile.getProfileVerificationStatus()`
-- **Alias phẳng**: `api.getProfileVerificationStatus()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/verification/status</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.getProfileVerificationStatus()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getProfileVerificationStatus()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -282,10 +337,16 @@ export type GetProfileVerificationStatusResponse = {
 
 ## `getSettings`
 
-Get my account settings
+Lấy toàn bộ cấu hình quyền riêng tư và cài đặt của tài khoản hiện tại.
 
-- **Domain call**: `api.profile.getSettings()`
-- **Alias phẳng**: `api.getSettings()`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.getSettings()
+// Hoặc gọi phẳng (Flat Alias):
+await api.getSettings()
+```
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -297,11 +358,16 @@ export type GetSettingsResponse = UserSetting;
 
 ## `getUserInfo`
 
-Get user info using user id
+Lấy thông tin hồ sơ chi tiết (Tên, Ảnh bìa, Ngày sinh, Giới tính, Bio, Zalo Business) của một hoặc nhiều UID.
 
-- **Endpoint**: `POST /api/social/friend/getprofiles/v2`
-- **Domain call**: `api.profile.getUserInfo(userId: string | string[], avatarSize: AvatarSize = AvatarSize.Small)`
-- **Alias phẳng**: `api.getUserInfo(userId: string | string[], avatarSize: AvatarSize = AvatarSize.Small)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/friend/getprofiles/v2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.getUserInfo(userId: string | string[], avatarSize: AvatarSize = AvatarSize.Small)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getUserInfo(userId: string | string[], avatarSize: AvatarSize = AvatarSize.Small)
+```
 
 ### Tham số
 
@@ -324,11 +390,16 @@ export type UserInfoResponse = {
 
 ## `reuseAvatar`
 
-Reuse avatar
+Sử dụng lại một ảnh đại diện cũ từ kho lịch sử ảnh đại diện.
 
-- **Endpoint**: `GET /api/social/reuse-avatar`
-- **Domain call**: `api.profile.reuseAvatar(photoId: string)`
-- **Alias phẳng**: `api.reuseAvatar(photoId: string)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/reuse-avatar</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.reuseAvatar(photoId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.reuseAvatar(photoId: string)
+```
 
 ### Tham số
 
@@ -344,11 +415,16 @@ export type ReuseAvatarResponse = null;
 
 ## `updateProfile`
 
-Change account setting information You may leave the other biz fields empty if you don’t want to change them.
+Cập nhật thông tin cá nhân (Tên hiển thị, Ngày sinh, Giới tính) và thông tin Zalo Business.
 
-- **Endpoint**: `POST /api/social/profile/update`
-- **Domain call**: `api.profile.updateProfile(payload: UpdateProfilePayload)`
-- **Alias phẳng**: `api.updateProfile(payload: UpdateProfilePayload)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/profile/update</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.updateProfile(payload: UpdateProfilePayload)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateProfile(payload: UpdateProfilePayload)
+```
 
 ### Tham số
 
@@ -382,11 +458,16 @@ export type UpdateProfileResponse = "";
 
 ## `updateProfileBio`
 
-Update profile bio
+Cập nhật dòng tiểu sử (Status / Bio) trên trang cá nhân.
 
-- **Endpoint**: `POST /api/social/profile/status`
-- **Domain call**: `api.profile.updateProfileBio(status: string)`
-- **Alias phẳng**: `api.updateProfileBio(status: string)`
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/profile/status</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.updateProfileBio(status: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateProfileBio(status: string)
+```
 
 ### Tham số
 
@@ -402,15 +483,20 @@ export type UpdateProfileBioResponse = "";
 
 ## `updateSettings`
 
-Set account settings ViewBirthday * 0: hide * 1: show full day/month/year * 2: show day/month ShowOnlineStatus * 0: hide * 1: show DisplaySeenStatus * 0: hide * 1: show ReceiveMessage * 1: everyone * 2: only friends AcceptCall * 2: only friends * 3: everyone * 4: friends and person who contacted AddFriendViaPhone * 0: disable * 1: enable AddFriendViaQR * 0: disable * 1: enable AddFriendViaGroup * 0: disable * 1: enable AddFriendViaContact * 0: disable * 1: enable DisplayOnRecommendFriend * 0: disable * 1: enable ArchivedChat * 0: disable * 1: enable QuickMessage * 0: disable * 1: enable
+Cập nhật cài đặt quyền riêng tư (Hiển thị ngày sinh, Trạng thái Online, Đã xem, Nguồn nhận tin nhắn/cuộc gọi, Nguồn kết bạn).
 
-- **Domain call**: `api.profile.updateSettings(type: UpdateSettingsType, value: number)`
-- **Alias phẳng**: `api.updateSettings(type: UpdateSettingsType, value: number)`
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.updateSettings(type: UpdateSettingsType, value: number)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateSettings(type: UpdateSettingsType, value: number)
+```
 
 ### Tham số
 
 - `type`: The type of setting to update
-- `value`: 
 
 ### Kiểu dữ liệu (TypeScript Types)
 
