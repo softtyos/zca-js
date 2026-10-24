@@ -791,11 +791,12 @@ function generateAllDocs() {
             const epPills =
                 a.endpoints.length > 0
                     ? a.endpoints.map((e) => `<span class="zca-endpoint-pill">${e}</span>`).join(" ")
-                    : `<span class="zca-endpoint-pill">Local Context Helper</span>`;
+                    : `<span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span>`;
 
             lines.push(
                 `<div class="zca-api-meta">` +
                     `<span class="zca-badge-method ${a.httpMethod.toLowerCase()}">${a.httpMethod}</span>` +
+                    `<span class="zca-endpoint-pill">api.${domain}</span>` +
                     `${epPills}` +
                     `</div>`,
             );
@@ -894,19 +895,21 @@ function generateAllDocs() {
         `      link: "${SITE_URL}/llms-full.txt"`,
         "",
         "features:",
-        "  - icon: 🧩",
+        `  - icon: '<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0068ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/></svg>'`,
         "    title: Kiến trúc 12 Domains Hiện Đại",
         `    details: "Tổ chức ${totalApis} API nguyên bản thành 12 phân hệ trực quan (api.auth, api.chat, api.group, api.sync, api.zcloud, api.call, api.media...) với Lazy Memoized Getters và tương thích ngược 100%."`,
-        "  - icon: 🔄",
+        `  - icon: '<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0068ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/></svg>'`,
         "    title: Đồng bộ Mobile ZDB 4.0 & Catch-up Sync",
         '    details: "Hỗ trợ đầy đủ luồng đồng bộ lịch sử tin nhắn từ điện thoại sang PC (RSA-2048 OAEP/PKCS1 + ZDB 4.0 64KB multi-chunk AES-256-CBC + Deflate)."',
-        "  - icon: 🛡️",
+        `  - icon: '<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0068ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg>'`,
         "    title: ZCloud, MediaStore & 64-bit Precision",
         '    details: "Tích hợp sẵn preParseJsonIds & ws-cipher storeAsString bảo toàn tuyệt đối UID 19 chữ số (owner_id, group_id) trên cả HTTP và WebSocket."',
-        "  - icon: 🤖",
+        `  - icon: '<svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#0068ff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8"/><rect width="16" height="12" x="4" y="8" rx="2"/><path d="M2 14h2"/><path d="M20 14h2"/><path d="M15 13v2"/><path d="M9 13v2"/></svg>'`,
         "    title: Chuẩn AI SEO & GEO (llms.txt Ready)",
         '    details: "Tích hợp sẵn chuẩn /llms.txt, /llms-full.txt, Models Reference và Cookbook thực chiến giúp lập trình viên & AI Coding Agents nắm bắt tức thì."',
         "---",
+        "",
+        "<HeroShowcase />",
         "",
         "<DomainGrid />",
         "",
@@ -914,7 +917,19 @@ function generateAllDocs() {
     fs.writeFileSync(path.join(docsDir, "index.md"), homeLines.join("\n"), "utf-8");
 
     // 4. Write docs/.vitepress/config.mts
-    const sidebarApiItems = domains.map((d) => ({
+    const coreDomains = ["chat", "group", "friend", "profile"];
+    const advancedDomains = ["sync", "zcloud", "call", "media"];
+    const utilityDomains = ["auth", "sticker", "board", "business"];
+
+    const coreSidebarItems = coreDomains.map((d) => ({
+        text: `${DOMAIN_META[d].icon} ${DOMAIN_META[d].title} (${(domainApis[d] || []).length})`,
+        link: `/api/${d}`,
+    }));
+    const advancedSidebarItems = advancedDomains.map((d) => ({
+        text: `${DOMAIN_META[d].icon} ${DOMAIN_META[d].title} (${(domainApis[d] || []).length})`,
+        link: `/api/${d}`,
+    }));
+    const utilitySidebarItems = utilityDomains.map((d) => ({
         text: `${DOMAIN_META[d].icon} ${DOMAIN_META[d].title} (${(domainApis[d] || []).length})`,
         link: `/api/${d}`,
     }));
@@ -963,6 +978,9 @@ export default defineConfig({
         hostname: "${SITE_URL}/",
     },
     head: [
+        ["link", { rel: "preconnect", href: "https://fonts.googleapis.com" }],
+        ["link", { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" }],
+        ["link", { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap" }],
         ["link", { rel: "icon", type: "image/svg+xml", href: "/zca-js-docs/favicon.svg" }],
         ["meta", { name: "author", content: "Softtynet Co., Ltd." }],
         ["meta", { name: "keywords", content: "zalo api, @softtynet/zca-js, zca-js, softtynet, zalo sdk, zalo bot nodejs, zalo typescript, zalo zdb sync, zalo cloud message" }],
@@ -1018,19 +1036,34 @@ export default defineConfig({
                 ],
             },
             {
+                text: "⚡ Tra cứu API & Models",
+                items: [
+                    { text: "🔍 API Explorer (${totalApis} APIs)", link: "/api/" },
+                    { text: "📦 Models, Enums & Errors", link: "/api/models" },
+                ],
+            },
+            {
+                text: "💬 Phân hệ Chat & Nhóm (Cốt lõi)",
+                collapsed: false,
+                items: ${JSON.stringify(coreSidebarItems, null, 20)},
+            },
+            {
+                text: "🔄 Đồng bộ & Dữ liệu Nâng cao",
+                collapsed: false,
+                items: ${JSON.stringify(advancedSidebarItems, null, 20)},
+            },
+            {
+                text: "💼 Tiện ích & Doanh nghiệp",
+                collapsed: false,
+                items: ${JSON.stringify(utilitySidebarItems, null, 20)},
+            },
+            {
                 text: "📚 Tài liệu Chuyên sâu (R&D)",
+                collapsed: true,
                 items: [
                     { text: "Tích hợp Đồng bộ ZDB 4.0 & Call", link: "/INTEGRATION_GUIDE_SYNC_AND_CALL" },
                     { text: "Kiến trúc Tổng thể & Giao thức", link: "/ARCHITECTURE_AND_API_REFERENCE" },
                     { text: "React Native & WebRTC Voice/Video", link: "/RND_REACT_NATIVE_AND_VOICE_VIDEO_CALL" },
-                ],
-            },
-            {
-                text: "⚡ Tra cứu API & Models (12 Domains)",
-                items: [
-                    { text: "🔍 API Explorer (${totalApis} APIs)", link: "/api/" },
-                    { text: "📦 Models, Enums & Errors", link: "/api/models" },
-                    ...${JSON.stringify(sidebarApiItems, null, 20)},
                 ],
             },
         ],

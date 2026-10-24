@@ -186,6 +186,14 @@ export async function request(ctx: ContextBase, url: string, options?: RequestIn
             ? AbortSignal.timeout(timeoutMs)
             : undefined;
 
+    const isAgentUndiciDispatcher = Boolean(
+        ctx.options.agent && typeof (ctx.options.agent as { dispatch?: unknown }).dispatch === "function",
+    );
+    const resolvedDispatcher =
+        ctx.options.dispatcher ?? (isAgentUndiciDispatcher ? ctx.options.agent : undefined);
+    const resolvedAgent =
+        ctx.options.agent && !isAgentUndiciDispatcher ? ctx.options.agent : undefined;
+
     const _options: RequestInit & Record<string, unknown> = {
         ...(options ?? {}),
         ...(defaultSignal ? { signal: defaultSignal } : {}),
@@ -196,8 +204,8 @@ export async function request(ctx: ContextBase, url: string, options?: RequestIn
                   proxy: ctx.options.agent?.proxy?.href,
               }
             : {
-                  agent: ctx.options.agent,
-                  dispatcher: ctx.options.agent,
+                  ...(resolvedAgent ? { agent: resolvedAgent } : {}),
+                  ...(resolvedDispatcher ? { dispatcher: resolvedDispatcher } : {}),
               }),
     };
 

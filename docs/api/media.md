@@ -28,7 +28,7 @@ Truy vấn Kho Lưu Trữ Ảnh/Video, File, Link của nhóm và Cloud của t�
 
 Lấy danh sách Kho Lưu Trữ (Ảnh/Video `"media"`, File `"file"`, hoặc Link `"link"`) trong hội thoại nhóm (command 11841)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/mediastore/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.media</span><span class="zca-endpoint-pill">/api/mediastore/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -90,7 +90,7 @@ export type GetConversationMediaResponse = {
 
 Lấy danh sách xem trước nhanh Kho Lưu Trữ (Ảnh/Video, File, Link) của nhóm (command 11843)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/mediastore/preview</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.media</span><span class="zca-endpoint-pill">/api/mediastore/preview</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -116,7 +116,7 @@ export type GetMediaStorePreviewResponse = MediaStoreItem[];
 
 Lấy danh sách Kho Lưu Trữ Ảnh/Video (`"media"`), File (`"file"`), hoặc Link (`"link"`) trong Cloud của tôi (Send2Me) (command 12220)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/media/oneone/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.media</span><span class="zca-endpoint-pill">/api/media/oneone/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -146,7 +146,7 @@ export type GetPersonalMediaOptions = {
 
 Lấy danh sách xem trước nhanh Kho Lưu Trữ trong Cloud của tôi (Send2Me) (command 12221)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/media/oneone/preview</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.media</span><span class="zca-endpoint-pill">/api/media/oneone/preview</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -171,7 +171,7 @@ export type GetPersonalMediaPreviewResponse = MediaStoreItem[];
 
 Xóa mục Ảnh/Video, File hoặc Link khỏi Kho Lưu Trữ của nhóm (command 11842)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/mediastore/remove</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.media</span><span class="zca-endpoint-pill">/api/mediastore/remove</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -202,7 +202,7 @@ export type RemoveConversationMediaResponse = unknown;
 
 Xóa mục lưu trữ trong Kho Lưu Trữ Cloud của tôi (Send2Me) (command 12222)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/media/oneone/remove</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.media</span><span class="zca-endpoint-pill">/api/media/oneone/remove</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -234,7 +234,7 @@ export type RemovePersonalMediaResponse = {
 
 Tải tệp đính kèm (Ảnh, Video, File) lên máy chủ Zalo để lấy thông tin fileUrl / fileId trước khi gửi.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.media</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -370,7 +370,7 @@ type AttachmentData =
 
 Gửi yêu cầu chuyển đổi tin nhắn thoại sang văn bản bằng Zalo AI (command 13394). Kết quả văn bản sau khi xử lý xong sẽ được đẩy về qua sự kiện `api.listener.on("voice2text_event", ...)` khớp với `req_id`.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/aifeatures/voice2text</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.media</span><span class="zca-endpoint-pill">/api/aifeatures/voice2text</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

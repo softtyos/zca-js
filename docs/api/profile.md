@@ -36,7 +36,7 @@ Thông tin tài khoản, đổi ảnh đại diện, cài đặt quyền riêng 
 
 Thay đổi ảnh đại diện (Avatar) cho tài khoản cá nhân.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/profile/upavatar</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/profile/upavatar</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -61,7 +61,7 @@ export type ChangeAccountAvatarResponse = "";
 
 Xóa một hoặc nhiều ảnh đại diện cũ trong kho ảnh đại diện.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/del-avatars</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/del-avatars</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -93,7 +93,7 @@ export type DeleteAvatarResponse = {
 
 API `fetchAccountInfo` thuộc phân hệ `profile`.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/me-v2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/profile/me-v2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -114,7 +114,7 @@ export type FetchAccountInfoResponse = { profile: User };
 
 Lấy danh sách lịch sử các ảnh đại diện đã từng sử dụng của tài khoản.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/avatar-list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/avatar-list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -150,7 +150,7 @@ export type GetAvatarListResponse = {
 
 Lấy đường dẫn ảnh đại diện của danh sách hồ sơ người dùng.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/avatar-url</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/profile/avatar-url</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -180,7 +180,7 @@ export type GetAvatarUrlProfileResponse = {
 
 Lấy cấu hình và danh sách bộ biểu tượng Trạng thái Emoji (Emoji Status - command 16300)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/v1/emoji-status/resource-config</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/v1/emoji-status/resource-config</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -221,7 +221,7 @@ export type GetEmojiStatusConfigResponse = {
 
 Lấy ảnh đại diện kích thước gốc (Full HD) của một người dùng theo UID.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/avatar</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/profile/avatar</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -249,7 +249,7 @@ export type GetFullAvatarResponse = {
 
 Lấy nhanh thông tin hồ sơ rút gọn (Avatar, Global ID, gói Biz) của danh sách người dùng (command 12134)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/friend/getminiprofiles</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/friend/getminiprofiles</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -287,7 +287,7 @@ export type GetMiniProfileResponse = Record<string, MiniProfileItem>;
 
 Lấy hạng tài khoản Zalo của một người dùng (ví dụ `"WHITE"`, `"GOLD"` - command 12012)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/getrank</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/profile/getrank</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -315,7 +315,7 @@ export type GetProfileRankResponse = {
 
 Kiểm tra trạng thái xác thực định danh (eKYC) của tài khoản Zalo (command 12150)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/verification/status</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/profile/verification/status</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -339,7 +339,7 @@ export type GetProfileVerificationStatusResponse = {
 
 Lấy toàn bộ cấu hình quyền riêng tư và cài đặt của tài khoản hiện tại.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -360,7 +360,7 @@ export type GetSettingsResponse = UserSetting;
 
 Lấy thông tin hồ sơ chi tiết (Tên, Ảnh bìa, Ngày sinh, Giới tính, Bio, Zalo Business) của một hoặc nhiều UID.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/friend/getprofiles/v2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/friend/getprofiles/v2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -392,7 +392,7 @@ export type UserInfoResponse = {
 
 Sử dụng lại một ảnh đại diện cũ từ kho lịch sử ảnh đại diện.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/reuse-avatar</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/reuse-avatar</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -417,7 +417,7 @@ export type ReuseAvatarResponse = null;
 
 Cập nhật thông tin cá nhân (Tên hiển thị, Ngày sinh, Giới tính) và thông tin Zalo Business.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/profile/update</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/profile/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -460,7 +460,7 @@ export type UpdateProfileResponse = "";
 
 Cập nhật dòng tiểu sử (Status / Bio) trên trang cá nhân.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/profile/status</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/profile/status</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -485,7 +485,7 @@ export type UpdateProfileBioResponse = "";
 
 Cập nhật cài đặt quyền riêng tư (Hiển thị ngày sinh, Trạng thái Online, Đã xem, Nguồn nhận tin nhắn/cuộc gọi, Nguồn kết bạn).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

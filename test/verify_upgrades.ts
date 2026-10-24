@@ -1255,6 +1255,34 @@ async function runVerificationSuite() {
     assert.equal(typeof wsEventDecoded.big_num, "string");
     assert.equal(wsEventDecoded.big_num, "9223372036854775807");
 
+    // 9.7 Kiểm tra CallbacksMap TTL cleanup, sendWs readyState guard & Proxy Agent/Dispatcher resolution
+    ctx.uploadCallbacks.set("test_file_1", () => {}, 60000);
+    assert.equal(ctx.uploadCallbacks.has("test_file_1"), true);
+    ctx.uploadCallbacks.delete("test_file_1");
+    assert.equal(ctx.uploadCallbacks.has("test_file_1"), false);
+
+    let lastFetchInit: Record<string, unknown> | undefined;
+    const origPolyfill = ctx.options.polyfill;
+    ctx.options.polyfill = (async (_url: string | URL | Request, init?: RequestInit) => {
+        lastFetchInit = init as Record<string, unknown>;
+        return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, { e2eeGroups: [] });
+    }) as typeof fetch;
+
+    const fakeHttpAgent = { keepAlive: true } as unknown as NonNullable<typeof ctx.options.agent>;
+    ctx.options.agent = fakeHttpAgent;
+    await api.group.getE2eeGroupList();
+    assert.equal(lastFetchInit?.agent, fakeHttpAgent, "Khi truyền http.Agent phải gán vào init.agent");
+    assert.equal(lastFetchInit?.dispatcher, undefined, "Không được gán http.Agent vào init.dispatcher của Undici");
+
+    const fakeUndiciDispatcher = { dispatch: () => {} } as unknown as NonNullable<typeof ctx.options.agent>;
+    ctx.options.agent = fakeUndiciDispatcher;
+    await api.group.getE2eeGroupList();
+    assert.equal(lastFetchInit?.dispatcher, fakeUndiciDispatcher, "Khi truyền Undici Dispatcher phải gán vào init.dispatcher");
+    assert.equal(lastFetchInit?.agent, undefined, "Không được gán Undici Dispatcher vào init.agent");
+
+    ctx.options.agent = undefined;
+    ctx.options.polyfill = origPolyfill;
+
     console.log(
         "✅ [9/9] preParseJsonIds 64-bit, ws-cipher storeAsString, exportSession, requestTimeout & 20 API nguyên bản mới: Chính xác 100%.",
     );

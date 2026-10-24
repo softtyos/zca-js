@@ -29,7 +29,7 @@ Truy vấn dung lượng My Cloud / ZCloud, ZFamily, khóa giải mã ViewerKey 
 
 Lấy thông tin gói thuê bao Zalo Cloud (command 12754)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.zcloud</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -54,7 +54,7 @@ export type GetCloudInfoResponse = Record<string, unknown>;
 
 Lấy cấu hình giới hạn tệp và cài đặt ZCloud của tài khoản (command 12756)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.zcloud</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -86,7 +86,7 @@ export type GetCloudSettingsResponse = {
 
 Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho hệ thống ZCloud / MyCloud (command 12741). Tự động cache trong bộ nhớ `ctx.zcloudViewerKeyCache` (TTL 15 phút) để tối ưu hiệu năng khi gọi liên tiếp.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.zcloud</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -114,7 +114,7 @@ export type GetCloudViewerKeyResponse = {
 
 Lấy thông tin nhóm gia đình ZFamily (command 12757)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.zcloud</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -139,7 +139,7 @@ export type GetFamilyProfileResponse = Record<string, unknown>;
 
 Kiểm tra dung lượng sử dụng gói ZCloud Gia đình (Family Usage - command 12758)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.zcloud</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -168,7 +168,7 @@ export type GetFamilyUsageResponse = {
 
 Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho gói gia đình ZFamily (command 12759). Tự động cache trong bộ nhớ `ctx.zfamilyViewerKeyCache` (TTL 15 phút) để tối ưu hiệu năng khi gọi liên tiếp.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.zcloud</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -196,7 +196,7 @@ export type GetFamilyViewerKeyResponse = {
 
 Kiểm tra hạn mức và dung lượng sử dụng Cloud của tôi (MyCloud - command 12748)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.zcloud</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -225,7 +225,7 @@ export type GetUsageMyCloudResponse = {
 
 Kiểm tra dung lượng sử dụng ZCloud V2 (bao gồm MyCloud và Sao lưu tin nhắn - command 12749)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.zcloud</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -258,7 +258,7 @@ export type GetUsageZCloudResponse = {
 
 Kiểm tra và lấy danh sách mục Media lưu trữ trên ZCloud (command 12740 / 12761)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.zcloud</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

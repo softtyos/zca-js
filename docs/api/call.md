@@ -23,7 +23,7 @@ description: "Điều khiển tín hiệu cuộc gọi thoại và gọi video 1
 
 Huỷ cuộc gọi đang đổ chuông trước khi người nhận bắt máy (`/api/voicecall/cancel`, command `11305`).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/voicecall/cancel</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.call</span><span class="zca-endpoint-pill">/api/voicecall/cancel</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -55,7 +55,7 @@ export type CancelVoiceCallResponse = Record<string, unknown>;
 
 Kết thúc cuộc gọi thoại / video (`/api/voicecall/endcall`, command `11306`).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/voicecall/endcall</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.call</span><span class="zca-endpoint-pill">/api/voicecall/endcall</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -86,7 +86,7 @@ export type EndVoiceCallResponse = Record<string, unknown>;
 
 Khởi tạo cuộc gọi thoại / video (Signaling 2 bước: `/api/voicecall/requestcall` command `11300` + `/api/voicecall/request` command `11301`) giúp đổ chuông trực tiếp trên thiết bị của người nhận.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/voicecall/requestcall</span> <span class="zca-endpoint-pill">/api/voicecall/request</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.call</span><span class="zca-endpoint-pill">/api/voicecall/requestcall</span> <span class="zca-endpoint-pill">/api/voicecall/request</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

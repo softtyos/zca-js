@@ -40,10 +40,11 @@ export class Listener extends EventEmitter<ListenerEvents> {
     private cipherKey?: string;
 
     private selfListen: boolean;
-    private pingInterval?: Timer;
-    private retryTimeout?: Timer;
-    private watchdogTimeout?: Timer;
+    private pingInterval?: ReturnType<typeof setInterval>;
+    private retryTimeout?: ReturnType<typeof setTimeout>;
+    private watchdogTimeout?: ReturnType<typeof setTimeout>;
     private consecutive1006Count = 0;
+    private isManualStop = false;
 
     private id = 0;
 
@@ -193,6 +194,7 @@ export class Listener extends EventEmitter<ListenerEvents> {
     }
 
     public start({ retryOnClose = false }: { retryOnClose?: boolean } = {}) {
+        this.isManualStop = false;
         if (this.retryTimeout) {
             clearTimeout(this.retryTimeout);
             this.retryTimeout = undefined;
@@ -218,6 +220,12 @@ export class Listener extends EventEmitter<ListenerEvents> {
         });
 
         const cookie = this.ctx.cookie.getCookieStringSync(ZALO_DOMAINS.CHAT_WEB);
+        const wsAgent =
+            this.ctx.options.agent &&
+            typeof (this.ctx.options.agent as { dispatch?: unknown }).dispatch !== "function"
+                ? this.ctx.options.agent
+                : undefined;
+
         const ws = new WebSocket(this.wsURL, {
             headers: {
                 "accept-language": getBrowserLanguage(this.ctx.language),
@@ -232,7 +240,7 @@ export class Listener extends EventEmitter<ListenerEvents> {
                 "user-agent": this.userAgent,
                 cookie,
             },
-            agent: this.ctx.options.agent,
+            ...(wsAgent ? { agent: wsAgent } : {}),
         });
         this.ws = ws;
 
@@ -248,6 +256,7 @@ export class Listener extends EventEmitter<ListenerEvents> {
             this.reset();
             this.emit("disconnected", event.code as CloseReason, event.reason);
             const retry =
+                !this.isManualStop &&
                 retryOnClose &&
                 this.isRetryable(event.code as CloseReason) &&
                 this.canRetry(event.code as CloseReason);
@@ -387,10 +396,17 @@ export class Listener extends EventEmitter<ListenerEvents> {
     }
 
     public stop() {
-        if (this.retryTimeout) clearTimeout(this.retryTimeout);
-        if (this.watchdogTimeout) clearTimeout(this.watchdogTimeout);
+        this.isManualStop = true;
+        if (this.retryTimeout) {
+            clearTimeout(this.retryTimeout);
+            this.retryTimeout = undefined;
+        }
+        if (this.watchdogTimeout) {
+            clearTimeout(this.watchdogTimeout);
+            this.watchdogTimeout = undefined;
+        }
         if (this.ws) {
-            if (this.ws.readyState !== WebSocket.CLOSED) {
+            if (this.ws.readyState !== WebSocket.CLOSED && this.ws.readyState !== WebSocket.CLOSING) {
                 this.ws.close(CloseReason.ManualClosure);
             }
         }
@@ -398,7 +414,7 @@ export class Listener extends EventEmitter<ListenerEvents> {
     }
 
     public sendWs(payload: WsPayload, requireId: boolean = true) {
-        if (this.ws) {
+        if (this.ws && (this.ws.readyState === undefined || this.ws.readyState === WebSocket.OPEN)) {
             if (requireId) payload.data["req_id"] = `req_${this.id++}`;
 
             const encodedData = new TextEncoder().encode(JSON.stringify(payload.data));

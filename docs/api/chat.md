@@ -61,7 +61,7 @@ Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nh�
 
 Thả biểu cảm (Reaction: Tim, Like, Haha, Wow, Buồn, Giận) vào một tin nhắn cá nhân hoặc nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/reaction</span> <span class="zca-endpoint-pill">/api/group/reaction</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/reaction</span> <span class="zca-endpoint-pill">/api/group/reaction</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -104,7 +104,7 @@ export type AddReactionDestination = {
 
 Đánh dấu hội thoại là chưa đọc (Unread).
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/conv/addUnreadMark</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/conv/addUnreadMark</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -135,7 +135,7 @@ export type AddUnreadMarkResponse = {
 
 Xóa lịch sử cuộc trò chuyện cá nhân hoặc nhóm ở phía tài khoản hiện tại.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/deleteconver</span> <span class="zca-endpoint-pill">/api/group/deleteconver</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/deleteconver</span> <span class="zca-endpoint-pill">/api/group/deleteconver</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -179,7 +179,7 @@ export type DeleteChatLastMessage = {
 
 Xóa một tin nhắn cụ thể (chỉ xóa ở phía tôi hoặc thu hồi).
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/delete</span> <span class="zca-endpoint-pill">/api/group/deletemsg</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/delete</span> <span class="zca-endpoint-pill">/api/group/deletemsg</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -217,7 +217,7 @@ export type DeleteMessageDestination = {
 
 Chuyển tiếp (Forward) tin nhắn văn bản hoặc đính kèm tới nhiều hội thoại cùng lúc.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/mforward</span> <span class="zca-endpoint-pill">/api/group/mforward</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/mforward</span> <span class="zca-endpoint-pill">/api/group/mforward</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -268,7 +268,7 @@ export type ForwardMessageResponse = {
 
 Lấy danh sách các hội thoại đã được lưu trữ (Archived Chats).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/archivedchat/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/archivedchat/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -292,7 +292,7 @@ export type GetArchivedChatListResponse = {
 
 Lấy danh sách các hội thoại đang bật chế độ tin nhắn tự xóa.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/conv/autodelete/getConvers</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/conv/autodelete/getConvers</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -320,7 +320,7 @@ export type GetAutoDeleteChatResponse = {
 
 Truy vấn trạng thái Đã nhận (`deliver`) và Đã xem (`seen`) tin nhắn trong các hội thoại cá nhân 1-1 (command 12016)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/getStatusMsg</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/getStatusMsg</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -355,7 +355,7 @@ export type GetDirectMessageStatusResponse = {
 
 Lấy danh sách các cuộc trò chuyện đang được ẩn bằng mã PIN.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/hiddenconvers/get-all</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/hiddenconvers/get-all</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -385,7 +385,7 @@ export type GetHiddenConversationsResponse = {
 
 Lấy thông tin trạng thái đã xem cuối cùng của danh sách nhóm và cá nhân (command 12009)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/preloadconvers/get-last-seen</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/preloadconvers/get-last-seen</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -420,7 +420,7 @@ export type GetLastSeenResponse = {
 
 Lấy trạng thái đã xem cảm xúc (Reaction) cuối cùng của danh sách nhóm và cá nhân (command 12450)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/react/gLastSn</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/react/gLastSn</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -453,7 +453,7 @@ export type GetLastSeenReactionResponse = {
 
 Lấy danh sách các cuộc trò chuyện đang tắt thông báo (Mute).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/getmute</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/social/profile/getmute</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -486,7 +486,7 @@ export type GetMuteResponse = {
 
 Lấy danh sách các cuộc trò chuyện đang được ghim trên đầu danh sách chat.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/pinconvers/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/pinconvers/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -510,7 +510,7 @@ export type GetPinConversationsResponse = {
 
 Lấy danh sách lịch sử tìm kiếm gần đây trên Zalo (command 12125)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/recentsearch/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/recentsearch/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -539,7 +539,7 @@ export type GetRecentSearchListResponse = {
 
 Lấy danh sách các cuộc hội thoại được gợi ý (command 11233)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/suggestconvers/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/suggestconvers/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -567,7 +567,7 @@ export type GetSuggestedConversationsResponse = {
 
 Lấy danh sách các cuộc trò chuyện đang được đánh dấu là chưa đọc.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/conv/getUnreadMark</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/conv/getUnreadMark</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -601,7 +601,7 @@ export type GetUnreadMarkResponse = {
 
 Phân tích siêu dữ liệu (Title, Description, Thumbnail) của một đường dẫn URL trước khi gửi.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/parselink</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/parselink</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -646,7 +646,7 @@ export type ParseLinkResponse = {
 
 Tải trước tin nhắn cuối cùng và trạng thái đã đọc của các hội thoại đang hoạt động (command 10053).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/preloadconvers/get-last-msgs</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/preloadconvers/get-last-msgs</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -695,7 +695,7 @@ export type PreloadConversationsResponse = PreloadConversationsRawResponse & {
 
 Gỡ bỏ đánh dấu chưa đọc trên cuộc trò chuyện.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/conv/removeUnreadMark</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/conv/removeUnreadMark</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -726,7 +726,7 @@ export type RemoveUnreadMarkResponse = {
 
 Đặt lại (Reset) mã PIN bảo vệ trò chuyện ẩn.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/hiddenconvers/reset</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/hiddenconvers/reset</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -747,7 +747,7 @@ export type ResetHiddenConversPinResponse = "";
 
 Gửi danh thiếp thông tin tài khoản ngân hàng (Bank Card) vào cuộc trò chuyện.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/transfer/card</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/transfer/card</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -780,7 +780,7 @@ export type SendBankCardResponse = "";
 
 Gửi danh thiếp liên hệ Zalo (Contact Card / QR) vào hội thoại cá nhân hoặc nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/forward</span> <span class="zca-endpoint-pill">/api/group/forward</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/forward</span> <span class="zca-endpoint-pill">/api/group/forward</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -817,7 +817,7 @@ export type SendCardResponse = {
 
 Gửi tín hiệu xác nhận Đã nhận (Delivered) cho một hoặc nhiều tin nhắn.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/deliveredv2</span> <span class="zca-endpoint-pill">/api/group/deliveredv2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/deliveredv2</span> <span class="zca-endpoint-pill">/api/group/deliveredv2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -874,7 +874,7 @@ type MsgInfos = {
 
 Gửi tin nhắn kèm bản xem trước liên kết (Link Preview) vào hội thoại.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/link</span> <span class="zca-endpoint-pill">/api/group/sendlink</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/link</span> <span class="zca-endpoint-pill">/api/group/sendlink</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -909,7 +909,7 @@ export type SendLinkResponse = {
 
 Gửi tin nhắn văn bản, trích dẫn (Quote), nhắc tên (@Mention) hoặc tệp đính kèm (Ảnh/File/GIF) tới cá nhân hoặc nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message</span> <span class="zca-endpoint-pill">/api/group</span> <span class="zca-endpoint-pill">/api/message/</span> <span class="zca-endpoint-pill">/api/group/</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message</span> <span class="zca-endpoint-pill">/api/group</span> <span class="zca-endpoint-pill">/api/message/</span> <span class="zca-endpoint-pill">/api/group/</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1040,7 +1040,7 @@ export type MessageContent = {
 
 Gửi báo cáo vi phạm (Report Abuse) đối với người dùng hoặc cuộc trò chuyện.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/report/abuse-v2</span> <span class="zca-endpoint-pill">/api/social/profile/reportabuse</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/report/abuse-v2</span> <span class="zca-endpoint-pill">/api/social/profile/reportabuse</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1085,7 +1085,7 @@ export type SendReportResponse = {
 
 Gửi tín hiệu xác nhận Đã xem (Seen) cho các tin nhắn trong hội thoại.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/seenv2</span> <span class="zca-endpoint-pill">/api/group/seenv2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/seenv2</span> <span class="zca-endpoint-pill">/api/group/seenv2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1143,7 +1143,7 @@ type MsgInfos = {
 
 Gửi nhãn dán (Sticker) vào cuộc trò chuyện cá nhân hoặc nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/sticker</span> <span class="zca-endpoint-pill">/api/group/sticker</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/sticker</span> <span class="zca-endpoint-pill">/api/group/sticker</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1178,7 +1178,7 @@ export type SendStickerResponse = {
 
 Gửi tín hiệu trạng thái Đang soạn tin nhắn (Typing...) tới người nhận hoặc nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/typing</span> <span class="zca-endpoint-pill">/api/group/typing</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/typing</span> <span class="zca-endpoint-pill">/api/group/typing</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1207,7 +1207,7 @@ export type SendTypingEventResponse = {
 
 Gửi tệp video kèm ảnh thu nhỏ (Thumbnail) và thời lượng vào hội thoại cá nhân hoặc nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/forward</span> <span class="zca-endpoint-pill">/api/group/forward</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/forward</span> <span class="zca-endpoint-pill">/api/group/forward</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1267,7 +1267,7 @@ export type SendVideoResponse = {
 
 Gửi tin nhắn thoại (Voice / Audio MP3 / AAC) vào hội thoại cá nhân hoặc nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/forward</span> <span class="zca-endpoint-pill">/api/group/forward</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/forward</span> <span class="zca-endpoint-pill">/api/group/forward</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1304,7 +1304,7 @@ export type SendVoiceResponse = {
 
 Ẩn hoặc bỏ ẩn một hoặc nhiều cuộc trò chuyện bằng mã PIN.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/hiddenconvers/add-remove</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/hiddenconvers/add-remove</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1331,7 +1331,7 @@ export type SetHiddenConversationsResponse = "";
 
 Bật hoặc tắt chế độ im lặng (Mute thông báo) cho cuộc trò chuyện theo khoảng thời gian.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/profile/setmute</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/social/profile/setmute</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1378,7 +1378,7 @@ export enum MuteAction {
 
 Ghim hoặc bỏ ghim cuộc trò chuyện lên đầu danh sách.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/pinconvers/updatev2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/pinconvers/updatev2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1405,7 +1405,7 @@ export type SetPinnedConversationsResponse = "";
 
 Thu hồi (Undo) một tin nhắn đã gửi với tất cả mọi người trong cuộc trò chuyện.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/undo</span> <span class="zca-endpoint-pill">/api/group/undomsg</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/undo</span> <span class="zca-endpoint-pill">/api/group/undomsg</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1439,7 +1439,7 @@ export type UndoResponse = {
 
 Thu hồi hàng loạt nhiều tin nhắn cùng lúc trong hội thoại cá nhân hoặc nhóm (command 12115 / 12116)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/multi_undomsg</span> <span class="zca-endpoint-pill">/api/message/multi_undo</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/group/multi_undomsg</span> <span class="zca-endpoint-pill">/api/message/multi_undo</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1473,7 +1473,7 @@ export type UndoMultiMessageResponse = Record<string, unknown>;
 
 Đưa cuộc trò chuyện vào mục Lưu trữ (Archive) hoặc khôi phục ra ngoài.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/archivedchat/update</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/archivedchat/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1501,7 +1501,7 @@ export type UpdateArchivedChatListResponse = { needResync: boolean; version: num
 
 Cấu hình thời gian tự động xóa tin nhắn cho cuộc trò chuyện (1 ngày, 7 ngày, 30 ngày hoặc tắt).
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/conv/autodelete/updateConvers</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/conv/autodelete/updateConvers</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1535,7 +1535,7 @@ export type UpdateAutoDeleteChatResponse = "";
 
 Đặt mới hoặc thay đổi mã PIN bảo mật cho tính năng Trò chuyện ẩn.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/hiddenconvers/update-pin</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/hiddenconvers/update-pin</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1560,7 +1560,7 @@ export type UpdateHiddenConversPinResponse = "";
 
 Cập nhật danh sách hội thoại ghim qua `/api/pinconvers/update` (command 12121) hoặc `/api/pinconvers/updatev2` (command 12122)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/pinconvers/updatev2</span> <span class="zca-endpoint-pill">/api/pinconvers/update</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/pinconvers/updatev2</span> <span class="zca-endpoint-pill">/api/pinconvers/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1608,7 +1608,7 @@ export type UpdatePinConversationsResponse = {
 
 Cập nhật danh sách lịch sử tìm kiếm gần đây trên Zalo (command 12126)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/recentsearch/update</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/recentsearch/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

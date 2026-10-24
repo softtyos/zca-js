@@ -34,7 +34,7 @@ Quản lý thiết bị đăng nhập, xuất/nhập phiên (exportSession), mã
 
 Giải mã danh sách Global ID (g_...) ẩn danh thành User ID thật (tương ứng hàm `getUidFromGlobalNoiseId` / command `12054` trên Zalo PC)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/gid/decrypt</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">/api/gid/decrypt</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -63,7 +63,7 @@ export type DecryptGidsResponse = {
 
 Mã hóa danh sách UID thật sang định danh ẩn danh Global Noise ID (`OTDAKO...`) (command 12053)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/gid/encrypt</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">/api/gid/encrypt</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -90,7 +90,7 @@ export type EncryptGidsResponse = {
 
 Xuất toàn bộ thông tin phiên đăng nhập hiện tại (`uid`, `imei`, `userAgent`, `language`, `cookie`) dưới định dạng chuẩn `Credentials` để lưu trữ (JSON/Database) và truyền trực tiếp vào `zalo.login(session)`.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -114,7 +114,7 @@ export type ExportedSession = Credentials & {
 
 API `getContext` thuộc phân hệ `auth`.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -129,7 +129,7 @@ await api.getContext()
 
 Get the current cookie string
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -144,7 +144,7 @@ await api.getCookie()
 
 Lấy danh sách các thiết bị đang đăng nhập tài khoản Zalo hiện tại.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/devices/linked</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">/api/devices/linked</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -173,7 +173,7 @@ export type GetListDeviceResponse = {
 
 Chuyển đổi danh sách UID cá nhân (`fids`) và GID nhóm (`gids`) dạng số thuần (từ SQLite ZDB4.0 mobile) sang định dạng Noised ID 19 chữ số dùng trên Zalo Web/PC (`getNoisedUids`, command `12390`). Tự động fallback sang `https://zwid.api.zalo.me/api/znoise` nếu profile domain trả về lỗi.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/znoise</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">/api/znoise</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -206,7 +206,7 @@ export type GetNoisedIdsResponse = {
 
 API `getOwnId` thuộc phân hệ `auth`.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -221,7 +221,7 @@ await api.getOwnId()
 
 Lấy mã QR của danh sách người dùng theo UID.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/mget-qr</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">/api/friend/mget-qr</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -248,7 +248,7 @@ export type GetQRResponse = {
 
 Gửi tín hiệu duy trì phiên kết nối HTTP tới máy chủ Chat (KeepAlive - command 11770)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -272,7 +272,7 @@ export type KeepAliveResponse = {
 
 Gửi tín hiệu thông báo ứng dụng chuyển sang chế độ chạy nền (Background).
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/profile/changefgtobg</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">/api/social/profile/changefgtobg</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -295,7 +295,7 @@ export type LostFocusResponse = {
 
 Quét và kiểm tra độ an toàn của đường dẫn URL thông qua bộ lọc bảo mật Zalo.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/message/scanurl</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">/api/message/scanurl</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -322,7 +322,7 @@ export type ScanURLResponse = {
 
 Cập nhật trạng thái hoạt động (Online / Offline / Ping) của tài khoản.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/ping</span> <span class="zca-endpoint-pill">/api/social/profile/deactive</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">/api/social/profile/ping</span> <span class="zca-endpoint-pill">/api/social/profile/deactive</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -345,7 +345,7 @@ export type UpdateActiveStatusResponse = {
 
 Cập nhật ngôn ngữ hiển thị của phiên tài khoản Zalo.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/updatelang</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">/api/social/profile/updatelang</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

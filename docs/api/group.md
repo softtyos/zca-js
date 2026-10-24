@@ -64,7 +64,7 @@ Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch 
 
 Chặn một hoặc nhiều thành viên khỏi nhóm (không cho tham gia lại).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/blockedmems/add</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/blockedmems/add</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -90,7 +90,7 @@ export type AddGroupBlockedMemberResponse = "";
 
 Bổ nhiệm thành viên làm Phó nhóm (Quản trị viên).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/admins/add</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/admins/add</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -116,7 +116,7 @@ export type AddGroupDeputyResponse = "";
 
 Thêm trực tiếp một hoặc nhiều người dùng vào nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/invite/v2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/invite/v2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -145,7 +145,7 @@ export type AddUserToGroupResponse = {
 
 Lấy dữ liệu phân tích/thống kê của nhóm qua `/api/group/analyse` (command 12407)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/analyse</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/analyse</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -172,7 +172,7 @@ export type AnalyseGroupResponse = {
 
 Thay đổi ảnh đại diện (Avatar) của nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/upavatar</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/upavatar</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -198,7 +198,7 @@ export type ChangeGroupAvatarResponse = "";
 
 Đổi tên hiển thị của nhóm chat hoặc Cộng đồng.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/updateinfo</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/updateinfo</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -226,7 +226,7 @@ export type ChangeGroupNameResponse = {
 
 Chuyển nhượng quyền Trưởng nhóm (Owner) cho một thành viên khác trong nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/change-owner</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/change-owner</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -254,7 +254,7 @@ export type ChangeGroupOwnerResponse = {
 
 Kiểm tra điều kiện/hạn mức thành viên Cộng đồng đối với một thành viên cụ thể trong nhóm (command 12182)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/quota/members-comm</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/quota/members-comm</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -284,7 +284,7 @@ export type CheckQuotaCommunityMemberResponse = {
 
 Tạo một nhóm chat mới kèm tên nhóm, danh sách thành viên ban đầu và ảnh đại diện.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/create/v2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/create/v2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -335,7 +335,7 @@ export type CreateGroupOptions = {
 
 Xóa lời mời tham gia nhóm trong hộp thư lời mời nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/inv-box/mdel-inv</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/inv-box/mdel-inv</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -368,7 +368,7 @@ export type DeleteGroupInviteBoxResponse = {
 
 Vô hiệu hóa (Tắt) đường dẫn tham gia nhóm bằng liên kết (Invite Link).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/link/disable</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/link/disable</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -393,7 +393,7 @@ export type DisableGroupLinkResponse = "";
 
 Giải tán nhóm chat vĩnh viễn (yêu cầu quyền Trưởng nhóm).
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/disperse</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/disperse</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -418,7 +418,7 @@ export type DisperseGroupResponse = "";
 
 Kích hoạt hoặc tạo mới đường dẫn liên kết mời tham gia nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/link/new</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/link/new</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -447,7 +447,7 @@ export type EnableGroupLinkResponse = {
 
 API `getAllGroups` thuộc phân hệ `group`.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/getlg/v4</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/getlg/v4</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -473,7 +473,7 @@ export type GetAllGroupsResponse = {
 
 Lấy danh sách các nhóm đang bật mã hóa đầu cuối E2EE (command 12146)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/getlg/e2ee</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/getlg/e2ee</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -499,7 +499,7 @@ export type GetE2eeGroupListResponse = {
 
 Lấy ngữ cảnh và vai trò mở rộng của người dùng đối với nhiều nhóm (command 12607)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/userctx/multiget</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/userctx/multiget</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -530,7 +530,7 @@ export type GetExtraGroupInfoResponse = Record<string, ExtraContextInfo>;
 
 Lấy danh sách các tài khoản đang bị chặn khỏi nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/blockedmems/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/blockedmems/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -578,7 +578,7 @@ export type GetGroupBlockedMemberResponse = {
 
 Lấy lịch sử tin nhắn nhóm từ Zalo Cloud Message (hỗ trợ cả `/api/cm/getrecentv2` cmd 12506 và `/api/cm/getoldv2` cmd 12507)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/cm/getoldv2</span> <span class="zca-endpoint-pill">/api/cm/getrecentv2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/cm/getoldv2</span> <span class="zca-endpoint-pill">/api/cm/getrecentv2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -651,7 +651,7 @@ export type GetGroupChatHistoryResponse = {
 
 Nhảy tới vị trí một tin nhắn nhóm cụ thể trên Zalo Cloud Message và lấy ngữ cảnh xung quanh (command 12508)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/cm/rgetv2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/cm/rgetv2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -680,7 +680,7 @@ export type GetGroupCloudMessageJumpResponse = GetGroupChatHistoryResponse;
 
 Lấy chuỗi tin nhắn nhóm theo đường dẫn nhảy tới một tin nhắn cụ thể (`globalMsgId` / `rGlobalMsgId`) qua `/api/cm/getpath` (command 12504)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/cm/getpath</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/cm/getpath</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -722,7 +722,7 @@ export type GetGroupCloudMessagePathResponse = {
 
 Lấy lịch sử tin nhắn nhóm qua endpoint `/api/group/history` trên miền `group` (command 11240)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/history</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/history</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -752,7 +752,7 @@ export type GetGroupHistoryLegacyResponse = {
 
 Lấy thông tin chi tiết của một hoặc nhiều nhóm (tên nhóm, cài đặt lockViewMember, creatorId, adminIds, memVerList) qua /api/group/getmg-v2.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/getmg-v2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/getmg-v2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -791,7 +791,7 @@ export type GroupInfoPendingApprove = {
 
 Lấy thông tin nhóm và danh sách thành viên theo trang qua `/api/group/getgi/v2` hoặc `/api/group/getgi` (command 11162)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/getgi</span> <span class="zca-endpoint-pill">/api/group/getgi/v2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/getgi</span> <span class="zca-endpoint-pill">/api/group/getgi/v2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -844,7 +844,7 @@ export type GetGroupInfoV2Response = GroupInfo & {
 
 Lấy thông tin chi tiết của một lời mời vào nhóm cụ thể.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/inv-box/inv-info</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/inv-box/inv-info</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -899,7 +899,7 @@ export type GetGroupInviteBoxInfoResponse = {
 
 Lấy danh sách tất cả lời mời tham gia nhóm đang chờ trong hộp thư.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/inv-box/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/inv-box/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -960,7 +960,7 @@ export type GetGroupInviteBoxListResponse = {
 
 Lấy chi tiết đường dẫn mời tham gia nhóm (Link邀請) của một nhóm mà bạn đang tham gia.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/link/detail</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/link/detail</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -992,7 +992,7 @@ export type GetGroupLinkDetailResponse = {
 
 Tra cứu thông tin nhóm và danh sách thành viên theo trang từ đường dẫn nhóm công khai (https://zalo.me/g/...).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/link/ginfo</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/link/ginfo</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1049,7 +1049,7 @@ export type GetGroupLinkInfoResponse = {
 
 Lấy danh sách nhóm theo trang kèm thông tin thành viên đại diện (`currentMems`) và gợi ý nhóm (`suggestGroup`) qua `/api/group/getlg/v3` (command 11161)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/getlg/v3</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/getlg/v3</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1091,7 +1091,7 @@ export type GetGroupListV3Response = {
 
 Giải mã hàng loạt thông tin hồ sơ thành viên (displayName, zaloName, avatar, globalId) từ danh sách UID qua /api/social/group/members.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/group/members</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/social/group/members</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1132,7 +1132,7 @@ export type GetGroupMembersInfoResponse = {
 
 Truy vấn trạng thái Đã nhận (`deliver`) và Đã xem (`seen`) tin nhắn của danh sách thành viên trong nhóm (command 12017)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/getStatusMsg</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/getStatusMsg</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1185,7 +1185,7 @@ export type GetGroupMessageStatusResponse = {
 
 Đồng bộ nhanh tin nhắn Cloud của nhiều nhóm cùng lúc theo danh sách `groupIds` (command 12503 - `syncCloudMsgFirstLogin`)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/cm/mget</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/cm/mget</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1214,7 +1214,7 @@ export type GetMultiGroupCloudMessagesResponse = {
 
 Lấy danh sách các yêu cầu xin vào nhóm đang chờ Quản trị viên phê duyệt.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/pending-mems/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/pending-mems/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1249,7 +1249,7 @@ export type GetPendingGroupMembersResponse = {
 
 Kiểm tra hạn mức nâng cấp nhóm lên Cộng đồng của tài khoản (command 12181)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/quota/community</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/quota/community</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1281,7 +1281,7 @@ export type GetQuotaCommunityResponse = {
 
 Kiểm tra danh sách các nhóm chung giữa tài khoản hiện tại và danh sách UID truyền vào qua /api/friend/group/related.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/group/related</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/friend/group/related</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1310,7 +1310,7 @@ export type GetRelatedFriendGroupResponse = {
 
 Gửi lời mời tham gia một hoặc nhiều nhóm tới người dùng.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/invite/multi</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/invite/multi</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1344,7 +1344,7 @@ export type InviteUserToGroupsResponse = {
 
 Chấp nhận lời mời tham gia nhóm từ hộp thư lời mời.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/inv-box/join</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/inv-box/join</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1369,7 +1369,7 @@ export type JoinGroupInviteBoxResponse = "";
 
 Tham gia vào nhóm thông qua đường dẫn liên kết mời (Group Link).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/link/join</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/link/join</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1394,7 +1394,7 @@ export type JoinGroupLinkResponse = "";
 
 Rời khỏi một hoặc nhiều nhóm chat (hỗ trợ rời nhóm im lặng silent).
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/leave</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/leave</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1422,7 +1422,7 @@ export type LeaveGroupResponse = {
 
 Gỡ chặn (Unblock) cho người dùng khỏi danh sách chặn của nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/blockedmems/remove</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/blockedmems/remove</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1448,7 +1448,7 @@ export type RemoveGroupBlockedMemberResponse = "";
 
 Cách chức Phó nhóm (thu hồi quyền Quản trị viên) của thành viên.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/admins/remove</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/admins/remove</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1474,7 +1474,7 @@ export type RemoveGroupDeputyResponse = "";
 
 Mời ra khỏi nhóm (Kick) một hoặc nhiều thành viên.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/group/kickout</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/kickout</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1502,7 +1502,7 @@ export type RemoveUserFromGroupResponse = {
 
 Phê duyệt (Chấp nhận hoặc Từ chối) yêu cầu xin tham gia nhóm của thành viên mới.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/pending-mems/review</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/pending-mems/review</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1542,7 +1542,7 @@ export type ReviewPendingMemberRequestResponse = {
 
 Cập nhật các thiết lập quyền hạn của nhóm (ẩn thành viên lockViewMember, duyệt thành viên joinAppr, khóa nhắn tin lockSendMsg...).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/setting/update</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/setting/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -1612,7 +1612,7 @@ export type UpdateGroupSettingsResponse = "";
 
 Nâng cấp nhóm thường lên Cộng đồng (Community - tối đa 1000 thành viên).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/group/upgrade/community</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/upgrade/community</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

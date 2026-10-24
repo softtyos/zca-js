@@ -14,6 +14,9 @@ export default defineConfig({
         hostname: "https://softtyos.github.io/zca-js-docs/",
     },
     head: [
+        ["link", { rel: "preconnect", href: "https://fonts.googleapis.com" }],
+        ["link", { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" }],
+        ["link", { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap" }],
         ["link", { rel: "icon", type: "image/svg+xml", href: "/zca-js-docs/favicon.svg" }],
         ["meta", { name: "author", content: "Softtynet Co., Ltd." }],
         ["meta", { name: "keywords", content: "zalo api, @softtynet/zca-js, zca-js, softtynet, zalo sdk, zalo bot nodejs, zalo typescript, zalo zdb sync, zalo cloud message" }],
@@ -69,23 +72,16 @@ export default defineConfig({
                 ],
             },
             {
-                text: "📚 Tài liệu Chuyên sâu (R&D)",
-                items: [
-                    { text: "Tích hợp Đồng bộ ZDB 4.0 & Call", link: "/INTEGRATION_GUIDE_SYNC_AND_CALL" },
-                    { text: "Kiến trúc Tổng thể & Giao thức", link: "/ARCHITECTURE_AND_API_REFERENCE" },
-                    { text: "React Native & WebRTC Voice/Video", link: "/RND_REACT_NATIVE_AND_VOICE_VIDEO_CALL" },
-                ],
-            },
-            {
-                text: "⚡ Tra cứu API & Models (12 Domains)",
+                text: "⚡ Tra cứu API & Models",
                 items: [
                     { text: "🔍 API Explorer (225 APIs)", link: "/api/" },
                     { text: "📦 Models, Enums & Errors", link: "/api/models" },
-                    ...[
-          {
-                    "text": "🔐 Xác thực & Phiên (Auth) (14)",
-                    "link": "/api/auth"
-          },
+                ],
+            },
+            {
+                text: "💬 Phân hệ Chat & Nhóm (Cốt lõi)",
+                collapsed: false,
+                items: [
           {
                     "text": "💬 Tin nhắn & Hội thoại (Chat) (41)",
                     "link": "/api/chat"
@@ -101,7 +97,13 @@ export default defineConfig({
           {
                     "text": "🪪 Hồ sơ cá nhân (Profile) (16)",
                     "link": "/api/profile"
-          },
+          }
+],
+            },
+            {
+                text: "🔄 Đồng bộ & Dữ liệu Nâng cao",
+                collapsed: false,
+                items: [
           {
                     "text": "🔄 Đồng bộ Mobile ZDB 4.0 (Sync) (5)",
                     "link": "/api/sync"
@@ -117,6 +119,16 @@ export default defineConfig({
           {
                     "text": "🖼️ Kho lưu trữ & Chuyển giọng nói (Media) (8)",
                     "link": "/api/media"
+          }
+],
+            },
+            {
+                text: "💼 Tiện ích & Doanh nghiệp",
+                collapsed: false,
+                items: [
+          {
+                    "text": "🔐 Xác thực & Phiên (Auth) (14)",
+                    "link": "/api/auth"
           },
           {
                     "text": "✨ Nhãn dán & Biểu cảm (Sticker) (10)",
@@ -131,6 +143,14 @@ export default defineConfig({
                     "link": "/api/business"
           }
 ],
+            },
+            {
+                text: "📚 Tài liệu Chuyên sâu (R&D)",
+                collapsed: true,
+                items: [
+                    { text: "Tích hợp Đồng bộ ZDB 4.0 & Call", link: "/INTEGRATION_GUIDE_SYNC_AND_CALL" },
+                    { text: "Kiến trúc Tổng thể & Giao thức", link: "/ARCHITECTURE_AND_API_REFERENCE" },
+                    { text: "React Native & WebRTC Voice/Video", link: "/RND_REACT_NATIVE_AND_VOICE_VIDEO_CALL" },
                 ],
             },
         ],

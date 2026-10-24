@@ -36,7 +36,7 @@ Quản lý Tin ghim (Pin Topics), Ghi chú nhóm (Notes), Bình chọn (Polls) v
 
 Thêm phương án lựa chọn mới vào một cuộc Bình chọn (Poll) đang mở trong nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/poll/option/add</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/poll/option/add</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -70,7 +70,7 @@ export type AddPollOptionsResponse = {
 
 Tạo một Ghi chú (Note) mới trên Bảng tin nhóm và tùy chọn ghim lên đầu.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/board/topic/createv2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/board/topic/createv2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -103,7 +103,7 @@ export type CreateNoteResponse = NoteDetail;
 
 Tạo một cuộc Bình chọn (Poll) mới trong nhóm với nhiều phương án và cấu hình ẩn danh/đa lựa chọn.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/poll/create</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/poll/create</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -166,7 +166,7 @@ export type CreatePollResponse = PollDetail;
 
 Tạo một Lịch hẹn (Reminder) mới trong hội thoại cá nhân hoặc nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/board/oneone/create</span> <span class="zca-endpoint-pill">/api/board/topic/createv2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/board/oneone/create</span> <span class="zca-endpoint-pill">/api/board/topic/createv2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -204,7 +204,7 @@ export type CreateReminderResponse = CreateReminderUser | CreateReminderGroup;
 
 Chỉnh sửa nội dung ghi chú đã tạo trên Bảng tin nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/board/topic/updatev2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/board/topic/updatev2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -245,7 +245,7 @@ export type EditNoteResponse = NoteDetail;
 
 Chỉnh sửa nội dung và thời gian của một Lịch hẹn (Reminder).
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/board/oneone/update</span> <span class="zca-endpoint-pill">/api/board/topic/updatev2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/board/oneone/update</span> <span class="zca-endpoint-pill">/api/board/topic/updatev2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -284,7 +284,7 @@ export type EditReminderResponse = EditReminderUser | EditReminderGroup;
 
 Lấy danh sách các mục trên Bảng tin nhóm (bao gồm Ghi chú, Bình chọn và Tin nhắn ghim) qua /api/board/list.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/board/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/board/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -337,7 +337,7 @@ type RawListBoard = {
 
 Lấy danh sách chủ đề / tin nhắn đã ghim trong bảng tin nhóm (command 12001)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/board/pin/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/board/pin/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -366,7 +366,7 @@ export type GetListPinTopicsResponse = {
 
 Lấy danh sách các Lịch hẹn (Reminders) trong hội thoại cá nhân hoặc nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/board/oneone/list</span> <span class="zca-endpoint-pill">/api/board/listReminder</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/board/oneone/list</span> <span class="zca-endpoint-pill">/api/board/listReminder</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -420,7 +420,7 @@ export type GetListReminderResponse = (ReminderListUser & ReminderListGroup)[];
 
 Lấy thông tin chi tiết và toàn bộ danh sách UID thành viên đã bỏ phiếu (voters) trong cuộc Bình chọn qua /api/poll/detail.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/poll/detail</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/poll/detail</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -445,7 +445,7 @@ export type PollDetailResponse = PollDetail;
 
 Lấy thông tin chi tiết của một Lịch hẹn (Reminder) trong nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/board/topic/getReminder</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/board/topic/getReminder</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -470,7 +470,7 @@ export type GetReminderResponse = ReminderGroup;
 
 Lấy danh sách UID các thành viên đã bấm Tham gia (acceptMember) hoặc Từ chối (rejectMember) một Lịch hẹn.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/board/topic/listResponseEvent</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/board/topic/listResponseEvent</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -498,7 +498,7 @@ export type GetReminderResponsesResponse = {
 
 Khóa (Kết thúc) một cuộc Bình chọn trong nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/poll/end</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/poll/end</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -523,7 +523,7 @@ export type LockPollResponse = "";
 
 Xóa một Lịch hẹn trong hội thoại cá nhân hoặc nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/board/oneone/remove</span> <span class="zca-endpoint-pill">/api/board/topic/remove</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/board/oneone/remove</span> <span class="zca-endpoint-pill">/api/board/topic/remove</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -550,7 +550,7 @@ export type RemoveReminderResponse = "" | number;
 
 Chia sẻ lại cuộc Bình chọn vào luồng tin nhắn nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/poll/share</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/poll/share</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -575,7 +575,7 @@ export type SharePollResponse = "";
 
 Bỏ phiếu bình chọn cho một hoặc nhiều phương án trong cuộc Bình chọn nhóm.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/poll/vote</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.board</span><span class="zca-endpoint-pill">/api/poll/vote</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

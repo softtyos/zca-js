@@ -53,7 +53,7 @@ Quản lý danh sách bạn bè, lời mời kết bạn, gợi ý kết bạn, 
 
 Đồng ý lời mời kết bạn từ một người dùng.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/accept</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/accept</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -78,7 +78,7 @@ export type AcceptFriendRequestResponse = "";
 
 Chặn tin nhắn từ một người dùng theo UID.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/block</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/block</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -103,7 +103,7 @@ export type BlockUserResponse = "";
 
 Chặn hoặc mở chặn quyền xem Nhật ký (Timeline Feed) đối với một người bạn.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/feed/block</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/feed/block</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -129,7 +129,7 @@ export type BlockViewFeedResponse = "";
 
 Đặt hoặc đổi tên gợi nhớ (Biệt danh / Alias) cho bạn bè.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/alias/update</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/alias/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -155,7 +155,7 @@ export type ChangeFriendAliasResponse = "";
 
 Đánh dấu đã xem danh sách lời mời kết bạn chưa đọc (command 12232)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/recommendsv2/read-requests</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/recommendsv2/read-requests</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -180,7 +180,7 @@ export type ClearUnreadFriendRequestsResponse = Record<string, unknown> | string
 
 Tìm kiếm thông tin tài khoản Zalo thông qua số điện thoại.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/profile/get</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/profile/get</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -206,7 +206,7 @@ export type FindUserResponse = UserBasic;
 
 Tìm kiếm thông tin tài khoản Zalo thông qua Username.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/search/by-user-name</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/search/by-user-name</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -232,7 +232,7 @@ export type FindUserByUsernameResponse = UserBasic;
 
 Lấy danh sách toàn bộ tên gợi nhớ (Alias) đã đặt cho bạn bè.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/alias/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/alias/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -264,7 +264,7 @@ export type GetAliasListResponse = {
 
 Lấy danh sách tên gợi nhớ (Alias) của bạn bè chuẩn V2 có hỗ trợ phân trang (command 12205)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/alias/list/v2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/alias/list/v2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -299,7 +299,7 @@ export type GetAliasListV2Response = {
 
 Lấy toàn bộ danh sách bạn bè trong danh bạ tài khoản hiện tại.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/friend/getfriends</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/social/friend/getfriends</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -326,7 +326,7 @@ export type GetAllFriendsResponse = User[];
 
 Lấy danh sách người dùng đang bị chặn chuẩn V2 (command 11429)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/blocklistv2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/blocklistv2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -357,7 +357,7 @@ export type GetBlockFriendsResponse = {
 
 Lấy danh sách bạn thân (Close Friends).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/friend/getclosedfriends</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/social/friend/getclosedfriends</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -378,7 +378,7 @@ export type GetCloseFriendsResponse = User[];
 
 Lấy ngữ cảnh và vai trò mở rộng (ví dụ `role: ["boss"]`) của danh sách bạn bè (command 11442)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/context/multiget</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/context/multiget</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -403,7 +403,7 @@ export type GetExtraFriendInfoResponse = Record<string, ExtraContextInfo>;
 
 Lấy thông tin bảng tin chung với một người bạn.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friendboard/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friendboard/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -431,7 +431,7 @@ export type GetFriendBoardListResponse = {
 
 Lấy danh sách bạn bè đang trực tuyến (Online) kèm trạng thái thiết bị.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/friend/onlines</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/social/friend/onlines</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -461,7 +461,7 @@ export type GetFriendOnlinesResponse = {
 
 Lấy hàng loạt hồ sơ chi tiết của danh sách bạn bè kèm trạng thái online qua `/api/social/friend/getprofiles/v2` (command 11140)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/friend/getprofiles/v2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/social/friend/getprofiles/v2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -511,7 +511,7 @@ export type GetFriendProfilesV2Response = {
 
 Lấy danh sách gợi ý kết bạn và lời mời kết bạn đã nhận.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/recommendsv2/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/recommendsv2/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -575,7 +575,7 @@ export type GetFriendRecommendationsResponse = {
 
 Kiểm tra trạng thái quan hệ bạn bè và lời mời kết bạn với một UID.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/reqstatus</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/reqstatus</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -606,7 +606,7 @@ export type GetFriendRequestStatusResponse = {
 
 Lấy danh sách bạn bè đang hoạt động trên Zalo PC / Web qua `/api/social/friend/active-pcweb` (command 12072)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/friend/active-pcweb</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/social/friend/active-pcweb</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -631,7 +631,7 @@ export type GetFriendsActivePCWebResponse = {
 
 Lấy danh sách trạng thái Emoji (Emoji Status) hiện tại của bạn bè (command 16301)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/v1/emoji-status/friends</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/v1/emoji-status/friends</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -672,7 +672,7 @@ export type GetFriendsEmojiStatusResponse = {
 
 Lấy dấu thời gian lần cuối đọc tab Danh bạ (command 12230)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/last-read-contact-tab</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/last-read-contact-tab</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -695,7 +695,7 @@ export type GetLastReadContactTabResponse = {
 
 Tra cứu hàng loạt thông tin tài khoản Zalo từ danh sách nhiều số điện thoại cùng lúc.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/profile/multiget</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/profile/multiget</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -723,7 +723,7 @@ export type GetMultiUsersByPhonesResponse = {
 
 Lấy danh bạ bạn bè đồng bộ từ số điện thoại chuẩn V2 (command 12428)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/friend/phonebook/v2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/social/friend/phonebook/v2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -752,7 +752,7 @@ export type GetPhonebookV2Response = {
 
 Lấy danh sách các lời mời kết bạn mà tài khoản hiện tại đã gửi đi nhưng chưa được phản hồi.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/friend/requested/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/requested/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -789,7 +789,7 @@ export type GetSentFriendRequestResponse = {
 
 Kiểm tra thời điểm truy cập (Online) gần nhất của một người dùng.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/social/profile/lastOnline</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/social/profile/lastOnline</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -819,7 +819,7 @@ export type LastOnlineResponse = {
 
 Đánh dấu đã đọc tab Danh bạ (command 12231)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/read-contact-tab</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/read-contact-tab</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -844,7 +844,7 @@ export type ReadContactTabResponse = Record<string, unknown> | string;
 
 Từ chối lời mời kết bạn từ một người dùng.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/reject</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/reject</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -865,7 +865,7 @@ export type RejectFriendRequestResponse = "";
 
 Hủy kết bạn (Xóa bạn) với một người dùng trong danh bạ.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/remove</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/remove</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -890,7 +890,7 @@ export type RemoveFriendResponse = "";
 
 Xóa tên gợi nhớ (Biệt danh / Alias) đã đặt cho một người bạn.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/alias/remove</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/alias/remove</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -915,7 +915,7 @@ export type RemoveFriendAliasResponse = "";
 
 Gửi lời mời kết bạn kèm lời chào tới một người dùng theo UID.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/sendreq</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/sendreq</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -941,7 +941,7 @@ export type SendFriendRequestResponse = "";
 
 Bỏ chặn tin nhắn đối với một người dùng.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/unblock</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/unblock</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -966,7 +966,7 @@ export type UnBlockUserResponse = "";
 
 Thu hồi (Hủy) lời mời kết bạn đã gửi trước đó.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/friend/undo</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/friend/undo</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -987,7 +987,7 @@ export type UndoFriendRequestResponse = "";
 
 Kiểm tra và xác thực danh sách bạn bè qua `/api/social/friend/verify` (command 11138)
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/friend/verify</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.friend</span><span class="zca-endpoint-pill">/api/social/friend/verify</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

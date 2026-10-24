@@ -25,7 +25,7 @@ description: "Đồng bộ toàn bộ lịch sử tin nhắn từ điện thoạ
 
 Huỷ yêu cầu đồng bộ tin nhắn từ điện thoại đang chờ (`cancel_pull_mobile_msg`, command `12700`).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/cancel_pull_mobile_msg</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sync</span><span class="zca-endpoint-pill">/api/message/cancel_pull_mobile_msg</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -60,7 +60,7 @@ export type CancelPullMobileParams = {
 
 Tải khối dữ liệu snapshot đồng bộ tin nhắn từ máy chủ transfersync.zaloapp.com
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sync</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -91,7 +91,7 @@ export type DownloadTransferSyncOptions =
 
 Tải xuống file sao lưu tin nhắn từ sự kiện `syncmsg_info` (`.db.crypt`, định dạng `ZDB4.0`) và lưu ra ổ đĩa hoặc trả về `ReadableStream`.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sync</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -126,7 +126,7 @@ export type GetSyncDataParams = {
 
 Yêu cầu thiết bị di động Zalo đóng gói và tải lên bản sao lưu tin nhắn (`pull_mobile_msg`, command `12000`). Sự kiện tiến trình (`user_confirm`, `syncmsg_info`, `transfer_error`) sẽ được đẩy về qua `api.listener.on("sync_event")`.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/pull_mobile_msg</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sync</span><span class="zca-endpoint-pill">/api/message/pull_mobile_msg</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -165,7 +165,7 @@ export type PullMobileParams = {
 
 Phát tín hiệu yêu cầu đồng bộ tin nhắn từ ứng dụng Zalo trên điện thoại (`pull_mobile_msg`, command `12000`). Tự động sinh cặp khoá RSA 2048-bit (nếu chưa truyền vào) và gọi `api.pullMobile(...)`. Điện thoại của người dùng sẽ hiển thị thông báo yêu cầu xác nhận đồng bộ (hoặc tự động đồng bộ nếu có `tempKey` từ `transfer_after_login`). Lắng nghe sự kiện `api.listener.on("sync_event", ...)` để nhận tiến trình xác nhận (`user_confirm`) và thông tin file sao lưu (`syncmsg_info`).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">Local Context Helper</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sync</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

@@ -1,2 +1,2 @@
-export * from "./dist";
+export * from "./dist/index.js";
 export as namespace Zalo;

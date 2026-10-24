@@ -46,7 +46,7 @@ Quản lý nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả
 
 Thêm mẫu Tin nhắn nhanh (Quick Message) mới cho tài khoản Zalo Business.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/quickmessage/create</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/quickmessage/create</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -80,7 +80,7 @@ export type AddQuickMessageResponse = {
 
 Tạo kịch bản Trả lời tự động (Auto Reply) theo khung giờ cho Zalo Business.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/autoreply/create</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/autoreply/create</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -117,7 +117,7 @@ export type CreateAutoReplyResponse = {
 
 Thêm thông tin tài khoản ngân hàng mới vào danh bạ ngân hàng.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/transfer/create</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/transfer/create</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -148,7 +148,7 @@ export type CreateBankAccountResponse = BankAccount;
 
 Tạo Danh mục sản phẩm (Catalog) mới cho Zalo Business.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/create</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/create</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -177,7 +177,7 @@ export type CreateCatalogResponse = {
 
 Thêm sản phẩm mới vào Danh mục sản phẩm (Product Catalog).
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/product/create</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/prodcatalog/product/create</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -225,7 +225,7 @@ export type CreateProductCatalogResponse = {
 
 Xóa một kịch bản Trả lời tự động.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/autoreply/delete</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/autoreply/delete</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -253,7 +253,7 @@ export type DeleteAutoReplyResponse = {
 
 Xóa một tài khoản ngân hàng đã lưu.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/transfer/delete</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/transfer/delete</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -287,7 +287,7 @@ export type DeleteBankAccountResponse = {
 
 Xóa một Danh mục sản phẩm (Catalog).
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/delete</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/delete</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -312,7 +312,7 @@ export type DeleteCatalogResponse = "";
 
 Xóa một hoặc nhiều sản phẩm khỏi Danh mục sản phẩm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/product/mdelete</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/prodcatalog/product/mdelete</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -346,7 +346,7 @@ export type DeleteProductCatalogResponse = {
 
 Lấy danh sách các kịch bản Trả lời tự động của tài khoản.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/autoreply/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/autoreply/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -370,7 +370,7 @@ export type GetAutoReplyListResponse = {
 
 Lấy thông tin cấu hình tài khoản Zalo Business (ZBusiness).
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/social/friend/get-bizacc</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/social/friend/get-bizacc</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -416,7 +416,7 @@ export type GetBizAccountResponse = {
 
 Lấy danh sách các Danh mục sản phẩm (Catalogs) của tài khoản.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -457,7 +457,7 @@ export type GetCatalogListResponse = {
 
 Lấy toàn bộ danh sách Nhãn phân loại hội thoại (Conversation Labels) và các hội thoại được gắn nhãn.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/convlabel/get</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/convlabel/get</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -486,7 +486,7 @@ type RawResponseType = Omit<GetLabelsResponse, "labelData"> & {
 
 Lấy danh sách mã ngân hàng (BIN / NAPAS) được Zalo hỗ trợ.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/transfer/conf</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/transfer/conf</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -509,7 +509,7 @@ export type GetListBankResponse = {
 
 Lấy danh sách các tài khoản ngân hàng đã lưu của người dùng.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/transfer/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/transfer/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -539,7 +539,7 @@ export type GetListBankAccountResponse = {
 
 Lấy danh sách các sản phẩm nằm trong một Danh mục sản phẩm (Catalog).
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/product/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/prodcatalog/product/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -582,7 +582,7 @@ export type GetProductCatalogListResponse = {
 
 Lấy danh sách các mẫu Tin nhắn nhanh (Quick Messages) đã tạo.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/quickmessage/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/quickmessage/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -607,7 +607,7 @@ export type GetQuickMessageListResponse = {
 
 Đăng ký kích hoạt tính năng Danh mục sản phẩm (Catalog) cho tài khoản.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/register</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/register</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -632,7 +632,7 @@ export type RegisterCatalogResponse = "";
 
 Xóa một hoặc nhiều mẫu Tin nhắn nhanh.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/quickmessage/delete</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/quickmessage/delete</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -660,7 +660,7 @@ export type RemoveQuickMessageResponse = {
 
 Cập nhật nội dung và thời gian hoạt động của kịch bản Trả lời tự động.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/autoreply/update</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/autoreply/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -698,7 +698,7 @@ export type UpdateAutoReplyResponse = {
 
 Cập nhật thông tin tài khoản ngân hàng đã lưu.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/transfer/update</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/transfer/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -730,7 +730,7 @@ export type UpdateBankAccountResponse = BankAccount;
 
 Cập nhật tên hoặc ảnh của Danh mục sản phẩm.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/update</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/prodcatalog/catalog/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -764,7 +764,7 @@ export type UpdateCatalogResponse = {
 
 Cập nhật danh sách Nhãn phân loại (Labels) và gán nhãn cho các cuộc trò chuyện.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/convlabel/update</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/convlabel/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -798,7 +798,7 @@ export type UpdateLabelsResponse = {
 
 Cập nhật thông tin chi tiết, giá bán và hình ảnh của sản phẩm trong Danh mục.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/prodcatalog/product/update</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/prodcatalog/product/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -848,7 +848,7 @@ export type UpdateProductCatalogResponse = {
 
 Chỉnh sửa phím tắt và nội dung của mẫu Tin nhắn nhanh.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/quickmessage/update</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/quickmessage/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -883,7 +883,7 @@ export type UpdateQuickMessageResponse = {
 
 Tải ảnh sản phẩm lên máy chủ Zalo phục vụ cho Product Catalog hoặc Quick Message.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">/api/product/upload/photo</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/product/upload/photo</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

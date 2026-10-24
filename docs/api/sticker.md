@@ -30,7 +30,7 @@ Tìm kiếm nhãn dán, danh mục nhãn dán V2, nhãn dán gợi ý theo ngữ
 
 Lấy danh sách Sticker cá nhân hóa của tài khoản (command 11745)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/personalized/list</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sticker</span><span class="zca-endpoint-pill">/api/message/sticker/personalized/list</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -54,7 +54,7 @@ export type GetPersonalizedStickerListResponse = {
 
 Lấy danh sách danh mục bộ nhãn dán (Sticker Categories V2 - command 12020)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/category/list/v2</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sticker</span><span class="zca-endpoint-pill">/api/message/sticker/category/list/v2</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -91,7 +91,7 @@ export type GetStickerCategoriesV2Response = {
 
 Lấy thông tin chi tiết một bộ nhãn dán theo `cid` (command 11156)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/category/detail</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sticker</span><span class="zca-endpoint-pill">/api/message/sticker/category/detail</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -116,7 +116,7 @@ export type GetStickerCategoryDataResponse = StickerCategoryV2Item;
 
 Lấy danh sách toàn bộ nhãn dán nằm trong một bộ nhãn dán (Category/Pack ID).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/category/sticker_detail</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sticker</span><span class="zca-endpoint-pill">/api/message/sticker/category/sticker_detail</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -141,7 +141,7 @@ export type GetStickerCategoryDetailResponse = StickerDetail[];
 
 Lấy danh sách Sticker chào hỏi gợi ý khi bắt đầu trò chuyện mới (command 11751)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/suggestion</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sticker</span><span class="zca-endpoint-pill">/api/message/sticker/suggestion</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -177,7 +177,7 @@ export type GetStickerHelloResponse = Record<string, unknown> | StickerHelloItem
 
 Lấy bộ từ khóa gợi ý Sticker tự động khi gõ tin nhắn (command 11740)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/suggest/keywords</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sticker</span><span class="zca-endpoint-pill">/api/message/sticker/suggest/keywords</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -208,7 +208,7 @@ export type GetStickerSuggestKeywordsResponse = {
 
 Gợi ý Sticker/GIF theo từ khóa đang nhập (command 11741)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/suggest/stickers</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sticker</span><span class="zca-endpoint-pill">/api/message/sticker/suggest/stickers</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -244,7 +244,7 @@ export type GetStickerSuggestionResponse = {
 
 Tìm kiếm danh sách ID nhãn dán theo từ khóa tiếng Việt/tiếng Anh.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sticker</span><span class="zca-endpoint-pill">/api/message/sticker</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -263,7 +263,7 @@ await api.getStickers(keyword: string)
 
 Lấy thông tin chi tiết (URL ảnh động, loại sticker, cateId) của một hoặc nhiều Sticker ID.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/sticker_detail</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sticker</span><span class="zca-endpoint-pill">/api/message/sticker/sticker_detail</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -288,7 +288,7 @@ export type StickerDetailResponse = StickerDetail[];
 
 Tìm kiếm nhãn dán nâng cao theo từ khóa.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">/api/message/sticker/search</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sticker</span><span class="zca-endpoint-pill">/api/message/sticker/search</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
