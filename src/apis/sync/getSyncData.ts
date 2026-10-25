@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import toughCookie from "tough-cookie";
+import * as toughCookie from "tough-cookie";
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import type { SyncData, SyncDataResponse, SyncDataStream } from "../../models/index.js";
 import { apiFactory, ZALO_DOMAINS } from "../../utils.js";

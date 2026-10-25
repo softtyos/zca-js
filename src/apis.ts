@@ -13,6 +13,7 @@ import { analyseGroupFactory } from "./apis/group/analyseGroup.js";
 import { answerAckVoiceCallFactory } from "./apis/call/answerAckVoiceCall.js";
 import { answerGroupCallFactory } from "./apis/call/answerGroupCall.js";
 import { answerVoiceCallFactory } from "./apis/call/answerVoiceCall.js";
+import { blockOAFactory } from "./apis/business/blockOA.js";
 import { blockUserFactory } from "./apis/friend/blockUser.js";
 import { blockViewFeedFactory } from "./apis/friend/blockViewFeed.js";
 import { broadcastGroupCallStateFactory } from "./apis/call/broadcastGroupCallState.js";
@@ -26,6 +27,7 @@ import { changeGroupNameFactory } from "./apis/group/changeGroupName.js";
 import { changeGroupOwnerFactory } from "./apis/group/changeGroupOwner.js";
 import { checkQuotaCommunityMemberFactory } from "./apis/group/checkQuotaCommunityMember.js";
 import { clearUnreadFriendRequestsFactory } from "./apis/friend/clearUnreadFriendRequests.js";
+import { convertOAIdsFactory } from "./apis/business/convertOAIds.js";
 import { createAutoReplyFactory } from "./apis/business/createAutoReply.js";
 import { createBankAccountFactory } from "./apis/business/createBankAccount.js";
 import { createCatalogFactory } from "./apis/business/createCatalog.js";
@@ -127,6 +129,7 @@ import { getMultiGroupCloudMessagesFactory } from "./apis/group/getMultiGroupClo
 import { getMultiUsersByPhonesFactory } from "./apis/friend/getMultiUsersByPhones.js";
 import { getMuteFactory } from "./apis/chat/getMute.js";
 import { getNoisedIdsFactory } from "./apis/auth/getNoisedIds.js";
+import { getOAProfileFactory } from "./apis/business/getOAProfile.js";
 import { getOwnIdFactory } from "./apis/auth/getOwnId.js";
 import { getPendingGroupMembersFactory } from "./apis/group/getPendingGroupMembers.js";
 import { getPersonalizedStickerListFactory } from "./apis/sticker/getPersonalizedStickerList.js";
@@ -222,6 +225,7 @@ import { setMuteFactory } from "./apis/chat/setMute.js";
 import { setPinnedConversationsFactory } from "./apis/chat/setPinnedConversations.js";
 import { sharePollFactory } from "./apis/board/sharePoll.js";
 import { shareScreenGroupCallFactory } from "./apis/call/shareScreenGroupCall.js";
+import { unblockOAFactory } from "./apis/business/unblockOA.js";
 import { unblockUserFactory } from "./apis/friend/unblockUser.js";
 import { undoFactory } from "./apis/chat/undo.js";
 import { undoFriendRequestFactory } from "./apis/friend/undoFriendRequest.js";
@@ -293,6 +297,8 @@ export type BoardDomainAPI = {
 
 export type BusinessDomainAPI = {
     readonly addQuickMessage: ReturnType<typeof addQuickMessageFactory>;
+    readonly blockOA: ReturnType<typeof blockOAFactory>;
+    readonly convertOAIds: ReturnType<typeof convertOAIdsFactory>;
     readonly createAutoReply: ReturnType<typeof createAutoReplyFactory>;
     readonly createBankAccount: ReturnType<typeof createBankAccountFactory>;
     readonly createCatalog: ReturnType<typeof createCatalogFactory>;
@@ -307,10 +313,12 @@ export type BusinessDomainAPI = {
     readonly getLabels: ReturnType<typeof getLabelsFactory>;
     readonly getListBank: ReturnType<typeof getListBankFactory>;
     readonly getListBankAccount: ReturnType<typeof getListBankAccountFactory>;
+    readonly getOAProfile: ReturnType<typeof getOAProfileFactory>;
     readonly getProductCatalogList: ReturnType<typeof getProductCatalogListFactory>;
     readonly getQuickMessageList: ReturnType<typeof getQuickMessageListFactory>;
     readonly registerCatalog: ReturnType<typeof registerCatalogFactory>;
     readonly removeQuickMessage: ReturnType<typeof removeQuickMessageFactory>;
+    readonly unblockOA: ReturnType<typeof unblockOAFactory>;
     readonly updateAutoReply: ReturnType<typeof updateAutoReplyFactory>;
     readonly updateBankAccount: ReturnType<typeof updateBankAccountFactory>;
     readonly updateCatalog: ReturnType<typeof updateCatalogFactory>;
@@ -615,6 +623,8 @@ export class API {
         if (!this._domains.business) {
             const createNamespace = (api: API): BusinessDomainAPI => ({
                 get addQuickMessage() { return api.addQuickMessage; },
+                get blockOA() { return api.blockOA; },
+                get convertOAIds() { return api.convertOAIds; },
                 get createAutoReply() { return api.createAutoReply; },
                 get createBankAccount() { return api.createBankAccount; },
                 get createCatalog() { return api.createCatalog; },
@@ -629,10 +639,12 @@ export class API {
                 get getLabels() { return api.getLabels; },
                 get getListBank() { return api.getListBank; },
                 get getListBankAccount() { return api.getListBankAccount; },
+                get getOAProfile() { return api.getOAProfile; },
                 get getProductCatalogList() { return api.getProductCatalogList; },
                 get getQuickMessageList() { return api.getQuickMessageList; },
                 get registerCatalog() { return api.registerCatalog; },
                 get removeQuickMessage() { return api.removeQuickMessage; },
+                get unblockOA() { return api.unblockOA; },
                 get updateAutoReply() { return api.updateAutoReply; },
                 get updateBankAccount() { return api.updateBankAccount; },
                 get updateCatalog() { return api.updateCatalog; },
@@ -979,6 +991,10 @@ export class API {
         return (this._cache.answerVoiceCall ??= answerVoiceCallFactory(this.ctx, this)) as ReturnType<typeof answerVoiceCallFactory>;
     }
 
+    public get blockOA(): ReturnType<typeof blockOAFactory> {
+        return (this._cache.blockOA ??= blockOAFactory(this.ctx, this)) as ReturnType<typeof blockOAFactory>;
+    }
+
     public get blockUser(): ReturnType<typeof blockUserFactory> {
         return (this._cache.blockUser ??= blockUserFactory(this.ctx, this)) as ReturnType<typeof blockUserFactory>;
     }
@@ -1029,6 +1045,10 @@ export class API {
 
     public get clearUnreadFriendRequests(): ReturnType<typeof clearUnreadFriendRequestsFactory> {
         return (this._cache.clearUnreadFriendRequests ??= clearUnreadFriendRequestsFactory(this.ctx, this)) as ReturnType<typeof clearUnreadFriendRequestsFactory>;
+    }
+
+    public get convertOAIds(): ReturnType<typeof convertOAIdsFactory> {
+        return (this._cache.convertOAIds ??= convertOAIdsFactory(this.ctx, this)) as ReturnType<typeof convertOAIdsFactory>;
     }
 
     public get createAutoReply(): ReturnType<typeof createAutoReplyFactory> {
@@ -1435,6 +1455,10 @@ export class API {
         return (this._cache.getNoisedIds ??= getNoisedIdsFactory(this.ctx, this)) as ReturnType<typeof getNoisedIdsFactory>;
     }
 
+    public get getOAProfile(): ReturnType<typeof getOAProfileFactory> {
+        return (this._cache.getOAProfile ??= getOAProfileFactory(this.ctx, this)) as ReturnType<typeof getOAProfileFactory>;
+    }
+
     public get getOwnId(): ReturnType<typeof getOwnIdFactory> {
         return (this._cache.getOwnId ??= getOwnIdFactory(this.ctx, this)) as ReturnType<typeof getOwnIdFactory>;
     }
@@ -1813,6 +1837,10 @@ export class API {
 
     public get shareScreenGroupCall(): ReturnType<typeof shareScreenGroupCallFactory> {
         return (this._cache.shareScreenGroupCall ??= shareScreenGroupCallFactory(this.ctx, this)) as ReturnType<typeof shareScreenGroupCallFactory>;
+    }
+
+    public get unblockOA(): ReturnType<typeof unblockOAFactory> {
+        return (this._cache.unblockOA ??= unblockOAFactory(this.ctx, this)) as ReturnType<typeof unblockOAFactory>;
     }
 
     public get unblockUser(): ReturnType<typeof unblockUserFactory> {

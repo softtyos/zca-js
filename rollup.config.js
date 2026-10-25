@@ -23,6 +23,7 @@ export default {
         "node:net",
         "node:os",
         "node:path",
+        "node:zlib",
         "pako",
         "semver",
         "sharp",

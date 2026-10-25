@@ -1,11 +1,25 @@
 import type { FriendEvent } from "../models/FriendEvent.js";
 import type { GroupEvent } from "../models/GroupEvent.js";
-import type { Message, Reaction, Undo, Typing, ThreadType } from "../models/index.js";
+import type { Message, Reaction, Undo, Typing, ThreadType, UserMessage } from "../models/index.js";
 import type { SeenMessage } from "../models/SeenMessage.js";
 import type { DeliveredMessage } from "../models/DeliveredMessage.js";
 import type { ClearUnread } from "../models/ClearUnread.js";
 import type { SyncEvent } from "../models/SyncEvent.js";
 import type { CallEvent } from "../models/CallEvent.js";
+import type { OAEvent } from "../models/OAMessage.js";
+
+export type HasMsgQueueId = {
+    cmd: number;
+    subCmd: number;
+    queueName?: string;
+    [key: string]: unknown;
+};
+
+export type HasMsgIdItem = {
+    actionId: string;
+    msgId?: string;
+    [key: string]: unknown;
+};
 
 export type UploadEventData = {
     fileUrl: string;
@@ -52,6 +66,7 @@ export interface ListenerEvents {
     error: [error: unknown];
     typing: [typing: Typing];
     message: [message: Message];
+    oa_message: [message: UserMessage];
     old_messages: [messages: Message[], type: ThreadType, hasMore?: boolean];
     seen_messages: [messages: SeenMessage[]];
     delivered_messages: [messages: DeliveredMessage[]];
@@ -64,6 +79,7 @@ export interface ListenerEvents {
     group_event: [data: GroupEvent];
     sync_event: [data: SyncEvent];
     call_event: [data: CallEvent];
+    oa_event: [data: OAEvent];
     voice2text_event: [data: Voice2TextEvent];
     cipher_key: [key: string];
     ping: [];

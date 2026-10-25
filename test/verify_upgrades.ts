@@ -30,9 +30,17 @@ import {
     decryptZdbBuffer,
     deriveZdbAesKey,
     encryptZCloudAES,
+    formatOAHighlightText,
     generateRSAKeyPair,
     generateSrtpMasterKeyBase64,
+    isOAProfile,
+    isOAVerified,
+    isZaloBot,
+    normalizeOAProfile,
     parseIncomingCallEvent,
+    parseOADnrStatus,
+    parseOAFooter,
+    parseOAMessage,
     parseRtpPacket,
     parseZRTPPacket,
     wrapLegacyMediaPacket,
@@ -253,6 +261,34 @@ async function runVerificationSuite() {
                         st: 1,
                         at: 0,
                         realMsgId: "2002",
+                    },
+                ],
+                pageMsgs: [
+                    {
+                        actionId: "103",
+                        msgId: "2003",
+                        cliMsgId: "3003",
+                        msgType: "chat.list.action",
+                        uidFrom: "4455667788990011223",
+                        idTo: TEST_UID,
+                        dName: "Zalo Official Account",
+                        ts: "1760000001500",
+                        status: 1,
+                        content: [
+                            {
+                                type: "l.a.header.full",
+                                title: "Thông báo từ Zalo OA khi preload",
+                                description: "Chi tiết thông báo OA",
+                            },
+                        ],
+                        notify: 1,
+                        ttl: 0,
+                        userId: "4455667788990011223",
+                        uin: "0",
+                        cmd: 501,
+                        st: 1,
+                        at: 0,
+                        realMsgId: "2003",
                     },
                 ],
                 clearUnreads: [
@@ -683,6 +719,40 @@ async function runVerificationSuite() {
         }
 
         if (u.pathname === "/api/social/friend/getprofiles/v2") {
+            if (decodedParams.isReqOAInfo === 1) {
+                return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                    changed_profiles: {
+                        "2359864726282056346": {
+                            userId: "2359864726282056346",
+                            username: "2359864726282056346",
+                            displayName: "SofttyNet Company Limited",
+                            zaloName: "SofttyNet Company Limited",
+                            avatar: "https://s120-ava-talk.zadn.vn/oa-avatar.jpg",
+                            cover: "https://cover-talk.zadn.vn/oa-cover.png",
+                            type: 7,
+                            globalId: "O2U3X3L1Z2S260R2B2J382O0",
+                            oaInfo: {
+                                description: "SofttyNet là công ty phát triển phần mềm",
+                                appUrl: null,
+                                hotline: { label: "Hotline", value: "02862705168", icon: "" },
+                                category: { label: "Danh mục", value: "Doanh nghiệp", icon: "" },
+                                website: { label: "Website", value: "https://www.softty.net", icon: "" },
+                                address: { label: "Địa chỉ", value: "Quận 7, TP.HCM", icon: "" },
+                                openTime: { label: "Giờ mở cửa", value: "08:00 - 17:00", icon: "" },
+                                group_msg: 0,
+                            },
+                            oa_status: {
+                                blocked: 0,
+                                enable_dnr: 1,
+                                dnr_type: 2,
+                                dnr_string: { vi: "Đang tắt thông báo đến 08:00" },
+                            },
+                        },
+                    },
+                    unchanged_profiles: {},
+                    phonebook_version: 1,
+                });
+            }
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
                 profiles: {
                     "1000000000000000001": {
@@ -693,6 +763,20 @@ async function runVerificationSuite() {
                     },
                 },
                 phonebook_version: 1,
+            });
+        }
+
+        if (u.pathname === "/api/social/friend/get-bizacc") {
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                biz: {
+                    desc: "SofttyNet Software",
+                    cate: 1,
+                    addr: "Quận 7, TP.HCM",
+                    website: "https://www.softty.net",
+                    email: "contact@softty.net",
+                },
+                setting_start_page: null,
+                pkgId: 2,
             });
         }
 
@@ -730,6 +814,28 @@ async function runVerificationSuite() {
             });
         }
 
+        if (u.pathname === "/api/social/oa/block") {
+            assert.equal(method, "POST", "blockOA phải dùng POST");
+            assert.ok(decodedParams.oaid, "blockOA phải truyền oaid");
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, "");
+        }
+
+        if (u.pathname === "/api/social/oa/unblock") {
+            assert.equal(method, "POST", "unblockOA phải dùng POST");
+            assert.ok(decodedParams.oaid, "unblockOA phải truyền oaid");
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, "");
+        }
+
+        if (u.pathname === "/api/social/oa/convertid") {
+            assert.equal(method, "GET", "convertOAIds phải dùng GET");
+            assert.ok(Array.isArray(decodedParams.oa_ids), "convertOAIds phải truyền mảng oa_ids");
+            const mapped: Record<string, string> = {};
+            for (const id of decodedParams.oa_ids) {
+                mapped[id] = `uid_oa_${id}`;
+            }
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, mapped);
+        }
+
         throw new Error(`Unexpected request URL in test: ${urlStr}`);
     }) as typeof fetch;
 
@@ -748,13 +854,17 @@ async function runVerificationSuite() {
     // TEST 1: preloadConversations (command 10053)
     // -------------------------------------------------------------------------
     const preloadRes = await api.preloadConversations({ "999888777": "2000" });
-    assert.equal(preloadRes.messages.length, 2, "Phải parse đủ 2 tin nhắn (1 User + 1 Group)");
+    assert.equal(preloadRes.messages.length, 3, "Phải parse đủ 3 tin nhắn (1 User + 1 OA pageMsg + 1 Group)");
     assert.ok(preloadRes.messages[0] instanceof UserMessage);
-    assert.ok(preloadRes.messages[1] instanceof GroupMessage);
+    assert.ok(preloadRes.messages[1] instanceof UserMessage);
+    assert.ok(preloadRes.messages[2] instanceof GroupMessage);
+    assert.equal(preloadRes.pageMessages.length, 1, "Phải tách riêng 1 tin nhắn OA trong pageMessages");
+    assert.equal(preloadRes.pageMessages[0].isOAMessage(), true);
+    assert.equal(preloadRes.pageMessages[0].oaData?.kind, "oa_list");
     assert.equal(preloadRes.unreadCleared.length, 1);
     assert.ok(preloadRes.unreadCleared[0] instanceof ClearUnread);
     assert.equal(preloadRes.unreadCleared[0].idTo, "999888777");
-    console.log("✅ [1/6] preloadConversations: Chính xác tham số threadIdLocalMsgId & parse messages/unreadCleared.");
+    console.log("✅ [1/11] preloadConversations: Chính xác tham số threadIdLocalMsgId & parse messages/pageMessages/unreadCleared.");
 
     // -------------------------------------------------------------------------
     // TEST 2: requestSyncFromPhone, pullMobile (12000), cancelPullMobile (12700)
@@ -860,13 +970,13 @@ async function runVerificationSuite() {
         },
     };
 
-    // Kiểm tra requestOldMessages mặc định lastId = "10000000000000000"
+    // Kiểm tra requestOldMessages mặc định lastId = "1"
     api.listener.requestOldMessages(ThreadType.User);
     assert.equal(sentWsPayloads.length, 1);
     const firstSent = sentWsPayloads[0] as { cmd: number; subCmd: number; json: { lastId: string } };
     assert.equal(firstSent.cmd, 510);
     assert.equal(firstSent.subCmd, 1);
-    assert.equal(firstSent.json.lastId, "10000000000000000");
+    assert.equal(firstSent.json.lastId, "1");
     listenerAny.ws = null as unknown as typeof listenerAny.ws;
 
     // Gắn mock onmessage từ Listener bằng cách tạo fake WebSocket thông qua xử lý gói tin trực tiếp
@@ -1988,9 +2098,294 @@ async function runVerificationSuite() {
     await controller.stop();
 
     console.log(
-        "✅ [10/10] Call Engine (ZRTPPacketCodec, ZaloSrtpSession, ZaloRtcSession 2 chiều UDP/SRTP & ZaloCallController IPC): Chính xác 100%.",
+        "✅ [10/11] Call Engine (ZRTPPacketCodec, ZaloSrtpSession, ZaloRtcSession 2 chiều UDP/SRTP & ZaloCallController IPC): Chính xác 100%.",
     );
-    console.log("\n🎉 TẤT CẢ 10 HẠNG MỤC KIỂM ĐỊNH ĐỀU VƯỢT QUA 100%!");
+
+    // -------------------------------------------------------------------------
+    // TEST 11: Zalo Official Account (OA) (parseOAMessage, footerv2, OA Bitmask, getOAProfile, blockOA, unblockOA, convertOAIds & WSS cmd 533 -> 570 -> 534 + 601 oa_event)
+    // -------------------------------------------------------------------------
+    const sampleOAChatMsgRaw = {
+        actionId: "50001",
+        msgId: "70001",
+        cliMsgId: "80001",
+        msgType: "webchat",
+        uidFrom: "2359864726282056346",
+        idTo: TEST_UID,
+        dName: "SofttyNet Company Limited",
+        ts: "1760000099000",
+        status: 1,
+        content: "Xin chào anh/chị! SofttyNet có thể hỗ trợ gì cho anh/chị hôm nay?",
+        footerv2: {
+            type: 0,
+            data: {
+                canForward: 1,
+                footerList: [
+                    { title: "Xem bảng giá", action: "open_url", href: "https://www.softty.net/pricing" },
+                    { title: "Chat với tư vấn viên", action: "send_msg", text: "Tư vấn ngay" },
+                ],
+            },
+        },
+        notify: "1",
+        ttl: 0,
+        userId: "2359864726282056346",
+        uin: "0",
+        topOut: "1",
+        topOutTimeOut: "0",
+        topOutImprTimeOut: "0",
+        propertyExt: undefined,
+        paramsExt: { countUnread: 1, containType: 0, platformType: 0 },
+        cmd: 501,
+        st: 1,
+        at: 0,
+        realMsgId: "70001",
+        quote: undefined,
+    };
+
+    // 11.1 Kiểm định OA Bitmask, DNR Status, FooterV2, parseOAMessage & UserMessage.oaData
+    assert.equal(isOAProfile({ type: 7 }), true);
+    assert.equal(isOAProfile({ type: 0 }), false);
+    assert.equal(isOAVerified(7), true, "type = 7 (111b) phải là OA tích vàng (isOAVerified === true)");
+    assert.equal(isOAVerified(5), true, "type = 5 (101b) phải là OA tích vàng (isOAVerified === true)");
+    assert.equal(isOAVerified(2), false, "type = 2 (10b) không phải là OA tích vàng");
+    assert.equal(isZaloBot(8), true, "type = 8 (1000b) phải là Zalo Bot");
+    assert.equal(isZaloBot(7), false);
+
+    const parsedDnr = parseOADnrStatus({
+        blocked: 0,
+        enable_dnr: 1,
+        dnr_type: 2,
+        dnr_string: { vi: "Đang tắt thông báo đến 08:00" },
+    });
+    assert.equal(parsedDnr.isBlocked, false);
+    assert.equal(parsedDnr.enableDnr, true);
+    assert.equal(parsedDnr.dnrType, 2);
+    assert.equal(parsedDnr.dnrText, "Đang tắt thông báo đến 08:00");
+
+    const parsedFooter = parseOAFooter(sampleOAChatMsgRaw.footerv2);
+    assert.equal(parsedFooter?.canForward, true);
+    assert.equal(parsedFooter?.footerList.length, 2);
+    assert.equal(parsedFooter?.footerList[0].title, "Xem bảng giá");
+
+    const oaChatMsg = new UserMessage(TEST_UID, sampleOAChatMsgRaw, true);
+    assert.equal(oaChatMsg.isOAMessage(), true, "Tin nhắn hội thoại OA phải được nhận diện isOAMessage() === true");
+    assert.equal(oaChatMsg.oaData?.kind, "oa_chat");
+    assert.equal(oaChatMsg.oaData?.text, "Xin chào anh/chị! SofttyNet có thể hỗ trợ gì cho anh/chị hôm nay?");
+    assert.equal(oaChatMsg.oaData?.topOut, true);
+    assert.equal(oaChatMsg.oaData?.canReply, true);
+    assert.equal(oaChatMsg.oaData?.footer?.footerList.length, 2);
+
+    const parsedOAList = parseOAMessage({
+        msgType: "chat.list.action",
+        content: [
+            {
+                type: "l.a.header.full",
+                title: "Thông báo bảo trì hệ thống",
+                description: "Từ 00:00 đến 02:00 ngày 26/10",
+                href: "https://oa.zalo.me/article/1",
+            },
+            {
+                type: "l.a.normal",
+                title: "Hướng dẫn giao dịch an toàn",
+                description: "Xem chi tiết",
+            },
+        ],
+    });
+    assert.equal(parsedOAList?.kind, "oa_list");
+    assert.equal(parsedOAList?.items?.length, 2);
+    assert.ok(parsedOAList?.text.includes("Thông báo bảo trì hệ thống: Từ 00:00 đến 02:00 ngày 26/10"));
+
+    const parsedInfoChat = parseOAMessage({
+        msgType: "webchat",
+        content: {
+            action: "msginfo.actionlist",
+            params: JSON.stringify({
+                msg: { vi: "Bạn đã quan tâm %1$s" },
+                highLightsV2: [{ dpn: "Zalo Official Account" }],
+            }),
+        },
+    });
+    assert.equal(parsedInfoChat?.kind, "info_chat");
+    assert.equal(parsedInfoChat?.text, "Bạn đã quan tâm Zalo Official Account");
+
+    const parsedECard = parseOAMessage({
+        msgType: "chat.ecard",
+        content: {
+            title: "Chúc mừng sinh nhật",
+            description: "Ưu đãi giảm 20% từ OA",
+        },
+    });
+    assert.equal(parsedECard?.kind, "ecard");
+    assert.equal(parsedECard?.text, "Chúc mừng sinh nhật — Ưu đãi giảm 20% từ OA");
+    assert.equal(formatOAHighlightText("Xin chào %1$s - $2$s", ["A", "B"]), "Xin chào A - B");
+
+    // 11.2 Kiểm định HTTP APIs cho Zalo OA (getOAProfile, blockOA, unblockOA, convertOAIds)
+    const oaProfile = await api.business.getOAProfile("2359864726282056346");
+    assert.equal(oaProfile.oaId, "2359864726282056346");
+    assert.equal(oaProfile.displayName, "SofttyNet Company Limited");
+    assert.equal(oaProfile.type, 7);
+    assert.equal(oaProfile.isOA, true);
+    assert.equal(oaProfile.isVerified, true);
+    assert.equal(oaProfile.isZaloBot, false);
+    assert.equal(oaProfile.hotline, "02862705168");
+    assert.equal(oaProfile.website, "https://www.softty.net");
+    assert.equal(oaProfile.category, "Doanh nghiệp");
+    assert.equal(oaProfile.openTime, "08:00 - 17:00");
+    assert.equal(oaProfile.email, "contact@softty.net");
+    assert.equal(oaProfile.dnrStatus.enableDnr, true);
+    assert.ok(normalizeOAProfile("2359864726282056346", oaProfile.rawProfile).isVerified);
+
+    await api.business.blockOA("2359864726282056346");
+    await api.business.unblockOA("2359864726282056346");
+    const convertedOAs = await api.business.convertOAIds(["oa_101", "oa_102"]);
+    assert.equal(convertedOAs.oa_101, "uid_oa_oa_101");
+    assert.equal(convertedOAs.oa_102, "uid_oa_oa_102");
+
+    // 11.3 Kiểm định WebSocket (wss) cho Zalo OA:
+    //   - cmd = 533 (HAS_MSG với 25 IDs) -> Tự động gửi 2 gói cmd = 570 (GET_MSG, batch 20 + 5)
+    //   - cmd = 570 (GET_MSG), cmd = 534 (PUSH_MISS_MSG), cmd = 501 (pageMsgs) -> emit "message" & "oa_message"
+    //   - cmd = 601 (act_type = "oa", act = "block") -> emit "oa_event"
+    const receivedOAMessages: UserMessage[] = [];
+    const receivedOAEvents: Array<{ act: string; isBlocked: boolean; oaIds: string[] }> = [];
+    const serverReceivedCmd570Batches: Array<{ queueId: unknown; ids: unknown[]; reqId: string }> = [];
+
+    api.listener.on("oa_message", (msg) => {
+        receivedOAMessages.push(msg);
+    });
+    api.listener.on("oa_event", (ev) => {
+        receivedOAEvents.push(ev);
+    });
+
+    const oaWss = new WebSocketServer({ host: "127.0.0.1", port: 0 });
+    await new Promise<void>((r) => oaWss.once("listening", () => r()));
+    const oaWsPort = (oaWss.address() as { port: number }).port;
+    (api.listener as unknown as { urls: string[] }).urls = [`ws://127.0.0.1:${oaWsPort}`];
+
+    await new Promise<void>((resolve, reject) => {
+        const timeout = setTimeout(() => reject(new Error("OA WebSocket test timeout")), 5000);
+        oaWss.on("connection", async (serverWs) => {
+            try {
+                serverWs.on("message", async (rawBuf: Buffer) => {
+                    const cmd = rawBuf.readUInt16LE(1);
+                    const subCmd = rawBuf.readUInt8(3);
+                    if (cmd === 570 && subCmd === 0) {
+                        const body = JSON.parse(rawBuf.subarray(4).toString("utf-8"));
+                        serverReceivedCmd570Batches.push(body);
+                        // Khi nhận đủ 2 batch cmd=570 (20 + 5 IDs), trả về gói cmd=570 chứa pageMsgs OA
+                        if (serverReceivedCmd570Batches.length === 2) {
+                            const frame570 = await encryptWsPayloadAesGcm(wsCipherKey, {
+                                data: {
+                                    msgs: [],
+                                    pageMsgs: [sampleOAChatMsgRaw],
+                                },
+                            });
+                            serverWs.send(buildWsFrame(1, 570, 0, frame570));
+                        }
+                    }
+                });
+
+                // 1. Gửi cipher_key
+                serverWs.send(buildWsFrame(1, 1, 1, { key: wsCipherKey }));
+
+                // 2. Gửi cmd=533 (HAS_MSG) báo có 25 tin nhắn OA đang chờ trong queue
+                const twentyFiveIds = Array.from({ length: 25 }, (_, idx) => ({
+                    actionId: String(60000 + idx),
+                    msgId: String(80000 + idx),
+                }));
+                const frame533 = await encryptWsPayloadAesGcm(wsCipherKey, {
+                    data: {
+                        queueId: { cmd: 501, subCmd: 0, queueName: "page_msg_queue" },
+                        ids: twentyFiveIds,
+                    },
+                });
+                serverWs.send(buildWsFrame(1, 533, 0, frame533));
+
+                // 3. Gửi cmd=534 (PUSH_MISS_MSG) chứa pageMsgs kiểu chat.list.action
+                const frame534 = await encryptWsPayloadAesGcm(wsCipherKey, {
+                    data: {
+                        pageMsgs: [
+                            {
+                                ...sampleOAChatMsgRaw,
+                                msgId: "70002",
+                                msgType: "chat.list.action",
+                                content: [
+                                    {
+                                        type: "l.a.header.full",
+                                        title: "Tin tức Zalo OA qua cmd 534",
+                                        description: "Nội dung chi tiết",
+                                    },
+                                ],
+                            },
+                        ],
+                    },
+                });
+                serverWs.send(buildWsFrame(1, 534, 0, frame534));
+
+                // 4. Gửi cmd=601 (act_type="oa", act="block")
+                const frame601OA = await encryptWsPayloadAesGcm(wsCipherKey, {
+                    data: {
+                        controls: [
+                            {
+                                content: {
+                                    act_type: "oa",
+                                    act: "block",
+                                    data: JSON.stringify({ uids: ["2359864726282056346"] }),
+                                },
+                            },
+                        ],
+                    },
+                });
+                serverWs.send(buildWsFrame(1, 601, 0, frame601OA));
+
+                const checkDone = setInterval(() => {
+                    if (
+                        serverReceivedCmd570Batches.length === 2 &&
+                        receivedOAMessages.length >= 2 &&
+                        receivedOAEvents.length >= 1
+                    ) {
+                        clearInterval(checkDone);
+                        clearTimeout(timeout);
+                        resolve();
+                    }
+                }, 20);
+            } catch (err) {
+                clearTimeout(timeout);
+                reject(err);
+            }
+        });
+
+        api.listener.start({ retryOnClose: false });
+    });
+
+    api.listener.stop();
+    await new Promise<void>((r) => oaWss.close(() => r()));
+
+    assert.equal(serverReceivedCmd570Batches.length, 2, "cmd=533 với 25 IDs phải tự động chia thành 2 batch cmd=570 (20 + 5)");
+    assert.equal(serverReceivedCmd570Batches[0].ids.length, 20);
+    assert.equal(serverReceivedCmd570Batches[1].ids.length, 5);
+    assert.equal(receivedOAMessages.length, 2, "Phải nhận đủ 2 tin nhắn OA từ cmd=570 và cmd=534");
+    assert.ok(
+        receivedOAMessages.some(
+            (m) =>
+                m.oaData?.kind === "oa_chat" &&
+                m.oaData.text.includes("SofttyNet có thể hỗ trợ gì") &&
+                m.oaData.footer?.footerList.length === 2,
+        ),
+        "Tin nhắn OA qua WSS cmd=570 phải giải mã đầy đủ nội dung và footerv2",
+    );
+    assert.ok(
+        receivedOAMessages.some(
+            (m) => m.oaData?.kind === "oa_list" && m.oaData.text.includes("Tin tức Zalo OA qua cmd 534"),
+        ),
+        "Tin nhắn OA qua WSS cmd=534 phải giải mã đúng danh sách bài viết",
+    );
+    assert.equal(receivedOAEvents.length, 1);
+    assert.equal(receivedOAEvents[0].isBlocked, true);
+    assert.deepEqual(receivedOAEvents[0].oaIds, ["2359864726282056346"]);
+
+    console.log(
+        "✅ [11/11] Zalo Official Account (OA) (parseOAMessage, footerv2, OA Bitmask, HTTP getOAProfile/blockOA/unblockOA/convertOAIds & WSS cmd 533->570->534 + oa_event): Chính xác 100%.",
+    );
+    console.log("\n🎉 TẤT CẢ 11 HẠNG MỤC KIỂM ĐỊNH ĐỀU VƯỢT QUA 100%!");
 }
 
 runVerificationSuite().catch((err) => {

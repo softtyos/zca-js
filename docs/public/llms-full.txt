@@ -1,4 +1,4 @@
-# @softtynet/zca-js v2.3.5 — Full AI/LLM Technical Reference (252 APIs across 12 Domains)
+# @softtynet/zca-js v2.3.6 — Full AI/LLM Technical Reference (256 APIs across 12 Domains)
 
 Maintained by Softtynet Co., Ltd. | Docs: https://softtyos.github.io/zca-js-docs/ | NPM: npm install @softtynet/zca-js
 
@@ -472,7 +472,7 @@ export type PreloadConversationsRawResponse = {
     groupMsgs?: TGroupMessage[];
     allmsgs?: Array<TMessage | (TGroupMessage & { isGroup?: boolean | number })>;
     eeMsgs?: unknown[];
-    pageMsgs?: unknown[];
+    pageMsgs?: TMessage[];
     clearUnreads?: TClearUnreadItem[];
     clearUnreadsReact?: TClearUnreadItem[];
     seens?: unknown[];
@@ -490,6 +490,7 @@ export type PreloadConversationsRawResponse = {
 
 export type PreloadConversationsResponse = PreloadConversationsRawResponse & {
     messages: Message[];
+    pageMessages: UserMessage[];
     unreadCleared: ClearUnread[];
 };
 ```
@@ -3815,8 +3816,8 @@ export type VotePollResponse = {
 };
 ```
 
-## Domain: Zalo Business, Nhãn & Danh mục (Business) (`api.business` — 26 APIs)
-Quản lý nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng.
+## Domain: Zalo Business, OA, Nhãn & Danh mục (Business) (`api.business` — 30 APIs)
+Quản lý Zalo Official Account (getOAProfile, blockOA, unblockOA, convertOAIds), nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng.
 
 ### addQuickMessage
 - **Call**: `await api.business.addQuickMessage(addPayload: AddQuickMessagePayload)` (or `await api.addQuickMessage(addPayload: AddQuickMessagePayload)`)
@@ -3832,6 +3833,24 @@ export type AddQuickMessagePayload = {
 export type AddQuickMessageResponse = {
     item: QuickMessage;
     version: number;
+};
+```
+
+### blockOA
+- **Call**: `await api.business.blockOA(oaId: string)` (or `await api.blockOA(oaId: string)`)
+- **Endpoint**: POST /api/social/oa/block
+- **Description**: Chặn nhận tin nhắn / thông báo từ một Zalo Official Account (OA) qua /api/social/oa/block (cmd 12681).
+```ts
+export type BlockOAResponse = "" | Record<string, unknown>;
+```
+
+### convertOAIds
+- **Call**: `await api.business.convertOAIds(oaIds: string | string[])` (or `await api.convertOAIds(oaIds: string | string[])`)
+- **Endpoint**: GET /api/social/oa/convertid
+- **Description**: Chuyển đổi danh sách OA ID sang Zalo UID nội bộ (hoặc ngược lại) qua /api/social/oa/convertid (cmd 11863).
+```ts
+export type ConvertOAIdsResponse = {
+    [oaId: string]: string | unknown;
 };
 ```
 
@@ -4067,6 +4086,25 @@ export type GetListBankAccountResponse = {
 };
 ```
 
+### getOAProfile
+- **Call**: `await api.business.getOAProfile(oaId: string, options: GetOAProfileOptions = {})` (or `await api.getOAProfile(oaId: string, options: GetOAProfileOptions = {})`)
+- **Endpoint**: POST /api/social/friend/get-bizacc, /api/social/friend/getprofiles/v2
+- **Description**: Lấy hồ sơ chuẩn hóa đầy đủ của một Zalo Official Account (OA) theo oaId (bao gồm tích vàng isVerified, isZaloBot, dnrStatus, hotline, website, giờ mở cửa, địa chỉ, danh mục...).
+```ts
+export type GetOAProfileOptions = {
+    /**
+     * Kích thước ảnh đại diện (mặc định: `240`).
+     */
+    avatarSize?: number;
+    /**
+     * Có lấy kèm thông tin tài khoản Business (`/api/social/friend/get-bizacc`) hay không (mặc định: `true`).
+     */
+    includeBizAccount?: boolean;
+};
+
+export type GetOAProfileResponse = OAProfileInfo;
+```
+
 ### getProductCatalogList
 - **Call**: `await api.business.getProductCatalogList(payload: GetProductCatalogListPayload)` (or `await api.getProductCatalogList(payload: GetProductCatalogListPayload)`)
 - **Endpoint**: POST /api/prodcatalog/product/list
@@ -4122,6 +4160,14 @@ export type RemoveQuickMessageResponse = {
     itemIds: number[];
     version: number;
 };
+```
+
+### unblockOA
+- **Call**: `await api.business.unblockOA(oaId: string)` (or `await api.unblockOA(oaId: string)`)
+- **Endpoint**: POST /api/social/oa/unblock
+- **Description**: Bỏ chặn một Zalo Official Account (OA) để tiếp tục nhận tin nhắn qua /api/social/oa/unblock (cmd 12682).
+```ts
+export type UnblockOAResponse = "" | Record<string, unknown>;
 ```
 
 ### updateAutoReply

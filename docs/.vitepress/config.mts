@@ -6,7 +6,7 @@ export default defineConfig({
     lang: "vi-VN",
     title: "@softtynet/zca-js",
     titleTemplate: ":title | Softtynet Zalo SDK",
-    description: "Tài liệu chính thức bộ SDK Zalo API (@softtynet/zca-js v2.3.5) phát triển bởi Softtynet Co., Ltd. dành cho Node.js, TypeScript và Bun (252 APIs, 12 Domains).",
+    description: "Tài liệu chính thức bộ SDK Zalo API (@softtynet/zca-js v2.3.6) phát triển bởi Softtynet Co., Ltd. dành cho Node.js, TypeScript và Bun (256 APIs, 12 Domains).",
     base: process.env.VITEPRESS_BASE || "/",
     ignoreDeadLinks: true,
     lastUpdated: true,
@@ -29,7 +29,7 @@ export default defineConfig({
         ["meta", { name: "twitter:image", content: "https://softtyos.github.io/zca-js-docs/og-banner.svg" }],
         ["link", { rel: "alternate", type: "text/plain", title: "LLM Summary Context (llms.txt)", href: "https://softtyos.github.io/zca-js-docs/llms.txt" }],
         ["link", { rel: "alternate", type: "text/plain", title: "LLM Full API Reference (llms-full.txt)", href: "https://softtyos.github.io/zca-js-docs/llms-full.txt" }],
-        ["script", { type: "application/ld+json" }, "{\"@context\":\"https://schema.org\",\"@type\":\"SoftwareSourceCode\",\"name\":\"@softtynet/zca-js\",\"version\":\"2.3.5\",\"description\":\"Bộ thư viện SDK Zalo API hiện đại dành cho Node.js, TypeScript và Bun với 252 API nguyên bản trên 12 Domains, phát triển bởi Softtynet Co., Ltd.\",\"programmingLanguage\":[\"TypeScript\",\"JavaScript\"],\"runtimePlatform\":[\"Node.js\",\"Bun\"],\"codeRepository\":\"https://github.com/softtyos/zca-js\",\"url\":\"https://softtyos.github.io/zca-js-docs/\",\"license\":\"https://opensource.org/licenses/MIT\",\"author\":{\"@type\":\"Organization\",\"name\":\"Softtynet Co., Ltd.\",\"url\":\"https://github.com/softtyos\"},\"keywords\":[\"zalo api\",\"zca-js\",\"@softtynet/zca-js\",\"softtynet\",\"zalo sdk nodejs\",\"zalo bot typescript\",\"zalo pc protocol\",\"zalo cloud message\"]}"],
+        ["script", { type: "application/ld+json" }, "{\"@context\":\"https://schema.org\",\"@type\":\"SoftwareSourceCode\",\"name\":\"@softtynet/zca-js\",\"version\":\"2.3.6\",\"description\":\"Bộ thư viện SDK Zalo API hiện đại dành cho Node.js, TypeScript và Bun với 256 API nguyên bản trên 12 Domains, phát triển bởi Softtynet Co., Ltd.\",\"programmingLanguage\":[\"TypeScript\",\"JavaScript\"],\"runtimePlatform\":[\"Node.js\",\"Bun\"],\"codeRepository\":\"https://github.com/softtyos/zca-js\",\"url\":\"https://softtyos.github.io/zca-js-docs/\",\"license\":\"https://opensource.org/licenses/MIT\",\"author\":{\"@type\":\"Organization\",\"name\":\"Softtynet Co., Ltd.\",\"url\":\"https://github.com/softtyos\"},\"keywords\":[\"zalo api\",\"zca-js\",\"@softtynet/zca-js\",\"softtynet\",\"zalo sdk nodejs\",\"zalo bot typescript\",\"zalo pc protocol\",\"zalo cloud message\"]}"],
     ],
     transformPageData(pageData) {
         const canonicalUrl = `${SITE_URL}/${pageData.relativePath}`
@@ -50,7 +50,7 @@ export default defineConfig({
         nav: [
             { text: "Trang chủ", link: "/" },
             { text: "Hướng dẫn & Thực chiến", link: "/guide/getting-started" },
-            { text: "⚡ API Explorer (252)", link: "/api/" },
+            { text: "⚡ API Explorer (256)", link: "/api/" },
             { text: "📦 Models & Enums", link: "/api/models" },
             { text: "🤖 llms.txt", link: "https://softtyos.github.io/zca-js-docs/llms.txt" },
         ],
@@ -74,7 +74,7 @@ export default defineConfig({
             {
                 text: "⚡ Tra cứu API & Models",
                 items: [
-                    { text: "🔍 API Explorer (252 APIs)", link: "/api/" },
+                    { text: "🔍 API Explorer (256 APIs)", link: "/api/" },
                     { text: "📦 Models, Enums & Errors", link: "/api/models" },
                 ],
             },
@@ -139,7 +139,7 @@ export default defineConfig({
                     "link": "/api/board"
           },
           {
-                    "text": "💼 Zalo Business, Nhãn & Danh mục (Business) (26)",
+                    "text": "💼 Zalo Business, OA, Nhãn & Danh mục (Business) (30)",
                     "link": "/api/business"
           }
 ],

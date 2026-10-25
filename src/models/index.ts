@@ -24,3 +24,4 @@ export * from "./ClearUnread.js";
 export * from "./SyncEvent.js";
 export * from "./SyncData.js";
 export * from "./CallEvent.js";
+export * from "./OAMessage.js";

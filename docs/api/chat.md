@@ -667,7 +667,7 @@ export type PreloadConversationsRawResponse = {
     groupMsgs?: TGroupMessage[];
     allmsgs?: Array<TMessage | (TGroupMessage & { isGroup?: boolean | number })>;
     eeMsgs?: unknown[];
-    pageMsgs?: unknown[];
+    pageMsgs?: TMessage[];
     clearUnreads?: TClearUnreadItem[];
     clearUnreadsReact?: TClearUnreadItem[];
     seens?: unknown[];
@@ -685,6 +685,7 @@ export type PreloadConversationsRawResponse = {
 
 export type PreloadConversationsResponse = PreloadConversationsRawResponse & {
     messages: Message[];
+    pageMessages: UserMessage[];
     unreadCleared: ClearUnread[];
 };
 ```

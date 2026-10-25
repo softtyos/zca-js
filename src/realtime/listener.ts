@@ -6,6 +6,8 @@ import { ZaloApiError } from "../Errors/ZaloApiError.js";
 import type { ContextSession } from "../context.js";
 import {
     CloseReason,
+    type HasMsgIdItem,
+    type HasMsgQueueId,
     type ListenerEvents,
     type OnClosedCallback,
     type OnErrorCallback,
@@ -416,21 +418,22 @@ export class Listener extends EventEmitter<ListenerEvents> {
 
     public sendWs(payload: WsPayload, requireId: boolean = true) {
         if (this.ws && (this.ws.readyState === undefined || this.ws.readyState === WebSocket.OPEN)) {
-            if (requireId) payload.data["req_id"] = `req_${this.id++}`;
+            if (requireId) {
+                const reqId = `req_${this.id++}`;
+                payload.data["req_id"] = reqId;
+                payload.data["reqId"] = reqId;
+            }
 
             const encodedData = new TextEncoder().encode(JSON.stringify(payload.data));
             const dataLength = encodedData.length;
 
-            const data = new DataView(Buffer.alloc(4 + dataLength).buffer);
-            data.setUint8(0, payload.version);
-            data.setInt32(1, payload.cmd, true);
-            data.setInt8(3, payload.subCmd);
+            const buf = Buffer.alloc(4 + dataLength);
+            buf.writeUInt8(payload.version, 0);
+            buf.writeUInt16LE(payload.cmd, 1);
+            buf.writeInt8(payload.subCmd, 3);
+            Buffer.from(encodedData).copy(buf, 4);
 
-            encodedData.forEach((e, i) => {
-                data.setUint8(4 + i, e);
-            });
-
-            this.ws.send(data);
+            this.ws.send(buf);
         }
     }
 
@@ -468,16 +471,40 @@ export class Listener extends EventEmitter<ListenerEvents> {
     }
 
     /**
-     * Kích hoạt và kéo hàng đợi sự kiện điều khiển / VoIP (`cmd 603` CTRL_PULL_CTRL và `cmd 604` CTRL_PULL_VOIP).
-     * Giúp nhận ngay các cuộc gọi đến đang đổ chuông ngay cả khi vừa mở kết nối WebSocket.
+     * Kéo danh sách tin nhắn cụ thể theo `queueId` và mảng `ids` (`cmd 570` GET_MSG)
+     * khi nhận tín hiệu `cmd 533` (`HAS_MSG`) từ Zalo WebSocket (thường dùng cho tin nhắn OA / ZNS / Missed Queue).
+     * Tự động chia batch tối đa 20 ID mỗi gói theo đúng cấu hình `max_msg_get = 20` trên Zalo Desktop.
+     */
+    public requestMessagesByIds(queueId: HasMsgQueueId, ids: HasMsgIdItem[], lastId: string = "0") {
+        if (!queueId || !Array.isArray(ids) || ids.length === 0) return;
+
+        const maxBatchSize = 20;
+        for (let i = 0; i < ids.length; i += maxBatchSize) {
+            const chunk = ids.slice(i, i + maxBatchSize);
+            const reqId = `req_${this.id++}`;
+            this.sendWs(
+                {
+                    version: 1,
+                    cmd: 570,
+                    subCmd: 0,
+                    data: {
+                        queueId,
+                        ids: chunk,
+                        lastId,
+                        reqId,
+                        req_id: reqId,
+                    },
+                },
+                false,
+            );
+        }
+    }
+
+    /**
+     * Kích hoạt và kéo hàng đợi sự kiện điều khiển / VoIP (`cmd 603` CTRL_PULL_CTRL).
+     * Giúp nhận ngay các cuộc gọi đến đang đổ chuông và sự kiện điều khiển ngay cả khi vừa mở kết nối WebSocket.
      */
     public requestOfflineVoipControls() {
-        this.sendWs({
-            version: 1,
-            cmd: 604,
-            subCmd: 0,
-            data: { first: true, lastId: 1, preIds: [] },
-        });
         this.sendWs({
             version: 1,
             cmd: 603,

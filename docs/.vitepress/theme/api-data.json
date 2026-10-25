@@ -1,6 +1,6 @@
 {
-  "version": "2.3.5",
-  "totalApis": 252,
+  "version": "2.3.6",
+  "totalApis": 256,
   "domains": [
     {
       "key": "auth",
@@ -159,15 +159,15 @@
     {
       "key": "business",
       "icon": "💼",
-      "title": "Zalo Business, Nhãn & Danh mục (Business)",
+      "title": "Zalo Business, OA, Nhãn & Danh mục (Business)",
       "badge": "api.business",
-      "description": "Quản lý nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng.",
-      "count": 26,
+      "description": "Quản lý Zalo Official Account (getOAProfile, blockOA, unblockOA, convertOAIds), nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng.",
+      "count": 30,
       "sampleMethods": [
         "addQuickMessage",
-        "createAutoReply",
-        "createBankAccount",
-        "createCatalog"
+        "blockOA",
+        "convertOAIds",
+        "createAutoReply"
       ]
     }
   ],
@@ -2430,6 +2430,26 @@
       "httpMethod": "GET"
     },
     {
+      "name": "blockOA",
+      "domain": "business",
+      "summary": "Chặn nhận tin nhắn / thông báo từ một Zalo Official Account (OA) qua /api/social/oa/block (cmd 12681).",
+      "signature": "api.business.blockOA(oaId: string)",
+      "endpoints": [
+        "/api/social/oa/block"
+      ],
+      "httpMethod": "POST"
+    },
+    {
+      "name": "convertOAIds",
+      "domain": "business",
+      "summary": "Chuyển đổi danh sách OA ID sang Zalo UID nội bộ (hoặc ngược lại) qua /api/social/oa/convertid (cmd 11863).",
+      "signature": "api.business.convertOAIds(oaIds: string | string[])",
+      "endpoints": [
+        "/api/social/oa/convertid"
+      ],
+      "httpMethod": "GET"
+    },
+    {
       "name": "createAutoReply",
       "domain": "business",
       "summary": "Tạo kịch bản Trả lời tự động (Auto Reply) theo khung giờ cho Zalo Business.",
@@ -2570,6 +2590,17 @@
       "httpMethod": "GET"
     },
     {
+      "name": "getOAProfile",
+      "domain": "business",
+      "summary": "Lấy hồ sơ chuẩn hóa đầy đủ của một Zalo Official Account (OA) theo oaId (bao gồm tích vàng isVerified, isZaloBot, dnrStatus, hotline, website, giờ mở cửa, địa chỉ, danh mục...).",
+      "signature": "api.business.getOAProfile(oaId: string, options: GetOAProfileOptions = {})",
+      "endpoints": [
+        "/api/social/friend/get-bizacc",
+        "/api/social/friend/getprofiles/v2"
+      ],
+      "httpMethod": "POST"
+    },
+    {
       "name": "getProductCatalogList",
       "domain": "business",
       "summary": "Lấy danh sách các sản phẩm nằm trong một Danh mục sản phẩm (Catalog).",
@@ -2608,6 +2639,16 @@
         "/api/quickmessage/delete"
       ],
       "httpMethod": "GET"
+    },
+    {
+      "name": "unblockOA",
+      "domain": "business",
+      "summary": "Bỏ chặn một Zalo Official Account (OA) để tiếp tục nhận tin nhắn qua /api/social/oa/unblock (cmd 12682).",
+      "signature": "api.business.unblockOA(oaId: string)",
+      "endpoints": [
+        "/api/social/oa/unblock"
+      ],
+      "httpMethod": "POST"
     },
     {
       "name": "updateAutoReply",

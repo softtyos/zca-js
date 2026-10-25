@@ -8,7 +8,7 @@ import {
 } from "./context.js";
 import { generateZaloUUID, logger, ZALO_DEFAULTS, ZALO_DOMAINS } from "./utils.js";
 
-import toughCookie from "tough-cookie";
+import * as toughCookie from "tough-cookie";
 
 import { ZaloApiError } from "./Errors/ZaloApiError.js";
 import { checkUpdate } from "./update.js";

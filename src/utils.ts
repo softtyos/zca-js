@@ -3,7 +3,7 @@ import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import SparkMD5 from "spark-md5";
-import toughCookie from "tough-cookie";
+import * as toughCookie from "tough-cookie";
 
 import { isContextSession, type ContextSession, type ContextBase } from "./context.js";
 import { ZaloApiError, ZaloApiMissingImageMetadataGetter } from "./Errors/index.js";
