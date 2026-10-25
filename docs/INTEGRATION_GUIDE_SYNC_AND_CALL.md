@@ -1,19 +1,7 @@
 # Hướng dẫn Tích hợp: Đồng bộ Tin nhắn Đa Thiết bị (`ZDB4.0`) & Gọi Thoại / Video (`@softtynet/zca-js`)
 
 > [!IMPORTANT]
-> Tài liệu này hướng dẫn chi tiết cách tích hợp các tính năng nâng cấp trên nhánh `lib` của `@softtynet/zca-js` (từ phiên bản `v2.2.0+`), đã được **kiểm định thực tế 100% trên máy chủ Zalo thật và thiết bị di động thật**.
-
----
-
-## Mục lục
-
-1. [Tổng quan Kiến trúc](#1-tổng-quan-kiến-trúc)
-2. [Bảng tra cứu nhanh API, Sự kiện & Hàm Giải mã](#2-bảng-tra-cứu-nhanh-api-sự-kiện--hàm-giải-mã)
-3. [Tích hợp Tầng 1: Đồng bộ bù tin nhắn khi Offline (Catch-up Sync)](#3-tích-hợp-tầng-1-đồng-bộ-bù-tin-nhắn-khi-offline-catch-up-sync)
-4. [Tích hợp Tầng 2: Đồng bộ lịch sử sao lưu từ Điện thoại (`ZDB4.0`)](#4-tích-hợp-tầng-2-đồng-bộ-lịch-sử-sao-lưu-từ-điện-thoại-zdb40)
-5. [Ánh xạ ID ẩn danh (`getNoisedIds` & `decryptGids`)](#5-ánh-xạ-id-ẩn-danh-getnoisedids--decryptgids)
-6. [Tích hợp Gọi Thoại (`CallType.Audio`) & Gọi Video (`CallType.Video`)](#6-tích-hợp-gọi-thoại-calltypeaudio--gọi-video-calltypevideo)
-7. [Các Lưu ý Quan trọng khi Vận hành Thực tế](#7-các-lưu-ý-quan-trọng-khi-vận-hành-thực-tế)
+> Tài liệu này hướng dẫn chi tiết cách tích hợp các tính năng nâng cấp của `@softtynet/zca-js` (từ phiên bản `v2.2.0+`), đã được **kiểm định thực tế 100% trên máy chủ Zalo thật và thiết bị di động thật**.
 
 ---
 
@@ -23,24 +11,24 @@ Hệ thống đồng bộ và cuộc gọi của Zalo hoạt động theo 3 lu�
 
 ```mermaid
 flowchart TD
-    subgraph Tầng 1: Catch-up Sync (Khi mở lại App / Mất kết nối ngắn)
-        A1["api.preloadConversations(threadIdLocalMsgId)"] --> A2["Trả về messages + unreadCleared (cmd 10053)"]
+    subgraph T1["Tầng 1: Catch-up Sync (Khi mở lại App / Mất kết nối ngắn)"]
+        A1["api.chat.preloadConversations(threadIdLocalMsgId)"] --> A2["Trả về messages + pageMessages + unreadCleared (cmd 10053)"]
         A3["WebSocket: sự kiện cipher_key"] --> A4["api.listener.requestOldMessages(User / Group)"]
         A4 --> A5["Sự kiện old_messages (cmd 510 / 511) + hasMore"]
     end
 
-    subgraph Tầng 2: Mobile Backup Sync (Kéo lịch sử từ Điện thoại)
-        B1["api.requestSyncFromPhone() (cmd 12000)"] --> B2["Điện thoại hiện thông báo xác nhận"]
+    subgraph T2["Tầng 2: Mobile Backup Sync (Kéo lịch sử ZDB 4.0 từ Điện thoại)"]
+        B1["api.sync.requestSyncFromPhone() (cmd 12000)"] --> B2["Điện thoại hiện thông báo xác nhận"]
         B2 --> B3["WebSocket: sync_event (user_confirm -> syncmsg_info)"]
-        B3 --> B4["api.getSyncData() tải file .db.crypt"]
+        B3 --> B4["api.sync.getSyncData() tải file .db.crypt"]
         B4 --> B5["decryptWithPrivateKey -> deriveZdbAesKey -> decryptZdbBuffer -> parseZdbHeader"]
     end
 
-    subgraph Luồng 3: Gọi Thoại & Video (Signaling 2 bước)
-        C1["api.sendVoiceCall(calleeId, { callType })"] --> C2["Bước 1: /api/voicecall/requestcall (cmd 11300)"]
+    subgraph T3["Luồng 3: Gọi Thoại & Video (Signaling 2 bước + ZRTC)"]
+        C1["api.call.sendVoiceCall(calleeId, { callType })"] --> C2["Bước 1: /api/voicecall/requestcall (cmd 11300)"]
         C2 --> C3["Bước 2: /api/voicecall/request (cmd 11301)"]
         C3 --> C4["Đổ chuông Thoại (1) hoặc Video (3) trên máy người nhận"]
-        C4 --> C5["api.cancelVoiceCall (11305) / api.endVoiceCall (11306)"]
+        C4 --> C5["api.call.cancelVoiceCall (11305) / api.call.endVoiceCall (11306)"]
     end
 ```
 
@@ -52,16 +40,16 @@ flowchart TD
 
 | Phương thức | Command ID | Endpoint Zalo | Công dụng |
 | :--- | :---: | :--- | :--- |
-| [`api.preloadConversations(threadIdLocalMsgId?)`](../src/apis/preloadConversations.ts) | `10053` | `/api/preloadconvers/get-last-msgs` | Lấy danh sách tin nhắn mới nhất của các hội thoại (`messages`, `msgs`, `groupMsgs`) và danh sách đã đọc (`unreadCleared`). |
-| [`api.requestSyncFromPhone(options?)`](../src/apis/requestSyncFromPhone.ts) | `12000` | `/api/message/pull_mobile_msg` | Tự sinh cặp khoá RSA-2048 và gửi yêu cầu đồng bộ lịch sử tin nhắn về điện thoại. Trả về `{ privateKey, publicKeyBase64, pcName }`. |
-| [`api.pullMobile(options)`](../src/apis/pullMobile.ts) | `12000` | `/api/message/pull_mobile_msg` | API mức thấp để gửi yêu cầu đồng bộ với `public_key` tự quản lý. |
-| [`api.cancelPullMobile(options)`](../src/apis/cancelPullMobile.ts) | `12700` | `/api/message/cancel_pull_mobile_msg` | Thu hồi thông báo yêu cầu đồng bộ trên điện thoại (khi hết thời gian chờ hoặc người dùng bấm huỷ trên Web/PC). |
-| [`api.getSyncData(options)`](../src/apis/getSyncData.ts) | — | *(URL động từ `syncmsg_info`)* | Tải gói sao lưu `.db.crypt` do điện thoại tải lên về thư mục máy chủ (`savePath`). |
-| [`api.getNoisedIds(options)`](../src/apis/getNoisedIds.ts) | `12390` | `/api/znoise` *(có fallback `zwid.api.zalo.me`)* | Chuyển đổi danh sách User ID (`fids`) và Group ID (`gids`) thật sang mã ẩn danh (Noised ID) dùng trong tên file SQLite của `ZDB4.0`. |
-| [`api.decryptGids(gids)`](../src/apis/decryptGids.ts) | `12054` | `/api/gid/decrypt` | Giải mã danh sách Global ID / Noised ID về ID gốc. |
-| [`api.sendVoiceCall(calleeId, options?)`](../src/apis/sendVoiceCall.ts) | `11300` + `11301` | `/api/voicecall/requestcall` + `/api/voicecall/request` | Khởi tạo cuộc gọi Thoại (`CallType.Audio = 1`) hoặc Video (`CallType.Video = 3`), làm đổ chuông thiết bị người nhận. |
-| [`api.cancelVoiceCall(calleeId, callId, options?)`](../src/apis/cancelVoiceCall.ts) | `11305` | `/api/voicecall/cancel` | Huỷ cuộc gọi đang đổ chuông trước khi người nhận bắt máy. |
-| [`api.endVoiceCall(calleeId, callId, options?)`](../src/apis/endVoiceCall.ts) | `11306` | `/api/voicecall/endcall` | Kết thúc cuộc gọi đang diễn ra. |
+| [`api.chat.preloadConversations`](./api/chat#preloadconversations) | `10053` | `/api/preloadconvers/get-last-msgs` | Lấy danh sách tin nhắn mới nhất của các hội thoại (`messages`, `msgs`, `groupMsgs`, `pageMessages`) và danh sách đã đọc (`unreadCleared`). |
+| [`api.sync.requestSyncFromPhone`](./api/sync#requestsyncfromphone) | `12000` | `/api/message/pull_mobile_msg` | Tự sinh cặp khoá RSA-2048 và gửi yêu cầu đồng bộ lịch sử tin nhắn về điện thoại. Trả về `{ privateKey, publicKeyBase64, pcName }`. |
+| [`api.sync.pullMobile`](./api/sync#pullmobile) | `12000` | `/api/message/pull_mobile_msg` | API mức thấp để gửi yêu cầu đồng bộ với `public_key` tự quản lý. |
+| [`api.sync.cancelPullMobile`](./api/sync#cancelpullmobile) | `12700` | `/api/message/cancel_pull_mobile_msg` | Thu hồi thông báo yêu cầu đồng bộ trên điện thoại (khi hết thời gian chờ hoặc người dùng bấm huỷ trên Web/PC). |
+| [`api.sync.getSyncData`](./api/sync#getsyncdata) | — | *(URL động từ `syncmsg_info`)* | Tải gói sao lưu `.db.crypt` do điện thoại tải lên về thư mục máy chủ (`savePath`). |
+| [`api.auth.getNoisedIds`](./api/auth#getnoisedids) | `12390` | `/api/znoise` *(fallback `zwid.api.zalo.me`)* | Chuyển đổi danh sách User ID (`fids`) và Group ID (`gids`) thật sang mã ẩn danh (Noised ID) dùng trong tên file SQLite của `ZDB4.0`. |
+| [`api.auth.decryptGids`](./api/auth#decryptgids) | `12054` | `/api/gid/decrypt` | Giải mã danh sách Global ID / Noised ID về ID gốc. |
+| [`api.call.sendVoiceCall`](./api/call#sendvoicecall) | `11300` + `11301` | `/api/voicecall/requestcall` + `/api/voicecall/request` | Khởi tạo cuộc gọi Thoại (`CallType.Audio = 1`) hoặc Video (`CallType.Video = 3`), làm đổ chuông thiết bị người nhận. |
+| [`api.call.cancelVoiceCall`](./api/call#cancelvoicecall) | `11305` | `/api/voicecall/cancel` | Huỷ cuộc gọi đang đổ chuông trước khi người nhận bắt máy. |
+| [`api.call.endVoiceCall`](./api/call#endvoicecall) | `11306` | `/api/voicecall/endcall` | Kết thúc cuộc gọi đang diễn ra. |
 
 ### 2.2. Các sự kiện WebSocket trên `api.listener`
 
@@ -75,11 +63,11 @@ flowchart TD
 ### 2.3. Các hàm tiện ích mật mã (`ZDB4.0` Crypto Helpers)
 
 Được export trực tiếp từ `@softtynet/zca-js`:
-- [`generateRSAKeyPair()`](../src/utils.ts): Sinh cặp khoá RSA-2048 (`publicKey`, `privateKey`, `publicKeyBase64`).
-- [`decryptWithPrivateKey(privateKeyPem, encryptedBase64)`](../src/utils.ts): Giải mã `encrypted_key` bằng RSA PKCS#1 v1.5 (tự động dự phòng bằng thuật toán BigInt CRT thuần JS trên Node.js 20/22/24+).
-- [`deriveZdbAesKey(decryptedRsaBytes)`](../src/utils.ts): Rút trích khoá AES-256 (32 bytes) từ payload RSA đã giải mã.
-- [`decryptZdbBuffer(encryptedBuf, aesKey)`](../src/utils.ts): Giải mã toàn bộ nội dung file `.db.crypt` theo từng khối `64KB` (`0x10000` bytes) với `AES-256-CBC` và `IV = 16 bytes 0x00`.
-- [`parseZdbHeader(zdbPlain)`](../src/utils.ts): Đọc header `"ZDB4.0"`, trích xuất danh sách toàn bộ file SQLite (`entries: [{ name, size }]`) và vị trí bắt đầu luồng nén XZ (`xzOffset`).
+- `generateRSAKeyPair()`: Sinh cặp khoá RSA-2048 (`publicKey`, `privateKey`, `publicKeyBase64`).
+- `decryptWithPrivateKey(privateKeyPem, encryptedBase64)`: Giải mã `encrypted_key` bằng RSA PKCS#1 v1.5 (tự động dự phòng bằng thuật toán BigInt CRT thuần JS trên Node.js 20/22/24+).
+- `deriveZdbAesKey(decryptedRsaBytes)`: Rút trích khoá AES-256 (32 bytes) từ payload RSA đã giải mã.
+- `decryptZdbBuffer(encryptedBuf, aesKey)`: Giải mã toàn bộ nội dung file `.db.crypt` theo từng khối `64KB` (`0x10000` bytes) với `AES-256-CBC` và `IV = 16 bytes 0x00`.
+- `parseZdbHeader(zdbPlain)`: Đọc header `"ZDB4.0"`, trích xuất danh sách toàn bộ file SQLite (`entries: [{ name, size }]`) và vị trí bắt đầu luồng nén XZ (`xzOffset`).
 
 ---
 
@@ -252,7 +240,7 @@ Bên trong gói sao lưu `ZDB4.0`, Zalo đặt tên các file SQLite theo mẫu:
 - Tin nhắn cá nhân: `3_<myNoisedId>_<friendNoisedId>.db`
 - Tin nhắn nhóm: `4_<myNoisedId>_<groupNoisedId>.db`
 
-Để biết file `.db` nào ứng với bạn bè (`uid`) hay nhóm (`groupId`) nào, sử dụng [`api.getNoisedIds`](../src/apis/getNoisedIds.ts) và [`api.decryptGids`](../src/apis/decryptGids.ts):
+Để biết file `.db` nào ứng với bạn bè (`uid`) hay nhóm (`groupId`) nào, sử dụng [`api.auth.getNoisedIds`](./api/auth#getnoisedids) và [`api.auth.decryptGids`](./api/auth#decryptgids):
 
 ```ts
 // 1. Đổi danh sách UID bạn bè & Group ID thật sang Noised ID
@@ -372,11 +360,11 @@ api.listener.on("call_event", (event) => {
 
 ---
 
-## 6. Hệ Sinh Thái 36 API Mới Bóc Tách Từ Zalo PC `26.7.10` (Đã Kiểm Định Live 100%)
+## 8. Hệ Sinh Thái 36 API Mới Bóc Tách Từ Zalo PC `26.7.10` (Đã Kiểm Định Live 100%)
 
 Toàn bộ các API dưới đây được bóc tách từ mã nguồn Zalo PC `26.7.10` (macOS) và **đã vượt qua 100% kiểm định trực tiếp trên máy chủ Zalo thật (`error_code === 0`)**:
 
-### 6.1. Hệ Sinh Thái ZCloud & ZFamily (Chuẩn mã hóa `98yS` — AES-256-CBC với 16-Byte Random IV)
+### 8.1. Hệ Sinh Thái ZCloud & ZFamily (Chuẩn mã hóa `98yS` — AES-256-CBC với 16-Byte Random IV)
 
 Khác với các API thông thường dùng Zero-IV, các dịch vụ ZCloud (`zcld.chat.zalo.me`) và ZFamily (`zfml.chat.zalo.me`) sử dụng cặp khóa `{ viewer_key, enk }` từ `getCloudViewerKey()` / `getFamilyViewerKey()` và giải mã dữ liệu bằng `decryptZCloudAES(data, enk)` (tự động trích xuất 16 byte đầu của bản mã Base64 làm IV).
 
@@ -397,7 +385,7 @@ const familyKey = await api.getFamilyViewerKey();
 const familyProfile = await api.getFamilyProfile(familyKey);
 ```
 
-### 6.2. AI Voice-to-Text (`13394`) & Sự Kiện WebSocket `voice2text_event`
+### 8.2. AI Voice-to-Text (`13394`) & Sự Kiện WebSocket `voice2text_event`
 
 Chuyển đổi tin nhắn thoại sang văn bản bằng trí tuệ nhân tạo của Zalo:
 
@@ -411,7 +399,7 @@ api.listener.on("voice2text_event", (event) => {
 const { req_id } = await api.voiceToText("https://voice.chat.zalo.me/...");
 ```
 
-### 6.3. Trạng Thái Cảm Xúc (Emoji Status) & Lịch Sử Tìm Kiếm Gần Đây (Recent Search)
+### 8.3. Trạng Thái Cảm Xúc (Emoji Status) & Lịch Sử Tìm Kiếm Gần Đây (Recent Search)
 
 ```ts
 // Lấy bộ cấu hình Emoji Status và trạng thái hiện tại của danh sách bạn bè
@@ -426,7 +414,7 @@ await api.updateRecentSearch({
 });
 ```
 
-### 6.4. Kho Lưu Trữ Hội Thoại (Media Store — Ảnh/Video, File, Link)
+### 8.4. Kho Lưu Trữ Hội Thoại (Media Store — Ảnh/Video, File, Link)
 
 > **Lưu ý quan trọng:** Máy chủ Zalo yêu cầu `mediaType` phải thuộc 1 trong 3 giá trị: `"media"` (ảnh & video), `"file"`, hoặc `"link"`.
 
@@ -449,7 +437,7 @@ await api.removeConversationMedia({
 });
 ```
 
-### 6.5. Nhóm, Hồ Sơ, Danh Bạ, Tin Nhắn & Nhãn Dán Mở Rộng
+### 8.5. Nhóm, Hồ Sơ, Danh Bạ, Tin Nhắn & Nhãn Dán Mở Rộng
 
 | Phương thức `api.*` | Command ID | Endpoint | Công dụng |
 | :--- | :---: | :--- | :--- |

@@ -285,19 +285,18 @@ async function copySampleCode() {
 /* Terminal Card (Consistent Theme-Adaptive Design) */
 .zca-terminal-card {
     border-radius: 16px;
-    background-color: #0b1120;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.45);
+    background-color: var(--vp-c-bg-elv);
+    border: 1px solid var(--vp-c-divider);
+    box-shadow: 0 16px 36px -12px rgba(15, 23, 42, 0.08);
     overflow: hidden;
     margin-bottom: 28px;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    transition: all 0.2s ease;
 }
 
-/* Light Mode Terminal Refinement: Keeps terminal aesthetics while harmonizing with light theme */
-html:not(.dark) .zca-terminal-card {
-    background-color: #0f172a;
-    border: 1px solid #cbd5e1;
-    box-shadow: 0 16px 36px -12px rgba(15, 23, 42, 0.18);
+.dark .zca-terminal-card {
+    background-color: #0b1120;
+    border-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 16px 40px -12px rgba(0, 0, 0, 0.45);
 }
 
 .zca-terminal-header {
@@ -305,13 +304,13 @@ html:not(.dark) .zca-terminal-card {
     align-items: center;
     justify-content: space-between;
     padding: 11px 16px;
-    background-color: #070c18;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background-color: var(--vp-c-bg-soft);
+    border-bottom: 1px solid var(--vp-c-divider);
 }
 
-html:not(.dark) .zca-terminal-header {
-    background-color: #090f1d;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+.dark .zca-terminal-header {
+    background-color: #070c18;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
 }
 
 .zca-traffic-lights {
@@ -334,10 +333,14 @@ html:not(.dark) .zca-terminal-header {
     display: inline-flex;
     align-items: center;
     gap: 7px;
-    color: #94a3b8;
+    color: var(--vp-c-text-2);
     font-family: var(--vp-font-family-mono);
     font-size: 0.78rem;
-    font-weight: 500;
+    font-weight: 600;
+}
+
+.dark .zca-terminal-title {
+    color: #94a3b8;
 }
 
 .zca-terminal-actions {
@@ -352,9 +355,15 @@ html:not(.dark) .zca-terminal-header {
     font-weight: 700;
     padding: 2px 7px;
     border-radius: 5px;
+    background-color: var(--vp-c-brand-soft);
+    color: var(--vp-c-brand-1);
+    border: 1px solid rgba(0, 104, 255, 0.25);
+}
+
+.dark .zca-lang-pill {
     background-color: rgba(56, 189, 248, 0.16);
     color: #38bdf8;
-    border: 1px solid rgba(56, 189, 248, 0.3);
+    border-color: rgba(56, 189, 248, 0.3);
 }
 
 .zca-terminal-copy {
@@ -362,14 +371,25 @@ html:not(.dark) .zca-terminal-header {
     font-size: 0.72rem;
     font-weight: 600;
     border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    background-color: rgba(255, 255, 255, 0.06);
-    color: #e2e8f0;
+    border: 1px solid var(--vp-c-divider);
+    background-color: var(--vp-c-bg-elv);
+    color: var(--vp-c-text-2);
     cursor: pointer;
     transition: all 0.15s ease;
 }
 
 .zca-terminal-copy:hover {
+    color: var(--vp-c-brand-1);
+    border-color: var(--vp-c-brand-1);
+}
+
+.dark .zca-terminal-copy {
+    border-color: rgba(255, 255, 255, 0.15);
+    background-color: rgba(255, 255, 255, 0.06);
+    color: #e2e8f0;
+}
+
+.dark .zca-terminal-copy:hover {
     background-color: rgba(255, 255, 255, 0.14);
     color: #ffffff;
 }
@@ -384,19 +404,34 @@ html:not(.dark) .zca-terminal-header {
     font-family: var(--vp-font-family-mono);
     font-size: 0.85rem;
     line-height: 1.7;
+    color: var(--vp-c-text-1);
+}
+
+.dark .zca-code-block {
     color: #e2e8f0;
 }
 
-/* Syntax Highlighting Tokens */
-.c-kw { color: #f43f5e; font-weight: 600; }
-.c-id { color: #38bdf8; font-weight: 600; }
-.c-var { color: #f8fafc; }
-.c-prop { color: #a5b4fc; }
-.c-fn { color: #67e8f9; }
-.c-param { color: #fdba74; }
-.c-str { color: #34d399; }
-.c-bool { color: #fb923c; font-weight: 600; }
-.c-cmt { color: #64748b; font-style: italic; }
+/* Syntax Highlighting Tokens - Light Mode */
+.c-kw { color: #d73a49; font-weight: 600; }
+.c-id { color: #005cc5; font-weight: 600; }
+.c-var { color: #24292e; }
+.c-prop { color: #6f42c1; }
+.c-fn { color: #005cc5; }
+.c-param { color: #e36209; }
+.c-str { color: #22863a; }
+.c-bool { color: #005cc5; font-weight: 600; }
+.c-cmt { color: #6a737d; font-style: italic; }
+
+/* Syntax Highlighting Tokens - Dark Mode */
+.dark .c-kw { color: #f43f5e; font-weight: 600; }
+.dark .c-id { color: #38bdf8; font-weight: 600; }
+.dark .c-var { color: #f8fafc; }
+.dark .c-prop { color: #a5b4fc; }
+.dark .c-fn { color: #67e8f9; }
+.dark .c-param { color: #fdba74; }
+.dark .c-str { color: #34d399; }
+.dark .c-bool { color: #fb923c; font-weight: 600; }
+.dark .c-cmt { color: #64748b; font-style: italic; }
 
 /* Metrics Grid */
 .zca-metrics-grid {

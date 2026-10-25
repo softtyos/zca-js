@@ -1,6 +1,6 @@
 {
     "name": "@softtynet/zca-js",
-    "version": "2.3.7",
+    "version": "2.3.8",
     "description": "Zalo API client library for Node.js and Bun, maintained by Softtynet.",
     "main": "dist/cjs/index.cjs",
     "module": "dist/index.js",
@@ -86,6 +86,7 @@
         "globals": "^16.3.0",
         "husky": "^9.1.7",
         "lint-staged": "^16.1.5",
+        "mermaid": "^12.2.0",
         "prettier": "^3.3.3",
         "rimraf": "^5.0.10",
         "rollup": "^4.24.0",

@@ -8,6 +8,40 @@
 
 Từ phiên bản `2.2.8`, `@softtynet/zca-js` được tái cấu trúc toàn diện từ mô hình phẳng sang **Kiến trúc Phân tầng theo Miền Nghiệp vụ (Domain-Driven SDK Architecture)** với 5 trụ cột:
 
+```mermaid
+flowchart TD
+    subgraph T5["Tầng 5: 256 API trong 12 Phân hệ Nghiệp vụ (src/apis/)"]
+        A1["auth (14) • chat (41) • group (44) • friend (33) • profile (16)"]
+        A2["sync (5) • zcloud (9) • call (30) • media (8) • sticker (10)"]
+        A3["board (16) • business & OA (30)"]
+    end
+
+    subgraph T4["Tầng 4: Động cơ WebSocket Thời gian thực (src/realtime/)"]
+        W1["listener.ts (Watchdog 50s, Ping/Pong, Endpoint Rotation)"]
+        W2["message.handler • control.handler • reaction.handler • status.handler"]
+        W1 --> W2
+    end
+
+    subgraph T3["Tầng 3: Hạ tầng Điều phối & Client Chuyên biệt (src/core/)"]
+        S1["service-router.ts (zpwServiceMap + Fallback)"]
+        S2["zcloud-client.ts (Auto Cache ViewerKey & Retry)"]
+    end
+
+    subgraph T2["Tầng 2: Lõi Mật mã học Độc lập (src/crypto/)"]
+        C1["aes.ts (AES-CBC) & ws-cipher.ts (AES-GCM 128-bit + Pako + JSONBig)"]
+        C2["zcloud-cipher.ts (98yS 16B IV) & zdb-cipher.ts (RSA-2048 + ZDB 4.0)"]
+    end
+
+    subgraph T1["Tầng 1: Single Source of Truth (src/constants/)"]
+        P1["protocol.ts • domains.ts • endpoints.ts • defaults.ts"]
+    end
+
+    T5 --> T3
+    T4 --> T2
+    T3 --> T2
+    T2 --> T1
+```
+
 ```text
 src/
 ├── constants/                 # [Tầng 1] Single Source of Truth (Tham số bất biến & Cấu hình)

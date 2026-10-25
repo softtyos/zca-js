@@ -1,4 +1,4 @@
-# @softtynet/zca-js v2.3.6 — Full AI/LLM Technical Reference (256 APIs across 12 Domains)
+# @softtynet/zca-js v2.3.7 — Full AI/LLM Technical Reference (256 APIs across 12 Domains)
 
 Maintained by Softtynet Co., Ltd. | Docs: https://softtyos.github.io/zca-js-docs/ | NPM: npm install @softtynet/zca-js
 
