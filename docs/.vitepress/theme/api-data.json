@@ -1,6 +1,6 @@
 {
-  "version": "2.3.4",
-  "totalApis": 225,
+  "version": "2.3.5",
+  "totalApis": 252,
   "domains": [
     {
       "key": "auth",
@@ -103,14 +103,15 @@
     {
       "key": "call",
       "icon": "📞",
-      "title": "Gọi thoại & Video 1-1 (Call)",
+      "title": "Gọi thoại, Video & Gọi nhóm (Call)",
       "badge": "api.call",
-      "description": "Điều khiển tín hiệu cuộc gọi thoại và gọi video 1-1 (Commands 11300 → 11306: Request, Call, Ringing, Cancel, End).",
-      "count": 3,
+      "description": "Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, video 1-1 và cuộc gọi nhóm (Group Call: Commands 11300 → 12447).",
+      "count": 30,
       "sampleMethods": [
-        "cancelVoiceCall",
-        "endVoiceCall",
-        "sendVoiceCall"
+        "addUserGroupCall",
+        "answerAckVoiceCall",
+        "answerGroupCall",
+        "answerVoiceCall"
       ]
     },
     {
@@ -1776,9 +1777,69 @@
       "httpMethod": "GET"
     },
     {
+      "name": "addUserGroupCall",
+      "domain": "call",
+      "summary": "Mời thêm thành viên mới vào cuộc gọi nhóm đang diễn ra (cmd 12435 - /api/voicecall/group/adduser).",
+      "signature": "api.call.addUserGroupCall(callId: number, options: AddUserGroupCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/adduser"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "answerAckVoiceCall",
+      "domain": "call",
+      "summary": "Gửi xác nhận hoàn tất bắt tay nhận cuộc gọi 1-1 (cmd 11304 - /api/voicecall/answerack, signal 408).",
+      "signature": "api.call.answerAckVoiceCall(calleeId: string, callId: number, options: AnswerAckVoiceCallOptions = {},)",
+      "endpoints": [
+        "/api/voicecall/answerack"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "answerGroupCall",
+      "domain": "call",
+      "summary": "Chấp nhận tham gia cuộc gọi nhóm khi nhận được lời mời (cmd 12436 - /api/voicecall/group/answer).",
+      "signature": "api.call.answerGroupCall(callId: number, options: AnswerGroupCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/answer"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "answerVoiceCall",
+      "domain": "call",
+      "summary": "Chấp nhận (Bắt máy) cuộc gọi Thoại/Video 1-1 đến (cmd 11303 - /api/voicecall/answer, signal 402).",
+      "signature": "api.call.answerVoiceCall(callerId: string, callId: number, options: AnswerVoiceCallOptions = {},)",
+      "endpoints": [
+        "/api/voicecall/answer"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "broadcastGroupCallState",
+      "domain": "call",
+      "summary": "Phát quảng bá trạng thái thiết bị (Mic, Camera, Screen Share) tới các thành viên trong cuộc gọi nhóm (cmd 12098 - /api/voicecall/group/broadcast).",
+      "signature": "api.call.broadcastGroupCallState(callId: number, options: BroadcastGroupCallStateOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/broadcast"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "cancelGroupCall",
+      "domain": "call",
+      "summary": "Hủy lời mời cuộc gọi nhóm (cmd 12437 - /api/voicecall/group/cancel).",
+      "signature": "api.call.cancelGroupCall(callId: number, options: CancelGroupCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/cancel"
+      ],
+      "httpMethod": "GET"
+    },
+    {
       "name": "cancelVoiceCall",
       "domain": "call",
-      "summary": "Huỷ cuộc gọi đang đổ chuông trước khi người nhận bắt máy (/api/voicecall/cancel, command 11305).",
+      "summary": "Hủy cuộc gọi 1-1 đang đổ chuông trước khi người nhận bắt máy (cmd 11305 - /api/voicecall/cancel, signal 405).",
       "signature": "api.call.cancelVoiceCall(calleeId: string, callId: number, options: CancelVoiceCallOptions = {},)",
       "endpoints": [
         "/api/voicecall/cancel"
@@ -1786,9 +1847,35 @@
       "httpMethod": "GET"
     },
     {
+      "name": "createController",
+      "domain": "call",
+      "summary": "API createController thuộc phân hệ call.",
+      "signature": "api.call.createController(options: ZaloCallControllerOptions = {})",
+      "endpoints": [],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "createRtcSession",
+      "domain": "call",
+      "summary": "API createRtcSession thuộc phân hệ call.",
+      "signature": "api.call.createRtcSession(options: ZaloRtcSessionOptions = {})",
+      "endpoints": [],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "endGroupCall",
+      "domain": "call",
+      "summary": "Rời khỏi cuộc gọi nhóm hoặc từ chối lời mời gọi nhóm (cmd 12438 - /api/voicecall/group/endcall).",
+      "signature": "api.call.endGroupCall(callId: number, options: EndGroupCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/endcall"
+      ],
+      "httpMethod": "GET"
+    },
+    {
       "name": "endVoiceCall",
       "domain": "call",
-      "summary": "Kết thúc cuộc gọi thoại / video (/api/voicecall/endcall, command 11306).",
+      "summary": "Kết thúc cuộc gọi 1-1 đang diễn ra hoặc từ chối cuộc gọi đến (cmd 11306 - /api/voicecall/endcall, signal 404).",
       "signature": "api.call.endVoiceCall(calleeId: string, callId: number, options: EndVoiceCallOptions = {},)",
       "endpoints": [
         "/api/voicecall/endcall"
@@ -1796,13 +1883,197 @@
       "httpMethod": "GET"
     },
     {
+      "name": "finishGroupCall",
+      "domain": "call",
+      "summary": "Kết thúc hoàn toàn phòng gọi nhóm cho tất cả thành viên (cmd 12446 - /api/voicecall/group/finish).",
+      "signature": "api.call.finishGroupCall(callId: number, options: FinishGroupCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/finish"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "getGroupCallState",
+      "domain": "call",
+      "summary": "Truy vấn trạng thái hiện tại và danh sách thành viên trong phòng gọi nhóm (cmd 12445 - /api/voicecall/group/state).",
+      "signature": "api.call.getGroupCallState(callId: number, hostCall: string, callType: CallType | number = CallType.GroupAudio,)",
+      "endpoints": [
+        "/api/voicecall/group/state"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "holdVoiceCall",
+      "domain": "call",
+      "summary": "Tạm giữ (Hold) cuộc gọi 1-1 đang diễn ra hoặc phản hồi yêu cầu tạm giữ (cmd 11307 holdreq / cmd 11308 holdresp, signal 411/412).",
+      "signature": "api.call.holdVoiceCall(toId: string, options: HoldVoiceCallOptions = {},)",
+      "endpoints": [
+        "/api/voicecall/holdreq",
+        "/api/voicecall/holdresp",
+        "/api/voicecall/"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "joinGroupCall",
+      "domain": "call",
+      "summary": "Chủ động tham gia vào một cuộc gọi nhóm đang diễn ra từ banner nhóm (cmd 12043 - /api/voicecall/group/join).",
+      "signature": "api.call.joinGroupCall(callId: number, options: JoinGroupCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/join"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "logEndVoiceCall",
+      "domain": "call",
+      "summary": "Gửi thống kê chất lượng cuộc gọi (QoS/Billing stats) sau khi kết thúc cuộc gọi 1-1 (cmd 11311 - /api/voicecall/logendcall, signal 406).",
+      "signature": "api.call.logEndVoiceCall(partnerId: string, callId: number, options: LogEndVoiceCallOptions = {},)",
+      "endpoints": [
+        "/api/voicecall/logendcall"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "notifyGroupCall",
+      "domain": "call",
+      "summary": "Gửi thông báo sự kiện cuộc gọi nhóm vào luồng chat nhóm (cmd 12447 - /api/voicecall/group/notify).",
+      "signature": "api.call.notifyGroupCall(callId: number, options: NotifyGroupCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/notify"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "pingGroupCall",
+      "domain": "call",
+      "summary": "Gửi nhịp tim (Heartbeat Ping) duy trì kết nối của thành viên trong phòng gọi nhóm (cmd 12097 - /api/voicecall/group/ping).",
+      "signature": "api.call.pingGroupCall(callId: number, options: PingGroupCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/ping"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "requestAudioToVideoCall",
+      "domain": "call",
+      "summary": "Yêu cầu nâng cấp từ cuộc gọi Thoại sang cuộc gọi Video hoặc phản hồi yêu cầu (cmd 12056 - /api/voicecall/requestaudio2video).",
+      "signature": "api.call.requestAudioToVideoCall(uidTo: string, callId: number, options: RequestAudioToVideoCallOptions = {},)",
+      "endpoints": [
+        "/api/voicecall/requestaudio2video"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "requestGroupCall",
+      "domain": "call",
+      "summary": "Bước 1 gọi nhóm (cmd 12433 - /api/voicecall/group/requestcall): Xin cấp phát phòng gọi nhóm (Group Call Room & RTP/ZRTC servers).",
+      "signature": "api.call.requestGroupCall(groupId: string, options: RequestGroupCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/requestcall"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "requestShareScreenCall",
+      "domain": "call",
+      "summary": "Yêu cầu bắt đầu hoặc kết thúc chia sẻ màn hình (Screen Share) trong cuộc gọi 1-1 (cmd 12064 - /api/voicecall/requestsharescreen).",
+      "signature": "api.call.requestShareScreenCall(uidTo: string, callId: number, options: RequestShareScreenCallOptions = {},)",
+      "endpoints": [
+        "/api/voicecall/requestsharescreen"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "requestVoiceCall",
+      "domain": "call",
+      "summary": "Bước 1 gọi 1-1 (cmd 11300 - /api/voicecall/requestcall, signal 401): Xin cấp phát phòng gọi 1-1 (callId, sessId, rtpServer, rtcpServer, zrtpKey, codec).",
+      "signature": "api.call.requestVoiceCall(calleeId: string, options: RequestVoiceCallOptions = {},)",
+      "endpoints": [
+        "/api/voicecall/requestcall"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "ringRingGroupCall",
+      "domain": "call",
+      "summary": "Báo hiệu thiết bị đang đổ chuông cho lời mời gọi nhóm (cmd 12439 - /api/voicecall/group/ringring).",
+      "signature": "api.call.ringRingGroupCall(callId: number, options: RingRingGroupCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/ringring"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "ringRingVoiceCall",
+      "domain": "call",
+      "summary": "Báo hiệu thiết bị đang đổ chuông cho cuộc gọi 1-1 đến (cmd 11302 - /api/voicecall/ringring, signal 407).",
+      "signature": "api.call.ringRingVoiceCall(callerId: string, callId: number, options: RingRingVoiceCallOptions = {},)",
+      "endpoints": [
+        "/api/voicecall/ringring"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "sendRequestGroupCall",
+      "domain": "call",
+      "summary": "Bước 2 gọi nhóm (cmd 12434 - /api/voicecall/group/request): Phát tín hiệu mời gọi nhóm tới danh sách thành viên.",
+      "signature": "api.call.sendRequestGroupCall(groupId: string, options: SendRequestGroupCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/request"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "sendRequestVoiceCall",
+      "domain": "call",
+      "summary": "Bước 2 gọi 1-1 (cmd 11301 - /api/voicecall/request, signal 416): Gửi gói mời gọi (Invite) kèm extendData ZRTC để kích hoạt đổ chuông trên thiết bị người nhận.",
+      "signature": "api.call.sendRequestVoiceCall(calleeId: string, options: SendRequestVoiceCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/request"
+      ],
+      "httpMethod": "GET"
+    },
+    {
       "name": "sendVoiceCall",
       "domain": "call",
-      "summary": "Khởi tạo cuộc gọi thoại / video (Signaling 2 bước: /api/voicecall/requestcall command 11300 + /api/voicecall/request command 11301) giúp đổ chuông trực tiếp trên thiết bị của người nhận.",
+      "summary": "Khởi tạo cuộc gọi Thoại hoặc Video 1-1 trọn gói (tự động thực hiện 2 bước 11300 + 11301 làm đổ chuông máy người nhận).",
       "signature": "api.call.sendVoiceCall(calleeId: string, options: SendVoiceCallOptions = {},)",
       "endpoints": [
         "/api/voicecall/requestcall",
         "/api/voicecall/request"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "shareScreenGroupCall",
+      "domain": "call",
+      "summary": "Bắt đầu hoặc dừng chia sẻ màn hình trong cuộc gọi nhóm (cmd 12044 - /api/voicecall/group/sharescreen).",
+      "signature": "api.call.shareScreenGroupCall(callId: number, options: ShareScreenGroupCallOptions,)",
+      "endpoints": [
+        "/api/voicecall/group/sharescreen"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "unholdVoiceCall",
+      "domain": "call",
+      "summary": "Khôi phục (Unhold) cuộc gọi 1-1 đang tạm giữ hoặc phản hồi yêu cầu khôi phục (cmd 11309 unholdreq / cmd 11310 unholdresp, signal 413/414).",
+      "signature": "api.call.unholdVoiceCall(toId: string, options: UnholdVoiceCallOptions = {},)",
+      "endpoints": [
+        "/api/voicecall/unholdreq",
+        "/api/voicecall/unholdresp",
+        "/api/voicecall/"
+      ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "updateCallMediaState",
+      "domain": "call",
+      "summary": "Đồng bộ trạng thái bật/tắt Mic và Camera trong cuộc gọi 1-1 (cmd 12006 - /api/voicecall/conf).",
+      "signature": "api.call.updateCallMediaState(calleeId: string, callId: number, options: UpdateCallMediaStateOptions,)",
+      "endpoints": [
+        "/api/voicecall/conf"
       ],
       "httpMethod": "GET"
     },

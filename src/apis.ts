@@ -7,10 +7,16 @@ import { addPollOptionsFactory } from "./apis/board/addPollOptions.js";
 import { addQuickMessageFactory } from "./apis/business/addQuickMessage.js";
 import { addReactionFactory } from "./apis/chat/addReaction.js";
 import { addUnreadMarkFactory } from "./apis/chat/addUnreadMark.js";
+import { addUserGroupCallFactory } from "./apis/call/addUserGroupCall.js";
 import { addUserToGroupFactory } from "./apis/group/addUserToGroup.js";
 import { analyseGroupFactory } from "./apis/group/analyseGroup.js";
+import { answerAckVoiceCallFactory } from "./apis/call/answerAckVoiceCall.js";
+import { answerGroupCallFactory } from "./apis/call/answerGroupCall.js";
+import { answerVoiceCallFactory } from "./apis/call/answerVoiceCall.js";
 import { blockUserFactory } from "./apis/friend/blockUser.js";
 import { blockViewFeedFactory } from "./apis/friend/blockViewFeed.js";
+import { broadcastGroupCallStateFactory } from "./apis/call/broadcastGroupCallState.js";
+import { cancelGroupCallFactory } from "./apis/call/cancelGroupCall.js";
 import { cancelPullMobileFactory } from "./apis/sync/cancelPullMobile.js";
 import { cancelVoiceCallFactory } from "./apis/call/cancelVoiceCall.js";
 import { changeAccountAvatarFactory } from "./apis/profile/changeAccountAvatar.js";
@@ -23,11 +29,13 @@ import { clearUnreadFriendRequestsFactory } from "./apis/friend/clearUnreadFrien
 import { createAutoReplyFactory } from "./apis/business/createAutoReply.js";
 import { createBankAccountFactory } from "./apis/business/createBankAccount.js";
 import { createCatalogFactory } from "./apis/business/createCatalog.js";
+import { createControllerFactory } from "./apis/call/createController.js";
 import { createGroupFactory } from "./apis/group/createGroup.js";
 import { createNoteFactory } from "./apis/board/createNote.js";
 import { createPollFactory } from "./apis/board/createPoll.js";
 import { createProductCatalogFactory } from "./apis/business/createProductCatalog.js";
 import { createReminderFactory } from "./apis/board/createReminder.js";
+import { createRtcSessionFactory } from "./apis/call/createRtcSession.js";
 import { decryptGidsFactory } from "./apis/auth/decryptGids.js";
 import { deleteAutoReplyFactory } from "./apis/business/deleteAutoReply.js";
 import { deleteAvatarFactory } from "./apis/profile/deleteAvatar.js";
@@ -44,11 +52,13 @@ import { editNoteFactory } from "./apis/board/editNote.js";
 import { editReminderFactory } from "./apis/board/editReminder.js";
 import { enableGroupLinkFactory } from "./apis/group/enableGroupLink.js";
 import { encryptGidsFactory } from "./apis/auth/encryptGids.js";
+import { endGroupCallFactory } from "./apis/call/endGroupCall.js";
 import { endVoiceCallFactory } from "./apis/call/endVoiceCall.js";
 import { exportSessionFactory } from "./apis/auth/exportSession.js";
 import { fetchAccountInfoFactory } from "./apis/profile/fetchAccountInfo.js";
 import { findUserFactory } from "./apis/friend/findUser.js";
 import { findUserByUsernameFactory } from "./apis/friend/findUserByUsername.js";
+import { finishGroupCallFactory } from "./apis/call/finishGroupCall.js";
 import { forwardMessageFactory } from "./apis/chat/forwardMessage.js";
 import { getAliasListFactory } from "./apis/friend/getAliasList.js";
 import { getAliasListV2Factory } from "./apis/friend/getAliasListV2.js";
@@ -86,6 +96,7 @@ import { getFriendsActivePCWebFactory } from "./apis/friend/getFriendsActivePCWe
 import { getFriendsEmojiStatusFactory } from "./apis/friend/getFriendsEmojiStatus.js";
 import { getFullAvatarFactory } from "./apis/profile/getFullAvatar.js";
 import { getGroupBlockedMemberFactory } from "./apis/group/getGroupBlockedMember.js";
+import { getGroupCallStateFactory } from "./apis/call/getGroupCallState.js";
 import { getGroupChatHistoryFactory } from "./apis/group/getGroupChatHistory.js";
 import { getGroupCloudMessageJumpFactory } from "./apis/group/getGroupCloudMessageJump.js";
 import { getGroupCloudMessagePathFactory } from "./apis/group/getGroupCloudMessagePath.js";
@@ -150,15 +161,20 @@ import { getUnreadMarkFactory } from "./apis/chat/getUnreadMark.js";
 import { getUsageMyCloudFactory } from "./apis/zcloud/getUsageMyCloud.js";
 import { getUsageZCloudFactory } from "./apis/zcloud/getUsageZCloud.js";
 import { getUserInfoFactory } from "./apis/profile/getUserInfo.js";
+import { holdVoiceCallFactory } from "./apis/call/holdVoiceCall.js";
 import { inviteUserToGroupsFactory } from "./apis/group/inviteUserToGroups.js";
+import { joinGroupCallFactory } from "./apis/call/joinGroupCall.js";
 import { joinGroupInviteBoxFactory } from "./apis/group/joinGroupInviteBox.js";
 import { joinGroupLinkFactory } from "./apis/group/joinGroupLink.js";
 import { keepAliveFactory } from "./apis/auth/keepAlive.js";
 import { lastOnlineFactory } from "./apis/friend/lastOnline.js";
 import { leaveGroupFactory } from "./apis/group/leaveGroup.js";
 import { lockPollFactory } from "./apis/board/lockPoll.js";
+import { logEndVoiceCallFactory } from "./apis/call/logEndVoiceCall.js";
 import { lostFocusFactory } from "./apis/auth/lostFocus.js";
+import { notifyGroupCallFactory } from "./apis/call/notifyGroupCall.js";
 import { parseLinkFactory } from "./apis/chat/parseLink.js";
+import { pingGroupCallFactory } from "./apis/call/pingGroupCall.js";
 import { preloadConversationsFactory } from "./apis/chat/preloadConversations.js";
 import { pullMobileFactory } from "./apis/sync/pullMobile.js";
 import { readContactTabFactory } from "./apis/friend/readContactTab.js";
@@ -174,10 +190,16 @@ import { removeQuickMessageFactory } from "./apis/business/removeQuickMessage.js
 import { removeReminderFactory } from "./apis/board/removeReminder.js";
 import { removeUnreadMarkFactory } from "./apis/chat/removeUnreadMark.js";
 import { removeUserFromGroupFactory } from "./apis/group/removeUserFromGroup.js";
+import { requestAudioToVideoCallFactory } from "./apis/call/requestAudioToVideoCall.js";
+import { requestGroupCallFactory } from "./apis/call/requestGroupCall.js";
+import { requestShareScreenCallFactory } from "./apis/call/requestShareScreenCall.js";
 import { requestSyncFromPhoneFactory } from "./apis/sync/requestSyncFromPhone.js";
+import { requestVoiceCallFactory } from "./apis/call/requestVoiceCall.js";
 import { resetHiddenConversPinFactory } from "./apis/chat/resetHiddenConversPin.js";
 import { reuseAvatarFactory } from "./apis/profile/reuseAvatar.js";
 import { reviewPendingMemberRequestFactory } from "./apis/group/reviewPendingMemberRequest.js";
+import { ringRingGroupCallFactory } from "./apis/call/ringRingGroupCall.js";
+import { ringRingVoiceCallFactory } from "./apis/call/ringRingVoiceCall.js";
 import { scanURLFactory } from "./apis/auth/scanURL.js";
 import { searchStickerFactory } from "./apis/sticker/searchSticker.js";
 import { sendBankCardFactory } from "./apis/chat/sendBankCard.js";
@@ -187,6 +209,8 @@ import { sendFriendRequestFactory } from "./apis/friend/sendFriendRequest.js";
 import { sendLinkFactory } from "./apis/chat/sendLink.js";
 import { sendMessageFactory } from "./apis/chat/sendMessage.js";
 import { sendReportFactory } from "./apis/chat/sendReport.js";
+import { sendRequestGroupCallFactory } from "./apis/call/sendRequestGroupCall.js";
+import { sendRequestVoiceCallFactory } from "./apis/call/sendRequestVoiceCall.js";
 import { sendSeenEventFactory } from "./apis/chat/sendSeenEvent.js";
 import { sendStickerFactory } from "./apis/chat/sendSticker.js";
 import { sendTypingEventFactory } from "./apis/chat/sendTypingEvent.js";
@@ -197,15 +221,18 @@ import { setHiddenConversationsFactory } from "./apis/chat/setHiddenConversation
 import { setMuteFactory } from "./apis/chat/setMute.js";
 import { setPinnedConversationsFactory } from "./apis/chat/setPinnedConversations.js";
 import { sharePollFactory } from "./apis/board/sharePoll.js";
+import { shareScreenGroupCallFactory } from "./apis/call/shareScreenGroupCall.js";
 import { unblockUserFactory } from "./apis/friend/unblockUser.js";
 import { undoFactory } from "./apis/chat/undo.js";
 import { undoFriendRequestFactory } from "./apis/friend/undoFriendRequest.js";
 import { undoMultiMessageFactory } from "./apis/chat/undoMultiMessage.js";
+import { unholdVoiceCallFactory } from "./apis/call/unholdVoiceCall.js";
 import { updateActiveStatusFactory } from "./apis/auth/updateActiveStatus.js";
 import { updateArchivedChatListFactory } from "./apis/chat/updateArchivedChatList.js";
 import { updateAutoDeleteChatFactory } from "./apis/chat/updateAutoDeleteChat.js";
 import { updateAutoReplyFactory } from "./apis/business/updateAutoReply.js";
 import { updateBankAccountFactory } from "./apis/business/updateBankAccount.js";
+import { updateCallMediaStateFactory } from "./apis/call/updateCallMediaState.js";
 import { updateCatalogFactory } from "./apis/business/updateCatalog.js";
 import { updateGroupSettingsFactory } from "./apis/group/updateGroupSettings.js";
 import { updateHiddenConversPinFactory } from "./apis/chat/updateHiddenConversPin.js";
@@ -294,9 +321,36 @@ export type BusinessDomainAPI = {
 };
 
 export type CallDomainAPI = {
+    readonly addUserGroupCall: ReturnType<typeof addUserGroupCallFactory>;
+    readonly answerAckVoiceCall: ReturnType<typeof answerAckVoiceCallFactory>;
+    readonly answerGroupCall: ReturnType<typeof answerGroupCallFactory>;
+    readonly answerVoiceCall: ReturnType<typeof answerVoiceCallFactory>;
+    readonly broadcastGroupCallState: ReturnType<typeof broadcastGroupCallStateFactory>;
+    readonly cancelGroupCall: ReturnType<typeof cancelGroupCallFactory>;
     readonly cancelVoiceCall: ReturnType<typeof cancelVoiceCallFactory>;
+    readonly createController: ReturnType<typeof createControllerFactory>;
+    readonly createRtcSession: ReturnType<typeof createRtcSessionFactory>;
+    readonly endGroupCall: ReturnType<typeof endGroupCallFactory>;
     readonly endVoiceCall: ReturnType<typeof endVoiceCallFactory>;
+    readonly finishGroupCall: ReturnType<typeof finishGroupCallFactory>;
+    readonly getGroupCallState: ReturnType<typeof getGroupCallStateFactory>;
+    readonly holdVoiceCall: ReturnType<typeof holdVoiceCallFactory>;
+    readonly joinGroupCall: ReturnType<typeof joinGroupCallFactory>;
+    readonly logEndVoiceCall: ReturnType<typeof logEndVoiceCallFactory>;
+    readonly notifyGroupCall: ReturnType<typeof notifyGroupCallFactory>;
+    readonly pingGroupCall: ReturnType<typeof pingGroupCallFactory>;
+    readonly requestAudioToVideoCall: ReturnType<typeof requestAudioToVideoCallFactory>;
+    readonly requestGroupCall: ReturnType<typeof requestGroupCallFactory>;
+    readonly requestShareScreenCall: ReturnType<typeof requestShareScreenCallFactory>;
+    readonly requestVoiceCall: ReturnType<typeof requestVoiceCallFactory>;
+    readonly ringRingGroupCall: ReturnType<typeof ringRingGroupCallFactory>;
+    readonly ringRingVoiceCall: ReturnType<typeof ringRingVoiceCallFactory>;
+    readonly sendRequestGroupCall: ReturnType<typeof sendRequestGroupCallFactory>;
+    readonly sendRequestVoiceCall: ReturnType<typeof sendRequestVoiceCallFactory>;
     readonly sendVoiceCall: ReturnType<typeof sendVoiceCallFactory>;
+    readonly shareScreenGroupCall: ReturnType<typeof shareScreenGroupCallFactory>;
+    readonly unholdVoiceCall: ReturnType<typeof unholdVoiceCallFactory>;
+    readonly updateCallMediaState: ReturnType<typeof updateCallMediaStateFactory>;
 };
 
 export type ChatDomainAPI = {
@@ -595,9 +649,36 @@ export class API {
     public get call(): CallDomainAPI {
         if (!this._domains.call) {
             const createNamespace = (api: API): CallDomainAPI => ({
+                get addUserGroupCall() { return api.addUserGroupCall; },
+                get answerAckVoiceCall() { return api.answerAckVoiceCall; },
+                get answerGroupCall() { return api.answerGroupCall; },
+                get answerVoiceCall() { return api.answerVoiceCall; },
+                get broadcastGroupCallState() { return api.broadcastGroupCallState; },
+                get cancelGroupCall() { return api.cancelGroupCall; },
                 get cancelVoiceCall() { return api.cancelVoiceCall; },
+                get createController() { return api.createController; },
+                get createRtcSession() { return api.createRtcSession; },
+                get endGroupCall() { return api.endGroupCall; },
                 get endVoiceCall() { return api.endVoiceCall; },
+                get finishGroupCall() { return api.finishGroupCall; },
+                get getGroupCallState() { return api.getGroupCallState; },
+                get holdVoiceCall() { return api.holdVoiceCall; },
+                get joinGroupCall() { return api.joinGroupCall; },
+                get logEndVoiceCall() { return api.logEndVoiceCall; },
+                get notifyGroupCall() { return api.notifyGroupCall; },
+                get pingGroupCall() { return api.pingGroupCall; },
+                get requestAudioToVideoCall() { return api.requestAudioToVideoCall; },
+                get requestGroupCall() { return api.requestGroupCall; },
+                get requestShareScreenCall() { return api.requestShareScreenCall; },
+                get requestVoiceCall() { return api.requestVoiceCall; },
+                get ringRingGroupCall() { return api.ringRingGroupCall; },
+                get ringRingVoiceCall() { return api.ringRingVoiceCall; },
+                get sendRequestGroupCall() { return api.sendRequestGroupCall; },
+                get sendRequestVoiceCall() { return api.sendRequestVoiceCall; },
                 get sendVoiceCall() { return api.sendVoiceCall; },
+                get shareScreenGroupCall() { return api.shareScreenGroupCall; },
+                get unholdVoiceCall() { return api.unholdVoiceCall; },
+                get updateCallMediaState() { return api.updateCallMediaState; },
             });
             this._domains.call = createNamespace(this);
         }
@@ -874,6 +955,10 @@ export class API {
         return (this._cache.addUnreadMark ??= addUnreadMarkFactory(this.ctx, this)) as ReturnType<typeof addUnreadMarkFactory>;
     }
 
+    public get addUserGroupCall(): ReturnType<typeof addUserGroupCallFactory> {
+        return (this._cache.addUserGroupCall ??= addUserGroupCallFactory(this.ctx, this)) as ReturnType<typeof addUserGroupCallFactory>;
+    }
+
     public get addUserToGroup(): ReturnType<typeof addUserToGroupFactory> {
         return (this._cache.addUserToGroup ??= addUserToGroupFactory(this.ctx, this)) as ReturnType<typeof addUserToGroupFactory>;
     }
@@ -882,12 +967,32 @@ export class API {
         return (this._cache.analyseGroup ??= analyseGroupFactory(this.ctx, this)) as ReturnType<typeof analyseGroupFactory>;
     }
 
+    public get answerAckVoiceCall(): ReturnType<typeof answerAckVoiceCallFactory> {
+        return (this._cache.answerAckVoiceCall ??= answerAckVoiceCallFactory(this.ctx, this)) as ReturnType<typeof answerAckVoiceCallFactory>;
+    }
+
+    public get answerGroupCall(): ReturnType<typeof answerGroupCallFactory> {
+        return (this._cache.answerGroupCall ??= answerGroupCallFactory(this.ctx, this)) as ReturnType<typeof answerGroupCallFactory>;
+    }
+
+    public get answerVoiceCall(): ReturnType<typeof answerVoiceCallFactory> {
+        return (this._cache.answerVoiceCall ??= answerVoiceCallFactory(this.ctx, this)) as ReturnType<typeof answerVoiceCallFactory>;
+    }
+
     public get blockUser(): ReturnType<typeof blockUserFactory> {
         return (this._cache.blockUser ??= blockUserFactory(this.ctx, this)) as ReturnType<typeof blockUserFactory>;
     }
 
     public get blockViewFeed(): ReturnType<typeof blockViewFeedFactory> {
         return (this._cache.blockViewFeed ??= blockViewFeedFactory(this.ctx, this)) as ReturnType<typeof blockViewFeedFactory>;
+    }
+
+    public get broadcastGroupCallState(): ReturnType<typeof broadcastGroupCallStateFactory> {
+        return (this._cache.broadcastGroupCallState ??= broadcastGroupCallStateFactory(this.ctx, this)) as ReturnType<typeof broadcastGroupCallStateFactory>;
+    }
+
+    public get cancelGroupCall(): ReturnType<typeof cancelGroupCallFactory> {
+        return (this._cache.cancelGroupCall ??= cancelGroupCallFactory(this.ctx, this)) as ReturnType<typeof cancelGroupCallFactory>;
     }
 
     public get cancelPullMobile(): ReturnType<typeof cancelPullMobileFactory> {
@@ -938,6 +1043,10 @@ export class API {
         return (this._cache.createCatalog ??= createCatalogFactory(this.ctx, this)) as ReturnType<typeof createCatalogFactory>;
     }
 
+    public get createController(): ReturnType<typeof createControllerFactory> {
+        return (this._cache.createController ??= createControllerFactory(this.ctx, this)) as ReturnType<typeof createControllerFactory>;
+    }
+
     public get createGroup(): ReturnType<typeof createGroupFactory> {
         return (this._cache.createGroup ??= createGroupFactory(this.ctx, this)) as ReturnType<typeof createGroupFactory>;
     }
@@ -956,6 +1065,10 @@ export class API {
 
     public get createReminder(): ReturnType<typeof createReminderFactory> {
         return (this._cache.createReminder ??= createReminderFactory(this.ctx, this)) as ReturnType<typeof createReminderFactory>;
+    }
+
+    public get createRtcSession(): ReturnType<typeof createRtcSessionFactory> {
+        return (this._cache.createRtcSession ??= createRtcSessionFactory(this.ctx, this)) as ReturnType<typeof createRtcSessionFactory>;
     }
 
     public get decryptGids(): ReturnType<typeof decryptGidsFactory> {
@@ -1022,6 +1135,10 @@ export class API {
         return (this._cache.encryptGids ??= encryptGidsFactory(this.ctx, this)) as ReturnType<typeof encryptGidsFactory>;
     }
 
+    public get endGroupCall(): ReturnType<typeof endGroupCallFactory> {
+        return (this._cache.endGroupCall ??= endGroupCallFactory(this.ctx, this)) as ReturnType<typeof endGroupCallFactory>;
+    }
+
     public get endVoiceCall(): ReturnType<typeof endVoiceCallFactory> {
         return (this._cache.endVoiceCall ??= endVoiceCallFactory(this.ctx, this)) as ReturnType<typeof endVoiceCallFactory>;
     }
@@ -1040,6 +1157,10 @@ export class API {
 
     public get findUserByUsername(): ReturnType<typeof findUserByUsernameFactory> {
         return (this._cache.findUserByUsername ??= findUserByUsernameFactory(this.ctx, this)) as ReturnType<typeof findUserByUsernameFactory>;
+    }
+
+    public get finishGroupCall(): ReturnType<typeof finishGroupCallFactory> {
+        return (this._cache.finishGroupCall ??= finishGroupCallFactory(this.ctx, this)) as ReturnType<typeof finishGroupCallFactory>;
     }
 
     public get forwardMessage(): ReturnType<typeof forwardMessageFactory> {
@@ -1188,6 +1309,10 @@ export class API {
 
     public get getGroupBlockedMember(): ReturnType<typeof getGroupBlockedMemberFactory> {
         return (this._cache.getGroupBlockedMember ??= getGroupBlockedMemberFactory(this.ctx, this)) as ReturnType<typeof getGroupBlockedMemberFactory>;
+    }
+
+    public get getGroupCallState(): ReturnType<typeof getGroupCallStateFactory> {
+        return (this._cache.getGroupCallState ??= getGroupCallStateFactory(this.ctx, this)) as ReturnType<typeof getGroupCallStateFactory>;
     }
 
     public get getGroupChatHistory(): ReturnType<typeof getGroupChatHistoryFactory> {
@@ -1446,8 +1571,16 @@ export class API {
         return (this._cache.getUserInfo ??= getUserInfoFactory(this.ctx, this)) as ReturnType<typeof getUserInfoFactory>;
     }
 
+    public get holdVoiceCall(): ReturnType<typeof holdVoiceCallFactory> {
+        return (this._cache.holdVoiceCall ??= holdVoiceCallFactory(this.ctx, this)) as ReturnType<typeof holdVoiceCallFactory>;
+    }
+
     public get inviteUserToGroups(): ReturnType<typeof inviteUserToGroupsFactory> {
         return (this._cache.inviteUserToGroups ??= inviteUserToGroupsFactory(this.ctx, this)) as ReturnType<typeof inviteUserToGroupsFactory>;
+    }
+
+    public get joinGroupCall(): ReturnType<typeof joinGroupCallFactory> {
+        return (this._cache.joinGroupCall ??= joinGroupCallFactory(this.ctx, this)) as ReturnType<typeof joinGroupCallFactory>;
     }
 
     public get joinGroupInviteBox(): ReturnType<typeof joinGroupInviteBoxFactory> {
@@ -1474,12 +1607,24 @@ export class API {
         return (this._cache.lockPoll ??= lockPollFactory(this.ctx, this)) as ReturnType<typeof lockPollFactory>;
     }
 
+    public get logEndVoiceCall(): ReturnType<typeof logEndVoiceCallFactory> {
+        return (this._cache.logEndVoiceCall ??= logEndVoiceCallFactory(this.ctx, this)) as ReturnType<typeof logEndVoiceCallFactory>;
+    }
+
     public get lostFocus(): ReturnType<typeof lostFocusFactory> {
         return (this._cache.lostFocus ??= lostFocusFactory(this.ctx, this)) as ReturnType<typeof lostFocusFactory>;
     }
 
+    public get notifyGroupCall(): ReturnType<typeof notifyGroupCallFactory> {
+        return (this._cache.notifyGroupCall ??= notifyGroupCallFactory(this.ctx, this)) as ReturnType<typeof notifyGroupCallFactory>;
+    }
+
     public get parseLink(): ReturnType<typeof parseLinkFactory> {
         return (this._cache.parseLink ??= parseLinkFactory(this.ctx, this)) as ReturnType<typeof parseLinkFactory>;
+    }
+
+    public get pingGroupCall(): ReturnType<typeof pingGroupCallFactory> {
+        return (this._cache.pingGroupCall ??= pingGroupCallFactory(this.ctx, this)) as ReturnType<typeof pingGroupCallFactory>;
     }
 
     public get preloadConversations(): ReturnType<typeof preloadConversationsFactory> {
@@ -1542,8 +1687,24 @@ export class API {
         return (this._cache.removeUserFromGroup ??= removeUserFromGroupFactory(this.ctx, this)) as ReturnType<typeof removeUserFromGroupFactory>;
     }
 
+    public get requestAudioToVideoCall(): ReturnType<typeof requestAudioToVideoCallFactory> {
+        return (this._cache.requestAudioToVideoCall ??= requestAudioToVideoCallFactory(this.ctx, this)) as ReturnType<typeof requestAudioToVideoCallFactory>;
+    }
+
+    public get requestGroupCall(): ReturnType<typeof requestGroupCallFactory> {
+        return (this._cache.requestGroupCall ??= requestGroupCallFactory(this.ctx, this)) as ReturnType<typeof requestGroupCallFactory>;
+    }
+
+    public get requestShareScreenCall(): ReturnType<typeof requestShareScreenCallFactory> {
+        return (this._cache.requestShareScreenCall ??= requestShareScreenCallFactory(this.ctx, this)) as ReturnType<typeof requestShareScreenCallFactory>;
+    }
+
     public get requestSyncFromPhone(): ReturnType<typeof requestSyncFromPhoneFactory> {
         return (this._cache.requestSyncFromPhone ??= requestSyncFromPhoneFactory(this.ctx, this)) as ReturnType<typeof requestSyncFromPhoneFactory>;
+    }
+
+    public get requestVoiceCall(): ReturnType<typeof requestVoiceCallFactory> {
+        return (this._cache.requestVoiceCall ??= requestVoiceCallFactory(this.ctx, this)) as ReturnType<typeof requestVoiceCallFactory>;
     }
 
     public get resetHiddenConversPin(): ReturnType<typeof resetHiddenConversPinFactory> {
@@ -1556,6 +1717,14 @@ export class API {
 
     public get reviewPendingMemberRequest(): ReturnType<typeof reviewPendingMemberRequestFactory> {
         return (this._cache.reviewPendingMemberRequest ??= reviewPendingMemberRequestFactory(this.ctx, this)) as ReturnType<typeof reviewPendingMemberRequestFactory>;
+    }
+
+    public get ringRingGroupCall(): ReturnType<typeof ringRingGroupCallFactory> {
+        return (this._cache.ringRingGroupCall ??= ringRingGroupCallFactory(this.ctx, this)) as ReturnType<typeof ringRingGroupCallFactory>;
+    }
+
+    public get ringRingVoiceCall(): ReturnType<typeof ringRingVoiceCallFactory> {
+        return (this._cache.ringRingVoiceCall ??= ringRingVoiceCallFactory(this.ctx, this)) as ReturnType<typeof ringRingVoiceCallFactory>;
     }
 
     public get scanURL(): ReturnType<typeof scanURLFactory> {
@@ -1592,6 +1761,14 @@ export class API {
 
     public get sendReport(): ReturnType<typeof sendReportFactory> {
         return (this._cache.sendReport ??= sendReportFactory(this.ctx, this)) as ReturnType<typeof sendReportFactory>;
+    }
+
+    public get sendRequestGroupCall(): ReturnType<typeof sendRequestGroupCallFactory> {
+        return (this._cache.sendRequestGroupCall ??= sendRequestGroupCallFactory(this.ctx, this)) as ReturnType<typeof sendRequestGroupCallFactory>;
+    }
+
+    public get sendRequestVoiceCall(): ReturnType<typeof sendRequestVoiceCallFactory> {
+        return (this._cache.sendRequestVoiceCall ??= sendRequestVoiceCallFactory(this.ctx, this)) as ReturnType<typeof sendRequestVoiceCallFactory>;
     }
 
     public get sendSeenEvent(): ReturnType<typeof sendSeenEventFactory> {
@@ -1634,6 +1811,10 @@ export class API {
         return (this._cache.sharePoll ??= sharePollFactory(this.ctx, this)) as ReturnType<typeof sharePollFactory>;
     }
 
+    public get shareScreenGroupCall(): ReturnType<typeof shareScreenGroupCallFactory> {
+        return (this._cache.shareScreenGroupCall ??= shareScreenGroupCallFactory(this.ctx, this)) as ReturnType<typeof shareScreenGroupCallFactory>;
+    }
+
     public get unblockUser(): ReturnType<typeof unblockUserFactory> {
         return (this._cache.unblockUser ??= unblockUserFactory(this.ctx, this)) as ReturnType<typeof unblockUserFactory>;
     }
@@ -1648,6 +1829,10 @@ export class API {
 
     public get undoMultiMessage(): ReturnType<typeof undoMultiMessageFactory> {
         return (this._cache.undoMultiMessage ??= undoMultiMessageFactory(this.ctx, this)) as ReturnType<typeof undoMultiMessageFactory>;
+    }
+
+    public get unholdVoiceCall(): ReturnType<typeof unholdVoiceCallFactory> {
+        return (this._cache.unholdVoiceCall ??= unholdVoiceCallFactory(this.ctx, this)) as ReturnType<typeof unholdVoiceCallFactory>;
     }
 
     public get updateActiveStatus(): ReturnType<typeof updateActiveStatusFactory> {
@@ -1668,6 +1853,10 @@ export class API {
 
     public get updateBankAccount(): ReturnType<typeof updateBankAccountFactory> {
         return (this._cache.updateBankAccount ??= updateBankAccountFactory(this.ctx, this)) as ReturnType<typeof updateBankAccountFactory>;
+    }
+
+    public get updateCallMediaState(): ReturnType<typeof updateCallMediaStateFactory> {
+        return (this._cache.updateCallMediaState ??= updateCallMediaStateFactory(this.ctx, this)) as ReturnType<typeof updateCallMediaStateFactory>;
     }
 
     public get updateCatalog(): ReturnType<typeof updateCatalogFactory> {

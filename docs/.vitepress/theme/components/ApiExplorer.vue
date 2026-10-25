@@ -14,13 +14,14 @@ const searchInputRef = ref<HTMLInputElement | null>(null);
 const domains = apiData.domains;
 const allApis = apiData.apis;
 
-// Domain Category Groups
+// Domain Category Groups (Dynamic counts from api-data.json)
+const countDomains = (doms: string[]) => allApis.filter((a) => doms.includes(a.domain)).length;
 const categories = [
     { key: "all", label: "Tất cả Phân hệ", count: apiData.totalApis },
-    { key: "messaging", label: "💬 Chat & Nhóm", domains: ["chat", "group"], count: 85 },
-    { key: "social", label: "👥 Bạn bè & Hồ sơ", domains: ["friend", "profile"], count: 49 },
-    { key: "sync_cloud", label: "🔄 Đồng bộ & Cloud", domains: ["sync", "zcloud", "media", "call"], count: 25 },
-    { key: "tools_biz", label: "💼 Tiện ích & Business", domains: ["auth", "sticker", "board", "business"], count: 66 },
+    { key: "messaging", label: "💬 Chat & Nhóm", domains: ["chat", "group"], count: countDomains(["chat", "group"]) },
+    { key: "social", label: "👥 Bạn bè & Hồ sơ", domains: ["friend", "profile"], count: countDomains(["friend", "profile"]) },
+    { key: "sync_cloud", label: "🔄 Đồng bộ, Cloud & Call", domains: ["sync", "zcloud", "media", "call"], count: countDomains(["sync", "zcloud", "media", "call"]) },
+    { key: "tools_biz", label: "💼 Tiện ích & Business", domains: ["auth", "sticker", "board", "business"], count: countDomains(["auth", "sticker", "board", "business"]) },
 ];
 
 function selectCategory(catKey: string) {

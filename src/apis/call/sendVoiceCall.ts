@@ -1,9 +1,12 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
+import { DEFAULT_ZALO_AUDIO_CODEC, buildZrtcExtendData } from "../../call-engine/ZRTPPacketCodec.js";
 import { apiFactory, resolveResponse } from "../../utils.js";
 
 export enum CallType {
     Audio = 1,
     Video = 3,
+    GroupAudio = 5,
+    GroupVideo = 6,
 }
 
 export type SendVoiceCallOptions = {
@@ -24,6 +27,9 @@ export type RequestCallServerEntry = {
 
 export type RequestCallServerInfo = {
     sessId: string;
+    fromId?: number;
+    toId?: number;
+    protocol?: number;
     rtpServer?: string;
     rtcpServer?: string;
     rtpIP?: string;
@@ -32,6 +38,8 @@ export type RequestCallServerInfo = {
     rtcpIPv6?: string;
     servers?: RequestCallServerEntry[];
     zrtpKey?: string;
+    zrtc_config?: Record<string, unknown> | string;
+    settings?: Record<string, unknown>;
     expiredTime?: number;
     codec?: string;
     [key: string]: unknown;
@@ -78,7 +86,7 @@ export const sendVoiceCallFactory = apiFactory<SendVoiceCallResponse>()((api, ct
 
         const callType = options.callType ?? CallType.Audio;
         const callId = options.callId ?? Math.floor(Math.random() * 2_000_000_000);
-        const codec = options.codec ?? "[]";
+        const codec = options.codec ?? DEFAULT_ZALO_AUDIO_CODEC;
         const normalizedCalleeId = String(calleeId);
 
         // Step 1: Allocate call session & RTP/RTCP relay endpoints (/api/voicecall/requestcall, command 11300)
@@ -115,17 +123,17 @@ export const sendVoiceCallFactory = apiFactory<SendVoiceCallResponse>()((api, ct
         const rtp = parseServerEndpoint(resolvedRtpServer);
         const rtcp = parseServerEndpoint(resolvedRtcpServer);
         const sessId = serverInfo?.sessId ?? `${normalizedCalleeId}_${callId}_401`;
-        const resolvedCodec = serverInfo?.codec ?? codec;
+        const resolvedCodec =
+            serverInfo?.codec && serverInfo.codec !== "[]" ? serverInfo.codec : codec;
 
         // Step 2: Send ringing signaling request (/api/voicecall/request, command 11301)
         const isVideo = callType === CallType.Video;
         const extendData = JSON.stringify({
-            callType: isVideo ? 1 : 0,
-            video: {
-                codec: isVideo ? [{ name: "h264", payload: 97 }] : [],
-            },
-            newZrtc: 1,
-            platform: 5,
+            ...buildZrtcExtendData({
+                rtpAddress: rtp.host,
+                rtcpAddress: rtcp.host,
+                isVideo,
+            }),
             rtcpDiff: 0,
             rtcp: [{ ip: rtcp.ip, port: rtcp.port }],
             rtp: [{ ip: rtp.ip, port: rtp.port }],

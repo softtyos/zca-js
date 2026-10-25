@@ -17,10 +17,13 @@ export async function handleRealtimeControlPacket(
     parsed: Record<string, unknown>,
     cipherKey?: string,
 ) {
-    if (version == 1 && cmd == 601 && subCmd == 0) {
-        const parsedData = (await decodeEventData(parsed, cipherKey)).data;
-        const { controls } = parsedData;
+    if (version == 1 && (cmd == 601 || cmd == 603 || cmd == 604) && subCmd == 0) {
+        const decoded = await decodeEventData(parsed, cipherKey);
+        const parsedData = decoded?.data;
+        const controls = parsedData?.controls;
+        if (!Array.isArray(controls)) return false;
         for (const control of controls) {
+            if (!control?.content) continue;
             if (control.content.act_type == "file_done") {
                 const data = {
                     fileUrl: control.content.data.url,
@@ -88,6 +91,17 @@ export async function handleRealtimeControlPacket(
                     typeof control.content.data == "string"
                         ? JSON.parse(control.content.data)
                         : control.content.data;
+                // Bỏ qua các gói mời gọi cũ (> 60s) nằm trong hàng đợi offline (cmd 603 / 604)
+                if (
+                    (cmd == 603 || cmd == 604) &&
+                    (control.content.act == "request" || control.content.act == "group_request") &&
+                    callEventData?.ts
+                ) {
+                    const eventTs = Number.parseInt(String(callEventData.ts), 10);
+                    if (Number.isFinite(eventTs) && Date.now() - eventTs > 60_000) {
+                        continue;
+                    }
+                }
                 const callEvent = initializeCallEvent(
                     callEventData,
                     control.content.act,

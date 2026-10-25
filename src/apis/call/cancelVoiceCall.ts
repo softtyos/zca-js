@@ -3,7 +3,7 @@ import { apiFactory } from "../../utils.js";
 import { CallType } from "./sendVoiceCall.js";
 
 export type CancelVoiceCallOptions = {
-    callType?: CallType;
+    callType?: CallType | number;
     status?: number;
 };
 
@@ -29,10 +29,16 @@ export const cancelVoiceCallFactory = apiFactory<CancelVoiceCallResponse>()((api
         if (!callId) throw new ZaloApiError("Missing callId");
         if (!voiceCallService) throw new ZaloApiError("Missing voice_call service URL in zpwServiceMap");
 
+        const rawCallType = options.callType ?? CallType.Audio;
+        // Khớp với ZMessageSerializer::sendCancelCall (0x100026acc): callType = (callType != 1 ? 1 : 0)
+        // Cho phép truyền trực tiếp 0 (Audio) hoặc 1 (Video), hoặc CallType.Audio (1) -> 0, CallType.Video (3) -> 1
+        const normalizedCallType =
+            rawCallType === 0 || rawCallType === CallType.Audio ? 0 : 1;
+
         const params = {
             callerId: String(calleeId),
             callId,
-            callType: options.callType ?? CallType.Audio,
+            callType: normalizedCallType,
             status: options.status ?? 0,
             imei: ctx.imei,
         };

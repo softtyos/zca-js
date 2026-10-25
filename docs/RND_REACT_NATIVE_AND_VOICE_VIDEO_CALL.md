@@ -37,23 +37,23 @@ flowchart TD
     S3 -.->|"Bàn giao thông số phiên"| M1
 ```
 
-### 1.2. Hiện trạng trong `@softtynet/zca-js` (v2.3.0)
-- **Những gì SDK đã làm được (Tầng 1 — Signaling Plane)**:
-  - [`src/apis/call/sendVoiceCall.ts`](../src/apis/call/sendVoiceCall.ts): Thực hiện đầy đủ quy trình bắt tay 2 bước (`cmd 11300` + `cmd 11301` với `zpw_type = 24`), kích hoạt đổ chuông thật trên điện thoại/máy tính của người nhận cho cả cuộc gọi Thoại (`CallType.Audio = 1`) và Video (`CallType.Video = 3`).
-  - Trả về đầy đủ thông số máy chủ Media của Zalo trong `SendVoiceCallResponse`:
-    - `callId`: Mã định danh cuộc gọi
-    - `sessId`: Mã phiên RTP (ví dụ `<calleeId>_<callId>_401`)
-    - `rtpServer` & `rtcpServer`: Địa chỉ `IP:Port` UDP của máy chủ relay thoại Zalo
-    - `zrtpKey`: Khóa bảo mật phiên thoại (`ZRTP`)
-    - `codec`: Danh sách codec đàm phán
-  - [`src/apis/call/cancelVoiceCall.ts`](../src/apis/call/cancelVoiceCall.ts): Huỷ cuộc gọi đang đổ chuông (`cmd 11305`).
-  - [`src/apis/call/endVoiceCall.ts`](../src/apis/call/endVoiceCall.ts): Ngắt cuộc gọi đang diễn ra (`cmd 11306`).
-  - [`src/realtime/handlers/control.handler.ts`](../src/realtime/handlers/control.handler.ts) & [`src/models/CallEvent.ts`](../src/models/CallEvent.ts): Bắt toàn bộ sự kiện `call_event` thời gian thực qua WebSocket (`request`, `ringring`, `answer`, `cancel`, `endcall`, `busy`).
+### 1.2. Hiện trạng trong `@softtynet/zca-js` (v2.3.4+ — 28 Call APIs)
+- **Những gì SDK đã làm được (Tầng 1 — Complete Signaling Plane: 28 APIs trong `src/apis/call/`)**:
+  - **14 API Gọi 1-1 (`Commands 11300 → 11311, 12006, 12056, 12064`, `zpw_type = 24`)**:
+    - `sendVoiceCall` (trọn gói `11300` + `11301`), `requestVoiceCall` (`11300` — signal `401`), `sendRequestVoiceCall` (`11301` — signal `416`), `ringRingVoiceCall` (`11302` — signal `407`), `answerVoiceCall` (`11303` — signal `402`), `answerAckVoiceCall` (`11304` — signal `408`), `cancelVoiceCall` (`11305` — signal `405`), `endVoiceCall` (`11306` — signal `404`), `holdVoiceCall` (`11307`/`11308` — signal `411`/`412`), `unholdVoiceCall` (`11309`/`11310` — signal `413`/`414`), `logEndVoiceCall` (`11311` — signal `406`), `updateCallMediaState` (`12006` — `/api/voicecall/conf`), `requestAudioToVideoCall` (`12056`), `requestShareScreenCall` (`12064`).
+  - **14 API Gọi Nhóm (`Group Call Commands 12433 → 12447, 12043, 12044, 12097, 12098`, `zpw_type = 24`)**:
+    - `requestGroupCall` (`12433`), `sendRequestGroupCall` (`12434`), `addUserGroupCall` (`12435`), `answerGroupCall` (`12436`), `cancelGroupCall` (`12437`), `endGroupCall` (`12438`), `ringRingGroupCall` (`12439`), `getGroupCallState` (`12445`), `finishGroupCall` (`12446`), `notifyGroupCall` (`12447`), `pingGroupCall` (`12097`), `broadcastGroupCallState` (`12098`), `joinGroupCall` (`12043`), `shareScreenGroupCall` (`12044`).
+  - [`src/realtime/handlers/control.handler.ts`](../src/realtime/handlers/control.handler.ts) & [`src/models/CallEvent.ts`](../src/models/CallEvent.ts): Bắt toàn bộ sự kiện `call_event` thời gian thực qua WebSocket (`request`, `ringring`, `answer`, `cancel`, `endcall`, `busy`, `hold`, `unhold`, `conf`).
 
-- **Vì sao chưa thể đàm thoại 2 chiều (thu mic / phát loa) bằng thuần JavaScript?**:
-  - Khác với Messenger, Telegram hay Google Meet sử dụng chuẩn mở **WebRTC** (có sẵn `RTCPeerConnection` trong trình duyệt và React Native), Zalo sử dụng giao thức truyền tải riêng gọi là **ZRTC** (`newZrtc: 1` trong `extendData`).
-  - Trên Zalo PC (Electron), phần JavaScript trong `compact-app-pc.js` **không trực tiếp xử lý âm thanh/hình ảnh**, mà sau khi gọi `/api/voicecall/requestcall` lấy được `{ rtpServer, rtcpServer, sessId, zrtpKey }`, nó gọi xuống **Native C++ Addon** đóng gói riêng của Zalo để mở socket UDP thô, đóng gói frame RTP/RTCP và mã hóa bằng `zrtpKey`.
-  - Đây cũng là lý do bản thân **Zalo Web chính chủ (`chat.zalo.me`) không hỗ trợ gọi thoại/video trên trình duyệt** mà bắt buộc người dùng phải tải ứng dụng Zalo PC.
+- **Kết quả Thực nghiệm Dịch ngược Tầng 2 (`ZRTC Media Engine`) trên Zalo PC `26.7.10`**:
+  - Module cũ `native/nativelibs/zcall/zcall_mac.node` là binary `x86_64` cũ không còn dùng trên Apple Silicon (`arm64`).
+  - Zalo PC `26.7.10` khởi chạy một tiến trình con độc lập (Universal Binary hỗ trợ cả `x86_64` và `arm64`):
+    - **macOS**: `/Applications/Zalo.app/Contents/ZaloHelper.app/Contents/MacOS/ZaloCall`
+    - **Windows**: `%LOCALAPPDATA%\Programs\Zalo\...\ZaloCall.exe`
+  - **Giao thức IPC giữa Node.js và `ZaloCall`**:
+    - Sử dụng 2 Unix Domain Sockets (`/tmp/socketzalorecv2021` để gửi lệnh từ Node.js vào `ZaloCall`, và `/tmp/socketzalosend2021` để nhận sự kiện từ `ZaloCall` về Node.js).
+    - Mỗi bản tin JSON được mã hóa bằng **AES-128-CBC** với khóa cố định `key = Buffer.from("yjAF9oqMWl6XfXYJn9mA7w==", "base64")` (`ca3005f68a8c5a5e977d76099fd980ef`), `IV = Buffer.alloc(16, 0)`, chuyển sang chuỗi `hex` và phân tách bằng ký tự `$`.
+    - Khi nhận lệnh `init` (`enablePreviewDeviceOutgoing: false`) và `makeCall`, `ZaloCall` tự động phát ra các sự kiện `sendSignal` (`401`, `416`, `407`, `402`, `408`, `404`, `406`), khớp 1:1 với bộ 28 API trong `src/apis/call/`.
 
 ### 1.3. Ứng dụng thực tế của bộ API Call hiện tại
 1. **Nháy máy / Báo thức thông báo (Wake-up / Buzz)**:
