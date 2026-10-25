@@ -14,10 +14,10 @@
 
 ## Điểm nổi bật
 
-- **Kiến trúc 12 Domains (`250 API nguyên bản`)**: Tổ chức trực quan qua `api.auth`, `api.chat`, `api.group`, `api.friend`, `api.profile`, `api.sync`, `api.zcloud`, `api.call`, `api.media`, `api.sticker`, `api.board`, `api.business` (vẫn hỗ trợ gọi phẳng `api.<method>` tương thích ngược 100%).
+- **Kiến trúc 12 Domains (`252 API nguyên bản`)**: Tổ chức trực quan qua `api.auth`, `api.chat`, `api.group`, `api.friend`, `api.profile`, `api.sync`, `api.zcloud`, `api.call`, `api.media`, `api.sticker`, `api.board`, `api.business` (vẫn hỗ trợ gọi phẳng `api.<method>` tương thích ngược 100%).
 - **Đồng bộ lịch sử Mobile (`ZDB 4.0`) & Catch-up Sync**: Hỗ trợ đầy đủ luồng `requestSyncFromPhone` $\rightarrow$ `getSyncData` (giải mã RSA-2048 OAEP/PKCS1 + ZDB 4.0 64KB multi-chunk AES-256-CBC + Deflate) & `pullMobile`.
 - **ZCloud, MediaStore & Bảo toàn Số nguyên 64-bit (`preParseJsonIds`)**: Tự động giữ nguyên độ chính xác chuỗi 19 chữ số cho `owner_id`, `group_id`, `globalMsgId`, `cliMsgId` trước khi `JSON.parse()` và tích hợp bộ mã hóa `98yS` AES-256-CBC cho ZCloud/ZFamily.
-- **Tín hiệu Gọi Thoại, Video Call 1-1 & Gọi Nhóm (`28 API`)**: Điều khiển trọn vẹn vòng đời cuộc gọi 1-1 (`11300` $\rightarrow$ `11311`, `12006`, `12056`, `12064`) và cuộc gọi nhóm (`12433` $\rightarrow$ `12447`, `12043`, `12044`, `12097`, `12098`) cùng lắng nghe `call_event` thời gian thực.
+- **Zalo Call Engine thuần TypeScript (`30 API` trong `api.call` + `ZaloRtcSession` / `ZaloCallController`)**: Hỗ trợ đầy đủ cả **Gọi Đi** và **Nhận Cuộc Gọi Đến** (Thoại 1-1, Video Call H.264 FU-A Annex-B 2 chiều, Gọi Nhóm), nâng cấp Thoại $\rightarrow$ Video giữa cuộc gọi, bật/tắt Camera/Mic, Tạm giữ (Hold/Unhold), Tái kết nối UDP (`reconnectUdp`), và **Bàn giao kết nối UDP trực tiếp cho Mobile App (`signalingOnly` / `handoffUdpToExternal`)**.
 
 ---
 
@@ -62,7 +62,7 @@ const zalo = new Zalo({ imageMetadataGetter });
 | **Hồ sơ cá nhân** | `api.profile` | 16 | [`docs/api/profile.md`](docs/api/profile.md) |
 | **Đồng bộ Mobile ZDB 4.0** | `api.sync` | 5 | [`docs/api/sync.md`](docs/api/sync.md) |
 | **Đám mây ZCloud & ZFamily** | `api.zcloud` | 9 | [`docs/api/zcloud.md`](docs/api/zcloud.md) |
-| **Gọi thoại, Video & Gọi nhóm** | `api.call` | 28 | [`docs/api/call.md`](docs/api/call.md) |
+| **Gọi thoại, Video & Gọi nhóm** | `api.call` | 30 | [`docs/api/call.md`](docs/api/call.md) |
 | **Kho lưu trữ & Voice-to-Text** | `api.media` | 8 | [`docs/api/media.md`](docs/api/media.md) |
 | **Nhãn dán & Biểu cảm** | `api.sticker` | 10 | [`docs/api/sticker.md`](docs/api/sticker.md) |
 | **Bảng tin, Bình chọn & Lịch hẹn** | `api.board` | 16 | [`docs/api/board.md`](docs/api/board.md) |
@@ -123,6 +123,42 @@ const mediaList = await api.media.getConversationMedia({
 
 // Giải mã thông tin thành viên hàng loạt
 const profiles = await api.group.getGroupMembersInfo(["1000000000000000001"]);
+```
+
+### 4. Gọi Thoại, Video Call 2 chiều & Nhận Cuộc Gọi Đến (`ZaloRtcSession`)
+
+```ts
+import { CallType } from "@softtynet/zca-js";
+
+const session = api.call.createRtcSession({ autoAttachListener: true });
+
+// 1) Gọi đi (Audio hoặc Video Call)
+const params = await session.startOutgoingCall("5249661060655759359", {
+    callType: CallType.Video,
+});
+
+// 2) Nhận luồng Audio Opus & Video H.264 Annex-B thời gian thực
+session.on("audio_frame", (frame) => {
+    // frame.payload: Buffer (Opus 16kHz mono)
+});
+session.on("video_annexb_frame", (frame) => {
+    // frame.annexB: Buffer (00 00 00 01 + SPS/PPS/IDR/P-Slice), frame.isKeyframe: boolean
+});
+
+// 3) Nhận cuộc gọi đến từ sự kiện WebSocket `call_event`
+api.listener.on("call_event", async (ev) => {
+    if (ev.act === "request" || ev.act === "group_request") {
+        await session.ringIncomingCall(ev); // Báo máy đang đổ chuông (402 / 502)
+        const incomingParams = await session.acceptIncomingCall(ev, { skipRingRing: true });
+        console.log("Đã bắt máy cuộc gọi đến:", incomingParams.callId, incomingParams.rtpAddress);
+    }
+});
+
+// 4) Chế độ Worker tạo cuộc gọi và bàn giao gói UDP trực tiếp cho Mobile App:
+const handoffParams = await session.startOutgoingCall("5249661060655759359", {
+    callType: CallType.Audio,
+    signalingOnly: true, // Worker không mở UDP, xuất sẵn gói `params.mobileDirectHandoff` cho Mobile
+});
 ```
 
 ---

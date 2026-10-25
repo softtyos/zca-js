@@ -1,3 +1,4 @@
+import dgram from "node:dgram";
 import { exec } from "node:child_process";
 import fs from "node:fs";
 import path from "node:path";
@@ -7,13 +8,18 @@ import {
     LoginQRCallbackEventType,
     ThreadType,
     SyncEventType,
+    CallEventType,
     CallType,
+    buildInitCallRequest,
+    buildPingRequest,
+    parseZRTPPacket,
+    uidToUint32,
     generateRSAKeyPair,
     decryptWithPrivateKey,
     deriveZdbAesKey,
     decryptZdbBuffer,
     parseZdbHeader,
-} from "../src/index.js";
+} from "../dist/index.js";
 
 /**
  * ============================================================================
@@ -299,35 +305,196 @@ async function main() {
     }
 
     // -------------------------------------------------------------------------
-    // BƯỚC 6: KIỂM ĐỊNH VOICE CALL SIGNALING (command 11300 / 11301 / 11305)
+    // BƯỚC 6: KIỂM ĐỊNH THỰC TẾ CALL ENGINE (HTTP 401/416 + UDP ZRTP 0x01 0x7e + ĐÀM THOẠI 2 CHIỀU)
     // -------------------------------------------------------------------------
-    printSection(6, "KIỂM ĐỊNH DỊCH VỤ VOICE CALL SIGNALING");
+    printSection(6, "KIỂM ĐỊNH THỰC TẾ BỘ MÁY GỌI (ZALO PRODUCTION SERVER + UDP RELAY)");
     const voiceCallUrls = api.zpwServiceMap.voice_call;
     console.log(`✅ Endpoint dịch vụ Voice Call của tài khoản: ${JSON.stringify(voiceCallUrls)}`);
 
-    if (targetCallUid) {
-        if (!videoOnly) {
-            console.log(`📞 [1/2] Đang gọi THOẠI (CallType.Audio) tới UID ${targetCallUid} trong 5 giây rồi tự động huỷ...`);
-            const audioCall = await api.sendVoiceCall(targetCallUid, { callType: CallType.Audio });
-            console.log(
-                `✅ Đã đổ chuông THOẠI thật! callId=${audioCall.callId}, sessId=${audioCall.sessId}, rtpServer=${audioCall.rtpServer}`,
-            );
-            await new Promise((r) => setTimeout(r, 5000));
-            await api.cancelVoiceCall(targetCallUid, audioCall.callId, { callType: CallType.Audio });
-            console.log(`✅ Đã huỷ cuộc gọi THOẠI (cancelVoiceCall) thành công!`);
-            await new Promise((r) => setTimeout(r, 2000));
+    // Pha 6.1: Tự động kiểm định cấp phát phiên (401) + Bắt tay UDP 0x01 0x7e trực tiếp với Máy chủ Relay UDP thật của Zalo
+    let probeUid = targetCallUid ?? "5249661060655759359"; // Mặc định: Ly Van Bong (0332606964)
+    if (!probeUid) {
+        try {
+            const friends = await api.friend.getAllFriends();
+            const firstFriend = Array.isArray(friends)
+                ? friends.find(
+                      (f) => f.userId && f.userId !== ownId && f.userId !== "7613400763746053261",
+                  )
+                : undefined;
+            if (firstFriend) {
+                probeUid = firstFriend.userId;
+            }
+        } catch {
+            // ignore
         }
+    }
 
-        console.log(`📹 [2/2] Đang gọi VIDEO (CallType.Video) tới UID ${targetCallUid} trong 5 giây rồi tự động huỷ...`);
-        const videoCall = await api.sendVoiceCall(targetCallUid, { callType: CallType.Video });
-        console.log(
-            `✅ Đã đổ chuông VIDEO thật! callId=${videoCall.callId}, sessId=${videoCall.sessId}, rtpServer=${videoCall.rtpServer}`,
-        );
-        await new Promise((r) => setTimeout(r, 5000));
-        await api.cancelVoiceCall(targetCallUid, videoCall.callId, { callType: CallType.Video });
-        console.log(`✅ Đã huỷ cuộc gọi VIDEO (cancelVoiceCall) thành công!`);
-    } else {
-        console.log(`ℹ️ Để test đổ chuông cuộc gọi thật tới 1 người bạn, bạn có thể chạy thêm: npx tsx test/verify_live.ts --call <UID_BAN_BE>`);
+    if (probeUid) {
+        console.log(`\n🔬 [Pha 6.1] Kiểm định bắt tay UDP ZRTP (0x01 0x7e) trực tiếp với Máy chủ Relay Zalo thật (probe UID: ${probeUid})...`);
+        console.log(`   (Lưu ý: Bước 401 + UDP 0x01 0x7e chỉ xin cấp phát phòng và bắt tay với Server UDP của Zalo, CHƯA làm đổ chuông máy người nhận)`);
+        const probeCallId = Math.floor(Math.random() * 1_000_000_000);
+        const serverInfo = await api.call.requestVoiceCall(probeUid, {
+            callType: CallType.Audio,
+            callId: probeCallId,
+        });
+        const rtpAddr =
+            serverInfo.rtpServer ?? serverInfo.rtpIP ?? serverInfo.servers?.[0]?.rtpaddr ?? "";
+        const fromUid = Number(serverInfo.fromId) || uidToUint32(ownId);
+        const toUid = Number(serverInfo.toId) || uidToUint32(probeUid);
+        console.log(`✅ [HTTP 401 Thành công] Server Zalo cấp phát phiên thật:`);
+        console.log(`   - callId   : ${serverInfo.callId}`);
+        console.log(`   - fromId   : ${fromUid}`);
+        console.log(`   - toId     : ${toUid}`);
+        console.log(`   - sessId   : ${serverInfo.sessId}`);
+        console.log(`   - rtpAddr  : ${rtpAddr}`);
+        console.log(`   - zrtpKey  : ${serverInfo.zrtpKey ?? "(none)"}`);
+        console.log(`   - servers  : ${JSON.stringify(serverInfo.servers ?? [])}`);
+
+        if (rtpAddr.includes(":")) {
+            const [rtpHost, rtpPortStr] = rtpAddr.split(":");
+            const rtpPort = Number.parseInt(rtpPortStr, 10);
+            const udpSock = dgram.createSocket("udp4");
+
+            const initReq = buildInitCallRequest({
+                isCaller: true,
+                seqNum: 0,
+                headerCallId: probeCallId,
+                callId: probeCallId,
+                fromUid,
+                toUid,
+                subFlags: toUid,
+                sessId: serverInfo.sessId,
+            });
+
+            console.log(`📡 Đang bắn gói UDP InitCall (0x01 0x7e, ${initReq.length} bytes) tới máy chủ Zalo Relay ${rtpHost}:${rtpPort}...`);
+            const udpResp = await new Promise<Buffer | null>((resolve) => {
+                const timer = setTimeout(() => resolve(null), 4000);
+                udpSock.once("message", (msg) => {
+                    clearTimeout(timer);
+                    resolve(msg);
+                });
+                udpSock.send(initReq, rtpPort, rtpHost);
+            });
+
+            if (udpResp) {
+                const parsed = parseZRTPPacket(udpResp);
+                console.log(`🎉 [UDP 0x02 0x7e THÀNH CÔNG] Nhận phản hồi trực tiếp từ Máy chủ UDP Relay của Zalo (${udpResp.length} bytes):`);
+                console.log(`   - Hex raw      : ${udpResp.toString("hex")}`);
+                console.log(`   - Parsed packet:`, parsed);
+
+                if (parsed.family === "control") {
+                    const pingReq = buildPingRequest({
+                        seqNum: 1,
+                        callId: probeCallId,
+                        fromUid,
+                        toUid,
+                        elapsedMs: 100,
+                    });
+                    udpSock.send(pingReq, rtpPort, rtpHost);
+                    console.log(`✅ Đã gửi gói UDP Ping (cmd=5, 40 bytes) tới ${rtpHost}:${rtpPort}!`);
+                }
+            } else {
+                console.log(`⚠️ Không nhận được phản hồi UDP trong 4s từ ${rtpHost}:${rtpPort} (có thể mạng chặn UDP hoặc server chờ Callee).`);
+            }
+            udpSock.close();
+        }
+    }
+
+    // Pha 6.2: Nếu có truyền --call <UID> hoặc bật chế độ tương tác cuộc gọi thật 2 chiều
+    if (targetCallUid) {
+        console.log(`\n📞 [Pha 6.2] Đang thực hiện cuộc gọi 2 chiều thật bằng ZaloRtcSession tới UID ${targetCallUid}...`);
+        const rtcSession = api.call.createRtcSession({
+            enableSrtp: false,
+            packetMode: 2,
+        });
+
+        rtcSession.on("state", (st) => {
+            console.log(`🔄 [ZaloRtcSession State] -> ${st}`);
+        });
+        rtcSession.on("zrtp_control", (pkt) => {
+            console.log(`📥 [UDP Control từ Zalo Relay] cmd=${pkt.cmd}, isResponse=${pkt.isResponse}, routingToken=${pkt.routingToken ?? "N/A"}, errorCode=${pkt.errorCode ?? "N/A"}`);
+        });
+        rtcSession.on("rtp_packet", (ev) => {
+            console.log(`🔊 [UDP Media từ đối phương] isVideo=${ev.isVideo}, seq=${ev.parsedRtp.sequenceNumber}, ts=${ev.parsedRtp.timestamp}, payload=${ev.parsedRtp.payload.length}B`);
+        });
+
+        api.listener.start();
+        const connParams = await rtcSession.startOutgoingCall(targetCallUid, {
+            callType: videoOnly ? CallType.Video : CallType.Audio,
+        });
+        console.log(`✅ Đã khởi tạo cuộc gọi & đổ chuông thật! Thông số kết nối:`, connParams);
+        console.log(`👉 Hãy bấm NGHE MÁY trên điện thoại người nhận (chờ 20 giây)...`);
+
+        await new Promise((r) => setTimeout(r, 20000));
+        await rtcSession.endCall();
+        console.log(`✅ Đã kết thúc cuộc gọi kiểm thử!`);
+    } else if (onlyCall) {
+        console.log(`\n🎧 [Pha 6.2 - Chế độ Đợi Cuộc Gọi Đến / Tương Tác Trực Tiếp trong 60 giây]:`);
+        console.log(`   👉 CÁCH 1: Lấy một tài khoản Zalo khác bấm GỌI THOẠI vào tài khoản vừa đăng nhập này -> Script sẽ TỰ ĐỘNG BẮT MÁY và giữ kết nối đàm thoại!`);
+        console.log(`   👉 CÁCH 2: Hoặc mở Zalo trên điện thoại của bạn, vào bất kỳ cuộc trò chuyện nào và nhắn tin chữ "call" -> Script sẽ tự động gọi cho người đó!`);
+
+        await new Promise<void>((resolve) => {
+            const maxTimer = setTimeout(() => {
+                console.log("⏱️ Đã hết 60 giây chờ tương tác cuộc gọi.");
+                resolve();
+            }, 60000);
+
+            api.listener.on("call_event", async (event) => {
+                console.log(`\n🔔 [WebSocket call_event] act=${event.act}, type=${event.type}, data=`, event.data);
+                if (event.type === CallEventType.REQUEST) {
+                    console.log(`📲 Phát hiện cuộc gọi đến! Đang tự động bắt máy bằng ZaloRtcSession.acceptIncomingCall()...`);
+                    try {
+                        const rtcSession = api.call.createRtcSession({ enableSrtp: false });
+                        rtcSession.on("state", (st) => console.log(`🔄 [ZaloRtcSession State] -> ${st}`));
+                        rtcSession.on("zrtp_control", (pkt) =>
+                            console.log(`📥 [UDP Control] cmd=${pkt.cmd}, routingToken=${pkt.routingToken}`),
+                        );
+                        rtcSession.on("rtp_packet", (pkt) =>
+                            console.log(`🔊 [Nhận gói RTP thật từ điện thoại] seq=${pkt.parsedRtp.sequenceNumber}, len=${pkt.parsedRtp.payload.length}B`),
+                        );
+                        const params = await rtcSession.acceptIncomingCall(event);
+                        console.log(`🎉 ĐÃ BẮT MÁY THÀNH CÔNG! Điện thoại của bạn hiện đang trong cuộc gọi thật:`, params);
+                        setTimeout(async () => {
+                            await rtcSession.endCall();
+                            clearTimeout(maxTimer);
+                            resolve();
+                        }, 15000);
+                    } catch (err) {
+                        console.error("❌ Lỗi khi bắt máy:", err);
+                    }
+                }
+            });
+
+            api.listener.on("message", async (msg) => {
+                const text = typeof msg.data.content === "string" ? msg.data.content.trim().toLowerCase() : "";
+                if (text === "call" && msg.type === ThreadType.User) {
+                    console.log(`\n📲 Nhận lệnh "call" trong hội thoại với ${msg.threadId}! Đang gọi bằng ZaloRtcSession...`);
+                    try {
+                        const rtcSession = api.call.createRtcSession({ enableSrtp: false });
+                        rtcSession.on("state", (st) => console.log(`🔄 [ZaloRtcSession State] -> ${st}`));
+                        rtcSession.on("zrtp_control", (pkt) =>
+                            console.log(`📥 [UDP Control] cmd=${pkt.cmd}, routingToken=${pkt.routingToken}`),
+                        );
+                        rtcSession.on("rtp_packet", (pkt) =>
+                            console.log(`🔊 [Nhận gói RTP thật từ điện thoại] seq=${pkt.parsedRtp.sequenceNumber}, len=${pkt.parsedRtp.payload.length}B`),
+                        );
+                        const params = await rtcSession.startOutgoingCall(msg.threadId, {
+                            callType: CallType.Audio,
+                        });
+                        console.log(`🎉 ĐÃ ĐỔ CHUÔNG THẬT TỚI ${msg.threadId}! Hãy bấm nghe máy:`, params);
+                        setTimeout(async () => {
+                            await rtcSession.endCall();
+                            clearTimeout(maxTimer);
+                            resolve();
+                        }, 20000);
+                    } catch (err) {
+                        console.error("❌ Lỗi khi gọi đi:", err);
+                    }
+                }
+            });
+
+            api.listener.start();
+        });
     }
 
     api.listener.stop();

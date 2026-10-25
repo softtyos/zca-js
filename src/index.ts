@@ -3,6 +3,7 @@ export * from "./models/index.js";
 export * from "./constants/index.js";
 export * from "./crypto/index.js";
 export * from "./core/index.js";
+export * from "./realtime/index.js";
 export * from "./zalo.js";
 export type {
     AuthDomainAPI,
@@ -121,6 +122,7 @@ export type { GetListBankResponse } from "./apis/business/getListBank.js";
 export type { GetListBankAccountResponse } from "./apis/business/getListBankAccount.js";
 export type { BoardItem, GetListBoardResponse, ListBoardOptions } from "./apis/board/getListBoard.js";
 export type { GetListDeviceResponse } from "./apis/auth/getListDevice.js";
+export type { GetListPinTopicsResponse } from "./apis/board/getListPinTopics.js";
 export type { GetListReminderResponse, ListReminderOptions, ReminderListGroup, ReminderListUser } from "./apis/board/getListReminder.js";
 export type { GetMultiUsersByPhonesResponse } from "./apis/friend/getMultiUsersByPhones.js";
 export type { GetMuteResponse, MuteEntriesInfo } from "./apis/chat/getMute.js";
@@ -181,7 +183,7 @@ export type { SendStickerResponse, SendStickerPayload } from "./apis/chat/sendSt
 export type { SendTypingEventResponse } from "./apis/chat/sendTypingEvent.js";
 export type { SendVideoOptions, SendVideoResponse } from "./apis/chat/sendVideo.js";
 export type { SendVoiceOptions, SendVoiceResponse } from "./apis/chat/sendVoice.js";
-export type { RequestCallServerInfo, SendVoiceCallOptions, SendVoiceCallResponse } from "./apis/call/sendVoiceCall.js";
+export type { RequestCallServerEntry, RequestCallServerInfo, SendVoiceCallOptions, SendVoiceCallResponse } from "./apis/call/sendVoiceCall.js";
 export type { SetHiddenConversationsResponse } from "./apis/chat/setHiddenConversations.js";
 export type { SetMuteParams, SetMuteResponse } from "./apis/chat/setMute.js";
 export type { SetPinnedConversationsResponse } from "./apis/chat/setPinnedConversations.js";
@@ -214,7 +216,7 @@ export type { CustomAPICallback, CustomAPIProps } from "./apis/custom.js";
 // Zalo PC 26.7.10 Live-Verified API Types
 export type { ClearUnreadFriendRequestsResponse } from "./apis/friend/clearUnreadFriendRequests.js";
 export type { EncryptGidsResponse } from "./apis/auth/encryptGids.js";
-export type { GetAliasListV2Response } from "./apis/friend/getAliasListV2.js";
+export type { AliasItemV2, GetAliasListV2Response } from "./apis/friend/getAliasListV2.js";
 export type { GetBlockFriendsResponse } from "./apis/friend/getBlockFriends.js";
 export type { GetCloudInfoResponse } from "./apis/zcloud/getCloudInfo.js";
 export type { GetCloudSettingsResponse } from "./apis/zcloud/getCloudSettings.js";
@@ -225,9 +227,9 @@ export type {
     MediaStoreItem,
     MediaStoreType,
 } from "./apis/media/getConversationMedia.js";
-export type { GetEmojiStatusConfigResponse } from "./apis/profile/getEmojiStatusConfig.js";
+export type { EmojiStatusItem, GetEmojiStatusConfigResponse } from "./apis/profile/getEmojiStatusConfig.js";
 export type { GetExtraFriendInfoResponse } from "./apis/friend/getExtraFriendInfo.js";
-export type { GetExtraGroupInfoResponse } from "./apis/group/getExtraGroupInfo.js";
+export type { ExtraContextInfo, GetExtraGroupInfoResponse } from "./apis/group/getExtraGroupInfo.js";
 export type { GetFamilyProfileResponse } from "./apis/zcloud/getFamilyProfile.js";
 export type { GetFamilyUsageResponse } from "./apis/zcloud/getFamilyUsage.js";
 export type { GetFamilyViewerKeyResponse } from "./apis/zcloud/getFamilyViewerKey.js";
@@ -296,6 +298,80 @@ export { ChatTTL } from "./apis/chat/updateAutoDeleteChat.js";
 export { UpdateLangAvailableLanguages } from "./apis/auth/updateLang.js";
 export { UpdateSettingsType } from "./apis/profile/updateSettings.js";
 export { CallType } from "./apis/call/sendVoiceCall.js";
+export {
+    DEFAULT_ZALOCALL_IPC_KEY_BASE64,
+    DEFAULT_ZALO_AUDIO_CODEC,
+    DEFAULT_ZALO_VIDEO_CODEC,
+    ZRTCMediaSubCommand,
+    ZRTPControlCommand,
+    ZRTPForwardSubCommand,
+    ZRTPLegacyMediaType,
+    ZRTCRole,
+    ZaloCallController,
+    ZaloCallTransport,
+    ZaloRtcSession,
+    ZaloSrtpSession,
+    buildEchoRequest,
+    buildEndCallRequest,
+    buildInitCallRequest,
+    buildInitCallResponse,
+    buildPingRequest,
+    buildPingResponse,
+    buildRelayPingRequest,
+    buildRequestForwardPacket,
+    buildRtpPacket,
+    buildZrtcExtendData,
+    deriveSrtpSessionKey,
+    generateSrtpMasterKeyBase64,
+    parseIncomingCallEvent,
+    parseRtpPacket,
+    parseZRTPPacket,
+    uidToUint32,
+    wrapLegacyMediaPacket,
+    wrapZrtcMediaPacket,
+    type AcceptIncomingCallOptions,
+    type BuildRtpPacketOptions,
+    type IncomingAudioFrameEvent,
+    type IncomingRtcpEvent,
+    type IncomingRtpEvent,
+    type IncomingVideoAnnexBFrameEvent,
+    type IncomingVideoFrameEvent,
+    type JoinGroupCallSessionOptions,
+    type MakeDesktopCallOptions,
+    type MakeDesktopGroupCallOptions,
+    type ParsedIncomingCallInfo,
+    type ParsedRtpPacket,
+    type ParsedZRTPPacket,
+    type RejectIncomingCallOptions,
+    type SrtpCryptoSuite,
+    type StartGroupCallOptions,
+    type StartOutgoingCallOptions,
+    type ZRTCMultiplexedMediaPacket,
+    type ZRTCP2PPacket,
+    type ZRTPControlPacket,
+    type ZRTPEchoRequestOptions,
+    type ZRTPEndCallRequestOptions,
+    type ZRTPInitCallRequestOptions,
+    type ZRTPInitCallResponseOptions,
+    type ZRTPLegacyMediaPacket,
+    type ZRTPPingRequestOptions,
+    type ZRTPRawPacket,
+    type ZRTPRelayPingRequestOptions,
+    type ZRTPRequestForwardOptions,
+    type ZaloCallConnectionParams,
+    type ZaloCallControllerEvents,
+    type ZaloCallControllerOptions,
+    type ZaloCallIpcMessage,
+    type ZaloCallMediaStateEvent,
+    type ZaloCallSignalPayload,
+    type ZaloCallTransportEvents,
+    type ZaloCallTransportOptions,
+    type ZaloMobileDirectHandoffBundle,
+    type ZaloRtcSessionEvents,
+    type ZaloRtcSessionOptions,
+    type ZaloRtcSessionState,
+    type ZrtcExtendDataOptions,
+} from "./call-engine/index.js";
 export {
     generateRSAKeyPair,
     decryptWithPrivateKey,

@@ -29,6 +29,7 @@
         "typecheck": "tsc --noEmit && tsc -p test/tsconfig.json --noEmit && tsc -p examples/tsconfig.json --noEmit && tsc -p docs/tsconfig.json --noEmit",
         "test:verify": "npm run typecheck && npx --yes tsx test/verify_upgrades.ts",
         "test:live": "npx --yes tsx test/verify_live.ts",
+        "test:call-studio": "npm run build && npx --yes tsx test/call_studio_server.ts",
         "docs:gen": "node scripts/generateDocs.js",
         "docs:dev": "node scripts/generateDocs.js && vitepress dev docs",
         "docs:build": "node scripts/generateDocs.js && vitepress build docs",

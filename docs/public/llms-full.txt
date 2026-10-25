@@ -1,4 +1,4 @@
-# @softtynet/zca-js v2.3.4 — Full AI/LLM Technical Reference (250 APIs across 12 Domains)
+# @softtynet/zca-js v2.3.5 — Full AI/LLM Technical Reference (252 APIs across 12 Domains)
 
 Maintained by Softtynet Co., Ltd. | Docs: https://softtyos.github.io/zca-js-docs/ | NPM: npm install @softtynet/zca-js
 
@@ -2689,7 +2689,7 @@ export type VerifyCloudMediaResponse = {
 };
 ```
 
-## Domain: Gọi thoại, Video & Gọi nhóm (Call) (`api.call` — 28 APIs)
+## Domain: Gọi thoại, Video & Gọi nhóm (Call) (`api.call` — 30 APIs)
 Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, video 1-1 và cuộc gọi nhóm (Group Call: Commands 11300 → 12447).
 
 ### addUserGroupCall
@@ -2794,12 +2794,20 @@ export type CancelGroupCallResponse = Record<string, unknown>;
 - **Description**: Hủy cuộc gọi 1-1 đang đổ chuông trước khi người nhận bắt máy (cmd 11305 - /api/voicecall/cancel, signal 405).
 ```ts
 export type CancelVoiceCallOptions = {
-    callType?: CallType;
+    callType?: CallType | number;
     status?: number;
 };
 
 export type CancelVoiceCallResponse = Record<string, unknown>;
 ```
+
+### createController
+- **Call**: `await api.call.createController(options: ZaloCallControllerOptions = {})` (or `await api.createController(options: ZaloCallControllerOptions = {})`)
+- **Description**: API createController thuộc phân hệ call.
+
+### createRtcSession
+- **Call**: `await api.call.createRtcSession(options: ZaloRtcSessionOptions = {})` (or `await api.createRtcSession(options: ZaloRtcSessionOptions = {})`)
+- **Description**: API createRtcSession thuộc phân hệ call.
 
 ### endGroupCall
 - **Call**: `await api.call.endGroupCall(callId: number, options: EndGroupCallOptions,)` (or `await api.endGroupCall(callId: number, options: EndGroupCallOptions,)`)
@@ -3080,6 +3088,9 @@ export type RequestCallServerEntry = {
 
 export type RequestCallServerInfo = {
     sessId: string;
+    fromId?: number;
+    toId?: number;
+    protocol?: number;
     rtpServer?: string;
     rtcpServer?: string;
     rtpIP?: string;
@@ -3088,6 +3099,8 @@ export type RequestCallServerInfo = {
     rtcpIPv6?: string;
     servers?: RequestCallServerEntry[];
     zrtpKey?: string;
+    zrtc_config?: Record<string, unknown> | string;
+    settings?: Record<string, unknown>;
     expiredTime?: number;
     codec?: string;
     [key: string]: unknown;
@@ -3141,8 +3154,8 @@ export type UnholdVoiceCallResponse = Record<string, unknown>;
 - **Description**: Đồng bộ trạng thái bật/tắt Mic và Camera trong cuộc gọi 1-1 (cmd 12006 - /api/voicecall/conf).
 ```ts
 export type UpdateCallMediaStateOptions = {
-    isOnCam: boolean | number;
-    isOnMic: boolean | number;
+    isOnCam?: boolean | number;
+    isOnMic?: boolean | number;
     data?: string | Record<string, unknown>;
 };
 

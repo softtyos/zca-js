@@ -303,6 +303,7 @@ export class Listener extends EventEmitter<ListenerEvents> {
                 if (version == 1 && cmd == 1 && subCmd == 1 && hasOwn(parsed, "key")) {
                     this.cipherKey = parsed.key as string;
                     this.emit("cipher_key", this.cipherKey);
+                    this.requestOfflineVoipControls();
 
                     if (this.pingInterval) clearInterval(this.pingInterval);
 
@@ -464,6 +465,25 @@ export class Listener extends EventEmitter<ListenerEvents> {
             data: { first: true, lastId: lastMsgId, preIds: [] },
         };
         this.sendWs(payload);
+    }
+
+    /**
+     * Kích hoạt và kéo hàng đợi sự kiện điều khiển / VoIP (`cmd 603` CTRL_PULL_CTRL và `cmd 604` CTRL_PULL_VOIP).
+     * Giúp nhận ngay các cuộc gọi đến đang đổ chuông ngay cả khi vừa mở kết nối WebSocket.
+     */
+    public requestOfflineVoipControls() {
+        this.sendWs({
+            version: 1,
+            cmd: 604,
+            subCmd: 0,
+            data: { first: true, lastId: 1, preIds: [] },
+        });
+        this.sendWs({
+            version: 1,
+            cmd: 603,
+            subCmd: 0,
+            data: { first: true, lastId: "1", preIds: [] },
+        });
     }
 
     private reset() {

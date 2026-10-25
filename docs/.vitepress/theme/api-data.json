@@ -1,6 +1,6 @@
 {
-  "version": "2.3.4",
-  "totalApis": 250,
+  "version": "2.3.5",
+  "totalApis": 252,
   "domains": [
     {
       "key": "auth",
@@ -106,7 +106,7 @@
       "title": "Gọi thoại, Video & Gọi nhóm (Call)",
       "badge": "api.call",
       "description": "Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, video 1-1 và cuộc gọi nhóm (Group Call: Commands 11300 → 12447).",
-      "count": 28,
+      "count": 30,
       "sampleMethods": [
         "addUserGroupCall",
         "answerAckVoiceCall",
@@ -1844,6 +1844,22 @@
       "endpoints": [
         "/api/voicecall/cancel"
       ],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "createController",
+      "domain": "call",
+      "summary": "API createController thuộc phân hệ call.",
+      "signature": "api.call.createController(options: ZaloCallControllerOptions = {})",
+      "endpoints": [],
+      "httpMethod": "GET"
+    },
+    {
+      "name": "createRtcSession",
+      "domain": "call",
+      "summary": "API createRtcSession thuộc phân hệ call.",
+      "signature": "api.call.createRtcSession(options: ZaloRtcSessionOptions = {})",
+      "endpoints": [],
       "httpMethod": "GET"
     },
     {

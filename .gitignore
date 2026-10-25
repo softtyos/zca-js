@@ -147,6 +147,7 @@ credentials.json
 !**/credentials.example.json
 qr.png
 **/qr.png
+test/live_call_proof.json
 sync_data/
 **/sync_data/
 *.db.crypt

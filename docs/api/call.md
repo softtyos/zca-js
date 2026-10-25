@@ -1,11 +1,11 @@
 ---
-title: "Gọi thoại, Video & Gọi nhóm (Call) (api.call) - 28 APIs"
-description: "Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, video 1-1 và cuộc gọi nhóm (Group Call: Commands 11300 → 12447). Tra cứu chi tiết 28 phương thức thuộc phân hệ api.call trong bộ SDK @softtynet/zca-js."
+title: "Gọi thoại, Video & Gọi nhóm (Call) (api.call) - 30 APIs"
+description: "Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, video 1-1 và cuộc gọi nhóm (Group Call: Commands 11300 → 12447). Tra cứu chi tiết 30 phương thức thuộc phân hệ api.call trong bộ SDK @softtynet/zca-js."
 ---
 
 # 📞 Gọi thoại, Video & Gọi nhóm (Call)
 
-> Namespace: `api.call` (hoặc gọi trực tiếp `api.<methodName>`) — **28 API nguyên bản**
+> Namespace: `api.call` (hoặc gọi trực tiếp `api.<methodName>`) — **30 API nguyên bản**
 
 Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, video 1-1 và cuộc gọi nhóm (Group Call: Commands 11300 → 12447).
 
@@ -20,6 +20,8 @@ description: "Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, 
 | [`broadcastGroupCallState`](#broadcastgroupcallstate) | `GET` | `/api/voicecall/group/broadcast` | Phát quảng bá trạng thái thiết bị (Mic, Camera, Screen Share) tới các thành viên trong cuộc gọi nhóm (cmd 12098 - /api/voicecall/group/broadcast). |
 | [`cancelGroupCall`](#cancelgroupcall) | `GET` | `/api/voicecall/group/cancel` | Hủy lời mời cuộc gọi nhóm (cmd 12437 - /api/voicecall/group/cancel). |
 | [`cancelVoiceCall`](#cancelvoicecall) | `GET` | `/api/voicecall/cancel` | Hủy cuộc gọi 1-1 đang đổ chuông trước khi người nhận bắt máy (cmd 11305 - /api/voicecall/cancel, signal 405). |
+| [`createController`](#createcontroller) | `GET` | `Internal` | API `createController` thuộc phân hệ `call`. |
+| [`createRtcSession`](#creatertcsession) | `GET` | `Internal` | API `createRtcSession` thuộc phân hệ `call`. |
 | [`endGroupCall`](#endgroupcall) | `GET` | `/api/voicecall/group/endcall` | Rời khỏi cuộc gọi nhóm hoặc từ chối lời mời gọi nhóm (cmd 12438 - /api/voicecall/group/endcall). |
 | [`endVoiceCall`](#endvoicecall) | `GET` | `/api/voicecall/endcall` | Kết thúc cuộc gọi 1-1 đang diễn ra hoặc từ chối cuộc gọi đến (cmd 11306 - /api/voicecall/endcall, signal 404). |
 | [`finishGroupCall`](#finishgroupcall) | `GET` | `/api/voicecall/group/finish` | Kết thúc hoàn toàn phòng gọi nhóm cho tất cả thành viên (cmd 12446 - /api/voicecall/group/finish). |
@@ -273,11 +275,41 @@ await api.cancelVoiceCall(calleeId: string, callId: number, options: CancelVoice
 
 ```ts
 export type CancelVoiceCallOptions = {
-    callType?: CallType;
+    callType?: CallType | number;
     status?: number;
 };
 
 export type CancelVoiceCallResponse = Record<string, unknown>;
+```
+
+---
+
+## `createController`
+
+API `createController` thuộc phân hệ `call`.
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.call</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.call.createController(options: ZaloCallControllerOptions = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.createController(options: ZaloCallControllerOptions = {})
+```
+
+---
+
+## `createRtcSession`
+
+API `createRtcSession` thuộc phân hệ `call`.
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.call</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.call.createRtcSession(options: ZaloRtcSessionOptions = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.createRtcSession(options: ZaloRtcSessionOptions = {})
 ```
 
 ---
@@ -889,6 +921,9 @@ export type RequestCallServerEntry = {
 
 export type RequestCallServerInfo = {
     sessId: string;
+    fromId?: number;
+    toId?: number;
+    protocol?: number;
     rtpServer?: string;
     rtcpServer?: string;
     rtpIP?: string;
@@ -897,6 +932,8 @@ export type RequestCallServerInfo = {
     rtcpIPv6?: string;
     servers?: RequestCallServerEntry[];
     zrtpKey?: string;
+    zrtc_config?: Record<string, unknown> | string;
+    settings?: Record<string, unknown>;
     expiredTime?: number;
     codec?: string;
     [key: string]: unknown;
@@ -1005,8 +1042,8 @@ await api.updateCallMediaState(calleeId: string, callId: number, options: Update
 
 ```ts
 export type UpdateCallMediaStateOptions = {
-    isOnCam: boolean | number;
-    isOnMic: boolean | number;
+    isOnCam?: boolean | number;
+    isOnMic?: boolean | number;
     data?: string | Record<string, unknown>;
 };
 

@@ -2,8 +2,8 @@ import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
 
 export type UpdateCallMediaStateOptions = {
-    isOnCam: boolean | number;
-    isOnMic: boolean | number;
+    isOnCam?: boolean | number;
+    isOnMic?: boolean | number;
     data?: string | Record<string, unknown>;
 };
 
@@ -14,6 +14,9 @@ export const updateCallMediaStateFactory = apiFactory<UpdateCallMediaStateRespon
 
     /**
      * Đồng bộ trạng thái bật/tắt Camera và Microphone trong cuộc gọi 1-1 (`/api/voicecall/conf`, command `12006`).
+     * Khớp chính xác với `ZMessageSerializer::sendOnOffMicCam` (`0x100026cdc`):
+     * - Khi bật/tắt Camera (`UiOnOffCameraEvent`): `isOnCam = 1 | 0`, `isOnMic = -1`, `data = ""`
+     * - Khi bật/tắt Mic (`UiMuteEvent`): `isOnCam = -1`, `isOnMic = 1 | 0`, `data = ""`
      *
      * @param calleeId User ID của đối phương
      * @param callId ID của cuộc gọi
@@ -31,16 +34,34 @@ export const updateCallMediaStateFactory = apiFactory<UpdateCallMediaStateRespon
 
         const dataStr =
             options.data === undefined
-                ? "{}"
+                ? ""
                 : typeof options.data === "string"
                   ? options.data
                   : JSON.stringify(options.data);
 
+        const isOnCamVal =
+            options.isOnCam === undefined
+                ? -1
+                : typeof options.isOnCam === "boolean"
+                  ? options.isOnCam
+                      ? 1
+                      : 0
+                  : Number(options.isOnCam);
+
+        const isOnMicVal =
+            options.isOnMic === undefined
+                ? -1
+                : typeof options.isOnMic === "boolean"
+                  ? options.isOnMic
+                      ? 1
+                      : 0
+                  : Number(options.isOnMic);
+
         const params = {
             calleeId: String(calleeId),
             callId,
-            isOnCam: typeof options.isOnCam === "boolean" ? (options.isOnCam ? 1 : 0) : options.isOnCam,
-            isOnMic: typeof options.isOnMic === "boolean" ? (options.isOnMic ? 1 : 0) : options.isOnMic,
+            isOnCam: isOnCamVal,
+            isOnMic: isOnMicVal,
             data: dataStr,
         };
 

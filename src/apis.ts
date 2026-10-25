@@ -29,11 +29,13 @@ import { clearUnreadFriendRequestsFactory } from "./apis/friend/clearUnreadFrien
 import { createAutoReplyFactory } from "./apis/business/createAutoReply.js";
 import { createBankAccountFactory } from "./apis/business/createBankAccount.js";
 import { createCatalogFactory } from "./apis/business/createCatalog.js";
+import { createControllerFactory } from "./apis/call/createController.js";
 import { createGroupFactory } from "./apis/group/createGroup.js";
 import { createNoteFactory } from "./apis/board/createNote.js";
 import { createPollFactory } from "./apis/board/createPoll.js";
 import { createProductCatalogFactory } from "./apis/business/createProductCatalog.js";
 import { createReminderFactory } from "./apis/board/createReminder.js";
+import { createRtcSessionFactory } from "./apis/call/createRtcSession.js";
 import { decryptGidsFactory } from "./apis/auth/decryptGids.js";
 import { deleteAutoReplyFactory } from "./apis/business/deleteAutoReply.js";
 import { deleteAvatarFactory } from "./apis/profile/deleteAvatar.js";
@@ -326,6 +328,8 @@ export type CallDomainAPI = {
     readonly broadcastGroupCallState: ReturnType<typeof broadcastGroupCallStateFactory>;
     readonly cancelGroupCall: ReturnType<typeof cancelGroupCallFactory>;
     readonly cancelVoiceCall: ReturnType<typeof cancelVoiceCallFactory>;
+    readonly createController: ReturnType<typeof createControllerFactory>;
+    readonly createRtcSession: ReturnType<typeof createRtcSessionFactory>;
     readonly endGroupCall: ReturnType<typeof endGroupCallFactory>;
     readonly endVoiceCall: ReturnType<typeof endVoiceCallFactory>;
     readonly finishGroupCall: ReturnType<typeof finishGroupCallFactory>;
@@ -652,6 +656,8 @@ export class API {
                 get broadcastGroupCallState() { return api.broadcastGroupCallState; },
                 get cancelGroupCall() { return api.cancelGroupCall; },
                 get cancelVoiceCall() { return api.cancelVoiceCall; },
+                get createController() { return api.createController; },
+                get createRtcSession() { return api.createRtcSession; },
                 get endGroupCall() { return api.endGroupCall; },
                 get endVoiceCall() { return api.endVoiceCall; },
                 get finishGroupCall() { return api.finishGroupCall; },
@@ -1037,6 +1043,10 @@ export class API {
         return (this._cache.createCatalog ??= createCatalogFactory(this.ctx, this)) as ReturnType<typeof createCatalogFactory>;
     }
 
+    public get createController(): ReturnType<typeof createControllerFactory> {
+        return (this._cache.createController ??= createControllerFactory(this.ctx, this)) as ReturnType<typeof createControllerFactory>;
+    }
+
     public get createGroup(): ReturnType<typeof createGroupFactory> {
         return (this._cache.createGroup ??= createGroupFactory(this.ctx, this)) as ReturnType<typeof createGroupFactory>;
     }
@@ -1055,6 +1065,10 @@ export class API {
 
     public get createReminder(): ReturnType<typeof createReminderFactory> {
         return (this._cache.createReminder ??= createReminderFactory(this.ctx, this)) as ReturnType<typeof createReminderFactory>;
+    }
+
+    public get createRtcSession(): ReturnType<typeof createRtcSessionFactory> {
+        return (this._cache.createRtcSession ??= createRtcSessionFactory(this.ctx, this)) as ReturnType<typeof createRtcSessionFactory>;
     }
 
     public get decryptGids(): ReturnType<typeof decryptGidsFactory> {
