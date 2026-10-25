@@ -1,13 +1,13 @@
 ---
-title: "API Explorer - Tra cứu 252 API Zalo SDK (12 Domains)"
-description: "Công cụ tìm kiếm và lọc trực tiếp toàn bộ 252 API nguyên bản của @softtynet/zca-js chia theo 12 phân hệ: Auth, Chat, Group, Friend, Profile, Sync, ZCloud, Call, Media, Sticker, Board, Business."
+title: "API Explorer - Tra cứu 256 API Zalo SDK (12 Domains)"
+description: "Công cụ tìm kiếm và lọc trực tiếp toàn bộ 256 API nguyên bản của @softtynet/zca-js chia theo 12 phân hệ: Auth, Chat, Group, Friend, Profile, Sync, ZCloud, Call, Media, Sticker, Board, Business."
 ---
 
 # ⚡ Tra cứu & Lọc trực tiếp API Reference
 
-Thư viện **`@softtynet/zca-js` (v2.3.5)** cung cấp tổng cộng **252 API nguyên bản** được tổ chức khoa học thành **12 Domains** theo đúng kiến trúc Zalo PC `26.7.10`.
+Thư viện **`@softtynet/zca-js` (v2.3.6)** cung cấp tổng cộng **256 API nguyên bản** được tổ chức khoa học thành **12 Domains** theo đúng kiến trúc Zalo PC `26.7.10`.
 
-> 🤖 **Dành cho AI Agents (Cursor, Antigravity, Claude, ChatGPT)**: Bạn có thể nạp trực tiếp ngữ cảnh toàn bộ 252 API qua chuẩn AI SEO tại [`/llms.txt`](https://softtyos.github.io/zca-js-docs/llms.txt) hoặc bản đầy đủ [`/llms-full.txt`](https://softtyos.github.io/zca-js-docs/llms-full.txt).
+> 🤖 **Dành cho AI Agents (Cursor, Antigravity, Claude, ChatGPT)**: Bạn có thể nạp trực tiếp ngữ cảnh toàn bộ 256 API qua chuẩn AI SEO tại [`/llms.txt`](https://softtyos.github.io/zca-js-docs/llms.txt) hoặc bản đầy đủ [`/llms-full.txt`](https://softtyos.github.io/zca-js-docs/llms-full.txt).
 
 Sử dụng thanh công cụ bên dưới để lọc tức thì theo **Phân hệ**, **HTTP Method (`GET`/`POST`)**, **Tên hàm** hoặc **Endpoint Zalo** và sao chép nhanh cú pháp gọi hàm:
 
@@ -28,4 +28,4 @@ Sử dụng thanh công cụ bên dưới để lọc tức thì theo **Phân h�
 | [**🖼️ Kho lưu trữ & Chuyển giọng nói (Media)**](./media.md) | `api.media` | **8** | Truy vấn Kho Lưu Trữ Ảnh/Video, File, Link của nhóm và Cloud của tôi (Send2Me), cùng chuyển đổi Voice-to-Text AI. |
 | [**✨ Nhãn dán & Biểu cảm (Sticker)**](./sticker.md) | `api.sticker` | **10** | Tìm kiếm nhãn dán, danh mục nhãn dán V2, nhãn dán gợi ý theo ngữ cảnh và nhãn dán cá nhân hóa. |
 | [**📌 Bảng tin, Ghi chú, Bình chọn & Lịch hẹn (Board)**](./board.md) | `api.board` | **16** | Quản lý Tin ghim (Pin Topics), Ghi chú nhóm (Notes), Bình chọn (Polls) và Lịch hẹn (Reminders). |
-| [**💼 Zalo Business, Nhãn & Danh mục (Business)**](./business.md) | `api.business` | **26** | Quản lý nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng. |
+| [**💼 Zalo Business, OA, Nhãn & Danh mục (Business)**](./business.md) | `api.business` | **30** | Quản lý Zalo Official Account (getOAProfile, blockOA, unblockOA, convertOAIds), nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng. |

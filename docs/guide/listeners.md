@@ -32,7 +32,15 @@ api.listener.on("call_event", (callEvent) => {
 });
 
 api.listener.on("voice2text_event", (v2t) => {
-    console.log(v2t.msgId, v2t.text);
+    console.log(v2t.data.req_id, v2t.data.text);
+});
+
+api.listener.on("oa_message", (oaMsg) => {
+    console.log(`[OA ${oaMsg.oaData?.kind}] ${oaMsg.data.dName}: ${oaMsg.oaData?.text}`);
+});
+
+api.listener.on("oa_event", (oaEvt) => {
+    console.log(`[OA Event] act=${oaEvt.act}, isBlocked=${oaEvt.isBlocked}, oaIds=${oaEvt.oaIds.join(",")}`);
 });
 
 api.listener.start({ retryOnClose: true });

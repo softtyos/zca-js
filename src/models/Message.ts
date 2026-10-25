@@ -1,4 +1,5 @@
 import { ThreadType } from "./Enum.js";
+import { parseOAMessage, type ParsedOAMessage } from "./OAMessage.js";
 
 export type TAttachmentContent = {
     title: string;
@@ -86,8 +87,12 @@ export class UserMessage {
      * true if the message is sent by the logged in account
      */
     isSelf: boolean;
+    /**
+     * Dữ liệu đã giải mã nếu đây là tin nhắn từ Zalo Official Account (OA) (`pageMsgs`, `footerv2`, `chat.list.action`, `msginfo.actionlist`, hoặc `chat.ecard`).
+     */
+    oaData?: ParsedOAMessage;
 
-    constructor(uid: string, data: TMessage) {
+    constructor(uid: string, data: TMessage, isPageMsg: boolean = false) {
         this.data = data;
         this.threadId = data.uidFrom == "0" ? data.idTo : data.uidFrom;
         this.isSelf = data.uidFrom == "0";
@@ -97,6 +102,18 @@ export class UserMessage {
         if (data.quote) {
             data.quote.ownerId = String(data.quote.ownerId);
         }
+
+        const parsedOA = parseOAMessage(data, { isPageMsg });
+        if (parsedOA) {
+            this.oaData = parsedOA;
+        }
+    }
+
+    /**
+     * Kiểm tra xem tin nhắn có phải là tin nhắn Zalo Official Account (OA) hay không.
+     */
+    public isOAMessage(): this is UserMessage & { oaData: ParsedOAMessage } {
+        return this.oaData !== undefined;
     }
 }
 

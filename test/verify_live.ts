@@ -121,8 +121,18 @@ async function main() {
         console.log(`✅ Server Zalo trả về thành công!`);
         console.log(`   - Tổng số tin nhắn mới nhất (messages): ${preload.messages.length}`);
         console.log(`   - Số tin nhắn cá nhân (msgs): ${Array.isArray(preload.msgs) ? preload.msgs.length : 0}`);
+        console.log(`   - Số tin nhắn Zalo OA / ZNS (pageMessages): ${preload.pageMessages.length}`);
         console.log(`   - Số tin nhắn nhóm (groupMsgs): ${Array.isArray(preload.groupMsgs) ? preload.groupMsgs.length : 0}`);
         console.log(`   - Số trạng thái đã đọc (unreadCleared): ${preload.unreadCleared.length}`);
+
+        if (preload.pageMessages.length > 0) {
+            console.log(`   - Mẫu tin nhắn Zalo OA / ZNS giải mã từ pageMessages:`);
+            for (const oaMsg of preload.pageMessages.slice(0, 3)) {
+                console.log(
+                    `     • [OA:${oaMsg.oaData?.kind ?? oaMsg.data.msgType}] từ=${oaMsg.data.dName || oaMsg.data.uidFrom}: ${oaMsg.oaData?.text || JSON.stringify(oaMsg.oaData?.bundleData ?? {})}`,
+                );
+            }
+        }
 
         if (preload.messages.length > 0) {
             console.log(`   - Mẫu 3 tin nhắn thật đầu tiên:`);
@@ -189,6 +199,16 @@ async function main() {
 
             api.listener.on("unread_cleared", (items) => {
                 console.log(`🧹 [unread_cleared] Nhận ${items.length} sự kiện xoá chưa đọc thật từ WebSocket!`);
+            });
+
+            api.listener.on("oa_message", (oaMsg) => {
+                console.log(
+                    `🏢 [oa_message] Nhận tin nhắn Zalo OA/ZNS (${oaMsg.oaData?.kind}) từ ${oaMsg.data.dName || oaMsg.data.uidFrom}: ${oaMsg.oaData?.text}`,
+                );
+            });
+
+            api.listener.on("oa_event", (oaEv) => {
+                console.log(`🏢 [oa_event] Sự kiện OA (${oaEv.act}): oaIds=${oaEv.oaIds.join(",")}`);
             });
 
             api.listener.on("old_messages", (messages, type, hasMore) => {

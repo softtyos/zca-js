@@ -2,6 +2,7 @@ import type { ContextSession } from "../../context.js";
 import { initializeCallEvent, type TCallEventData } from "../../models/CallEvent.js";
 import { initializeFriendEvent, type TFriendEvent } from "../../models/FriendEvent.js";
 import { initializeGroupEvent, type TGroupEvent } from "../../models/GroupEvent.js";
+import { initializeOAEvent, type TOAEventData } from "../../models/OAMessage.js";
 import { initializeSyncEvent, type TSyncEvent } from "../../models/SyncEvent.js";
 import { decodeEventData, getFriendEventType, getGroupEventType } from "../../utils.js";
 import type { Listener } from "../listener.js";
@@ -17,7 +18,7 @@ export async function handleRealtimeControlPacket(
     parsed: Record<string, unknown>,
     cipherKey?: string,
 ) {
-    if (version == 1 && (cmd == 601 || cmd == 603 || cmd == 604) && subCmd == 0) {
+    if (version == 1 && (cmd == 601 || cmd == 602 || cmd == 603 || cmd == 604) && (subCmd == 0 || subCmd == 1)) {
         const decoded = await decodeEventData(parsed, cipherKey);
         const parsedData = decoded?.data;
         const controls = parsedData?.controls;
@@ -118,6 +119,13 @@ export async function handleRealtimeControlPacket(
                     act_type: "voice2text",
                     data: v2tData,
                 });
+            } else if (control.content.act_type == "oa") {
+                const oaData: TOAEventData =
+                    typeof control.content.data == "string"
+                        ? JSON.parse(control.content.data)
+                        : control.content.data;
+                const oaEvent = initializeOAEvent(oaData, control.content.act);
+                listener.emit("oa_event", oaEvent);
             }
         }
         return true;

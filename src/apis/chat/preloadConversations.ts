@@ -15,7 +15,7 @@ export type PreloadConversationsRawResponse = {
     groupMsgs?: TGroupMessage[];
     allmsgs?: Array<TMessage | (TGroupMessage & { isGroup?: boolean | number })>;
     eeMsgs?: unknown[];
-    pageMsgs?: unknown[];
+    pageMsgs?: TMessage[];
     clearUnreads?: TClearUnreadItem[];
     clearUnreadsReact?: TClearUnreadItem[];
     seens?: unknown[];
@@ -33,6 +33,7 @@ export type PreloadConversationsRawResponse = {
 
 export type PreloadConversationsResponse = PreloadConversationsRawResponse & {
     messages: Message[];
+    pageMessages: UserMessage[];
     unreadCleared: ClearUnread[];
 };
 
@@ -66,6 +67,7 @@ export const preloadConversationsFactory = apiFactory<PreloadConversationsRespon
             }
 
             const messages: Message[] = [];
+            const pageMessages: UserMessage[] = [];
             const seenMsgIds = new Set<string>();
 
             if (Array.isArray(data.msgs)) {
@@ -74,6 +76,17 @@ export const preloadConversationsFactory = apiFactory<PreloadConversationsRespon
                     if (id && seenMsgIds.has(id)) continue;
                     if (id) seenMsgIds.add(id);
                     messages.push(new UserMessage(ctx.uid, msg));
+                }
+            }
+
+            if (Array.isArray(data.pageMsgs)) {
+                for (const msg of data.pageMsgs) {
+                    const id = String(msg.msgId ?? "");
+                    if (id && seenMsgIds.has(id)) continue;
+                    if (id) seenMsgIds.add(id);
+                    const userMsg = new UserMessage(ctx.uid, msg, true);
+                    pageMessages.push(userMsg);
+                    messages.push(userMsg);
                 }
             }
 
@@ -109,6 +122,7 @@ export const preloadConversationsFactory = apiFactory<PreloadConversationsRespon
             return {
                 ...data,
                 messages,
+                pageMessages,
                 unreadCleared,
             };
         });

@@ -209,3 +209,41 @@ api.listener.on("call_event", async (evt) => {
 const grpRoom = await api.call.requestGroupCall(groupId, memberUids, { callType: CallType.GroupAudio });
 await api.call.sendRequestGroupCall(groupId, grpRoom.callId, memberUids);
 ```
+
+---
+
+## 7. Nhận, Trả lời & Quản lý Zalo Official Account (`api.business` & `oa_message`)
+
+`@softtynet/zca-js` hỗ trợ đầy đủ luồng hội thoại 2 chiều với Zalo Official Account (OA), tự động phân tách `pageMessages` và giải mã hồ sơ tích vàng (`isOAVerified`), thẻ bài viết (`chat.list.action`), nút bấm chân trang (`footerv2`):
+
+```ts
+import { ThreadType } from "@softtynet/zca-js";
+
+// 1. Tra cứu hồ sơ chuẩn hóa của Zalo OA (bao gồm tích vàng, hotline, website, giờ mở cửa, DNR)
+const oaProfile = await api.business.getOAProfile("2359864726282056346");
+console.log(oaProfile.displayName, oaProfile.isVerified, oaProfile.hotline, oaProfile.website);
+
+// 2. Tải trước các tin nhắn từ Zalo OA khi khởi động
+const preload = await api.chat.preloadConversations();
+for (const oaMsg of preload.pageMessages) {
+    console.log(`[OA Preload] ${oaMsg.data.dName}: ${oaMsg.oaData?.text}`);
+}
+
+// 3. Lắng nghe tin nhắn OA thời gian thực qua WebSocket và tự động trả lời 2 chiều
+api.listener.on("oa_message", async (msg) => {
+    console.log(`[OA Realtime - ${msg.oaData?.kind}] ${msg.data.dName}: ${msg.oaData?.text}`);
+    if (msg.oaData?.footer?.footerList.length) {
+        console.log("Nút bấm chân trang (footerv2):", msg.oaData.footer.footerList);
+    }
+    if (!msg.isSelf) {
+        await api.chat.sendMessage({ msg: "Cảm ơn OA, tôi đã nhận được thông tin!" }, msg.threadId, ThreadType.User);
+    }
+});
+
+// 4. Lắng nghe sự kiện chặn / bỏ chặn OA và quản lý trạng thái OA
+api.listener.on("oa_event", (ev) => {
+    console.log(`Sự kiện OA: act=${ev.act}, isBlocked=${ev.isBlocked}, oaIds=${ev.oaIds.join(",")}`);
+});
+await api.business.blockOA("2359864726282056346");
+await api.business.unblockOA("2359864726282056346");
+```

@@ -36,8 +36,8 @@ export const ZALO_DEFAULTS = {
         /** Số lần lỗi 1006 liên tiếp trước khi xoay sang WebSocket endpoint tiếp theo */
         CONSECUTIVE_1006_ROTATE_THRESHOLD: 2,
         /** Con trỏ mặc định khi bắt đầu kéo hàng đợi tin nhắn cũ (cmd 510 / 511) */
-        OLD_MSG_INITIAL_CURSOR: "10000000000000000",
-        INITIAL_OLD_MESSAGES_CURSOR: "10000000000000000",
+        OLD_MSG_INITIAL_CURSOR: "1",
+        INITIAL_OLD_MESSAGES_CURSOR: "1",
     },
     UPLOAD: {
         /** Thời gian sống tối đa của uploadCallback trong bộ nhớ trước khi tự hủy (5 phút) */

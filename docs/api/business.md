@@ -1,19 +1,21 @@
 ---
-title: "Zalo Business, Nhãn & Danh mục (Business) (api.business) - 26 APIs"
-description: "Quản lý nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng. Tra cứu chi tiết 26 phương thức thuộc phân hệ api.business trong bộ SDK @softtynet/zca-js."
+title: "Zalo Business, OA, Nhãn & Danh mục (Business) (api.business) - 30 APIs"
+description: "Quản lý Zalo Official Account (getOAProfile, blockOA, unblockOA, convertOAIds), nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng. Tra cứu chi tiết 30 phương thức thuộc phân hệ api.business trong bộ SDK @softtynet/zca-js."
 ---
 
-# 💼 Zalo Business, Nhãn & Danh mục (Business)
+# 💼 Zalo Business, OA, Nhãn & Danh mục (Business)
 
-> Namespace: `api.business` (hoặc gọi trực tiếp `api.<methodName>`) — **26 API nguyên bản**
+> Namespace: `api.business` (hoặc gọi trực tiếp `api.<methodName>`) — **30 API nguyên bản**
 
-Quản lý nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng.
+Quản lý Zalo Official Account (getOAProfile, blockOA, unblockOA, convertOAIds), nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng.
 
 ## Danh sách nhanh
 
 | Phương thức | HTTP | Endpoint Zalo | Mô tả |
 | :--- | :---: | :--- | :--- |
 | [`addQuickMessage`](#addquickmessage) | `GET` | `/api/quickmessage/create` | Thêm mẫu Tin nhắn nhanh (Quick Message) mới cho tài khoản Zalo Business. |
+| [`blockOA`](#blockoa) | `POST` | `/api/social/oa/block` | Chặn nhận tin nhắn / thông báo từ một Zalo Official Account (OA) qua /api/social/oa/block (cmd 12681). |
+| [`convertOAIds`](#convertoaids) | `GET` | `/api/social/oa/convertid` | Chuyển đổi danh sách OA ID sang Zalo UID nội bộ (hoặc ngược lại) qua /api/social/oa/convertid (cmd 11863). |
 | [`createAutoReply`](#createautoreply) | `POST` | `/api/autoreply/create` | Tạo kịch bản Trả lời tự động (Auto Reply) theo khung giờ cho Zalo Business. |
 | [`createBankAccount`](#createbankaccount) | `POST` | `/api/transfer/create` | Thêm thông tin tài khoản ngân hàng mới vào danh bạ ngân hàng. |
 | [`createCatalog`](#createcatalog) | `POST` | `/api/prodcatalog/catalog/create` | Tạo Danh mục sản phẩm (Catalog) mới cho Zalo Business. |
@@ -28,10 +30,12 @@ Quản lý nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả
 | [`getLabels`](#getlabels) | `GET` | `/api/convlabel/get` | Lấy toàn bộ danh sách Nhãn phân loại hội thoại (Conversation Labels) và các hội thoại được gắn nhãn. |
 | [`getListBank`](#getlistbank) | `GET` | `/api/transfer/conf` | Lấy danh sách mã ngân hàng (BIN / NAPAS) được Zalo hỗ trợ. |
 | [`getListBankAccount`](#getlistbankaccount) | `GET` | `/api/transfer/list` | Lấy danh sách các tài khoản ngân hàng đã lưu của người dùng. |
+| [`getOAProfile`](#getoaprofile) | `POST` | `/api/social/friend/get-bizacc`<br/>`/api/social/friend/getprofiles/v2` | Lấy hồ sơ chuẩn hóa đầy đủ của một Zalo Official Account (OA) theo oaId (bao gồm tích vàng isVerified, isZaloBot, dnrStatus, hotline, website, giờ mở cửa, địa chỉ, danh mục...). |
 | [`getProductCatalogList`](#getproductcataloglist) | `POST` | `/api/prodcatalog/product/list` | Lấy danh sách các sản phẩm nằm trong một Danh mục sản phẩm (Catalog). |
 | [`getQuickMessageList`](#getquickmessagelist) | `GET` | `/api/quickmessage/list` | Lấy danh sách các mẫu Tin nhắn nhanh (Quick Messages) đã tạo. |
 | [`registerCatalog`](#registercatalog) | `POST` | `/api/prodcatalog/catalog/register` | Đăng ký kích hoạt tính năng Danh mục sản phẩm (Catalog) cho tài khoản. |
 | [`removeQuickMessage`](#removequickmessage) | `GET` | `/api/quickmessage/delete` | Xóa một hoặc nhiều mẫu Tin nhắn nhanh. |
+| [`unblockOA`](#unblockoa) | `POST` | `/api/social/oa/unblock` | Bỏ chặn một Zalo Official Account (OA) để tiếp tục nhận tin nhắn qua /api/social/oa/unblock (cmd 12682). |
 | [`updateAutoReply`](#updateautoreply) | `POST` | `/api/autoreply/update` | Cập nhật nội dung và thời gian hoạt động của kịch bản Trả lời tự động. |
 | [`updateBankAccount`](#updatebankaccount) | `POST` | `/api/transfer/update` | Cập nhật thông tin tài khoản ngân hàng đã lưu. |
 | [`updateCatalog`](#updatecatalog) | `POST` | `/api/prodcatalog/catalog/update` | Cập nhật tên hoặc ảnh của Danh mục sản phẩm. |
@@ -71,6 +75,58 @@ export type AddQuickMessagePayload = {
 export type AddQuickMessageResponse = {
     item: QuickMessage;
     version: number;
+};
+```
+
+---
+
+## `blockOA`
+
+Chặn nhận tin nhắn / thông báo từ một Zalo Official Account (OA) qua /api/social/oa/block (cmd 12681).
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/social/oa/block</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.blockOA(oaId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.blockOA(oaId: string)
+```
+
+### Tham số
+
+- `oaId`: UID hoặc OA ID của Official Account cần chặn
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type BlockOAResponse = "" | Record<string, unknown>;
+```
+
+---
+
+## `convertOAIds`
+
+Chuyển đổi danh sách OA ID sang Zalo UID nội bộ (hoặc ngược lại) qua /api/social/oa/convertid (cmd 11863).
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/social/oa/convertid</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.convertOAIds(oaIds: string | string[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.convertOAIds(oaIds: string | string[])
+```
+
+### Tham số
+
+- `oaIds`: Một OA ID hoặc mảng các OA ID cần chuyển đổi
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type ConvertOAIdsResponse = {
+    [oaId: string]: string | unknown;
 };
 ```
 
@@ -535,6 +591,43 @@ export type GetListBankAccountResponse = {
 
 ---
 
+## `getOAProfile`
+
+Lấy hồ sơ chuẩn hóa đầy đủ của một Zalo Official Account (OA) theo oaId (bao gồm tích vàng isVerified, isZaloBot, dnrStatus, hotline, website, giờ mở cửa, địa chỉ, danh mục...).
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/social/friend/get-bizacc</span> <span class="zca-endpoint-pill">/api/social/friend/getprofiles/v2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.getOAProfile(oaId: string, options: GetOAProfileOptions = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.getOAProfile(oaId: string, options: GetOAProfileOptions = {})
+```
+
+### Tham số
+
+- `oaId`: UID của Zalo Official Account
+- `options`: Tùy chọn truy vấn
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type GetOAProfileOptions = {
+    /**
+     * Kích thước ảnh đại diện (mặc định: `240`).
+     */
+    avatarSize?: number;
+    /**
+     * Có lấy kèm thông tin tài khoản Business (`/api/social/friend/get-bizacc`) hay không (mặc định: `true`).
+     */
+    includeBizAccount?: boolean;
+};
+
+export type GetOAProfileResponse = OAProfileInfo;
+```
+
+---
+
 ## `getProductCatalogList`
 
 Lấy danh sách các sản phẩm nằm trong một Danh mục sản phẩm (Catalog).
@@ -652,6 +745,31 @@ export type RemoveQuickMessageResponse = {
     itemIds: number[];
     version: number;
 };
+```
+
+---
+
+## `unblockOA`
+
+Bỏ chặn một Zalo Official Account (OA) để tiếp tục nhận tin nhắn qua /api/social/oa/unblock (cmd 12682).
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.business</span><span class="zca-endpoint-pill">/api/social/oa/unblock</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.business.unblockOA(oaId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.unblockOA(oaId: string)
+```
+
+### Tham số
+
+- `oaId`: UID hoặc OA ID của Official Account cần bỏ chặn
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type UnblockOAResponse = "" | Record<string, unknown>;
 ```
 
 ---

@@ -14,10 +14,11 @@
 
 ## Điểm nổi bật
 
-- **Kiến trúc 12 Domains (`252 API nguyên bản`)**: Tổ chức trực quan qua `api.auth`, `api.chat`, `api.group`, `api.friend`, `api.profile`, `api.sync`, `api.zcloud`, `api.call`, `api.media`, `api.sticker`, `api.board`, `api.business` (vẫn hỗ trợ gọi phẳng `api.<method>` tương thích ngược 100%).
+- **Kiến trúc 12 Domains (`256 API nguyên bản`)**: Tổ chức trực quan qua `api.auth`, `api.chat`, `api.group`, `api.friend`, `api.profile`, `api.sync`, `api.zcloud`, `api.call`, `api.media`, `api.sticker`, `api.board`, `api.business` (vẫn hỗ trợ gọi phẳng `api.<method>` tương thích ngược 100%).
 - **Đồng bộ lịch sử Mobile (`ZDB 4.0`) & Catch-up Sync**: Hỗ trợ đầy đủ luồng `requestSyncFromPhone` $\rightarrow$ `getSyncData` (giải mã RSA-2048 OAEP/PKCS1 + ZDB 4.0 64KB multi-chunk AES-256-CBC + Deflate) & `pullMobile`.
 - **ZCloud, MediaStore & Bảo toàn Số nguyên 64-bit (`preParseJsonIds`)**: Tự động giữ nguyên độ chính xác chuỗi 19 chữ số cho `owner_id`, `group_id`, `globalMsgId`, `cliMsgId` trước khi `JSON.parse()` và tích hợp bộ mã hóa `98yS` AES-256-CBC cho ZCloud/ZFamily.
 - **Zalo Call Engine thuần TypeScript (`30 API` trong `api.call` + `ZaloRtcSession` / `ZaloCallController`)**: Hỗ trợ đầy đủ cả **Gọi Đi** và **Nhận Cuộc Gọi Đến** (Thoại 1-1, Video Call H.264 FU-A Annex-B 2 chiều, Gọi Nhóm), nâng cấp Thoại $\rightarrow$ Video giữa cuộc gọi, bật/tắt Camera/Mic, Tạm giữ (Hold/Unhold), Tái kết nối UDP (`reconnectUdp`), và **Bàn giao kết nối UDP trực tiếp cho Mobile App (`signalingOnly` / `handoffUdpToExternal`)**.
+- **Hội thoại & Quản lý Zalo Official Account (OA) 2 chiều (`api.business.getOAProfile`, `blockOA`, `unblockOA`, `convertOAIds`)**: Tự động bóc tách tin nhắn OA (`pageMsgs`, `chat.list.action`, `footerv2`), giải mã bitmask tích vàng (`isOAVerified`), Zalo Bot (`isZaloBot`), trạng thái DNR (`parseOADnrStatus`) và lắng nghe thời gian thực qua `oa_message` & `oa_event`.
 
 ---
 
@@ -66,7 +67,7 @@ const zalo = new Zalo({ imageMetadataGetter });
 | **Kho lưu trữ & Voice-to-Text** | `api.media` | 8 | [`docs/api/media.md`](docs/api/media.md) |
 | **Nhãn dán & Biểu cảm** | `api.sticker` | 10 | [`docs/api/sticker.md`](docs/api/sticker.md) |
 | **Bảng tin, Bình chọn & Lịch hẹn** | `api.board` | 16 | [`docs/api/board.md`](docs/api/board.md) |
-| **Zalo Business & Danh mục** | `api.business` | 26 | [`docs/api/business.md`](docs/api/business.md) |
+| **Zalo Business, OA & Danh mục** | `api.business` | 30 | [`docs/api/business.md`](docs/api/business.md) |
 
 > Xem tổng quan toàn bộ tài liệu tại [`docs/api/index.md`](docs/api/index.md) hoặc chạy trang tài liệu VitePress cục bộ bằng lệnh `npm run docs:dev`.
 
@@ -159,6 +160,28 @@ const handoffParams = await session.startOutgoingCall("5249661060655759359", {
     callType: CallType.Audio,
     signalingOnly: true, // Worker không mở UDP, xuất sẵn gói `params.mobileDirectHandoff` cho Mobile
 });
+```
+
+### 5. Nhận, Trả lời & Quản lý Zalo Official Account (OA) 2 chiều
+
+```ts
+import { ThreadType } from "@softtynet/zca-js";
+
+// 1) Lấy hồ sơ chi tiết của Zalo OA (tích vàng isVerified, hotline, website, giờ mở cửa, DNR)
+const oaProfile = await api.business.getOAProfile("2359864726282056346");
+console.log(oaProfile.displayName, oaProfile.isVerified, oaProfile.hotline);
+
+// 2) Lắng nghe tin nhắn OA thời gian thực (`oa_chat`, `oa_list`, `info_chat`, `ecard`) và trả lời 2 chiều
+api.listener.on("oa_message", async (msg) => {
+    console.log(`[OA ${msg.oaData?.kind}] ${msg.data.dName}: ${msg.oaData?.text}`);
+    if (!msg.isSelf) {
+        await api.chat.sendMessage({ msg: "Cảm ơn OA!" }, msg.threadId, ThreadType.User);
+    }
+});
+
+// 3) Chặn / Bỏ chặn OA & chuyển đổi OA ID
+await api.business.blockOA("2359864726282056346");
+await api.business.unblockOA("2359864726282056346");
 ```
 
 ---

@@ -285,6 +285,10 @@ export type { SendRequestVoiceCallOptions, SendRequestVoiceCallResponse } from "
 export type { ShareScreenGroupCallOptions, ShareScreenGroupCallResponse } from "./apis/call/shareScreenGroupCall.js";
 export type { UnholdVoiceCallOptions, UnholdVoiceCallResponse } from "./apis/call/unholdVoiceCall.js";
 export type { UpdateCallMediaStateOptions, UpdateCallMediaStateResponse } from "./apis/call/updateCallMediaState.js";
+export type { BlockOAResponse } from "./apis/business/blockOA.js";
+export type { UnblockOAResponse } from "./apis/business/unblockOA.js";
+export type { ConvertOAIdsResponse } from "./apis/business/convertOAIds.js";
+export type { GetOAProfileOptions, GetOAProfileResponse } from "./apis/business/getOAProfile.js";
 
 // Others (Enum)
 export { CloseReason } from "./apis/listen.js";
