@@ -167,6 +167,9 @@ export function parseZdbHeader(zdbPlaintext: Buffer): { entries: ZdbTocEntry[]; 
     }
 
     const count = zdbPlaintext.readUInt32BE(COUNT_OFFSET);
+    if (count > 100000) {
+        throw new ZaloApiError(`ZDB4.0 header entry count exceeds safety limit (${count})`);
+    }
     let offset = COUNT_OFFSET + 4;
     const entries: ZdbTocEntry[] = [];
 
@@ -175,12 +178,16 @@ export function parseZdbHeader(zdbPlaintext: Buffer): { entries: ZdbTocEntry[]; 
             throw new ZaloApiError("Truncated ZDB4.0 header while reading entry name length");
         }
         const nameLen = zdbPlaintext.readUInt32BE(offset);
-        if (offset + 4 + nameLen + 4 > zdbPlaintext.length) {
-            throw new ZaloApiError("Truncated ZDB4.0 header while reading entry metadata");
+        if (nameLen > 4096 || offset + 4 + nameLen + 4 > zdbPlaintext.length) {
+            throw new ZaloApiError("Truncated or invalid ZDB4.0 header while reading entry metadata");
         }
-        const name = zdbPlaintext
+        const rawName = zdbPlaintext
             .toString("utf8", offset + 4, offset + 4 + nameLen)
             .replace(/\0+$/, "");
+        const name = rawName.split(/[\\/]/).pop() || rawName;
+        if (name === ".." || name === "." || name.includes("..")) {
+            throw new ZaloApiError(`Unsafe entry name in ZDB4.0 header: ${rawName}`);
+        }
         const size = zdbPlaintext.readUInt32BE(offset + 4 + nameLen);
         entries.push({ name, size });
         offset += 4 + nameLen + 4;

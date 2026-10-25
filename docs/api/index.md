@@ -24,7 +24,7 @@ Sử dụng thanh công cụ bên dưới để lọc tức thì theo **Phân h�
 | [**🪪 Hồ sơ cá nhân (Profile)**](./profile.md) | `api.profile` | **16** | Thông tin tài khoản, đổi ảnh đại diện, cài đặt quyền riêng tư, trạng thái cảm xúc (Emoji Status) và xác thực EKYC. |
 | [**🔄 Đồng bộ Mobile ZDB 4.0 (Sync)**](./sync.md) | `api.sync` | **5** | Đồng bộ toàn bộ lịch sử tin nhắn từ điện thoại sang PC qua giao thức RSA-2048 & ZDB 4.0 AES-256-CBC multi-chunk. |
 | [**☁️ Đám mây ZCloud & ZFamily (ZCloud)**](./zcloud.md) | `api.zcloud` | **9** | Truy vấn dung lượng My Cloud / ZCloud, ZFamily, khóa giải mã ViewerKey (98yS AES-256-CBC) và xác thực Media. |
-| [**📞 Gọi thoại, Video & Gọi nhóm (Call)**](./call.md) | `api.call` | **30** | Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, video 1-1 và cuộc gọi nhóm (Group Call: Commands 11300 → 12447). |
+| [**📞 Gọi thoại, Video & Gọi nhóm (Call)**](./call.md) | `api.call` | **30** | Điều khiển trọn vẹn 30 API cuộc gọi thoại, video 1-1, gọi nhóm và bộ máy Call Engine (ZaloRtcSession UDP/SRTP 2 chiều & ZaloCallController). |
 | [**🖼️ Kho lưu trữ & Chuyển giọng nói (Media)**](./media.md) | `api.media` | **8** | Truy vấn Kho Lưu Trữ Ảnh/Video, File, Link của nhóm và Cloud của tôi (Send2Me), cùng chuyển đổi Voice-to-Text AI. |
 | [**✨ Nhãn dán & Biểu cảm (Sticker)**](./sticker.md) | `api.sticker` | **10** | Tìm kiếm nhãn dán, danh mục nhãn dán V2, nhãn dán gợi ý theo ngữ cảnh và nhãn dán cá nhân hóa. |
 | [**📌 Bảng tin, Ghi chú, Bình chọn & Lịch hẹn (Board)**](./board.md) | `api.board` | **16** | Quản lý Tin ghim (Pin Topics), Ghi chú nhóm (Notes), Bình chọn (Polls) và Lịch hẹn (Reminders). |

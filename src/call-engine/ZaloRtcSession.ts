@@ -3486,7 +3486,11 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
                         this.fuaFragments = [Buffer.from([reconstructedNalHeader]), body];
                     }
                 } else if (this.fuaFragments.length > 0) {
-                    this.fuaFragments.push(body);
+                    if (this.fuaFragments.length >= 512) {
+                        this.fuaFragments = [];
+                    } else {
+                        this.fuaFragments.push(body);
+                    }
                 }
 
                 if (isEnd && this.fuaFragments.length > 0) {
@@ -3519,6 +3523,9 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             this.remotePpsNal = Buffer.from(nal);
         } else if (nalType === 5) {
             this.currentAccessUnitHasIdr = true;
+        }
+        if (this.currentAccessUnitNals.length >= 256) {
+            this.currentAccessUnitNals = [];
         }
         this.currentAccessUnitNals.push(Buffer.from(nal));
     }
