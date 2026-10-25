@@ -42,6 +42,7 @@ export interface ZaloCallTransportEvents {
 }
 
 const MAX_IPC_CHUNK_LENGTH = 4000;
+const MAX_IPC_RECEIVE_BUFFER_LENGTH = 4 * 1024 * 1024;
 
 /**
  * Tầng giao thức IPC双kênh (`receiveSocketPath` & `sendSocketPath`) mã hoá AES-128-CBC (Hex + `$` framing + 4000-char chunking)
@@ -153,11 +154,29 @@ export class ZaloCallTransport extends EventEmitter<ZaloCallTransportEvents> {
         await Promise.all([
             new Promise<void>((resolve, reject) => {
                 this.receiveServer!.once("error", reject);
-                this.receiveServer!.listen(this.receiveSocketPath, () => resolve());
+                this.receiveServer!.listen(this.receiveSocketPath, () => {
+                    if (process.platform !== "win32") {
+                        try {
+                            fs.chmodSync(this.receiveSocketPath, 0o600);
+                        } catch {
+                            // Ignore chmod error if unsupported
+                        }
+                    }
+                    resolve();
+                });
             }),
             new Promise<void>((resolve, reject) => {
                 this.sendServer!.once("error", reject);
-                this.sendServer!.listen(this.sendSocketPath, () => resolve());
+                this.sendServer!.listen(this.sendSocketPath, () => {
+                    if (process.platform !== "win32") {
+                        try {
+                            fs.chmodSync(this.sendSocketPath, 0o600);
+                        } catch {
+                            // Ignore chmod error if unsupported
+                        }
+                    }
+                    resolve();
+                });
             }),
         ]);
 
@@ -257,6 +276,11 @@ export class ZaloCallTransport extends EventEmitter<ZaloCallTransportEvents> {
     }
 
     private handleReceiveChunk(chunk: string): void {
+        if (this.receiveBuffer.length + chunk.length > MAX_IPC_RECEIVE_BUFFER_LENGTH) {
+            this.receiveBuffer = "";
+            this.emit("error", new Error("IPC receive buffer exceeded maximum allowed size (4MB)"));
+            return;
+        }
         this.receiveBuffer += chunk;
 
         let dollarIdx = this.receiveBuffer.indexOf("$");

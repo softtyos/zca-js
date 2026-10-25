@@ -1,13 +1,13 @@
 ---
 title: "Gọi thoại, Video & Gọi nhóm (Call) (api.call) - 30 APIs"
-description: "Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, video 1-1 và cuộc gọi nhóm (Group Call: Commands 11300 → 12447). Tra cứu chi tiết 30 phương thức thuộc phân hệ api.call trong bộ SDK @softtynet/zca-js."
+description: "Điều khiển trọn vẹn 30 API cuộc gọi thoại, video 1-1, gọi nhóm và bộ máy Call Engine (ZaloRtcSession UDP/SRTP 2 chiều & ZaloCallController). Tra cứu chi tiết 30 phương thức thuộc phân hệ api.call trong bộ SDK @softtynet/zca-js."
 ---
 
 # 📞 Gọi thoại, Video & Gọi nhóm (Call)
 
 > Namespace: `api.call` (hoặc gọi trực tiếp `api.<methodName>`) — **30 API nguyên bản**
 
-Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, video 1-1 và cuộc gọi nhóm (Group Call: Commands 11300 → 12447).
+Điều khiển trọn vẹn 30 API cuộc gọi thoại, video 1-1, gọi nhóm và bộ máy Call Engine (ZaloRtcSession UDP/SRTP 2 chiều & ZaloCallController).
 
 ## Danh sách nhanh
 
@@ -20,8 +20,8 @@ description: "Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, 
 | [`broadcastGroupCallState`](#broadcastgroupcallstate) | `GET` | `/api/voicecall/group/broadcast` | Phát quảng bá trạng thái thiết bị (Mic, Camera, Screen Share) tới các thành viên trong cuộc gọi nhóm (cmd 12098 - /api/voicecall/group/broadcast). |
 | [`cancelGroupCall`](#cancelgroupcall) | `GET` | `/api/voicecall/group/cancel` | Hủy lời mời cuộc gọi nhóm (cmd 12437 - /api/voicecall/group/cancel). |
 | [`cancelVoiceCall`](#cancelvoicecall) | `GET` | `/api/voicecall/cancel` | Hủy cuộc gọi 1-1 đang đổ chuông trước khi người nhận bắt máy (cmd 11305 - /api/voicecall/cancel, signal 405). |
-| [`createController`](#createcontroller) | `GET` | `Internal` | API `createController` thuộc phân hệ `call`. |
-| [`createRtcSession`](#creatertcsession) | `GET` | `Internal` | API `createRtcSession` thuộc phân hệ `call`. |
+| [`createController`](#createcontroller) | `GET` | `Internal` | Khởi tạo bộ điều phối cuộc gọi ZaloCallController quản lý vòng đời gọi đi, nhận cuộc gọi đến và kênh IPC cục bộ. |
+| [`createRtcSession`](#creatertcsession) | `GET` | `Internal` | Khởi tạo phiên gọi thoại / video 2 chiều thuần TypeScript (ZaloRtcSession — UDP ZRTPPacket + SRTP + H.264 Annex-B + Mobile Direct UDP Handoff). |
 | [`endGroupCall`](#endgroupcall) | `GET` | `/api/voicecall/group/endcall` | Rời khỏi cuộc gọi nhóm hoặc từ chối lời mời gọi nhóm (cmd 12438 - /api/voicecall/group/endcall). |
 | [`endVoiceCall`](#endvoicecall) | `GET` | `/api/voicecall/endcall` | Kết thúc cuộc gọi 1-1 đang diễn ra hoặc từ chối cuộc gọi đến (cmd 11306 - /api/voicecall/endcall, signal 404). |
 | [`finishGroupCall`](#finishgroupcall) | `GET` | `/api/voicecall/group/finish` | Kết thúc hoàn toàn phòng gọi nhóm cho tất cả thành viên (cmd 12446 - /api/voicecall/group/finish). |
@@ -286,7 +286,7 @@ export type CancelVoiceCallResponse = Record<string, unknown>;
 
 ## `createController`
 
-API `createController` thuộc phân hệ `call`.
+Khởi tạo bộ điều phối cuộc gọi ZaloCallController quản lý vòng đời gọi đi, nhận cuộc gọi đến và kênh IPC cục bộ.
 
 <div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.call</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 
@@ -301,7 +301,7 @@ await api.createController(options: ZaloCallControllerOptions = {})
 
 ## `createRtcSession`
 
-API `createRtcSession` thuộc phân hệ `call`.
+Khởi tạo phiên gọi thoại / video 2 chiều thuần TypeScript (ZaloRtcSession — UDP ZRTPPacket + SRTP + H.264 Annex-B + Mobile Direct UDP Handoff).
 
 <div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.call</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
 

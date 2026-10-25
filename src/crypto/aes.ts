@@ -183,5 +183,7 @@ export function encryptPin(pin: string): string {
 
 export function validatePin(encryptedPin: string, pin: string): boolean {
     const hash = crypto.createHash("md5").update(pin).digest("hex");
-    return hash === encryptedPin;
+    const a = Buffer.from(hash, "utf8");
+    const b = Buffer.from(String(encryptedPin), "utf8");
+    return a.length === b.length && crypto.timingSafeEqual(a, b);
 }

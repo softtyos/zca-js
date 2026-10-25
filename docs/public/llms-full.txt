@@ -2690,7 +2690,7 @@ export type VerifyCloudMediaResponse = {
 ```
 
 ## Domain: Gọi thoại, Video & Gọi nhóm (Call) (`api.call` — 30 APIs)
-Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, video 1-1 và cuộc gọi nhóm (Group Call: Commands 11300 → 12447).
+Điều khiển trọn vẹn 30 API cuộc gọi thoại, video 1-1, gọi nhóm và bộ máy Call Engine (ZaloRtcSession UDP/SRTP 2 chiều & ZaloCallController).
 
 ### addUserGroupCall
 - **Call**: `await api.call.addUserGroupCall(callId: number, options: AddUserGroupCallOptions,)` (or `await api.addUserGroupCall(callId: number, options: AddUserGroupCallOptions,)`)
@@ -2803,11 +2803,11 @@ export type CancelVoiceCallResponse = Record<string, unknown>;
 
 ### createController
 - **Call**: `await api.call.createController(options: ZaloCallControllerOptions = {})` (or `await api.createController(options: ZaloCallControllerOptions = {})`)
-- **Description**: API createController thuộc phân hệ call.
+- **Description**: Khởi tạo bộ điều phối cuộc gọi ZaloCallController quản lý vòng đời gọi đi, nhận cuộc gọi đến và kênh IPC cục bộ.
 
 ### createRtcSession
 - **Call**: `await api.call.createRtcSession(options: ZaloRtcSessionOptions = {})` (or `await api.createRtcSession(options: ZaloRtcSessionOptions = {})`)
-- **Description**: API createRtcSession thuộc phân hệ call.
+- **Description**: Khởi tạo phiên gọi thoại / video 2 chiều thuần TypeScript (ZaloRtcSession — UDP ZRTPPacket + SRTP + H.264 Annex-B + Mobile Direct UDP Handoff).
 
 ### endGroupCall
 - **Call**: `await api.call.endGroupCall(callId: number, options: EndGroupCallOptions,)` (or `await api.endGroupCall(callId: number, options: EndGroupCallOptions,)`)

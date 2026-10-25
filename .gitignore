@@ -143,6 +143,7 @@ bun.lockb
 cookies.json
 *cookies*.json
 credentials.json
+*credentials*.json
 *session*.json
 !**/credentials.example.json
 qr.png

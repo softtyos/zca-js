@@ -58,7 +58,7 @@ const DOMAIN_META = {
         icon: "📞",
         title: "Gọi thoại, Video & Gọi nhóm (Call)",
         badge: "api.call",
-        description: "Điều khiển trọn vẹn 28 tín hiệu cuộc gọi thoại, video 1-1 và cuộc gọi nhóm (Group Call: Commands 11300 → 12447).",
+        description: "Điều khiển trọn vẹn 30 API cuộc gọi thoại, video 1-1, gọi nhóm và bộ máy Call Engine (ZaloRtcSession UDP/SRTP 2 chiều & ZaloCallController).",
     },
     media: {
         icon: "🖼️",
@@ -263,6 +263,8 @@ const VI_DESCRIPTIONS = {
     broadcastGroupCallState: "Phát quảng bá trạng thái thiết bị (Mic, Camera, Screen Share) tới các thành viên trong cuộc gọi nhóm (cmd 12098 - /api/voicecall/group/broadcast).",
     joinGroupCall: "Chủ động tham gia vào một cuộc gọi nhóm đang diễn ra từ banner nhóm (cmd 12043 - /api/voicecall/group/join).",
     shareScreenGroupCall: "Bắt đầu hoặc dừng chia sẻ màn hình trong cuộc gọi nhóm (cmd 12044 - /api/voicecall/group/sharescreen).",
+    createRtcSession: "Khởi tạo phiên gọi thoại / video 2 chiều thuần TypeScript (ZaloRtcSession — UDP ZRTPPacket + SRTP + H.264 Annex-B + Mobile Direct UDP Handoff).",
+    createController: "Khởi tạo bộ điều phối cuộc gọi ZaloCallController quản lý vòng đời gọi đi, nhận cuộc gọi đến và kênh IPC cục bộ.",
 };
 
 function escapeMarkdownHtml(str) {
