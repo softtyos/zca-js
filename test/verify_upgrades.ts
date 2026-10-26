@@ -2303,7 +2303,11 @@ async function runVerificationSuite() {
             fromId: 1001,
         },
     });
-    assert.deepEqual(observedLeaves, ["1001"]);
+    assert.deepEqual(
+        observedLeaves,
+        ["5001"],
+        "GROUP_END với fromId=1001 (32-bit VoIP ID) phải được ánh xạ tự động sang partnerId='5001' (Zalo UID)",
+    );
     assert.equal(
         grpMultiLeaveSession.getState(),
         "active",
@@ -2318,17 +2322,19 @@ async function runVerificationSuite() {
             fromId: 1002,
         },
     });
-    assert.deepEqual(observedLeaves, ["1001", "1002"]);
+    assert.deepEqual(observedLeaves, ["5001", "5002"]);
     assert.equal(
         grpMultiLeaveSession.getState(),
         "ended",
         "Khi thành viên cuối cùng rời cuộc gọi nhóm (remaining=0), phiên gọi phải tự động kết thúc",
     );
 
-    // Kiểm định 3 cải tiến Group Video Call:
-    // 1. Khi sendRequestGroupCall (12434) trả về hostCall 32-bit (ví dụ 450859586), phải cập nhật hostCall, localVoipUid và fromUid32 = 450859586
+    // Kiểm định 6 cải tiến Group Video Call (bản 2.3.11):
+    // 1. Khi sendRequestGroupCall (12434) trả về hostCall 32-bit (450859586), groupId 32-bit (912345678) và mapNoiseId,
+    //    phải cập nhật hostCall, localVoipUid, fromUid32 = 450859586, toUid32 = 912345678 (KHÔNG trùng fromUid32) và ánh xạ mapNoiseId vào groupPartnerInfo
     // 2. Phát ngay pingGroupCall + broadcastGroupCallState với userId = 450859586 khi tạo phòng & khi có GROUP_ANSWER
-    // 3. Bộ ghép H.264 theo từng SSRC (Map<number, SsrcVideoAssembler>) không làm đứt gãy FU-A khi nhiều thành viên bật camera đan xen
+    // 3. GROUP_ANSWER (status=0) luôn phát media_state_change kèm partnerId (Zalo UID), voipUid, isCameraOn, isMicMuted
+    // 4. Bộ ghép H.264 theo từng SSRC (Map<number, SsrcVideoAssembler>) đính kèm partnerId đã ánh xạ và tạo Multi-SSRC RTCP SR + REMB
     const prevPolyfillForHostCall = ctx.options.polyfill;
     ctx.options.polyfill = (async (input: RequestInfo | URL, init?: RequestInit) => {
         const u = new URL(String(input));
@@ -2338,7 +2344,11 @@ async function runVerificationSuite() {
                 params: JSON.stringify({
                     callId: 778899,
                     hostCall: 450859586,
-                    groupId: "888999000",
+                    groupId: 912345678,
+                    mapNoiseId: {
+                        "5001": 1001,
+                        "5002": 1002,
+                    },
                 }),
             });
         }
@@ -2365,7 +2375,22 @@ async function runVerificationSuite() {
         450859586,
         "fromUid32 (fromId) phải được cập nhật bằng 32-bit hostCall (450859586) trả về từ sendRequestGroupCall",
     );
+    assert.equal(
+        grpHostUidParams.toId,
+        912345678,
+        "toUid32 (toId) trong gọi nhóm phải là 32-bit groupId (912345678), không được trùng với hostCall",
+    );
     assert.equal(grpHostUidSession.getMediaState().hostCall, "450859586");
+    assert.equal(
+        grpHostUidSession.resolvePartnerId(1001),
+        "5001",
+        "mapNoiseId từ sendRequestGroupCall phải ánh xạ 32-bit VoIP ID (1001) sang Zalo UID ('5001')",
+    );
+    assert.equal(
+        grpHostUidSession.getGroupPartnerInfo().find((p) => p.id === "5001")?.userId,
+        1001,
+        "groupPartnerInfo ở phía người gọi phải được điền userId (32-bit VoIP ID) từ mapNoiseId",
+    );
 
     const pingReqsAfterStart = capturedRequests.filter((r) => r.url.includes("/api/voicecall/group/ping"));
     const broadcastReqsAfterStart = capturedRequests.filter((r) => r.url.includes("/api/voicecall/group/broadcast"));
@@ -2391,6 +2416,17 @@ async function runVerificationSuite() {
     assert.equal(initialBroadcastDecoded.userId, 450859586);
     assert.equal(initialBroadcastDecoded.videostate, 1);
 
+    const groupAnswerMediaEvents: Array<{
+        partnerId?: string;
+        voipUid?: string;
+        isCameraOn?: boolean;
+        isMicMuted?: boolean;
+    }> = [];
+    grpHostUidSession.on("media_state_change", (ev) => {
+        if (ev.rawAct === "group_answer") {
+            groupAnswerMediaEvents.push(ev);
+        }
+    });
     const broadcastCountBeforeAnswer = capturedRequests.filter((r) =>
         r.url.includes("/api/voicecall/group/broadcast"),
     ).length;
@@ -2412,12 +2448,28 @@ async function runVerificationSuite() {
         broadcastCountAfterAnswer > broadcastCountBeforeAnswer,
         "Khi có thành viên trả lời (GROUP_ANSWER status=0), phải phát lại broadcastGroupCallState để đồng bộ Mic/Cam",
     );
+    assert.equal(
+        groupAnswerMediaEvents.length,
+        1,
+        "GROUP_ANSWER (status=0) phải luôn phát sự kiện media_state_change kể cả khi gói không kèm audioState/videoState tường minh",
+    );
+    assert.equal(groupAnswerMediaEvents[0].partnerId, "5001");
+    assert.equal(groupAnswerMediaEvents[0].voipUid, "1001");
+    assert.equal(groupAnswerMediaEvents[0].isCameraOn, true);
+    assert.equal(groupAnswerMediaEvents[0].isMicMuted, false);
 
     // Kiểm định ghép khung H.264 đan xen từ 2 SSRC khác nhau (ssrc=1001, ts=90000 và ssrc=1002, ts=180000)
-    const multiSsrcFrames: Array<{ ssrc: number; timestamp: number; isKeyframe: boolean; nalTypes?: number[] }> = [];
+    const multiSsrcFrames: Array<{
+        ssrc: number;
+        partnerId?: string;
+        timestamp: number;
+        isKeyframe: boolean;
+        nalTypes?: number[];
+    }> = [];
     grpHostUidSession.on("video_annexb_frame", (frame) => {
         multiSsrcFrames.push({
             ssrc: frame.ssrc,
+            partnerId: frame.partnerId,
             timestamp: frame.timestamp,
             isKeyframe: frame.isKeyframe,
             nalTypes: frame.nalTypes,
@@ -2433,6 +2485,7 @@ async function runVerificationSuite() {
                 payloadType: number;
                 marker: boolean;
             }) => void;
+            buildCompoundRtcpReport: (isVideo: boolean) => Buffer;
         }
     ).handleIncomingVideoRtpPayload.bind(grpHostUidSession);
 
@@ -2479,12 +2532,32 @@ async function runVerificationSuite() {
         "Cả 2 luồng Video H.264 FU-A đan xen từ 2 SSRC (1001 & 1002) đều phải ghép thành công không làm đứt mảnh của nhau",
     );
     assert.deepEqual(
-        multiSsrcFrames.map((f) => ({ ssrc: f.ssrc, nalTypes: f.nalTypes })),
+        multiSsrcFrames.map((f) => ({ ssrc: f.ssrc, partnerId: f.partnerId, nalTypes: f.nalTypes })),
         [
-            { ssrc: 1001, nalTypes: [7, 8, 5] },
-            { ssrc: 1002, nalTypes: [7, 8, 5] },
+            { ssrc: 1001, partnerId: "5001", nalTypes: [7, 8, 5] },
+            { ssrc: 1002, partnerId: "5002", nalTypes: [7, 8, 5] },
         ],
     );
+
+    // Kiểm định buildCompoundRtcpReport(true) sinh đầy đủ 2 Report Block trong SR (RC=2) và numSsrcs=2 trong REMB
+    const multiSsrcRtcp = (
+        grpHostUidSession as unknown as { buildCompoundRtcpReport: (isVideo: boolean) => Buffer }
+    ).buildCompoundRtcpReport(true);
+    assert.equal(
+        multiSsrcRtcp.readUInt8(0) & 0x1f,
+        2,
+        "RTCP Sender Report cho Group Video Call có 2 SSRC phải có RC = 2 (2 Report Blocks)",
+    );
+    const rembOffsetInMulti = 28 + 2 * 24 + 16;
+    assert.equal(multiSsrcRtcp.subarray(rembOffsetInMulti + 12, rembOffsetInMulti + 16).toString("ascii"), "REMB");
+    assert.equal(
+        multiSsrcRtcp.readUInt8(rembOffsetInMulti + 16),
+        2,
+        "RTCP REMB phải báo cáo numSsrcs = 2 cho cả 2 SSRC (1001 & 1002)",
+    );
+    assert.equal(multiSsrcRtcp.readUInt32BE(rembOffsetInMulti + 20), 1001);
+    assert.equal(multiSsrcRtcp.readUInt32BE(rembOffsetInMulti + 24), 1002);
+
     await grpHostUidSession.endCall("local_end");
 
     // Kiểm định Gọi lại liên tiếp (Sequential Re-call) trên cùng một instance ZaloRtcSession & Tái kết nối UDP (reconnectUdp)

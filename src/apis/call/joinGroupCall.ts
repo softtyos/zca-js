@@ -61,6 +61,27 @@ export const joinGroupCallFactory = apiFactory<JoinGroupCallResponse>()((api, ct
             method: "GET",
         });
 
-        return utils.resolve(response);
+        const raw = await utils.resolve(response);
+        const resObj: Record<string, unknown> =
+            typeof raw === "string"
+                ? (JSON.parse(raw) as Record<string, unknown>)
+                : ((raw ?? {}) as Record<string, unknown>);
+
+        for (const field of ["params", "data"] as const) {
+            if (typeof resObj[field] === "string" && (resObj[field] as string).length > 0) {
+                try {
+                    const innerObj = JSON.parse(resObj[field] as string) as Record<string, unknown>;
+                    if (innerObj && typeof innerObj === "object" && !Array.isArray(innerObj)) {
+                        return {
+                            ...innerObj,
+                            ...resObj,
+                        };
+                    }
+                } catch {
+                    // Giữ nguyên nếu không phải JSON
+                }
+            }
+        }
+        return resObj;
     };
 });

@@ -1,6 +1,6 @@
 {
     "name": "@softtynet/zca-js",
-    "version": "2.3.10",
+    "version": "2.3.11",
     "description": "Zalo API client library for Node.js and Bun, maintained by Softtynet.",
     "main": "dist/cjs/index.cjs",
     "module": "dist/index.js",
