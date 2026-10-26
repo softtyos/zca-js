@@ -38,14 +38,18 @@ export const joinGroupCallFactory = apiFactory<JoinGroupCallResponse>()((api, ct
                   ? options.data
                   : JSON.stringify(options.data);
 
+        const audioState = options.audioState ?? 1;
+        const videoState = options.videoState ?? 0;
         const params = {
             userId: String(options.userId ?? ctx.uid),
             callId,
             hostCall: String(options.hostCall),
             status: options.status ?? 0,
             srcJoinCall: options.srcJoinCall ?? 0,
-            audiostate: options.audioState ?? 1,
-            videostate: options.videoState ?? 0,
+            audioState,
+            videoState,
+            audiostate: audioState,
+            videostate: videoState,
             data: dataStr,
         };
 

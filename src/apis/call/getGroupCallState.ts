@@ -1,6 +1,6 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
-import { CallType } from "./sendVoiceCall.js";
+import { CallType, normalizeGroupCallType } from "./sendVoiceCall.js";
 
 export type GetGroupCallStateResponse = Record<string, unknown>;
 
@@ -27,7 +27,7 @@ export const getGroupCallStateFactory = apiFactory<GetGroupCallStateResponse>()(
         const params = {
             callId,
             hostCall: String(hostCall),
-            callType,
+            callType: normalizeGroupCallType(callType),
         };
 
         const encryptedParams = utils.encodeAES(JSON.stringify(params));

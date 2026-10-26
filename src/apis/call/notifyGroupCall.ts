@@ -1,6 +1,7 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
-import { CallType } from "./sendVoiceCall.js";
+import type { CallType} from "./sendVoiceCall.js";
+import { normalizeGroupCallType } from "./sendVoiceCall.js";
 
 export type NotifyGroupCallOptions = {
     hostCall: string;
@@ -39,7 +40,7 @@ export const notifyGroupCallFactory = apiFactory<NotifyGroupCallResponse>()((api
         const params = {
             callId,
             hostCall: String(options.hostCall),
-            callType: options.callType ?? CallType.GroupAudio,
+            callType: normalizeGroupCallType(options.callType),
             status: options.status ?? 0,
             data: dataStr,
         };
