@@ -43,10 +43,7 @@ export const getGroupInfoV2Factory = apiFactory<GetGroupInfoV2Response>()((api, 
      * @param pageOrOptions Số trang `mpage` (mặc định: `1`) hoặc cấu hình `GetGroupInfoV2Options`
      * @throws {ZaloApiError}
      */
-    return async function getGroupInfoV2(
-        groupId: string,
-        pageOrOptions: number | GetGroupInfoV2Options = 1,
-    ) {
+    return async function getGroupInfoV2(groupId: string, pageOrOptions: number | GetGroupInfoV2Options = 1) {
         if (!groupId) {
             throw new ZaloApiError("Missing groupId");
         }

@@ -28,7 +28,9 @@ export const getOAProfileFactory = apiFactory<GetOAProfileResponse>()((api, ctx,
      * @throws {ZaloApiError}
      */
     return async function getOAProfile(oaId: string, options: GetOAProfileOptions = {}): Promise<GetOAProfileResponse> {
-        const cleanId = String(oaId ?? "").trim().split("_")[0];
+        const cleanId = String(oaId ?? "")
+            .trim()
+            .split("_")[0];
         if (!cleanId) {
             throw new ZaloApiError("Missing oaId");
         }
@@ -79,10 +81,7 @@ export const getOAProfileFactory = apiFactory<GetOAProfileResponse>()((api, ctx,
             Record<string, unknown>
         >;
         const rawProfile =
-            changedProfiles[cleanId] ??
-            changedProfiles[`${cleanId}_0`] ??
-            Object.values(changedProfiles)[0] ??
-            null;
+            changedProfiles[cleanId] ?? changedProfiles[`${cleanId}_0`] ?? Object.values(changedProfiles)[0] ?? null;
 
         return normalizeOAProfile(
             cleanId,

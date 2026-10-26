@@ -86,5 +86,3 @@ export default {
         );
     },
 } satisfies Theme;
-
-

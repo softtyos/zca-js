@@ -11,17 +11,17 @@ Truy vấn dung lượng My Cloud / ZCloud, ZFamily, khóa giải mã ViewerKey 
 
 ## Danh sách nhanh
 
-| Phương thức | HTTP | Endpoint Zalo | Mô tả |
-| :--- | :---: | :--- | :--- |
-| [`getCloudInfo`](#getcloudinfo) | `GET` | `Internal` | Lấy thông tin gói thuê bao Zalo Cloud (command 12754) |
-| [`getCloudSettings`](#getcloudsettings) | `GET` | `Internal` | Lấy cấu hình giới hạn tệp và cài đặt ZCloud của tài khoản (command 12756) |
-| [`getCloudViewerKey`](#getcloudviewerkey) | `GET` | `Internal` | Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho hệ thống ZCloud / MyCloud (command 12741). Tự động cache trong bộ nhớ `ctx.zcloudViewerKeyCache` (TTL 15 phút) để tối ưu hiệu năng khi gọi liên tiếp. |
-| [`getFamilyProfile`](#getfamilyprofile) | `GET` | `Internal` | Lấy thông tin nhóm gia đình ZFamily (command 12757) |
-| [`getFamilyUsage`](#getfamilyusage) | `GET` | `Internal` | Kiểm tra dung lượng sử dụng gói ZCloud Gia đình (Family Usage - command 12758) |
-| [`getFamilyViewerKey`](#getfamilyviewerkey) | `GET` | `Internal` | Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho gói gia đình ZFamily (command 12759). Tự động cache trong bộ nhớ `ctx.zfamilyViewerKeyCache` (TTL 15 phút) để tối ưu hiệu năng khi gọi liên tiếp. |
-| [`getUsageMyCloud`](#getusagemycloud) | `GET` | `Internal` | Kiểm tra hạn mức và dung lượng sử dụng Cloud của tôi (MyCloud - command 12748) |
-| [`getUsageZCloud`](#getusagezcloud) | `GET` | `Internal` | Kiểm tra dung lượng sử dụng ZCloud V2 (bao gồm MyCloud và Sao lưu tin nhắn - command 12749) |
-| [`verifyCloudMedia`](#verifycloudmedia) | `GET` | `Internal` | Kiểm tra và lấy danh sách mục Media lưu trữ trên ZCloud (command 12740 / 12761) |
+| Phương thức                                 | HTTP  | Endpoint Zalo | Mô tả                                                                                                                                                                                                                     |
+| :------------------------------------------ | :---: | :------------ | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| [`getCloudInfo`](#getcloudinfo)             | `GET` | `Internal`    | Lấy thông tin gói thuê bao Zalo Cloud (command 12754)                                                                                                                                                                     |
+| [`getCloudSettings`](#getcloudsettings)     | `GET` | `Internal`    | Lấy cấu hình giới hạn tệp và cài đặt ZCloud của tài khoản (command 12756)                                                                                                                                                 |
+| [`getCloudViewerKey`](#getcloudviewerkey)   | `GET` | `Internal`    | Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho hệ thống ZCloud / MyCloud (command 12741). Tự động cache trong bộ nhớ `ctx.zcloudViewerKeyCache` (TTL 15 phút) để tối ưu hiệu năng khi gọi liên tiếp. |
+| [`getFamilyProfile`](#getfamilyprofile)     | `GET` | `Internal`    | Lấy thông tin nhóm gia đình ZFamily (command 12757)                                                                                                                                                                       |
+| [`getFamilyUsage`](#getfamilyusage)         | `GET` | `Internal`    | Kiểm tra dung lượng sử dụng gói ZCloud Gia đình (Family Usage - command 12758)                                                                                                                                            |
+| [`getFamilyViewerKey`](#getfamilyviewerkey) | `GET` | `Internal`    | Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho gói gia đình ZFamily (command 12759). Tự động cache trong bộ nhớ `ctx.zfamilyViewerKeyCache` (TTL 15 phút) để tối ưu hiệu năng khi gọi liên tiếp.     |
+| [`getUsageMyCloud`](#getusagemycloud)       | `GET` | `Internal`    | Kiểm tra hạn mức và dung lượng sử dụng Cloud của tôi (MyCloud - command 12748)                                                                                                                                            |
+| [`getUsageZCloud`](#getusagezcloud)         | `GET` | `Internal`    | Kiểm tra dung lượng sử dụng ZCloud V2 (bao gồm MyCloud và Sao lưu tin nhắn - command 12749)                                                                                                                               |
+| [`verifyCloudMedia`](#verifycloudmedia)     | `GET` | `Internal`    | Kiểm tra và lấy danh sách mục Media lưu trữ trên ZCloud (command 12740 / 12761)                                                                                                                                           |
 
 ---
 
@@ -90,9 +90,9 @@ Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho h
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.zcloud.getCloudViewerKey(forceRefresh = false)
+await api.zcloud.getCloudViewerKey((forceRefresh = false));
 // Hoặc gọi phẳng (Flat Alias):
-await api.getCloudViewerKey(forceRefresh = false)
+await api.getCloudViewerKey((forceRefresh = false));
 ```
 
 ### Tham số
@@ -172,9 +172,9 @@ Lấy cặp khóa phiên (`viewer_key` và khóa giải mã AES-256 `enk`) cho g
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.zcloud.getFamilyViewerKey(forceRefresh = false)
+await api.zcloud.getFamilyViewerKey((forceRefresh = false));
 // Hoặc gọi phẳng (Flat Alias):
-await api.getFamilyViewerKey(forceRefresh = false)
+await api.getFamilyViewerKey((forceRefresh = false));
 ```
 
 ### Tham số

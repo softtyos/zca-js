@@ -11,18 +11,18 @@ Tìm kiếm nhãn dán, danh mục nhãn dán V2, nhãn dán gợi ý theo ngữ
 
 ## Danh sách nhanh
 
-| Phương thức | HTTP | Endpoint Zalo | Mô tả |
-| :--- | :---: | :--- | :--- |
-| [`getPersonalizedStickerList`](#getpersonalizedstickerlist) | `GET` | `/api/message/sticker/personalized/list` | Lấy danh sách Sticker cá nhân hóa của tài khoản (command 11745) |
-| [`getStickerCategoriesV2`](#getstickercategoriesv2) | `GET` | `/api/message/sticker/category/list/v2` | Lấy danh sách danh mục bộ nhãn dán (Sticker Categories V2 - command 12020) |
-| [`getStickerCategoryData`](#getstickercategorydata) | `GET` | `/api/message/sticker/category/detail` | Lấy thông tin chi tiết một bộ nhãn dán theo `cid` (command 11156) |
-| [`getStickerCategoryDetail`](#getstickercategorydetail) | `GET` | `/api/message/sticker/category/sticker_detail` | Lấy danh sách toàn bộ nhãn dán nằm trong một bộ nhãn dán (Category/Pack ID). |
-| [`getStickerHello`](#getstickerhello) | `GET` | `/api/message/sticker/suggestion` | Lấy danh sách Sticker chào hỏi gợi ý khi bắt đầu trò chuyện mới (command 11751) |
-| [`getStickerSuggestKeywords`](#getstickersuggestkeywords) | `GET` | `/api/message/sticker/suggest/keywords` | Lấy bộ từ khóa gợi ý Sticker tự động khi gõ tin nhắn (command 11740) |
-| [`getStickerSuggestion`](#getstickersuggestion) | `GET` | `/api/message/sticker/suggest/stickers` | Gợi ý Sticker/GIF theo từ khóa đang nhập (command 11741) |
-| [`getStickers`](#getstickers) | `GET` | `/api/message/sticker` | Tìm kiếm danh sách ID nhãn dán theo từ khóa tiếng Việt/tiếng Anh. |
-| [`getStickersDetail`](#getstickersdetail) | `GET` | `/api/message/sticker/sticker_detail` | Lấy thông tin chi tiết (URL ảnh động, loại sticker, cateId) của một hoặc nhiều Sticker ID. |
-| [`searchSticker`](#searchsticker) | `GET` | `/api/message/sticker/search` | Tìm kiếm nhãn dán nâng cao theo từ khóa. |
+| Phương thức                                                 | HTTP  | Endpoint Zalo                                  | Mô tả                                                                                      |
+| :---------------------------------------------------------- | :---: | :--------------------------------------------- | :----------------------------------------------------------------------------------------- |
+| [`getPersonalizedStickerList`](#getpersonalizedstickerlist) | `GET` | `/api/message/sticker/personalized/list`       | Lấy danh sách Sticker cá nhân hóa của tài khoản (command 11745)                            |
+| [`getStickerCategoriesV2`](#getstickercategoriesv2)         | `GET` | `/api/message/sticker/category/list/v2`        | Lấy danh sách danh mục bộ nhãn dán (Sticker Categories V2 - command 12020)                 |
+| [`getStickerCategoryData`](#getstickercategorydata)         | `GET` | `/api/message/sticker/category/detail`         | Lấy thông tin chi tiết một bộ nhãn dán theo `cid` (command 11156)                          |
+| [`getStickerCategoryDetail`](#getstickercategorydetail)     | `GET` | `/api/message/sticker/category/sticker_detail` | Lấy danh sách toàn bộ nhãn dán nằm trong một bộ nhãn dán (Category/Pack ID).               |
+| [`getStickerHello`](#getstickerhello)                       | `GET` | `/api/message/sticker/suggestion`              | Lấy danh sách Sticker chào hỏi gợi ý khi bắt đầu trò chuyện mới (command 11751)            |
+| [`getStickerSuggestKeywords`](#getstickersuggestkeywords)   | `GET` | `/api/message/sticker/suggest/keywords`        | Lấy bộ từ khóa gợi ý Sticker tự động khi gõ tin nhắn (command 11740)                       |
+| [`getStickerSuggestion`](#getstickersuggestion)             | `GET` | `/api/message/sticker/suggest/stickers`        | Gợi ý Sticker/GIF theo từ khóa đang nhập (command 11741)                                   |
+| [`getStickers`](#getstickers)                               | `GET` | `/api/message/sticker`                         | Tìm kiếm danh sách ID nhãn dán theo từ khóa tiếng Việt/tiếng Anh.                          |
+| [`getStickersDetail`](#getstickersdetail)                   | `GET` | `/api/message/sticker/sticker_detail`          | Lấy thông tin chi tiết (URL ảnh động, loại sticker, cateId) của một hoặc nhiều Sticker ID. |
+| [`searchSticker`](#searchsticker)                           | `GET` | `/api/message/sticker/search`                  | Tìm kiếm nhãn dán nâng cao theo từ khóa.                                                   |
 
 ---
 
@@ -34,9 +34,9 @@ Lấy danh sách Sticker cá nhân hóa của tài khoản (command 11745)
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.sticker.getPersonalizedStickerList()
+await api.sticker.getPersonalizedStickerList();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getPersonalizedStickerList()
+await api.getPersonalizedStickerList();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -58,9 +58,9 @@ Lấy danh sách danh mục bộ nhãn dán (Sticker Categories V2 - command 120
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.sticker.getStickerCategoriesV2()
+await api.sticker.getStickerCategoriesV2();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getStickerCategoriesV2()
+await api.getStickerCategoriesV2();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -145,9 +145,9 @@ Lấy danh sách Sticker chào hỏi gợi ý khi bắt đầu trò chuyện m�
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.sticker.getStickerHello()
+await api.sticker.getStickerHello();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getStickerHello()
+await api.getStickerHello();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -181,9 +181,9 @@ Lấy bộ từ khóa gợi ý Sticker tự động khi gõ tin nhắn (command 
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.sticker.getStickerSuggestKeywords()
+await api.sticker.getStickerSuggestKeywords();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getStickerSuggestKeywords()
+await api.getStickerSuggestKeywords();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)

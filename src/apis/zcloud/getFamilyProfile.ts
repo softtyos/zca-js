@@ -1,10 +1,4 @@
-import {
-    apiFactory,
-    getServiceEndpoint,
-    requestZFamilyDecrypted,
-    ZALO_DOMAINS,
-    ZALO_ENDPOINTS,
-} from "../../utils.js";
+import { apiFactory, getServiceEndpoint, requestZFamilyDecrypted, ZALO_DOMAINS, ZALO_ENDPOINTS } from "../../utils.js";
 import type { GetFamilyViewerKeyResponse } from "./getFamilyViewerKey.js";
 
 export type GetFamilyProfileResponse = Record<string, unknown>;

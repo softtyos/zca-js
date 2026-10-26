@@ -11,52 +11,52 @@ Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch 
 
 ## Danh sách nhanh
 
-| Phương thức | HTTP | Endpoint Zalo | Mô tả |
-| :--- | :---: | :--- | :--- |
-| [`addGroupBlockedMember`](#addgroupblockedmember) | `GET` | `/api/group/blockedmems/add` | Chặn một hoặc nhiều thành viên khỏi nhóm (không cho tham gia lại). |
-| [`addGroupDeputy`](#addgroupdeputy) | `GET` | `/api/group/admins/add` | Bổ nhiệm thành viên làm Phó nhóm (Quản trị viên). |
-| [`addUserToGroup`](#addusertogroup) | `POST` | `/api/group/invite/v2` | Thêm trực tiếp một hoặc nhiều người dùng vào nhóm. |
-| [`analyseGroup`](#analysegroup) | `GET` | `/api/group/analyse` | Lấy dữ liệu phân tích/thống kê của nhóm qua `/api/group/analyse` (command 12407) |
-| [`changeGroupAvatar`](#changegroupavatar) | `POST` | `/api/group/upavatar` | Thay đổi ảnh đại diện (Avatar) của nhóm. |
-| [`changeGroupName`](#changegroupname) | `POST` | `/api/group/updateinfo` | Đổi tên hiển thị của nhóm chat hoặc Cộng đồng. |
-| [`changeGroupOwner`](#changegroupowner) | `GET` | `/api/group/change-owner` | Chuyển nhượng quyền Trưởng nhóm (Owner) cho một thành viên khác trong nhóm. |
-| [`checkQuotaCommunityMember`](#checkquotacommunitymember) | `GET` | `/api/group/quota/members-comm` | Kiểm tra điều kiện/hạn mức thành viên Cộng đồng đối với một thành viên cụ thể trong nhóm (command 12182) |
-| [`createGroup`](#creategroup) | `POST` | `/api/group/create/v2` | Tạo một nhóm chat mới kèm tên nhóm, danh sách thành viên ban đầu và ảnh đại diện. |
-| [`deleteGroupInviteBox`](#deletegroupinvitebox) | `GET` | `/api/group/inv-box/mdel-inv` | Xóa lời mời tham gia nhóm trong hộp thư lời mời nhóm. |
-| [`disableGroupLink`](#disablegrouplink) | `GET` | `/api/group/link/disable` | Vô hiệu hóa (Tắt) đường dẫn tham gia nhóm bằng liên kết (Invite Link). |
-| [`disperseGroup`](#dispersegroup) | `POST` | `/api/group/disperse` | Giải tán nhóm chat vĩnh viễn (yêu cầu quyền Trưởng nhóm). |
-| [`enableGroupLink`](#enablegrouplink) | `GET` | `/api/group/link/new` | Kích hoạt hoặc tạo mới đường dẫn liên kết mời tham gia nhóm. |
-| [`getAllGroups`](#getallgroups) | `GET` | `/api/group/getlg/v4` | API `getAllGroups` thuộc phân hệ `group`. |
-| [`getE2eeGroupList`](#gete2eegrouplist) | `GET` | `/api/group/getlg/e2ee` | Lấy danh sách các nhóm đang bật mã hóa đầu cuối E2EE (command 12146) |
-| [`getExtraGroupInfo`](#getextragroupinfo) | `POST` | `/api/group/userctx/multiget` | Lấy ngữ cảnh và vai trò mở rộng của người dùng đối với nhiều nhóm (command 12607) |
-| [`getGroupBlockedMember`](#getgroupblockedmember) | `GET` | `/api/group/blockedmems/list` | Lấy danh sách các tài khoản đang bị chặn khỏi nhóm. |
-| [`getGroupChatHistory`](#getgroupchathistory) | `GET` | `/api/cm/getoldv2`<br/>`/api/cm/getrecentv2` | Lấy lịch sử tin nhắn nhóm từ Zalo Cloud Message (hỗ trợ cả `/api/cm/getrecentv2` cmd 12506 và `/api/cm/getoldv2` cmd 12507) |
-| [`getGroupCloudMessageJump`](#getgroupcloudmessagejump) | `GET` | `/api/cm/rgetv2` | Nhảy tới vị trí một tin nhắn nhóm cụ thể trên Zalo Cloud Message và lấy ngữ cảnh xung quanh (command 12508) |
-| [`getGroupCloudMessagePath`](#getgroupcloudmessagepath) | `GET` | `/api/cm/getpath` | Lấy chuỗi tin nhắn nhóm theo đường dẫn nhảy tới một tin nhắn cụ thể (`globalMsgId` / `rGlobalMsgId`) qua `/api/cm/getpath` (command 12504) |
-| [`getGroupHistoryLegacy`](#getgrouphistorylegacy) | `GET` | `/api/group/history` | Lấy lịch sử tin nhắn nhóm qua endpoint `/api/group/history` trên miền `group` (command 11240) |
-| [`getGroupInfo`](#getgroupinfo) | `POST` | `/api/group/getmg-v2` | Lấy thông tin chi tiết của một hoặc nhiều nhóm (tên nhóm, cài đặt lockViewMember, creatorId, adminIds, memVerList) qua /api/group/getmg-v2. |
-| [`getGroupInfoV2`](#getgroupinfov2) | `GET` | `/api/group/getgi`<br/>`/api/group/getgi/v2` | Lấy thông tin nhóm và danh sách thành viên theo trang qua `/api/group/getgi/v2` hoặc `/api/group/getgi` (command 11162) |
-| [`getGroupInviteBoxInfo`](#getgroupinviteboxinfo) | `GET` | `/api/group/inv-box/inv-info` | Lấy thông tin chi tiết của một lời mời vào nhóm cụ thể. |
-| [`getGroupInviteBoxList`](#getgroupinviteboxlist) | `GET` | `/api/group/inv-box/list` | Lấy danh sách tất cả lời mời tham gia nhóm đang chờ trong hộp thư. |
-| [`getGroupLinkDetail`](#getgrouplinkdetail) | `GET` | `/api/group/link/detail` | Lấy chi tiết đường dẫn mời tham gia nhóm (Link邀請) của một nhóm mà bạn đang tham gia. |
-| [`getGroupLinkInfo`](#getgrouplinkinfo) | `GET` | `/api/group/link/ginfo` | Tra cứu thông tin nhóm và danh sách thành viên theo trang từ đường dẫn nhóm công khai (https://zalo.me/g/...). |
-| [`getGroupListV3`](#getgrouplistv3) | `GET` | `/api/group/getlg/v3` | Lấy danh sách nhóm theo trang kèm thông tin thành viên đại diện (`currentMems`) và gợi ý nhóm (`suggestGroup`) qua `/api/group/getlg/v3` (command 11161) |
-| [`getGroupMembersInfo`](#getgroupmembersinfo) | `GET` | `/api/social/group/members` | Giải mã hàng loạt thông tin hồ sơ thành viên (displayName, zaloName, avatar, globalId) từ danh sách UID qua /api/social/group/members. |
-| [`getGroupMessageStatus`](#getgroupmessagestatus) | `POST` | `/api/group/getStatusMsg` | Truy vấn trạng thái Đã nhận (`deliver`) và Đã xem (`seen`) tin nhắn của danh sách thành viên trong nhóm (command 12017) |
-| [`getMultiGroupCloudMessages`](#getmultigroupcloudmessages) | `GET` | `/api/cm/mget` | Đồng bộ nhanh tin nhắn Cloud của nhiều nhóm cùng lúc theo danh sách `groupIds` (command 12503 - `syncCloudMsgFirstLogin`) |
-| [`getPendingGroupMembers`](#getpendinggroupmembers) | `GET` | `/api/group/pending-mems/list` | Lấy danh sách các yêu cầu xin vào nhóm đang chờ Quản trị viên phê duyệt. |
-| [`getQuotaCommunity`](#getquotacommunity) | `GET` | `/api/group/quota/community` | Kiểm tra hạn mức nâng cấp nhóm lên Cộng đồng của tài khoản (command 12181) |
-| [`getRelatedFriendGroup`](#getrelatedfriendgroup) | `POST` | `/api/friend/group/related` | Kiểm tra danh sách các nhóm chung giữa tài khoản hiện tại và danh sách UID truyền vào qua /api/friend/group/related. |
-| [`inviteUserToGroups`](#inviteusertogroups) | `GET` | `/api/group/invite/multi` | Gửi lời mời tham gia một hoặc nhiều nhóm tới người dùng. |
-| [`joinGroupInviteBox`](#joingroupinvitebox) | `GET` | `/api/group/inv-box/join` | Chấp nhận lời mời tham gia nhóm từ hộp thư lời mời. |
-| [`joinGroupLink`](#joingrouplink) | `GET` | `/api/group/link/join` | Tham gia vào nhóm thông qua đường dẫn liên kết mời (Group Link). |
-| [`leaveGroup`](#leavegroup) | `POST` | `/api/group/leave` | Rời khỏi một hoặc nhiều nhóm chat (hỗ trợ rời nhóm im lặng silent). |
-| [`removeGroupBlockedMember`](#removegroupblockedmember) | `GET` | `/api/group/blockedmems/remove` | Gỡ chặn (Unblock) cho người dùng khỏi danh sách chặn của nhóm. |
-| [`removeGroupDeputy`](#removegroupdeputy) | `GET` | `/api/group/admins/remove` | Cách chức Phó nhóm (thu hồi quyền Quản trị viên) của thành viên. |
-| [`removeUserFromGroup`](#removeuserfromgroup) | `POST` | `/api/group/kickout` | Mời ra khỏi nhóm (Kick) một hoặc nhiều thành viên. |
-| [`reviewPendingMemberRequest`](#reviewpendingmemberrequest) | `GET` | `/api/group/pending-mems/review` | Phê duyệt (Chấp nhận hoặc Từ chối) yêu cầu xin tham gia nhóm của thành viên mới. |
-| [`updateGroupSettings`](#updategroupsettings) | `GET` | `/api/group/setting/update` | Cập nhật các thiết lập quyền hạn của nhóm (ẩn thành viên lockViewMember, duyệt thành viên joinAppr, khóa nhắn tin lockSendMsg...). |
-| [`upgradeGroupToCommunity`](#upgradegrouptocommunity) | `GET` | `/api/group/upgrade/community` | Nâng cấp nhóm thường lên Cộng đồng (Community - tối đa 1000 thành viên). |
+| Phương thức                                                 |  HTTP  | Endpoint Zalo                                | Mô tả                                                                                                                                                    |
+| :---------------------------------------------------------- | :----: | :------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`addGroupBlockedMember`](#addgroupblockedmember)           | `GET`  | `/api/group/blockedmems/add`                 | Chặn một hoặc nhiều thành viên khỏi nhóm (không cho tham gia lại).                                                                                       |
+| [`addGroupDeputy`](#addgroupdeputy)                         | `GET`  | `/api/group/admins/add`                      | Bổ nhiệm thành viên làm Phó nhóm (Quản trị viên).                                                                                                        |
+| [`addUserToGroup`](#addusertogroup)                         | `POST` | `/api/group/invite/v2`                       | Thêm trực tiếp một hoặc nhiều người dùng vào nhóm.                                                                                                       |
+| [`analyseGroup`](#analysegroup)                             | `GET`  | `/api/group/analyse`                         | Lấy dữ liệu phân tích/thống kê của nhóm qua `/api/group/analyse` (command 12407)                                                                         |
+| [`changeGroupAvatar`](#changegroupavatar)                   | `POST` | `/api/group/upavatar`                        | Thay đổi ảnh đại diện (Avatar) của nhóm.                                                                                                                 |
+| [`changeGroupName`](#changegroupname)                       | `POST` | `/api/group/updateinfo`                      | Đổi tên hiển thị của nhóm chat hoặc Cộng đồng.                                                                                                           |
+| [`changeGroupOwner`](#changegroupowner)                     | `GET`  | `/api/group/change-owner`                    | Chuyển nhượng quyền Trưởng nhóm (Owner) cho một thành viên khác trong nhóm.                                                                              |
+| [`checkQuotaCommunityMember`](#checkquotacommunitymember)   | `GET`  | `/api/group/quota/members-comm`              | Kiểm tra điều kiện/hạn mức thành viên Cộng đồng đối với một thành viên cụ thể trong nhóm (command 12182)                                                 |
+| [`createGroup`](#creategroup)                               | `POST` | `/api/group/create/v2`                       | Tạo một nhóm chat mới kèm tên nhóm, danh sách thành viên ban đầu và ảnh đại diện.                                                                        |
+| [`deleteGroupInviteBox`](#deletegroupinvitebox)             | `GET`  | `/api/group/inv-box/mdel-inv`                | Xóa lời mời tham gia nhóm trong hộp thư lời mời nhóm.                                                                                                    |
+| [`disableGroupLink`](#disablegrouplink)                     | `GET`  | `/api/group/link/disable`                    | Vô hiệu hóa (Tắt) đường dẫn tham gia nhóm bằng liên kết (Invite Link).                                                                                   |
+| [`disperseGroup`](#dispersegroup)                           | `POST` | `/api/group/disperse`                        | Giải tán nhóm chat vĩnh viễn (yêu cầu quyền Trưởng nhóm).                                                                                                |
+| [`enableGroupLink`](#enablegrouplink)                       | `GET`  | `/api/group/link/new`                        | Kích hoạt hoặc tạo mới đường dẫn liên kết mời tham gia nhóm.                                                                                             |
+| [`getAllGroups`](#getallgroups)                             | `GET`  | `/api/group/getlg/v4`                        | API `getAllGroups` thuộc phân hệ `group`.                                                                                                                |
+| [`getE2eeGroupList`](#gete2eegrouplist)                     | `GET`  | `/api/group/getlg/e2ee`                      | Lấy danh sách các nhóm đang bật mã hóa đầu cuối E2EE (command 12146)                                                                                     |
+| [`getExtraGroupInfo`](#getextragroupinfo)                   | `POST` | `/api/group/userctx/multiget`                | Lấy ngữ cảnh và vai trò mở rộng của người dùng đối với nhiều nhóm (command 12607)                                                                        |
+| [`getGroupBlockedMember`](#getgroupblockedmember)           | `GET`  | `/api/group/blockedmems/list`                | Lấy danh sách các tài khoản đang bị chặn khỏi nhóm.                                                                                                      |
+| [`getGroupChatHistory`](#getgroupchathistory)               | `GET`  | `/api/cm/getoldv2`<br/>`/api/cm/getrecentv2` | Lấy lịch sử tin nhắn nhóm từ Zalo Cloud Message (hỗ trợ cả `/api/cm/getrecentv2` cmd 12506 và `/api/cm/getoldv2` cmd 12507)                              |
+| [`getGroupCloudMessageJump`](#getgroupcloudmessagejump)     | `GET`  | `/api/cm/rgetv2`                             | Nhảy tới vị trí một tin nhắn nhóm cụ thể trên Zalo Cloud Message và lấy ngữ cảnh xung quanh (command 12508)                                              |
+| [`getGroupCloudMessagePath`](#getgroupcloudmessagepath)     | `GET`  | `/api/cm/getpath`                            | Lấy chuỗi tin nhắn nhóm theo đường dẫn nhảy tới một tin nhắn cụ thể (`globalMsgId` / `rGlobalMsgId`) qua `/api/cm/getpath` (command 12504)               |
+| [`getGroupHistoryLegacy`](#getgrouphistorylegacy)           | `GET`  | `/api/group/history`                         | Lấy lịch sử tin nhắn nhóm qua endpoint `/api/group/history` trên miền `group` (command 11240)                                                            |
+| [`getGroupInfo`](#getgroupinfo)                             | `POST` | `/api/group/getmg-v2`                        | Lấy thông tin chi tiết của một hoặc nhiều nhóm (tên nhóm, cài đặt lockViewMember, creatorId, adminIds, memVerList) qua /api/group/getmg-v2.              |
+| [`getGroupInfoV2`](#getgroupinfov2)                         | `GET`  | `/api/group/getgi`<br/>`/api/group/getgi/v2` | Lấy thông tin nhóm và danh sách thành viên theo trang qua `/api/group/getgi/v2` hoặc `/api/group/getgi` (command 11162)                                  |
+| [`getGroupInviteBoxInfo`](#getgroupinviteboxinfo)           | `GET`  | `/api/group/inv-box/inv-info`                | Lấy thông tin chi tiết của một lời mời vào nhóm cụ thể.                                                                                                  |
+| [`getGroupInviteBoxList`](#getgroupinviteboxlist)           | `GET`  | `/api/group/inv-box/list`                    | Lấy danh sách tất cả lời mời tham gia nhóm đang chờ trong hộp thư.                                                                                       |
+| [`getGroupLinkDetail`](#getgrouplinkdetail)                 | `GET`  | `/api/group/link/detail`                     | Lấy chi tiết đường dẫn mời tham gia nhóm (Link邀請) của một nhóm mà bạn đang tham gia.                                                                   |
+| [`getGroupLinkInfo`](#getgrouplinkinfo)                     | `GET`  | `/api/group/link/ginfo`                      | Tra cứu thông tin nhóm và danh sách thành viên theo trang từ đường dẫn nhóm công khai (https://zalo.me/g/...).                                           |
+| [`getGroupListV3`](#getgrouplistv3)                         | `GET`  | `/api/group/getlg/v3`                        | Lấy danh sách nhóm theo trang kèm thông tin thành viên đại diện (`currentMems`) và gợi ý nhóm (`suggestGroup`) qua `/api/group/getlg/v3` (command 11161) |
+| [`getGroupMembersInfo`](#getgroupmembersinfo)               | `GET`  | `/api/social/group/members`                  | Giải mã hàng loạt thông tin hồ sơ thành viên (displayName, zaloName, avatar, globalId) từ danh sách UID qua /api/social/group/members.                   |
+| [`getGroupMessageStatus`](#getgroupmessagestatus)           | `POST` | `/api/group/getStatusMsg`                    | Truy vấn trạng thái Đã nhận (`deliver`) và Đã xem (`seen`) tin nhắn của danh sách thành viên trong nhóm (command 12017)                                  |
+| [`getMultiGroupCloudMessages`](#getmultigroupcloudmessages) | `GET`  | `/api/cm/mget`                               | Đồng bộ nhanh tin nhắn Cloud của nhiều nhóm cùng lúc theo danh sách `groupIds` (command 12503 - `syncCloudMsgFirstLogin`)                                |
+| [`getPendingGroupMembers`](#getpendinggroupmembers)         | `GET`  | `/api/group/pending-mems/list`               | Lấy danh sách các yêu cầu xin vào nhóm đang chờ Quản trị viên phê duyệt.                                                                                 |
+| [`getQuotaCommunity`](#getquotacommunity)                   | `GET`  | `/api/group/quota/community`                 | Kiểm tra hạn mức nâng cấp nhóm lên Cộng đồng của tài khoản (command 12181)                                                                               |
+| [`getRelatedFriendGroup`](#getrelatedfriendgroup)           | `POST` | `/api/friend/group/related`                  | Kiểm tra danh sách các nhóm chung giữa tài khoản hiện tại và danh sách UID truyền vào qua /api/friend/group/related.                                     |
+| [`inviteUserToGroups`](#inviteusertogroups)                 | `GET`  | `/api/group/invite/multi`                    | Gửi lời mời tham gia một hoặc nhiều nhóm tới người dùng.                                                                                                 |
+| [`joinGroupInviteBox`](#joingroupinvitebox)                 | `GET`  | `/api/group/inv-box/join`                    | Chấp nhận lời mời tham gia nhóm từ hộp thư lời mời.                                                                                                      |
+| [`joinGroupLink`](#joingrouplink)                           | `GET`  | `/api/group/link/join`                       | Tham gia vào nhóm thông qua đường dẫn liên kết mời (Group Link).                                                                                         |
+| [`leaveGroup`](#leavegroup)                                 | `POST` | `/api/group/leave`                           | Rời khỏi một hoặc nhiều nhóm chat (hỗ trợ rời nhóm im lặng silent).                                                                                      |
+| [`removeGroupBlockedMember`](#removegroupblockedmember)     | `GET`  | `/api/group/blockedmems/remove`              | Gỡ chặn (Unblock) cho người dùng khỏi danh sách chặn của nhóm.                                                                                           |
+| [`removeGroupDeputy`](#removegroupdeputy)                   | `GET`  | `/api/group/admins/remove`                   | Cách chức Phó nhóm (thu hồi quyền Quản trị viên) của thành viên.                                                                                         |
+| [`removeUserFromGroup`](#removeuserfromgroup)               | `POST` | `/api/group/kickout`                         | Mời ra khỏi nhóm (Kick) một hoặc nhiều thành viên.                                                                                                       |
+| [`reviewPendingMemberRequest`](#reviewpendingmemberrequest) | `GET`  | `/api/group/pending-mems/review`             | Phê duyệt (Chấp nhận hoặc Từ chối) yêu cầu xin tham gia nhóm của thành viên mới.                                                                         |
+| [`updateGroupSettings`](#updategroupsettings)               | `GET`  | `/api/group/setting/update`                  | Cập nhật các thiết lập quyền hạn của nhóm (ẩn thành viên lockViewMember, duyệt thành viên joinAppr, khóa nhắn tin lockSendMsg...).                       |
+| [`upgradeGroupToCommunity`](#upgradegrouptocommunity)       | `GET`  | `/api/group/upgrade/community`               | Nâng cấp nhóm thường lên Cộng đồng (Community - tối đa 1000 thành viên).                                                                                 |
 
 ---
 
@@ -451,9 +451,9 @@ API `getAllGroups` thuộc phân hệ `group`.
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.group.getAllGroups()
+await api.group.getAllGroups();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getAllGroups()
+await api.getAllGroups();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -477,9 +477,9 @@ Lấy danh sách các nhóm đang bật mã hóa đầu cuối E2EE (command 121
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.group.getE2eeGroupList()
+await api.group.getE2eeGroupList();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getE2eeGroupList()
+await api.getE2eeGroupList();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)

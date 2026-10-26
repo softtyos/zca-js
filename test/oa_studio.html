@@ -1,709 +1,749 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ZCA-JS Zalo OA Studio</title>
-    <style>
-        :root {
-            --bg-primary: #0b0f19;
-            --bg-secondary: #111827;
-            --bg-card: #1e293b;
-            --bg-hover: #26354d;
-            --border-color: #334155;
-            --text-primary: #f8fafc;
-            --text-secondary: #94a3b8;
-            --accent-blue: #2563eb;
-            --accent-blue-light: #3b82f6;
-            --accent-green: #10b981;
-            --accent-amber: #f59e0b;
-            --accent-red: #ef4444;
-            --accent-purple: #8b5cf6;
-        }
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        header {
-            height: 60px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 20px;
-            flex-shrink: 0;
-        }
-        .brand {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        .brand-badge {
-            background: linear-gradient(135deg, #0068ff, #00c6ff);
-            color: #fff;
-            font-weight: 800;
-            font-size: 13px;
-            padding: 5px 10px;
-            border-radius: 8px;
-            letter-spacing: 0.4px;
-        }
-        .brand h1 {
-            font-size: 16px;
-            font-weight: 700;
-        }
-        .header-status {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            font-size: 13px;
-        }
-        .pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 5px 11px;
-            border-radius: 999px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            font-size: 12px;
-        }
-        .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: var(--accent-green);
-            box-shadow: 0 0 8px var(--accent-green);
-        }
-        .btn {
-            background: var(--accent-blue);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            padding: 7px 13px;
-            font-size: 12.5px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.15s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .btn:hover {
-            background: var(--accent-blue-light);
-        }
-        .btn-outline {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-        }
-        .btn-outline:hover {
-            background: var(--bg-hover);
-        }
-        .btn-amber {
-            background: rgba(245, 158, 11, 0.15);
-            color: #fbbf24;
-            border: 1px solid rgba(245, 158, 11, 0.35);
-        }
-        .btn-danger {
-            background: rgba(239, 68, 68, 0.16);
-            color: #f87171;
-            border: 1px solid rgba(239, 68, 68, 0.35);
-        }
-        .btn-success {
-            background: rgba(16, 185, 129, 0.16);
-            color: #34d399;
-            border: 1px solid rgba(16, 185, 129, 0.35);
-        }
-        .workspace {
-            flex: 1;
-            display: grid;
-            grid-template-columns: 310px 1fr 390px;
-            overflow: hidden;
-        }
-        /* Left Sidebar */
-        .sidebar {
-            background: var(--bg-secondary);
-            border-right: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-        }
-        .sidebar-header {
-            padding: 14px;
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .sidebar-header h2 {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.7px;
-            color: var(--text-secondary);
-        }
-        .lookup-row {
-            display: flex;
-            gap: 6px;
-        }
-        input[type="text"], textarea {
-            background: var(--bg-primary);
-            border: 1px solid var(--border-color);
-            color: var(--text-primary);
-            border-radius: 8px;
-            padding: 8px 11px;
-            font-size: 13px;
-            outline: none;
-            width: 100%;
-        }
-        input[type="text"]:focus, textarea:focus {
-            border-color: var(--accent-blue-light);
-        }
-        .oa-list {
-            flex: 1;
-            overflow-y: auto;
-            padding: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .oa-item {
-            padding: 11px;
-            border-radius: 10px;
-            background: var(--bg-card);
-            border: 1px solid transparent;
-            cursor: pointer;
-            display: flex;
-            gap: 11px;
-            align-items: center;
-            transition: all 0.15s ease;
-        }
-        .oa-item:hover {
-            background: var(--bg-hover);
-        }
-        .oa-item.active {
-            border-color: var(--accent-blue-light);
-            background: rgba(37, 99, 235, 0.16);
-        }
-        .oa-avatar {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            object-fit: cover;
-            background: #334155;
-            flex-shrink: 0;
-            border: 2px solid rgba(59, 130, 246, 0.5);
-        }
-        .oa-meta {
-            flex: 1;
-            min-width: 0;
-        }
-        .oa-name {
-            font-size: 13.5px;
-            font-weight: 700;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .oa-badge {
-            font-size: 10px;
-            background: rgba(245, 158, 11, 0.2);
-            color: #fbbf24;
-            border: 1px solid rgba(245, 158, 11, 0.4);
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-weight: 700;
-        }
-        .oa-sub {
-            font-size: 11.5px;
-            color: var(--text-secondary);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-top: 3px;
-        }
-        /* Center Chat Panel */
-        .chat-panel {
-            display: flex;
-            flex-direction: column;
-            background: var(--bg-primary);
-            overflow: hidden;
-        }
-        .chat-header {
-            padding: 12px 18px;
-            background: var(--bg-secondary);
-            border-bottom: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-        }
-        .chat-header-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            min-width: 0;
-        }
-        .chat-title {
-            font-size: 15px;
-            font-weight: 700;
-        }
-        .chat-subtitle {
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 2px;
-        }
-        .chat-actions {
-            display: flex;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-        .chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 18px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .msg-row {
-            display: flex;
-            flex-direction: column;
-            max-width: 78%;
-        }
-        .msg-row.self {
-            align-self: flex-end;
-            align-items: flex-end;
-        }
-        .msg-row.incoming {
-            align-self: flex-start;
-            align-items: flex-start;
-        }
-        .msg-bubble {
-            padding: 11px 14px;
-            border-radius: 14px;
-            font-size: 13.5px;
-            line-height: 1.5;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            cursor: pointer;
-            transition: border-color 0.15s;
-            word-break: break-word;
-        }
-        .msg-bubble:hover {
-            border-color: var(--accent-blue-light);
-        }
-        .msg-row.self .msg-bubble {
-            background: linear-gradient(135deg, #1d4ed8, #2563eb);
-            border-color: #3b82f6;
-            color: #fff;
-        }
-        .msg-meta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 11px;
-            color: var(--text-secondary);
-            margin-top: 4px;
-            padding: 0 4px;
-        }
-        .kind-tag {
-            font-size: 10px;
-            padding: 1px 6px;
-            border-radius: 4px;
-            font-weight: 700;
-            text-transform: uppercase;
-            background: rgba(139, 92, 246, 0.2);
-            color: #c4b5fd;
-            border: 1px solid rgba(139, 92, 246, 0.4);
-        }
-        .oa-list-cards {
-            margin-top: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .oa-list-card {
-            background: rgba(15, 23, 42, 0.75);
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
-        }
-        .oa-list-card h4 {
-            font-size: 13px;
-            color: #60a5fa;
-            margin-bottom: 4px;
-        }
-        .oa-list-card p {
-            font-size: 12px;
-            color: var(--text-secondary);
-        }
-        .footer-buttons {
-            margin-top: 10px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 6px;
-        }
-        .footer-btn {
-            background: rgba(37, 99, 235, 0.18);
-            border: 1px solid rgba(59, 130, 246, 0.45);
-            color: #93c5fd;
-            padding: 5px 10px;
-            border-radius: 6px;
-            font-size: 11.5px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .footer-btn:hover {
-            background: rgba(37, 99, 235, 0.32);
-        }
-        .chat-composer {
-            padding: 14px 18px;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .quick-replies {
-            display: flex;
-            gap: 6px;
-            flex-wrap: wrap;
-        }
-        .chip {
-            font-size: 11.5px;
-            padding: 4px 10px;
-            border-radius: 999px;
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
-            cursor: pointer;
-        }
-        .chip:hover {
-            color: #fff;
-            border-color: var(--accent-blue-light);
-        }
-        .composer-row {
-            display: flex;
-            gap: 10px;
-        }
-        /* Right Inspector Panel */
-        .inspector {
-            background: var(--bg-secondary);
-            border-left: 1px solid var(--border-color);
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-            padding: 14px;
-            gap: 14px;
-        }
-        .card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            padding: 12px;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .card h3 {
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 0.6px;
-            color: var(--text-secondary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .info-line {
-            font-size: 12px;
-            display: flex;
-            justify-content: space-between;
-            gap: 8px;
-            border-bottom: 1px dashed rgba(148, 163, 184, 0.15);
-            padding-bottom: 4px;
-        }
-        .info-line span:first-child {
-            color: var(--text-secondary);
-            flex-shrink: 0;
-        }
-        .info-line span:last-child {
-            text-align: right;
-            word-break: break-all;
-        }
-        pre {
-            background: #090d16;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            padding: 10px;
-            font-size: 11.5px;
-            color: #a7f3d0;
-            overflow-x: auto;
-            max-height: 220px;
-            white-space: pre-wrap;
-            word-break: break-all;
-        }
-        .log-box {
-            max-height: 150px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-            font-size: 11px;
-        }
-        .log-entry {
-            padding: 4px 7px;
-            border-radius: 5px;
-            background: rgba(15, 23, 42, 0.7);
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <div class="brand">
-            <span class="brand-badge">ZCA-JS OA</span>
-            <h1>Zalo Official Account (OA) Interactive Studio</h1>
-        </div>
-        <div class="header-status">
-            <div class="pill">
-                <span class="dot"></span>
-                <span id="ownUidLabel">Đang tải...</span>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ZCA-JS Zalo OA Studio</title>
+        <style>
+            :root {
+                --bg-primary: #0b0f19;
+                --bg-secondary: #111827;
+                --bg-card: #1e293b;
+                --bg-hover: #26354d;
+                --border-color: #334155;
+                --text-primary: #f8fafc;
+                --text-secondary: #94a3b8;
+                --accent-blue: #2563eb;
+                --accent-blue-light: #3b82f6;
+                --accent-green: #10b981;
+                --accent-amber: #f59e0b;
+                --accent-red: #ef4444;
+                --accent-purple: #8b5cf6;
+            }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+                background: var(--bg-primary);
+                color: var(--text-primary);
+                height: 100vh;
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            header {
+                height: 60px;
+                background: var(--bg-secondary);
+                border-bottom: 1px solid var(--border-color);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 20px;
+                flex-shrink: 0;
+            }
+            .brand {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+            .brand-badge {
+                background: linear-gradient(135deg, #0068ff, #00c6ff);
+                color: #fff;
+                font-weight: 800;
+                font-size: 13px;
+                padding: 5px 10px;
+                border-radius: 8px;
+                letter-spacing: 0.4px;
+            }
+            .brand h1 {
+                font-size: 16px;
+                font-weight: 700;
+            }
+            .header-status {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-size: 13px;
+            }
+            .pill {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 5px 11px;
+                border-radius: 999px;
+                background: var(--bg-card);
+                border: 1px solid var(--border-color);
+                color: var(--text-secondary);
+                font-size: 12px;
+            }
+            .dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: var(--accent-green);
+                box-shadow: 0 0 8px var(--accent-green);
+            }
+            .btn {
+                background: var(--accent-blue);
+                color: #fff;
+                border: none;
+                border-radius: 8px;
+                padding: 7px 13px;
+                font-size: 12.5px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: all 0.15s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .btn:hover {
+                background: var(--accent-blue-light);
+            }
+            .btn-outline {
+                background: var(--bg-card);
+                border: 1px solid var(--border-color);
+                color: var(--text-primary);
+            }
+            .btn-outline:hover {
+                background: var(--bg-hover);
+            }
+            .btn-amber {
+                background: rgba(245, 158, 11, 0.15);
+                color: #fbbf24;
+                border: 1px solid rgba(245, 158, 11, 0.35);
+            }
+            .btn-danger {
+                background: rgba(239, 68, 68, 0.16);
+                color: #f87171;
+                border: 1px solid rgba(239, 68, 68, 0.35);
+            }
+            .btn-success {
+                background: rgba(16, 185, 129, 0.16);
+                color: #34d399;
+                border: 1px solid rgba(16, 185, 129, 0.35);
+            }
+            .workspace {
+                flex: 1;
+                display: grid;
+                grid-template-columns: 310px 1fr 390px;
+                overflow: hidden;
+            }
+            /* Left Sidebar */
+            .sidebar {
+                background: var(--bg-secondary);
+                border-right: 1px solid var(--border-color);
+                display: flex;
+                flex-direction: column;
+                overflow: hidden;
+            }
+            .sidebar-header {
+                padding: 14px;
+                border-bottom: 1px solid var(--border-color);
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .sidebar-header h2 {
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.7px;
+                color: var(--text-secondary);
+            }
+            .lookup-row {
+                display: flex;
+                gap: 6px;
+            }
+            input[type="text"],
+            textarea {
+                background: var(--bg-primary);
+                border: 1px solid var(--border-color);
+                color: var(--text-primary);
+                border-radius: 8px;
+                padding: 8px 11px;
+                font-size: 13px;
+                outline: none;
+                width: 100%;
+            }
+            input[type="text"]:focus,
+            textarea:focus {
+                border-color: var(--accent-blue-light);
+            }
+            .oa-list {
+                flex: 1;
+                overflow-y: auto;
+                padding: 10px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .oa-item {
+                padding: 11px;
+                border-radius: 10px;
+                background: var(--bg-card);
+                border: 1px solid transparent;
+                cursor: pointer;
+                display: flex;
+                gap: 11px;
+                align-items: center;
+                transition: all 0.15s ease;
+            }
+            .oa-item:hover {
+                background: var(--bg-hover);
+            }
+            .oa-item.active {
+                border-color: var(--accent-blue-light);
+                background: rgba(37, 99, 235, 0.16);
+            }
+            .oa-avatar {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                object-fit: cover;
+                background: #334155;
+                flex-shrink: 0;
+                border: 2px solid rgba(59, 130, 246, 0.5);
+            }
+            .oa-meta {
+                flex: 1;
+                min-width: 0;
+            }
+            .oa-name {
+                font-size: 13.5px;
+                font-weight: 700;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+            }
+            .oa-badge {
+                font-size: 10px;
+                background: rgba(245, 158, 11, 0.2);
+                color: #fbbf24;
+                border: 1px solid rgba(245, 158, 11, 0.4);
+                padding: 1px 6px;
+                border-radius: 4px;
+                font-weight: 700;
+            }
+            .oa-sub {
+                font-size: 11.5px;
+                color: var(--text-secondary);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                margin-top: 3px;
+            }
+            /* Center Chat Panel */
+            .chat-panel {
+                display: flex;
+                flex-direction: column;
+                background: var(--bg-primary);
+                overflow: hidden;
+            }
+            .chat-header {
+                padding: 12px 18px;
+                background: var(--bg-secondary);
+                border-bottom: 1px solid var(--border-color);
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 12px;
+            }
+            .chat-header-left {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                min-width: 0;
+            }
+            .chat-title {
+                font-size: 15px;
+                font-weight: 700;
+            }
+            .chat-subtitle {
+                font-size: 12px;
+                color: var(--text-secondary);
+                margin-top: 2px;
+            }
+            .chat-actions {
+                display: flex;
+                gap: 8px;
+                flex-shrink: 0;
+            }
+            .chat-messages {
+                flex: 1;
+                overflow-y: auto;
+                padding: 18px;
+                display: flex;
+                flex-direction: column;
+                gap: 12px;
+            }
+            .msg-row {
+                display: flex;
+                flex-direction: column;
+                max-width: 78%;
+            }
+            .msg-row.self {
+                align-self: flex-end;
+                align-items: flex-end;
+            }
+            .msg-row.incoming {
+                align-self: flex-start;
+                align-items: flex-start;
+            }
+            .msg-bubble {
+                padding: 11px 14px;
+                border-radius: 14px;
+                font-size: 13.5px;
+                line-height: 1.5;
+                background: var(--bg-card);
+                border: 1px solid var(--border-color);
+                cursor: pointer;
+                transition: border-color 0.15s;
+                word-break: break-word;
+            }
+            .msg-bubble:hover {
+                border-color: var(--accent-blue-light);
+            }
+            .msg-row.self .msg-bubble {
+                background: linear-gradient(135deg, #1d4ed8, #2563eb);
+                border-color: #3b82f6;
+                color: #fff;
+            }
+            .msg-meta {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 11px;
+                color: var(--text-secondary);
+                margin-top: 4px;
+                padding: 0 4px;
+            }
+            .kind-tag {
+                font-size: 10px;
+                padding: 1px 6px;
+                border-radius: 4px;
+                font-weight: 700;
+                text-transform: uppercase;
+                background: rgba(139, 92, 246, 0.2);
+                color: #c4b5fd;
+                border: 1px solid rgba(139, 92, 246, 0.4);
+            }
+            .oa-list-cards {
+                margin-top: 10px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .oa-list-card {
+                background: rgba(15, 23, 42, 0.75);
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                padding: 10px;
+            }
+            .oa-list-card h4 {
+                font-size: 13px;
+                color: #60a5fa;
+                margin-bottom: 4px;
+            }
+            .oa-list-card p {
+                font-size: 12px;
+                color: var(--text-secondary);
+            }
+            .footer-buttons {
+                margin-top: 10px;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 6px;
+            }
+            .footer-btn {
+                background: rgba(37, 99, 235, 0.18);
+                border: 1px solid rgba(59, 130, 246, 0.45);
+                color: #93c5fd;
+                padding: 5px 10px;
+                border-radius: 6px;
+                font-size: 11.5px;
+                font-weight: 600;
+                cursor: pointer;
+            }
+            .footer-btn:hover {
+                background: rgba(37, 99, 235, 0.32);
+            }
+            .chat-composer {
+                padding: 14px 18px;
+                background: var(--bg-secondary);
+                border-top: 1px solid var(--border-color);
+                display: flex;
+                flex-direction: column;
+                gap: 10px;
+            }
+            .quick-replies {
+                display: flex;
+                gap: 6px;
+                flex-wrap: wrap;
+            }
+            .chip {
+                font-size: 11.5px;
+                padding: 4px 10px;
+                border-radius: 999px;
+                background: var(--bg-card);
+                border: 1px solid var(--border-color);
+                color: var(--text-secondary);
+                cursor: pointer;
+            }
+            .chip:hover {
+                color: #fff;
+                border-color: var(--accent-blue-light);
+            }
+            .composer-row {
+                display: flex;
+                gap: 10px;
+            }
+            /* Right Inspector Panel */
+            .inspector {
+                background: var(--bg-secondary);
+                border-left: 1px solid var(--border-color);
+                display: flex;
+                flex-direction: column;
+                overflow-y: auto;
+                padding: 14px;
+                gap: 14px;
+            }
+            .card {
+                background: var(--bg-card);
+                border: 1px solid var(--border-color);
+                border-radius: 10px;
+                padding: 12px;
+                display: flex;
+                flex-direction: column;
+                gap: 8px;
+            }
+            .card h3 {
+                font-size: 12px;
+                text-transform: uppercase;
+                letter-spacing: 0.6px;
+                color: var(--text-secondary);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .info-line {
+                font-size: 12px;
+                display: flex;
+                justify-content: space-between;
+                gap: 8px;
+                border-bottom: 1px dashed rgba(148, 163, 184, 0.15);
+                padding-bottom: 4px;
+            }
+            .info-line span:first-child {
+                color: var(--text-secondary);
+                flex-shrink: 0;
+            }
+            .info-line span:last-child {
+                text-align: right;
+                word-break: break-all;
+            }
+            pre {
+                background: #090d16;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                padding: 10px;
+                font-size: 11.5px;
+                color: #a7f3d0;
+                overflow-x: auto;
+                max-height: 220px;
+                white-space: pre-wrap;
+                word-break: break-all;
+            }
+            .log-box {
+                max-height: 150px;
+                overflow-y: auto;
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+                font-size: 11px;
+            }
+            .log-entry {
+                padding: 4px 7px;
+                border-radius: 5px;
+                background: rgba(15, 23, 42, 0.7);
+            }
+        </style>
+    </head>
+    <body>
+        <header>
+            <div class="brand">
+                <span class="brand-badge">ZCA-JS OA</span>
+                <h1>Zalo Official Account (OA) Interactive Studio</h1>
             </div>
-            <button class="btn btn-outline" onclick="syncAllMessages()">🔄 Đồng bộ tin nhắn OA (HTTP + WSS)</button>
-            <button class="btn btn-amber" onclick="simulateOA('oa_list')">📰 Mô phỏng bài viết OA (chat.list.action)</button>
-            <button class="btn btn-outline" onclick="simulateOA('oa_chat')">🔘 Mô phỏng tin OA kèm nút bấm (footerv2)</button>
-        </div>
-    </header>
-
-    <div class="workspace">
-        <!-- Left Sidebar: OA Conversations -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <h2>Tra cứu / Mở Zalo OA theo UID</h2>
-                <div class="lookup-row">
-                    <input type="text" id="lookupOaInput" placeholder="Nhập OA UID (vd: 2359864726282056346)" value="2359864726282056346" />
-                    <button class="btn" onclick="lookupOAProfile()">Nạp OA</button>
+            <div class="header-status">
+                <div class="pill">
+                    <span class="dot"></span>
+                    <span id="ownUidLabel">Đang tải...</span>
                 </div>
+                <button class="btn btn-outline" onclick="syncAllMessages()">🔄 Đồng bộ tin nhắn OA (HTTP + WSS)</button>
+                <button class="btn btn-amber" onclick="simulateOA('oa_list')">
+                    📰 Mô phỏng bài viết OA (chat.list.action)
+                </button>
+                <button class="btn btn-outline" onclick="simulateOA('oa_chat')">
+                    🔘 Mô phỏng tin OA kèm nút bấm (footerv2)
+                </button>
             </div>
-            <div class="oa-list" id="oaListContainer"></div>
-        </aside>
+        </header>
 
-        <!-- Center: Real-time OA Chat & Replies -->
-        <main class="chat-panel">
-            <div class="chat-header">
-                <div class="chat-header-left">
-                    <img id="activeOaAvatar" class="oa-avatar" src="https://stc-zaloprofile.zdn.vn/pc/v1/images/zalo_sharelogo.png" alt="OA" />
-                    <div>
-                        <div class="chat-title" id="activeOaName">SofttyNet Company Limited</div>
-                        <div class="chat-subtitle" id="activeOaSubtitle">OA UID: 2359864726282056346</div>
+        <div class="workspace">
+            <!-- Left Sidebar: OA Conversations -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Tra cứu / Mở Zalo OA theo UID</h2>
+                    <div class="lookup-row">
+                        <input
+                            type="text"
+                            id="lookupOaInput"
+                            placeholder="Nhập OA UID (vd: 2359864726282056346)"
+                            value="2359864726282056346"
+                        />
+                        <button class="btn" onclick="lookupOAProfile()">Nạp OA</button>
                     </div>
                 </div>
-                <div class="chat-actions">
-                    <button class="btn btn-danger" id="btnBlockOa" onclick="toggleBlockOA(true)">🚫 Chặn OA (blockOA)</button>
-                    <button class="btn btn-success" id="btnUnblockOa" onclick="toggleBlockOA(false)">✅ Bỏ chặn (unblockOA)</button>
+                <div class="oa-list" id="oaListContainer"></div>
+            </aside>
+
+            <!-- Center: Real-time OA Chat & Replies -->
+            <main class="chat-panel">
+                <div class="chat-header">
+                    <div class="chat-header-left">
+                        <img
+                            id="activeOaAvatar"
+                            class="oa-avatar"
+                            src="https://stc-zaloprofile.zdn.vn/pc/v1/images/zalo_sharelogo.png"
+                            alt="OA"
+                        />
+                        <div>
+                            <div class="chat-title" id="activeOaName">SofttyNet Company Limited</div>
+                            <div class="chat-subtitle" id="activeOaSubtitle">OA UID: 2359864726282056346</div>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="btn btn-danger" id="btnBlockOa" onclick="toggleBlockOA(true)">
+                            🚫 Chặn OA (blockOA)
+                        </button>
+                        <button class="btn btn-success" id="btnUnblockOa" onclick="toggleBlockOA(false)">
+                            ✅ Bỏ chặn (unblockOA)
+                        </button>
+                    </div>
                 </div>
-            </div>
 
-            <div class="chat-messages" id="chatMessagesContainer"></div>
+                <div class="chat-messages" id="chatMessagesContainer"></div>
 
-            <div class="chat-composer">
-                <div class="quick-replies">
-                    <span class="chip" onclick="fillReply('Xin chào OA! Tôi đang test nhận & trả lời tin nhắn từ zca-js')">👋 Xin chào OA!</span>
-                    <span class="chip" onclick="fillReply('Tư vấn dịch vụ')">💬 Tư vấn dịch vụ</span>
-                    <span class="chip" onclick="fillReply('Kiểm tra phản hồi trực tuyến 2 chiều')">⚡ Test phản hồi 2 chiều</span>
-                    <span class="chip" onclick="fillReply('Cảm ơn shop nhé!')">❤️ Cảm ơn shop nhé!</span>
+                <div class="chat-composer">
+                    <div class="quick-replies">
+                        <span
+                            class="chip"
+                            onclick="fillReply('Xin chào OA! Tôi đang test nhận & trả lời tin nhắn từ zca-js')"
+                            >👋 Xin chào OA!</span
+                        >
+                        <span class="chip" onclick="fillReply('Tư vấn dịch vụ')">💬 Tư vấn dịch vụ</span>
+                        <span class="chip" onclick="fillReply('Kiểm tra phản hồi trực tuyến 2 chiều')"
+                            >⚡ Test phản hồi 2 chiều</span
+                        >
+                        <span class="chip" onclick="fillReply('Cảm ơn shop nhé!')">❤️ Cảm ơn shop nhé!</span>
+                    </div>
+                    <div class="composer-row">
+                        <input
+                            type="text"
+                            id="replyInput"
+                            placeholder="Nhập nội dung tin nhắn gửi trực tiếp tới Zalo Official Account..."
+                            onkeydown="if (event.key === 'Enter') sendReplyToOA();"
+                        />
+                        <button class="btn" onclick="sendReplyToOA()">Gửi tin nhắn tới OA ➤</button>
+                    </div>
                 </div>
-                <div class="composer-row">
-                    <input type="text" id="replyInput" placeholder="Nhập nội dung tin nhắn gửi trực tiếp tới Zalo Official Account..." onkeydown="if(event.key==='Enter') sendReplyToOA()" />
-                    <button class="btn" onclick="sendReplyToOA()">Gửi tin nhắn tới OA ➤</button>
+            </main>
+
+            <!-- Right: OA Profile & Message Inspector -->
+            <aside class="inspector">
+                <div class="card">
+                    <h3>
+                        <span>🏢 Hồ sơ Zalo OA (`getOAProfile`)</span>
+                        <span id="oaTypeBadge" class="oa-badge">OA</span>
+                    </h3>
+                    <div id="oaProfileDetails">
+                        <div class="info-line"><span>Tên OA:</span><span id="profName">—</span></div>
+                        <div class="info-line"><span>Xác thực:</span><span id="profVerified">—</span></div>
+                        <div class="info-line"><span>Danh mục:</span><span id="profCate">—</span></div>
+                        <div class="info-line"><span>Hotline:</span><span id="profHotline">—</span></div>
+                        <div class="info-line"><span>Website:</span><span id="profWeb">—</span></div>
+                        <div class="info-line"><span>Giờ mở cửa:</span><span id="profOpenTime">—</span></div>
+                        <div class="info-line"><span>Địa chỉ:</span><span id="profAddr">—</span></div>
+                        <div class="info-line"><span>Global ID:</span><span id="profGlobalId">—</span></div>
+                        <div class="info-line"><span>Thông báo (DNR):</span><span id="profDnr">—</span></div>
+                    </div>
                 </div>
-            </div>
-        </main>
 
-        <!-- Right: OA Profile & Message Inspector -->
-        <aside class="inspector">
-            <div class="card">
-                <h3>
-                    <span>🏢 Hồ sơ Zalo OA (`getOAProfile`)</span>
-                    <span id="oaTypeBadge" class="oa-badge">OA</span>
-                </h3>
-                <div id="oaProfileDetails">
-                    <div class="info-line"><span>Tên OA:</span><span id="profName">—</span></div>
-                    <div class="info-line"><span>Xác thực:</span><span id="profVerified">—</span></div>
-                    <div class="info-line"><span>Danh mục:</span><span id="profCate">—</span></div>
-                    <div class="info-line"><span>Hotline:</span><span id="profHotline">—</span></div>
-                    <div class="info-line"><span>Website:</span><span id="profWeb">—</span></div>
-                    <div class="info-line"><span>Giờ mở cửa:</span><span id="profOpenTime">—</span></div>
-                    <div class="info-line"><span>Địa chỉ:</span><span id="profAddr">—</span></div>
-                    <div class="info-line"><span>Global ID:</span><span id="profGlobalId">—</span></div>
-                    <div class="info-line"><span>Thông báo (DNR):</span><span id="profDnr">—</span></div>
+                <div class="card">
+                    <h3>
+                        <span>🔍 Chi tiết `oaData` & Gói tin gốc</span>
+                        <span id="inspectorMsgId" style="font-size: 11px; color: #60a5fa">Chọn 1 tin nhắn</span>
+                    </h3>
+                    <pre id="inspectorJson">
+Nhấn vào bất kỳ tin nhắn nào ở khung giữa để kiểm tra dữ liệu oaData (kind, text, items, footerv2) và gói tin rawMessage.</pre
+                    >
                 </div>
-            </div>
 
-            <div class="card">
-                <h3>
-                    <span>🔍 Chi tiết `oaData` & Gói tin gốc</span>
-                    <span id="inspectorMsgId" style="font-size:11px;color:#60a5fa">Chọn 1 tin nhắn</span>
-                </h3>
-                <pre id="inspectorJson">Nhấn vào bất kỳ tin nhắn nào ở khung giữa để kiểm tra dữ liệu oaData (kind, text, items, footerv2) và gói tin rawMessage.</pre>
-            </div>
-
-            <div class="card">
-                <h3>🔄 Chuyển đổi OA ID (`convertOAIds`)</h3>
-                <div class="lookup-row">
-                    <input type="text" id="convertOaIdsInput" placeholder="Nhập OA ID (cách nhau dấu phẩy)" value="2359864726282056346" />
-                    <button class="btn btn-outline" onclick="runConvertOaIds()">Convert</button>
+                <div class="card">
+                    <h3>🔄 Chuyển đổi OA ID (`convertOAIds`)</h3>
+                    <div class="lookup-row">
+                        <input
+                            type="text"
+                            id="convertOaIdsInput"
+                            placeholder="Nhập OA ID (cách nhau dấu phẩy)"
+                            value="2359864726282056346"
+                        />
+                        <button class="btn btn-outline" onclick="runConvertOaIds()">Convert</button>
+                    </div>
+                    <pre id="convertResultJson" style="max-height: 80px; display: none"></pre>
                 </div>
-                <pre id="convertResultJson" style="max-height:80px;display:none"></pre>
-            </div>
 
-            <div class="card">
-                <h3>📡 Nhật ký Thời gian thực (SSE & WSS)</h3>
-                <div class="log-box" id="logContainer"></div>
-            </div>
-        </aside>
-    </div>
+                <div class="card">
+                    <h3>📡 Nhật ký Thời gian thực (SSE & WSS)</h3>
+                    <div class="log-box" id="logContainer"></div>
+                </div>
+            </aside>
+        </div>
 
-    <script>
-        let state = {
-            uid: "",
-            oaProfiles: [],
-            messages: [],
-            selectedThreadId: "2359864726282056346",
-            selectedMessage: null,
-        };
-
-        function addLog(message, level = "info") {
-            const box = document.getElementById("logContainer");
-            const div = document.createElement("div");
-            div.className = "log-entry";
-            const time = new Date().toLocaleTimeString("vi-VN");
-            const color = level === "ok" ? "#34d399" : level === "warn" ? "#fbbf24" : "#93c5fd";
-            div.innerHTML = `<span style="color:#64748b">[${time}]</span> <span style="color:${color}">${escapeHtml(message)}</span>`;
-            box.prepend(div);
-        }
-
-        function escapeHtml(str) {
-            return String(str ?? "")
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;");
-        }
-
-        async function loadInitialState() {
-            const res = await fetch("/api/state");
-            const data = await res.json();
-            if (data.ok) {
-                state.uid = data.uid;
-                state.oaProfiles = data.oaProfiles || [];
-                state.messages = data.messages || [];
-                document.getElementById("ownUidLabel").textContent = `UID: ${data.uid} (WSS Online)`;
-                renderAll();
-                addLog(`Đã nạp ${state.oaProfiles.length} Zalo OA và ${state.messages.length} tin nhắn.`, "ok");
-            }
-        }
-
-        function connectSse() {
-            const es = new EventSource("/api/events");
-            es.onmessage = (ev) => {
-                try {
-                    const payload = JSON.parse(ev.data);
-                    if (payload.type === "log") {
-                        addLog(payload.message, payload.level);
-                    } else if (payload.type === "message" && payload.item) {
-                        const idx = state.messages.findIndex((m) => m.msgId === payload.item.msgId);
-                        if (idx >= 0) {
-                            state.messages[idx] = payload.item;
-                        } else {
-                            state.messages.push(payload.item);
-                        }
-                        if (payload.oaProfile) {
-                            upsertProfile(payload.oaProfile);
-                        }
-                        renderAll();
-                        addLog(`Tin nhắn mới [${payload.item.msgType}] msgId=${payload.item.msgId}`, "ok");
-                    } else if (payload.type === "oa_event" && payload.event) {
-                        addLog(`Sự kiện oa_event: act=${payload.event.act}, oaIds=${payload.event.oaIds.join(",")}`, "warn");
-                        loadInitialState();
-                    }
-                } catch {}
+        <script>
+            let state = {
+                uid: "",
+                oaProfiles: [],
+                messages: [],
+                selectedThreadId: "2359864726282056346",
+                selectedMessage: null,
             };
-        }
 
-        function upsertProfile(prof) {
-            const idx = state.oaProfiles.findIndex((p) => p.oaId === prof.oaId);
-            if (idx >= 0) state.oaProfiles[idx] = prof;
-            else state.oaProfiles.push(prof);
-        }
-
-        function renderAll() {
-            renderSidebar();
-            renderChat();
-            renderProfileInspector();
-        }
-
-        function renderSidebar() {
-            const container = document.getElementById("oaListContainer");
-            const threadMap = new Map();
-
-            for (const prof of state.oaProfiles) {
-                threadMap.set(prof.oaId, {
-                    threadId: prof.oaId,
-                    displayName: prof.displayName,
-                    avatar: prof.avatar,
-                    isOA: true,
-                    isVerified: prof.isVerified,
-                    isZaloBot: prof.isZaloBot,
-                    type: prof.type,
-                    lastMsg: null,
-                });
+            function addLog(message, level = "info") {
+                const box = document.getElementById("logContainer");
+                const div = document.createElement("div");
+                div.className = "log-entry";
+                const time = new Date().toLocaleTimeString("vi-VN");
+                const color = level === "ok" ? "#34d399" : level === "warn" ? "#fbbf24" : "#93c5fd";
+                div.innerHTML = `<span style="color:#64748b">[${time}]</span> <span style="color:${color}">${escapeHtml(message)}</span>`;
+                box.prepend(div);
             }
 
-            for (const msg of state.messages) {
-                const existing = threadMap.get(msg.threadId) || {
-                    threadId: msg.threadId,
-                    displayName: msg.dName || msg.threadId,
-                    avatar: "",
-                    isOA: msg.isOA,
-                    lastMsg: null,
-                };
-                if (!existing.lastMsg || msg.ts >= existing.lastMsg.ts) {
-                    existing.lastMsg = msg;
+            function escapeHtml(str) {
+                return String(str ?? "")
+                    .replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;");
+            }
+
+            async function loadInitialState() {
+                const res = await fetch("/api/state");
+                const data = await res.json();
+                if (data.ok) {
+                    state.uid = data.uid;
+                    state.oaProfiles = data.oaProfiles || [];
+                    state.messages = data.messages || [];
+                    document.getElementById("ownUidLabel").textContent = `UID: ${data.uid} (WSS Online)`;
+                    renderAll();
+                    addLog(`Đã nạp ${state.oaProfiles.length} Zalo OA và ${state.messages.length} tin nhắn.`, "ok");
                 }
-                threadMap.set(msg.threadId, existing);
             }
 
-            const threads = Array.from(threadMap.values()).sort((a, b) => {
-                if (a.threadId === "2359864726282056346") return -1;
-                if (b.threadId === "2359864726282056346") return 1;
-                return (b.lastMsg?.ts || 0) - (a.lastMsg?.ts || 0);
-            });
+            function connectSse() {
+                const es = new EventSource("/api/events");
+                es.onmessage = (ev) => {
+                    try {
+                        const payload = JSON.parse(ev.data);
+                        if (payload.type === "log") {
+                            addLog(payload.message, payload.level);
+                        } else if (payload.type === "message" && payload.item) {
+                            const idx = state.messages.findIndex((m) => m.msgId === payload.item.msgId);
+                            if (idx >= 0) {
+                                state.messages[idx] = payload.item;
+                            } else {
+                                state.messages.push(payload.item);
+                            }
+                            if (payload.oaProfile) {
+                                upsertProfile(payload.oaProfile);
+                            }
+                            renderAll();
+                            addLog(`Tin nhắn mới [${payload.item.msgType}] msgId=${payload.item.msgId}`, "ok");
+                        } else if (payload.type === "oa_event" && payload.event) {
+                            addLog(
+                                `Sự kiện oa_event: act=${payload.event.act}, oaIds=${payload.event.oaIds.join(",")}`,
+                                "warn",
+                            );
+                            loadInitialState();
+                        }
+                    } catch {}
+                };
+            }
 
-            container.innerHTML = threads
-                .map((t) => {
-                    const isActive = t.threadId === state.selectedThreadId;
-                    const preview =
-                        t.lastMsg?.oaData?.text ||
-                        (typeof t.lastMsg?.rawContent === "string" ? t.lastMsg.rawContent : "Chưa có tin nhắn");
-                    const avatarUrl =
-                        t.avatar || "https://stc-zaloprofile.zdn.vn/pc/v1/images/zalo_sharelogo.png";
-                    return `
+            function upsertProfile(prof) {
+                const idx = state.oaProfiles.findIndex((p) => p.oaId === prof.oaId);
+                if (idx >= 0) state.oaProfiles[idx] = prof;
+                else state.oaProfiles.push(prof);
+            }
+
+            function renderAll() {
+                renderSidebar();
+                renderChat();
+                renderProfileInspector();
+            }
+
+            function renderSidebar() {
+                const container = document.getElementById("oaListContainer");
+                const threadMap = new Map();
+
+                for (const prof of state.oaProfiles) {
+                    threadMap.set(prof.oaId, {
+                        threadId: prof.oaId,
+                        displayName: prof.displayName,
+                        avatar: prof.avatar,
+                        isOA: true,
+                        isVerified: prof.isVerified,
+                        isZaloBot: prof.isZaloBot,
+                        type: prof.type,
+                        lastMsg: null,
+                    });
+                }
+
+                for (const msg of state.messages) {
+                    const existing = threadMap.get(msg.threadId) || {
+                        threadId: msg.threadId,
+                        displayName: msg.dName || msg.threadId,
+                        avatar: "",
+                        isOA: msg.isOA,
+                        lastMsg: null,
+                    };
+                    if (!existing.lastMsg || msg.ts >= existing.lastMsg.ts) {
+                        existing.lastMsg = msg;
+                    }
+                    threadMap.set(msg.threadId, existing);
+                }
+
+                const threads = Array.from(threadMap.values()).sort((a, b) => {
+                    if (a.threadId === "2359864726282056346") return -1;
+                    if (b.threadId === "2359864726282056346") return 1;
+                    return (b.lastMsg?.ts || 0) - (a.lastMsg?.ts || 0);
+                });
+
+                container.innerHTML = threads
+                    .map((t) => {
+                        const isActive = t.threadId === state.selectedThreadId;
+                        const preview =
+                            t.lastMsg?.oaData?.text ||
+                            (typeof t.lastMsg?.rawContent === "string" ? t.lastMsg.rawContent : "Chưa có tin nhắn");
+                        const avatarUrl = t.avatar || "https://stc-zaloprofile.zdn.vn/pc/v1/images/zalo_sharelogo.png";
+                        return `
                         <div class="oa-item ${isActive ? "active" : ""}" onclick="selectThread('${escapeHtml(t.threadId)}')">
                             <img class="oa-avatar" src="${escapeHtml(avatarUrl)}" alt="avatar" />
                             <div class="oa-meta">
@@ -715,77 +755,75 @@
                             </div>
                         </div>
                     `;
-                })
-                .join("");
-        }
-
-        function selectThread(threadId) {
-            state.selectedThreadId = threadId;
-            document.getElementById("lookupOaInput").value = threadId;
-            renderAll();
-        }
-
-        function renderChat() {
-            const prof = state.oaProfiles.find((p) => p.oaId === state.selectedThreadId);
-            document.getElementById("activeOaName").textContent =
-                prof?.displayName || `Hội thoại (${state.selectedThreadId})`;
-            document.getElementById("activeOaSubtitle").textContent =
-                `OA UID: ${state.selectedThreadId} ${prof?.category ? `• ${prof.category}` : ""} ${prof?.isVerified ? "• Tích vàng OA" : ""} ${prof?.isBlocked ? "• ĐÃ CHẶN" : ""}`;
-            if (prof?.avatar) {
-                document.getElementById("activeOaAvatar").src = prof.avatar;
+                    })
+                    .join("");
             }
 
-            const msgs = state.messages
-                .filter((m) => m.threadId === state.selectedThreadId)
-                .sort((a, b) => a.ts - b.ts);
-
-            const container = document.getElementById("chatMessagesContainer");
-            if (msgs.length === 0) {
-                container.innerHTML = `<div style="margin:auto;text-align:center;color:#64748b;font-size:13px;">Chưa có tin nhắn nào trong phiên này.<br/>Hãy gửi tin nhắn bên dưới hoặc bấm "Mô phỏng bài viết OA" trên thanh công cụ!</div>`;
-                return;
+            function selectThread(threadId) {
+                state.selectedThreadId = threadId;
+                document.getElementById("lookupOaInput").value = threadId;
+                renderAll();
             }
 
-            container.innerHTML = msgs
-                .map((m) => {
-                    const timeStr = new Date(m.ts).toLocaleString("vi-VN");
-                    const text =
-                        m.oaData?.text ||
-                        (typeof m.rawContent === "string"
-                            ? m.rawContent
-                            : JSON.stringify(m.rawContent));
-                    const kind = m.oaData?.kind || m.msgType;
+            function renderChat() {
+                const prof = state.oaProfiles.find((p) => p.oaId === state.selectedThreadId);
+                document.getElementById("activeOaName").textContent =
+                    prof?.displayName || `Hội thoại (${state.selectedThreadId})`;
+                document.getElementById("activeOaSubtitle").textContent =
+                    `OA UID: ${state.selectedThreadId} ${prof?.category ? `• ${prof.category}` : ""} ${prof?.isVerified ? "• Tích vàng OA" : ""} ${prof?.isBlocked ? "• ĐÃ CHẶN" : ""}`;
+                if (prof?.avatar) {
+                    document.getElementById("activeOaAvatar").src = prof.avatar;
+                }
 
-                    let extraHtml = "";
-                    if (Array.isArray(m.oaData?.items) && m.oaData.items.length > 0) {
-                        const cards = m.oaData.items
-                            .map(
-                                (it) => `
+                const msgs = state.messages
+                    .filter((m) => m.threadId === state.selectedThreadId)
+                    .sort((a, b) => a.ts - b.ts);
+
+                const container = document.getElementById("chatMessagesContainer");
+                if (msgs.length === 0) {
+                    container.innerHTML = `<div style="margin:auto;text-align:center;color:#64748b;font-size:13px;">Chưa có tin nhắn nào trong phiên này.<br/>Hãy gửi tin nhắn bên dưới hoặc bấm "Mô phỏng bài viết OA" trên thanh công cụ!</div>`;
+                    return;
+                }
+
+                container.innerHTML = msgs
+                    .map((m) => {
+                        const timeStr = new Date(m.ts).toLocaleString("vi-VN");
+                        const text =
+                            m.oaData?.text ||
+                            (typeof m.rawContent === "string" ? m.rawContent : JSON.stringify(m.rawContent));
+                        const kind = m.oaData?.kind || m.msgType;
+
+                        let extraHtml = "";
+                        if (Array.isArray(m.oaData?.items) && m.oaData.items.length > 0) {
+                            const cards = m.oaData.items
+                                .map(
+                                    (it) => `
                                 <div class="oa-list-card">
                                     <h4>${escapeHtml(it.title || "Bài viết OA")}</h4>
                                     <p>${escapeHtml(it.description || "")}</p>
                                     ${it.href ? `<a href="${escapeHtml(it.href)}" target="_blank" style="font-size:11px;color:#38bdf8;margin-top:4px;display:inline-block;">🔗 Mở liên kết</a>` : ""}
                                 </div>
                             `,
-                            )
-                            .join("");
-                        extraHtml += `<div class="oa-list-cards">${cards}</div>`;
-                    }
+                                )
+                                .join("");
+                            extraHtml += `<div class="oa-list-cards">${cards}</div>`;
+                        }
 
-                    if (Array.isArray(m.oaData?.footer?.footerList) && m.oaData.footer.footerList.length > 0) {
-                        const btns = m.oaData.footer.footerList
-                            .map((btn) => {
-                                const label = btn.title || btn.label || btn.text || "Tác vụ OA";
-                                const replyTxt = btn.text || label;
-                                if (btn.href || btn.url) {
-                                    return `<a class="footer-btn" href="${escapeHtml(btn.href || btn.url)}" target="_blank">🔗 ${escapeHtml(label)}</a>`;
-                                }
-                                return `<button class="footer-btn" onclick="event.stopPropagation(); fillReply('${escapeHtml(replyTxt)}')">💬 ${escapeHtml(label)}</button>`;
-                            })
-                            .join("");
-                        extraHtml += `<div class="footer-buttons">${btns}</div>`;
-                    }
+                        if (Array.isArray(m.oaData?.footer?.footerList) && m.oaData.footer.footerList.length > 0) {
+                            const btns = m.oaData.footer.footerList
+                                .map((btn) => {
+                                    const label = btn.title || btn.label || btn.text || "Tác vụ OA";
+                                    const replyTxt = btn.text || label;
+                                    if (btn.href || btn.url) {
+                                        return `<a class="footer-btn" href="${escapeHtml(btn.href || btn.url)}" target="_blank">🔗 ${escapeHtml(label)}</a>`;
+                                    }
+                                    return `<button class="footer-btn" onclick="event.stopPropagation(); fillReply('${escapeHtml(replyTxt)}')">💬 ${escapeHtml(label)}</button>`;
+                                })
+                                .join("");
+                            extraHtml += `<div class="footer-buttons">${btns}</div>`;
+                        }
 
-                    return `
+                        return `
                         <div class="msg-row ${m.isSelf ? "self" : "incoming"}" onclick="inspectMessage('${escapeHtml(m.msgId)}')">
                             <div class="msg-bubble">
                                 <div>${escapeHtml(text)}</div>
@@ -799,156 +837,156 @@
                             </div>
                         </div>
                     `;
-                })
-                .join("");
+                    })
+                    .join("");
 
-            container.scrollTop = container.scrollHeight;
-            if (!state.selectedMessage && msgs.length > 0) {
-                inspectMessage(msgs[msgs.length - 1].msgId);
+                container.scrollTop = container.scrollHeight;
+                if (!state.selectedMessage && msgs.length > 0) {
+                    inspectMessage(msgs[msgs.length - 1].msgId);
+                }
             }
-        }
 
-        function renderProfileInspector() {
-            const prof = state.oaProfiles.find((p) => p.oaId === state.selectedThreadId);
-            document.getElementById("profName").textContent = prof?.displayName || "—";
-            document.getElementById("profVerified").textContent = prof
-                ? `${prof.isVerified ? "✅ Tích vàng (Verified OA)" : "OA tiêu chuẩn"} ${prof.isZaloBot ? "• 🤖 Bot" : ""}`
-                : "—";
-            document.getElementById("profCate").textContent = prof?.category || "—";
-            document.getElementById("profHotline").textContent = prof?.hotline || "—";
-            document.getElementById("profWeb").textContent = prof?.website || "—";
-            document.getElementById("profOpenTime").textContent = prof?.openTime || "—";
-            document.getElementById("profAddr").textContent = prof?.address || "—";
-            document.getElementById("profGlobalId").textContent = prof?.globalId || "—";
-            document.getElementById("profDnr").textContent = prof?.dnrStatus?.enableDnr
-                ? `Đang bật DNR (${prof.dnrStatus.dnrText || ""})`
-                : "Đang nhận thông báo";
-            document.getElementById("oaTypeBadge").textContent = prof?.type
-                ? `TYPE ${prof.type} (${Number(prof.type).toString(2)}b)`
-                : "OA";
-        }
-
-        function inspectMessage(msgId) {
-            const found = state.messages.find((m) => m.msgId === msgId);
-            if (!found) return;
-            state.selectedMessage = found;
-            document.getElementById("inspectorMsgId").textContent = `msgId: ${found.msgId}`;
-            document.getElementById("inspectorJson").textContent = JSON.stringify(
-                {
-                    msgId: found.msgId,
-                    msgType: found.msgType,
-                    threadId: found.threadId,
-                    source: found.source,
-                    oaData: found.oaData,
-                    rawContent: found.rawContent,
-                },
-                null,
-                2,
-            );
-        }
-
-        function fillReply(text) {
-            const input = document.getElementById("replyInput");
-            input.value = text;
-            input.focus();
-        }
-
-        async function sendReplyToOA() {
-            const input = document.getElementById("replyInput");
-            const message = input.value.trim();
-            if (!message) return;
-            input.value = "";
-            addLog(`Đang gửi tin nhắn tới OA ${state.selectedThreadId}: "${message}"...`);
-            const res = await fetch("/api/oa/send", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ oaId: state.selectedThreadId, message }),
-            });
-            const data = await res.json();
-            if (!data.ok) {
-                addLog(`Lỗi gửi tin nhắn OA: ${data.error}`, "warn");
+            function renderProfileInspector() {
+                const prof = state.oaProfiles.find((p) => p.oaId === state.selectedThreadId);
+                document.getElementById("profName").textContent = prof?.displayName || "—";
+                document.getElementById("profVerified").textContent = prof
+                    ? `${prof.isVerified ? "✅ Tích vàng (Verified OA)" : "OA tiêu chuẩn"} ${prof.isZaloBot ? "• 🤖 Bot" : ""}`
+                    : "—";
+                document.getElementById("profCate").textContent = prof?.category || "—";
+                document.getElementById("profHotline").textContent = prof?.hotline || "—";
+                document.getElementById("profWeb").textContent = prof?.website || "—";
+                document.getElementById("profOpenTime").textContent = prof?.openTime || "—";
+                document.getElementById("profAddr").textContent = prof?.address || "—";
+                document.getElementById("profGlobalId").textContent = prof?.globalId || "—";
+                document.getElementById("profDnr").textContent = prof?.dnrStatus?.enableDnr
+                    ? `Đang bật DNR (${prof.dnrStatus.dnrText || ""})`
+                    : "Đang nhận thông báo";
+                document.getElementById("oaTypeBadge").textContent = prof?.type
+                    ? `TYPE ${prof.type} (${Number(prof.type).toString(2)}b)`
+                    : "OA";
             }
-        }
 
-        async function lookupOAProfile() {
-            const oaId = document.getElementById("lookupOaInput").value.trim();
-            if (!oaId) return;
-            addLog(`Đang truy vấn hồ sơ OA ${oaId} qua api.business.getOAProfile...`);
-            const res = await fetch("/api/oa/profile", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ oaId }),
-            });
-            const data = await res.json();
-            if (data.ok && data.profile) {
-                upsertProfile(data.profile);
-                state.selectedThreadId = oaId;
-                renderAll();
-                addLog(`Đã nạp hồ sơ OA: ${data.profile.displayName} (Verified=${data.profile.isVerified})`, "ok");
-            } else {
-                addLog(`Lỗi nạp hồ sơ OA: ${data.error}`, "warn");
+            function inspectMessage(msgId) {
+                const found = state.messages.find((m) => m.msgId === msgId);
+                if (!found) return;
+                state.selectedMessage = found;
+                document.getElementById("inspectorMsgId").textContent = `msgId: ${found.msgId}`;
+                document.getElementById("inspectorJson").textContent = JSON.stringify(
+                    {
+                        msgId: found.msgId,
+                        msgType: found.msgType,
+                        threadId: found.threadId,
+                        source: found.source,
+                        oaData: found.oaData,
+                        rawContent: found.rawContent,
+                    },
+                    null,
+                    2,
+                );
             }
-        }
 
-        async function toggleBlockOA(block) {
-            const oaId = state.selectedThreadId;
-            addLog(`Đang gọi api.business.${block ? "blockOA" : "unblockOA"}('${oaId}')...`);
-            const res = await fetch("/api/oa/block", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ oaId, block }),
-            });
-            const data = await res.json();
-            if (data.ok) {
-                const prof = state.oaProfiles.find((p) => p.oaId === oaId);
-                if (prof) prof.isBlocked = block;
-                renderAll();
-            } else {
-                addLog(`Lỗi ${block ? "blockOA" : "unblockOA"}: ${data.error}`, "warn");
+            function fillReply(text) {
+                const input = document.getElementById("replyInput");
+                input.value = text;
+                input.focus();
             }
-        }
 
-        async function simulateOA(simType) {
-            const res = await fetch("/api/oa/simulate", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ oaId: state.selectedThreadId, simType }),
-            });
-            const data = await res.json();
-            if (data.ok && data.item) {
-                inspectMessage(data.item.msgId);
+            async function sendReplyToOA() {
+                const input = document.getElementById("replyInput");
+                const message = input.value.trim();
+                if (!message) return;
+                input.value = "";
+                addLog(`Đang gửi tin nhắn tới OA ${state.selectedThreadId}: "${message}"...`);
+                const res = await fetch("/api/oa/send", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ oaId: state.selectedThreadId, message }),
+                });
+                const data = await res.json();
+                if (!data.ok) {
+                    addLog(`Lỗi gửi tin nhắn OA: ${data.error}`, "warn");
+                }
             }
-        }
 
-        async function runConvertOaIds() {
-            const oaIds = document.getElementById("convertOaIdsInput").value.trim();
-            if (!oaIds) return;
-            const res = await fetch("/api/oa/convert-id", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ oaIds }),
-            });
-            const data = await res.json();
-            const pre = document.getElementById("convertResultJson");
-            pre.style.display = "block";
-            pre.textContent = JSON.stringify(data, null, 2);
-            addLog(`Kết quả convertOAIds: ${JSON.stringify(data.result || data.error)}`, data.ok ? "ok" : "warn");
-        }
-
-        async function syncAllMessages() {
-            addLog("Đang đồng bộ lại preloadConversations & WebSocket cmd=510...");
-            const res = await fetch("/api/oa/sync", { method: "POST" });
-            const data = await res.json();
-            if (data.ok) {
-                state.oaProfiles = data.oaProfiles || state.oaProfiles;
-                state.messages = data.messages || state.messages;
-                renderAll();
-                addLog(`Đồng bộ hoàn tất (${state.messages.length} tin nhắn).`, "ok");
+            async function lookupOAProfile() {
+                const oaId = document.getElementById("lookupOaInput").value.trim();
+                if (!oaId) return;
+                addLog(`Đang truy vấn hồ sơ OA ${oaId} qua api.business.getOAProfile...`);
+                const res = await fetch("/api/oa/profile", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ oaId }),
+                });
+                const data = await res.json();
+                if (data.ok && data.profile) {
+                    upsertProfile(data.profile);
+                    state.selectedThreadId = oaId;
+                    renderAll();
+                    addLog(`Đã nạp hồ sơ OA: ${data.profile.displayName} (Verified=${data.profile.isVerified})`, "ok");
+                } else {
+                    addLog(`Lỗi nạp hồ sơ OA: ${data.error}`, "warn");
+                }
             }
-        }
 
-        loadInitialState();
-        connectSse();
-    </script>
-</body>
+            async function toggleBlockOA(block) {
+                const oaId = state.selectedThreadId;
+                addLog(`Đang gọi api.business.${block ? "blockOA" : "unblockOA"}('${oaId}')...`);
+                const res = await fetch("/api/oa/block", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ oaId, block }),
+                });
+                const data = await res.json();
+                if (data.ok) {
+                    const prof = state.oaProfiles.find((p) => p.oaId === oaId);
+                    if (prof) prof.isBlocked = block;
+                    renderAll();
+                } else {
+                    addLog(`Lỗi ${block ? "blockOA" : "unblockOA"}: ${data.error}`, "warn");
+                }
+            }
+
+            async function simulateOA(simType) {
+                const res = await fetch("/api/oa/simulate", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ oaId: state.selectedThreadId, simType }),
+                });
+                const data = await res.json();
+                if (data.ok && data.item) {
+                    inspectMessage(data.item.msgId);
+                }
+            }
+
+            async function runConvertOaIds() {
+                const oaIds = document.getElementById("convertOaIdsInput").value.trim();
+                if (!oaIds) return;
+                const res = await fetch("/api/oa/convert-id", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ oaIds }),
+                });
+                const data = await res.json();
+                const pre = document.getElementById("convertResultJson");
+                pre.style.display = "block";
+                pre.textContent = JSON.stringify(data, null, 2);
+                addLog(`Kết quả convertOAIds: ${JSON.stringify(data.result || data.error)}`, data.ok ? "ok" : "warn");
+            }
+
+            async function syncAllMessages() {
+                addLog("Đang đồng bộ lại preloadConversations & WebSocket cmd=510...");
+                const res = await fetch("/api/oa/sync", { method: "POST" });
+                const data = await res.json();
+                if (data.ok) {
+                    state.oaProfiles = data.oaProfiles || state.oaProfiles;
+                    state.messages = data.messages || state.messages;
+                    renderAll();
+                    addLog(`Đồng bộ hoàn tất (${state.messages.length} tin nhắn).`, "ok");
+                }
+            }
+
+            loadInitialState();
+            connectSse();
+        </script>
+    </body>
 </html>

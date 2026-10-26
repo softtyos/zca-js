@@ -16,17 +16,13 @@ import { ZaloApiLoginQRDeclined } from "../Errors/ZaloApiLoginQRDeclined.js";
  * @param ctx - Context chứa ctx.userAgent và ctx.language
  * @param extra - Các header bổ sung đặc thù cho từng request (sec-fetch-dest, Referer...)
  */
-function getLoginHeaders(
-    ctx: ContextBase,
-    extra?: Record<string, string>,
-): Record<string, string> {
+function getLoginHeaders(ctx: ContextBase, extra?: Record<string, string>): Record<string, string> {
     return {
         "accept-language": getBrowserLanguage(ctx.language),
         ...getSecChUaHeaders(ctx.userAgent),
         ...extra,
     };
 }
-
 
 export enum LoginQRCallbackEventType {
     QRCodeGenerated,

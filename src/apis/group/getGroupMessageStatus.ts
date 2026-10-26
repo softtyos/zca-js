@@ -102,7 +102,11 @@ export const getGroupMessageStatusFactory = apiFactory<GetGroupMessageStatusResp
                 if (Array.isArray(obj.statusInfos)) {
                     return obj as GetGroupMessageStatusResponse;
                 }
-                if (obj.data && typeof obj.data === "object" && Array.isArray((obj.data as Record<string, unknown>).statusInfos)) {
+                if (
+                    obj.data &&
+                    typeof obj.data === "object" &&
+                    Array.isArray((obj.data as Record<string, unknown>).statusInfos)
+                ) {
                     return obj.data as GetGroupMessageStatusResponse;
                 }
             }

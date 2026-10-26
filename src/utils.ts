@@ -152,7 +152,11 @@ export async function getDefaultHeaders(ctx: ContextBase, origin: string = ZALO_
     };
 }
 
-export async function request(ctx: ContextBase, url: string, options?: RequestInit, raw = false) {
+export type ZaloRequestInit = Omit<RequestInit, "body"> & {
+    body?: BodyInit | Buffer | Uint8Array | null;
+};
+
+export async function request(ctx: ContextBase, url: string, options?: ZaloRequestInit, raw = false) {
     if (!ctx.cookie) ctx.cookie = new toughCookie.CookieJar();
     const origin = new URL(url).origin;
 
@@ -189,12 +193,10 @@ export async function request(ctx: ContextBase, url: string, options?: RequestIn
     const isAgentUndiciDispatcher = Boolean(
         ctx.options.agent && typeof (ctx.options.agent as { dispatch?: unknown }).dispatch === "function",
     );
-    const resolvedDispatcher =
-        ctx.options.dispatcher ?? (isAgentUndiciDispatcher ? ctx.options.agent : undefined);
-    const resolvedAgent =
-        ctx.options.agent && !isAgentUndiciDispatcher ? ctx.options.agent : undefined;
+    const resolvedDispatcher = ctx.options.dispatcher ?? (isAgentUndiciDispatcher ? ctx.options.agent : undefined);
+    const resolvedAgent = ctx.options.agent && !isAgentUndiciDispatcher ? ctx.options.agent : undefined;
 
-    const _options: RequestInit & Record<string, unknown> = {
+    const _options: ZaloRequestInit & Record<string, unknown> = {
         ...(options ?? {}),
         ...(defaultSignal ? { signal: defaultSignal } : {}),
         ...(isBun
@@ -209,7 +211,7 @@ export async function request(ctx: ContextBase, url: string, options?: RequestIn
               }),
     };
 
-    const response = await ctx.options.polyfill(url, _options);
+    const response = await ctx.options.polyfill(url, _options as RequestInit);
     const setCookieRaw = response.headers.get("set-cookie");
     if (setCookieRaw && !raw) {
         let cookieStrings: string[] = [];
@@ -573,7 +575,7 @@ export type FactoryUtils<T> = {
         apiVersion?: boolean,
     ) => ReturnType<typeof makeURL>;
     encodeAES: (data: cryptojs.lib.WordArray | string, t?: number) => ReturnType<typeof encodeAES>;
-    request: (url: string, options?: RequestInit, raw?: boolean) => ReturnType<typeof request>;
+    request: (url: string, options?: ZaloRequestInit, raw?: boolean) => ReturnType<typeof request>;
     logger: ReturnType<typeof logger>;
     resolve: (
         res: Response,
@@ -594,7 +596,7 @@ export function apiFactory<T>() {
                 encodeAES(data: cryptojs.lib.WordArray | string, t?: number) {
                     return encodeAES(ctx.secretKey, data, t);
                 },
-                request(url: string, options?: RequestInit, raw?: boolean) {
+                request(url: string, options?: ZaloRequestInit, raw?: boolean) {
                     return request(ctx, url, options, raw);
                 },
                 logger: logger(ctx),

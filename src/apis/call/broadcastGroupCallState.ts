@@ -1,9 +1,10 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
+import { toVoipInt } from "./sendVoiceCall.js";
 
 export type BroadcastGroupCallStateOptions = {
-    hostCall: string;
-    userId?: string;
+    hostCall: string | number;
+    userId?: string | number;
     callState?: number;
     audioState?: number;
     videoState?: number;
@@ -30,28 +31,20 @@ export const broadcastGroupCallStateFactory = apiFactory<BroadcastGroupCallState
         if (!options?.hostCall) throw new ZaloApiError("Missing hostCall");
         if (!voiceCallService) throw new ZaloApiError("Missing voice_call service URL in zpwServiceMap");
 
-        const paramsStr =
-            options.params === undefined
-                ? "{}"
-                : typeof options.params === "string"
-                  ? options.params
-                  : JSON.stringify(options.params);
-
         const callState = options.callState ?? 1;
         const audioState = options.audioState ?? 1;
         const videoState = options.videoState ?? 0;
-        const payload = {
+        const payload: Record<string, unknown> = {
             callId,
-            hostCall: String(options.hostCall),
-            userId: String(options.userId ?? ctx.uid),
-            callState,
-            audioState,
-            videoState,
+            hostCall: toVoipInt(options.hostCall),
+            userId: toVoipInt(options.userId ?? options.hostCall ?? ctx.uid),
             callstate: callState,
             audiostate: audioState,
             videostate: videoState,
-            params: paramsStr,
         };
+        if (options.params !== undefined) {
+            payload.params = typeof options.params === "string" ? options.params : JSON.stringify(options.params);
+        }
 
         const encryptedParams = utils.encodeAES(JSON.stringify(payload));
         if (!encryptedParams) throw new ZaloApiError("Failed to encrypt broadcastGroupCallState params");

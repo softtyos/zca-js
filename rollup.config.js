@@ -30,6 +30,6 @@ export default {
         "spark-md5",
         "tough-cookie",
         "ws",
-        "json-bigint"
+        "json-bigint",
     ],
 };

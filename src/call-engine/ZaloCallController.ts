@@ -5,11 +5,7 @@ import path from "node:path";
 import type { API } from "../apis.js";
 import { CallType, type RequestCallServerInfo } from "../apis/call/sendVoiceCall.js";
 import { CallEventType, type CallEvent } from "../models/CallEvent.js";
-import {
-    ZaloCallTransport,
-    type ZaloCallIpcMessage,
-    type ZaloCallTransportOptions,
-} from "./ZaloCallTransport.js";
+import { ZaloCallTransport, type ZaloCallIpcMessage, type ZaloCallTransportOptions } from "./ZaloCallTransport.js";
 import {
     ZaloRtcSession,
     parseIncomingCallEvent,
@@ -21,28 +17,29 @@ import {
     type ZaloRtcSessionOptions,
 } from "./ZaloRtcSession.js";
 
-export type ZaloCallControllerOptions = ZaloCallTransportOptions & ZaloRtcSessionOptions & {
-    /**
-     * Tự động khởi chạy IPC bridge nội bộ (mặc định `false` — ưu tiên dùng trực tiếp `ZaloRtcSession` thuần TypeScript).
-     */
-    spawnProcess?: boolean;
-    /**
-     * Tự động lắng nghe `call_event` từ `api.listener` và cập nhật phiên gọi (mặc định `true`).
-     */
-    autoForwardCallEvents?: boolean;
-    /**
-     * Tên hiển thị của tài khoản hiện tại.
-     */
-    displayName?: string;
-    /**
-     * Ảnh đại diện của tài khoản hiện tại.
-     */
-    avatar?: string;
-    /**
-     * Ngôn ngữ giao diện (`"vi"` hoặc `"en"`).
-     */
-    lang?: string;
-};
+export type ZaloCallControllerOptions = ZaloCallTransportOptions &
+    ZaloRtcSessionOptions & {
+        /**
+         * Tự động khởi chạy IPC bridge nội bộ (mặc định `false` — ưu tiên dùng trực tiếp `ZaloRtcSession` thuần TypeScript).
+         */
+        spawnProcess?: boolean;
+        /**
+         * Tự động lắng nghe `call_event` từ `api.listener` và cập nhật phiên gọi (mặc định `true`).
+         */
+        autoForwardCallEvents?: boolean;
+        /**
+         * Tên hiển thị của tài khoản hiện tại.
+         */
+        displayName?: string;
+        /**
+         * Ảnh đại diện của tài khoản hiện tại.
+         */
+        avatar?: string;
+        /**
+         * Ngôn ngữ giao diện (`"vi"` hoặc `"en"`).
+         */
+        lang?: string;
+    };
 
 export type MakeDesktopCallOptions = {
     calleeId: string | number;
@@ -178,9 +175,7 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
     /**
      * Giải mã và báo máy đang đổ chuông (`ringRingVoiceCall` / `ringRingGroupCall`) cho cuộc gọi đến.
      */
-    public async ringIncomingCall(
-        callEvent: CallEvent | Record<string, unknown>,
-    ): Promise<ParsedIncomingCallInfo> {
+    public async ringIncomingCall(callEvent: CallEvent | Record<string, unknown>): Promise<ParsedIncomingCallInfo> {
         const info = parseIncomingCallEvent(callEvent, this.api.getContext().uid);
         if (
             this.activeSession &&
@@ -240,9 +235,7 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
      * Tái kích hoạt kết nối UDP (Re-bind UDP socket + bắt tay `InitCall` + khởi động lại vòng lặp Ping/Media/RTCP)
      * cho phiên gọi đang hoạt động.
      */
-    public async reconnectUdp(
-        options: { skipUdpHandshake?: boolean } = {},
-    ): Promise<ZaloCallConnectionParams | null> {
+    public async reconnectUdp(options: { skipUdpHandshake?: boolean } = {}): Promise<ZaloCallConnectionParams | null> {
         if (!this.activeSession) return null;
         const params = await this.activeSession.reconnectUdp(options);
         this.emit("connection_params", params);
@@ -263,9 +256,7 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
     /**
      * Ngắt kênh UDP cục bộ tại Worker để bàn giao luồng kết nối UDP trực tiếp cho Mobile App.
      */
-    public handoffUdpToExternal(
-        routingTokenOverride?: number,
-    ): ZaloMobileDirectHandoffBundle | null {
+    public handoffUdpToExternal(routingTokenOverride?: number): ZaloMobileDirectHandoffBundle | null {
         if (!this.activeSession) return null;
         return this.activeSession.handoffUdpToExternal(routingTokenOverride);
     }
@@ -296,14 +287,46 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
     }
 
     /**
+     * Thực hiện cuộc gọi Nhóm (Thoại hoặc Video) trực tiếp bằng `ZaloRtcSession` thuần TypeScript.
+     */
+    public async makeGroupCallRtc(options: MakeDesktopGroupCallOptions): Promise<ZaloCallConnectionParams> {
+        const isVideo = Boolean(options.isVideoCall);
+
+        if (this.activeSession) {
+            await this.activeSession.endCall("new_group_call").catch(() => {});
+        }
+
+        const session = new ZaloRtcSession(this.api, this.options);
+        this.activeSession = session;
+
+        session.on("ended", (reason) => {
+            this.emit("call_ended", { reason });
+        });
+        session.on("error", (err) => {
+            this.emit("error", err);
+        });
+
+        const params = await session.startGroupCall(String(options.groupId), {
+            callType: isVideo ? CallType.GroupVideo : CallType.GroupAudio,
+            partners: options.members.map((m) => String(m.id)),
+            partnerInfo: options.members.map((m) => ({
+                id: String(m.id),
+                name: m.name,
+                avatar: m.avatar ?? "",
+            })),
+        });
+
+        this.emit("connection_params", params);
+        return params;
+    }
+
+    /**
      * Chuyển tiếp một sự kiện `call_event` từ WebSocket Zalo xuống `ZaloCall` dưới dạng gói `{ type: "control" }`.
      */
     public forwardCallEvent(event: CallEvent): void {
         const normalizedAct = this.normalizeControlAct(event.act);
         const parsedInfo = parseIncomingCallEvent(event, this.api.getContext().uid);
-        const callId =
-            parsedInfo.callId ||
-            Number(event.data.callId ?? event.data.call_id ?? event.data.id ?? 0);
+        const callId = parsedInfo.callId || Number(event.data.callId ?? event.data.call_id ?? event.data.id ?? 0);
 
         if (
             event.type === CallEventType.REQUEST ||
@@ -346,11 +369,7 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
             controlData.callId = callId;
             controlData.id = callId;
         }
-        if (
-            normalizedAct === "answer" &&
-            controlData.params &&
-            typeof controlData.params !== "string"
-        ) {
+        if (normalizedAct === "answer" && controlData.params && typeof controlData.params !== "string") {
             controlData.params = JSON.stringify(controlData.params);
         }
 
@@ -430,10 +449,7 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
             return;
         }
 
-        if (
-            (msg.type === "request" && msg.command === "serverTime") ||
-            msg.type === "serverTime"
-        ) {
+        if ((msg.type === "request" && msg.command === "serverTime") || msg.type === "serverTime") {
             this.transport.send({
                 type: "response",
                 command: "serverTime",
@@ -442,10 +458,7 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
             return;
         }
 
-        if (
-            (msg.type === "request" && msg.command === "getAliasName") ||
-            msg.type === "getAliasName"
-        ) {
+        if ((msg.type === "request" && msg.command === "getAliasName") || msg.type === "getAliasName") {
             const reqData = (msg.data ?? {}) as Record<string, unknown>;
             this.transport.send({
                 type: "response",
@@ -480,11 +493,7 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
      * Cầu nối điều phối toàn bộ 28 mã lệnh `sendSignal` (`401..418` và `501..514`)
      * từ `ZaloCall` sang các hàm trong `api.call.*` và trả kết quả về qua `recvSignal`.
      */
-    private async handleSignalFromEngine(
-        type: number,
-        seqId: number,
-        rawParams: unknown,
-    ): Promise<void> {
+    private async handleSignalFromEngine(type: number, seqId: number, rawParams: unknown): Promise<void> {
         const paramsObj: Record<string, unknown> =
             typeof rawParams === "string"
                 ? (JSON.parse(rawParams) as Record<string, unknown>)
@@ -513,10 +522,8 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
                         codec,
                     })) as RequestCallServerInfo & { callId: number };
 
-                    const rtpAddr =
-                        srv.rtpServer ?? srv.rtpIP ?? srv.servers?.[0]?.rtpaddr ?? "";
-                    const rtcpAddr =
-                        srv.rtcpServer ?? srv.rtcpIP ?? srv.servers?.[0]?.rtcpaddr ?? rtpAddr;
+                    const rtpAddr = srv.rtpServer ?? srv.rtpIP ?? srv.servers?.[0]?.rtpaddr ?? "";
+                    const rtcpAddr = srv.rtcpServer ?? srv.rtcpIP ?? srv.servers?.[0]?.rtcpaddr ?? rtpAddr;
 
                     result = {
                         ...srv,
@@ -532,9 +539,7 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
                         showDebugInfo: 0,
                         showShareScreenBtn: 1,
                         zrtc_config: srv.zrtc_config ?? {},
-                        servers: srv.servers ?? [
-                            { rtpaddr: rtpAddr, rtcpaddr: rtcpAddr, spTcp: 1, bonus: 0 },
-                        ],
+                        servers: srv.servers ?? [{ rtpaddr: rtpAddr, rtcpaddr: rtcpAddr, spTcp: 1, bonus: 0 }],
                     };
                     break;
                 }
@@ -639,139 +644,189 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
                     });
                     break;
                 case 501:
-                    result = await this.api.call.requestGroupCall(
-                        String(paramsObj.groupId ?? ""),
-                        {
-                            callId: callId || undefined,
-                            typeRequest:
-                                paramsObj.typeRequest !== undefined
-                                    ? (Number(paramsObj.typeRequest) as CallType)
-                                    : paramsObj.callType !== undefined
-                                      ? (Number(paramsObj.callType) as CallType)
-                                      : CallType.GroupAudio,
-                            data: paramsObj.data as string | Record<string, unknown> | undefined,
-                            partners: (paramsObj.partners as string[] | undefined) ?? [],
-                        },
-                    );
+                case 12433:
+                    result = await this.api.call.requestGroupCall(String(paramsObj.groupId ?? ""), {
+                        callId: callId || undefined,
+                        typeRequest:
+                            paramsObj.typeRequest !== undefined
+                                ? (Number(paramsObj.typeRequest) as CallType)
+                                : paramsObj.callType !== undefined
+                                  ? (Number(paramsObj.callType) as CallType)
+                                  : CallType.GroupAudio,
+                        data: paramsObj.data as string | Record<string, unknown> | undefined,
+                        partners: (paramsObj.partners as string[] | undefined) ?? [],
+                    });
                     break;
                 case 502:
+                case 12435:
                     result = await this.api.call.addUserGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        groupId: paramsObj.groupId ? String(paramsObj.groupId) : undefined,
                         session,
                         callType:
-                            paramsObj.callType !== undefined
-                                ? (Number(paramsObj.callType) as CallType)
-                                : undefined,
+                            paramsObj.callType !== undefined ? (Number(paramsObj.callType) as CallType) : undefined,
                         partners: (paramsObj.partners as string[] | undefined) ?? [],
+                        rtpAddress,
+                        rtcpAddress,
+                        codec,
                         data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 503:
+                case 12436:
                     result = await this.api.call.answerGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        groupId: paramsObj.groupId ? String(paramsObj.groupId) : undefined,
                         session: session || undefined,
                         callType:
-                            paramsObj.callType !== undefined
-                                ? (Number(paramsObj.callType) as CallType)
-                                : undefined,
+                            paramsObj.callType !== undefined ? (Number(paramsObj.callType) as CallType) : undefined,
+                        status: paramsObj.status !== undefined ? Number(paramsObj.status) : undefined,
                         data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 504:
+                case 12437:
                     result = await this.api.call.cancelGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        groupId: paramsObj.groupId ? String(paramsObj.groupId) : undefined,
                         session: session || undefined,
                         callType:
-                            paramsObj.callType !== undefined
-                                ? (Number(paramsObj.callType) as CallType)
-                                : undefined,
+                            paramsObj.callType !== undefined ? (Number(paramsObj.callType) as CallType) : undefined,
+                        status: paramsObj.status !== undefined ? Number(paramsObj.status) : undefined,
                         data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 505:
+                case 12438:
                     result = await this.api.call.endGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        groupId: paramsObj.groupId ? String(paramsObj.groupId) : undefined,
                         session: session || undefined,
                         callType:
-                            paramsObj.callType !== undefined
-                                ? (Number(paramsObj.callType) as CallType)
-                                : undefined,
+                            paramsObj.callType !== undefined ? (Number(paramsObj.callType) as CallType) : undefined,
+                        status: paramsObj.status !== undefined ? Number(paramsObj.status) : undefined,
                         data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 506:
+                case 12439:
                     result = await this.api.call.ringRingGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        groupId: paramsObj.groupId ? String(paramsObj.groupId) : undefined,
                         session: session || undefined,
                         callType:
-                            paramsObj.callType !== undefined
-                                ? (Number(paramsObj.callType) as CallType)
-                                : undefined,
+                            paramsObj.callType !== undefined ? (Number(paramsObj.callType) as CallType) : undefined,
+                        status: paramsObj.status !== undefined ? Number(paramsObj.status) : undefined,
                         data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 507:
+                case 12440:
                     result = await this.api.call.finishGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
                         callType:
-                            paramsObj.callType !== undefined
-                                ? (Number(paramsObj.callType) as CallType)
-                                : undefined,
+                            paramsObj.callType !== undefined ? (Number(paramsObj.callType) as CallType) : undefined,
                         duration: Number(paramsObj.duration ?? 0),
                         data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 508:
+                case 12446:
                     result = await this.api.call.getGroupCallState(
                         callId,
                         String(paramsObj.hostCall ?? ""),
-                        paramsObj.callType !== undefined
-                            ? (Number(paramsObj.callType) as CallType)
-                            : undefined,
+                        paramsObj.callType !== undefined ? (Number(paramsObj.callType) as CallType) : undefined,
                     );
                     break;
                 case 509:
+                case 12098:
                     result = await this.api.call.pingGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        userId: paramsObj.userId ? String(paramsObj.userId) : undefined,
+                        callState:
+                            paramsObj.callstate !== undefined
+                                ? Number(paramsObj.callstate)
+                                : paramsObj.callState !== undefined
+                                  ? Number(paramsObj.callState)
+                                  : undefined,
+                        audioState:
+                            paramsObj.audiostate !== undefined
+                                ? Number(paramsObj.audiostate)
+                                : paramsObj.audioState !== undefined
+                                  ? Number(paramsObj.audioState)
+                                  : undefined,
+                        videoState:
+                            paramsObj.videostate !== undefined
+                                ? Number(paramsObj.videostate)
+                                : paramsObj.videoState !== undefined
+                                  ? Number(paramsObj.videoState)
+                                  : undefined,
+                        params: paramsObj.params as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 510:
+                case 12097:
                     result = await this.api.call.broadcastGroupCallState(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        userId: paramsObj.userId ? String(paramsObj.userId) : undefined,
+                        callState:
+                            paramsObj.callstate !== undefined
+                                ? Number(paramsObj.callstate)
+                                : paramsObj.callState !== undefined
+                                  ? Number(paramsObj.callState)
+                                  : undefined,
+                        audioState:
+                            paramsObj.audiostate !== undefined
+                                ? Number(paramsObj.audiostate)
+                                : paramsObj.audioState !== undefined
+                                  ? Number(paramsObj.audioState)
+                                  : undefined,
+                        videoState:
+                            paramsObj.videostate !== undefined
+                                ? Number(paramsObj.videostate)
+                                : paramsObj.videoState !== undefined
+                                  ? Number(paramsObj.videoState)
+                                  : undefined,
+                        params: paramsObj.params as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 511:
+                case 12043:
                     result = await this.api.call.joinGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        userId: paramsObj.userId ? String(paramsObj.userId) : undefined,
+                        data: paramsObj.params as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 512:
+                case 12044:
                     result = await this.api.call.shareScreenGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        userId: paramsObj.userId ? String(paramsObj.userId) : undefined,
+                        data: paramsObj.params as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 513:
-                    result = await this.api.call.sendRequestGroupCall(
-                        String(paramsObj.groupId ?? ""),
-                        {
-                            callId,
-                            session,
-                            callType:
-                                paramsObj.callType !== undefined
-                                    ? (Number(paramsObj.callType) as CallType)
-                                    : undefined,
-                            partners: (paramsObj.partners as string[] | undefined) ?? [],
-                            data: paramsObj.data as string | Record<string, unknown> | undefined,
-                        },
-                    );
+                case 12434:
+                    result = await this.api.call.sendRequestGroupCall(String(paramsObj.groupId ?? ""), {
+                        callId,
+                        hostCall: paramsObj.hostCall ? String(paramsObj.hostCall) : undefined,
+                        session,
+                        callType:
+                            paramsObj.callType !== undefined ? (Number(paramsObj.callType) as CallType) : undefined,
+                        partners: (paramsObj.partners as string[] | undefined) ?? [],
+                        rtpAddress,
+                        rtcpAddress,
+                        codec,
+                        data: paramsObj.data as string | Record<string, unknown> | undefined,
+                    });
                     break;
                 case 514:
+                case 12447:
                     result = await this.api.call.notifyGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
                         callType:
-                            paramsObj.callType !== undefined
-                                ? (Number(paramsObj.callType) as CallType)
-                                : undefined,
+                            paramsObj.callType !== undefined ? (Number(paramsObj.callType) as CallType) : undefined,
                         data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
@@ -785,9 +840,7 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
                 type: "recvSignal",
                 command: type,
                 data: {
-                    ...(typeof result === "object" && result !== null
-                        ? (result as Record<string, unknown>)
-                        : {}),
+                    ...(typeof result === "object" && result !== null ? (result as Record<string, unknown>) : {}),
                     type,
                     seqId,
                     errorCode: 0,

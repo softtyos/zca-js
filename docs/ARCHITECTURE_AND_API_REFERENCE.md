@@ -95,21 +95,21 @@ src/
 Khi Zalo phát hành bản Zalo PC mới (ví dụ nâng `zpw_ver` từ `689` lên `700` hoặc đổi domain dịch vụ), bạn **không cần tìm kiếm trong thư mục `src/apis/`** mà chỉ cần chỉnh sửa tại **`src/constants/`**:
 
 1. **Nâng cấp phiên bản giao thức (`zpw_ver` / `zpw_type`)**:
-   - Mở `src/constants/protocol.ts`:
-     ```ts
-     export const ZALO_PROTOCOL = {
-         API_TYPE: 30,
-         API_VERSION: 689, // <-- Chỉ cần đổi số này khi Zalo nâng phiên bản giao thức
-         VOICECALL_API_TYPE: 24,
-         // ...
-     };
-     ```
+    - Mở `src/constants/protocol.ts`:
+        ```ts
+        export const ZALO_PROTOCOL = {
+            API_TYPE: 30,
+            API_VERSION: 689, // <-- Chỉ cần đổi số này khi Zalo nâng phiên bản giao thức
+            VOICECALL_API_TYPE: 24,
+            // ...
+        };
+        ```
 2. **Thay đổi Domain gốc hoặc Domain Fallback**:
-   - Mở `src/constants/domains.ts`: Cập nhật trực tiếp tại `ZALO_DOMAINS` (`ZCLOUD_FALLBACK`, `ZFAMILY_FALLBACK`, `AI_FEATURES_FALLBACK`, `EMOJI_STATUS_FALLBACK`, `ZWID_API`, v.v.).
+    - Mở `src/constants/domains.ts`: Cập nhật trực tiếp tại `ZALO_DOMAINS` (`ZCLOUD_FALLBACK`, `ZFAMILY_FALLBACK`, `AI_FEATURES_FALLBACK`, `EMOJI_STATUS_FALLBACK`, `ZWID_API`, v.v.).
 3. **Thay đổi đường dẫn API (Endpoint Path)**:
-   - Mở `src/constants/endpoints.ts`: Cập nhật tại `ZALO_ENDPOINTS`.
+    - Mở `src/constants/endpoints.ts`: Cập nhật tại `ZALO_ENDPOINTS`.
 4. **Thay đổi thông số Ping, Watchdog, Cache TTL, Audio/Video Codecs**:
-   - Mở `src/constants/defaults.ts`: Cập nhật tại `ZALO_DEFAULTS`.
+    - Mở `src/constants/defaults.ts`: Cập nhật tại `ZALO_DEFAULTS`.
 
 > **Lưu ý về `SDK_VERSION`**: Khi chạy `npm run build` (hoặc trong CI/CD), script `scripts/buildAPI.js` sẽ tự động đọc trường `version` từ `package.json` và đồng bộ tự động vào `ZALO_PROTOCOL.SDK_VERSION`.
 
@@ -120,6 +120,7 @@ Khi Zalo phát hành bản Zalo PC mới (ví dụ nâng `zpw_ver` từ `689` l�
 Class `API` được sinh tự động bởi `scripts/buildAPI.js` với cơ chế **Lazy Memoized Getters** (chỉ khởi tạo hàm khi được gọi lần đầu, giảm ~85% bộ nhớ RAM khởi tạo mỗi tài khoản) và hỗ trợ đồng thời 2 cách gọi:
 
 ### Cách 1: Gọi qua 12 Domain Namespaces (Khuyên dùng cho code mới — Gợi ý IntelliSense cực gọn)
+
 ```ts
 // Phân hệ Chat (38 API)
 await api.chat.sendMessage("Xin chào", threadId);
@@ -141,18 +142,21 @@ const mediaList = await api.media.getConversationMedia({ threadId, type: "media"
 ```
 
 ### Cách 2: Gọi phẳng truyền thống (Tương thích ngược 100% với toàn bộ dự án cũ)
+
 ```ts
 await api.sendMessage("Xin chào", threadId);
 await api.getUsageZCloud();
 await api.sendVoiceCall(calleeUid, { callType: CallType.Video });
 ```
-*(Cả hai cách gọi đều trỏ tới cùng một hàm đã được memoize trong bộ nhớ: `api.chat.sendMessage === api.sendMessage`)*.
+
+_(Cả hai cách gọi đều trỏ tới cùng một hàm đã được memoize trong bộ nhớ: `api.chat.sendMessage === api.sendMessage`)_.
 
 ---
 
 ## 4. Cẩm Nang Sử Dụng 42 API Mới Bóc Tách Từ Zalo PC `26.7.10`
 
 ### 4.1. Phân hệ `api.zcloud` — Hệ sinh thái ZCloud, MyCloud & ZFamily (Module `98yS`)
+
 Toàn bộ các API trong phân hệ này sử dụng cơ chế mã hóa `AES-256-CBC` với `16-byte Random IV` gắn ở đầu bản mã (`encryptZCloudAES` / `decryptZCloudAES`) và xác thực bằng header `cloud-viewer-key` / `zfamily-viewer-key`.
 Nhờ `requestZCloudDecrypted` và `requestZFamilyDecrypted` trong `src/core/zcloud-client.ts`, **bạn không cần tự quản lý `viewer_key`** — SDK tự động cache khóa trong 15 phút và tự động xin lại khóa mới nếu khóa hết hạn sớm!
 
@@ -292,18 +296,19 @@ const encryptedGids = await api.auth.encryptGids(["687719761480069038"]); // cmd
 ## 5. Quy Trình Kiểm Định Tự Động (Quality Gates)
 
 Mọi thay đổi trong dự án được bảo vệ bởi 3 tầng kiểm thử:
+
 1. **Kiểm tra kiểu tĩnh & chuẩn code**:
-   ```bash
-   npm run build && npm run lint
-   ```
+    ```bash
+    npm run build && npm run lint
+    ```
 2. **Kiểm thử tự động 8 hạng mục cốt lõi (Offline Mock Suite — chạy tự động trong CI/CD trước khi publish)**:
-   ```bash
-   npm run test:verify
-   ```
+    ```bash
+    npm run test:verify
+    ```
 3. **Kiểm thử thực chiến trên máy chủ Zalo thật**:
-   ```bash
-   npm run test:live
-   ```
+    ```bash
+    npm run test:live
+    ```
 
 ---
 
@@ -311,4 +316,3 @@ Mọi thay đổi trong dự án được bảo vệ bởi 3 tầng kiểm thử
 
 - [Tài liệu R&D: Gọi Thoại/Video 2 Chiều (`ZRTC`), Tương thích React Native & Cơ chế Dữ liệu Nhóm](./RND_REACT_NATIVE_AND_VOICE_VIDEO_CALL.md)
 - [Hướng dẫn Tích hợp: Đồng bộ Tin nhắn Đa Thiết bị (`ZDB4.0`) & Gọi Thoại / Video](./INTEGRATION_GUIDE_SYNC_AND_CALL.md)
-

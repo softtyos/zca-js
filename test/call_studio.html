@@ -1,1652 +1,1962 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ZCA-JS Call Studio — Bộ Máy Gọi Thuần TypeScript (Không Cần Zalo PC)</title>
-  <style>
-    :root {
-      --bg: #0b1020;
-      --panel: #131b33;
-      --panel-2: #192342;
-      --border: #273561;
-      --text: #eaf0ff;
-      --muted: #8ea0c8;
-      --primary: #0068ff;
-      --primary-hover: #1b7dff;
-      --success: #16c784;
-      --warning: #f5a623;
-      --danger: #ea3943;
-      --code-bg: #080c18;
-    }
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.5;
-      padding: 20px;
-    }
-    .header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      background: linear-gradient(135deg, #111c38 0%, #1a2a56 100%);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px 24px;
-      margin-bottom: 20px;
-    }
-    .header h1 {
-      font-size: 20px;
-      font-weight: 700;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(22, 199, 132, 0.15);
-      color: var(--success);
-      border: 1px solid rgba(22, 199, 132, 0.35);
-    }
-    .grid {
-      display: grid;
-      grid-template-columns: 380px 1fr;
-      gap: 20px;
-    }
-    @media (max-width: 1024px) {
-      .grid { grid-template-columns: 1fr; }
-    }
-    .card {
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    .card-title {
-      font-size: 15px;
-      font-weight: 700;
-      margin-bottom: 14px;
-      color: #fff;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .field { margin-bottom: 14px; }
-    .field label {
-      display: block;
-      font-size: 12px;
-      color: var(--muted);
-      margin-bottom: 6px;
-      font-weight: 600;
-    }
-    .input-row {
-      display: flex;
-      gap: 8px;
-    }
-    input, select {
-      width: 100%;
-      padding: 10px 12px;
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-size: 13px;
-      outline: none;
-    }
-    input:focus, select:focus {
-      border-color: var(--primary);
-    }
-    button {
-      cursor: pointer;
-      border: none;
-      border-radius: 8px;
-      padding: 10px 16px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #fff;
-      transition: all 0.15s ease;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-    }
-    button:disabled { opacity: 0.45; cursor: not-allowed; }
-    .btn-primary { background: var(--primary); }
-    .btn-primary:hover:not(:disabled) { background: var(--primary-hover); }
-    .btn-success { background: var(--success); color: #052315; }
-    .btn-danger { background: var(--danger); }
-    .btn-secondary { background: var(--panel-2); border: 1px solid var(--border); }
-    .btn-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 10px;
-    }
-    .contact-card {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px;
-      background: var(--panel-2);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      margin-bottom: 14px;
-      cursor: pointer;
-    }
-    .contact-card:hover { border-color: var(--primary); }
-    .avatar {
-      width: 44px;
-      height: 44px;
-      border-radius: 50%;
-      background: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 700;
-      font-size: 16px;
-      object-fit: cover;
-    }
-    .status-banner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 14px 18px;
-      border-radius: 10px;
-      background: var(--panel-2);
-      border: 1px solid var(--border);
-      margin-bottom: 16px;
-    }
-    .state-pill {
-      padding: 4px 12px;
-      border-radius: 999px;
-      font-size: 12px;
-      font-weight: 700;
-      text-transform: uppercase;
-    }
-    .state-idle { background: rgba(142, 160, 200, 0.2); color: var(--muted); }
-    .state-allocating, .state-handshaking_udp, .state-ringing {
-      background: rgba(245, 166, 35, 0.2);
-      color: var(--warning);
-    }
-    .state-active { background: rgba(22, 199, 132, 0.2); color: var(--success); }
-    .state-ended, .state-error { background: rgba(234, 57, 67, 0.2); color: var(--danger); }
-    .metrics {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin-bottom: 16px;
-    }
-    .metric-box {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      text-align: center;
-    }
-    .metric-val {
-      font-size: 20px;
-      font-weight: 800;
-      color: #fff;
-    }
-    .metric-lbl {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 2px;
-    }
-    pre {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px;
-      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
-      font-size: 12px;
-      color: #c5d4f5;
-      overflow-x: auto;
-      max-height: 280px;
-      overflow-y: auto;
-    }
-    .log-list {
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      height: 300px;
-      overflow-y: auto;
-      font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
-      font-size: 12px;
-    }
-    .log-item {
-      padding: 4px 0;
-      border-bottom: 1px solid rgba(39, 53, 97, 0.4);
-    }
-    .log-time { color: var(--muted); margin-right: 8px; }
-    .log-ok { color: var(--success); }
-    .log-warn { color: var(--warning); }
-    .log-err { color: var(--danger); }
-    @keyframes pulseRing {
-      0% { box-shadow: 0 0 0 0 rgba(22, 199, 132, 0.55); }
-      70% { box-shadow: 0 0 0 14px rgba(22, 199, 132, 0); }
-      100% { box-shadow: 0 0 0 0 rgba(22, 199, 132, 0); }
-    }
-    .incoming-banner {
-      display: none;
-      background: linear-gradient(135deg, rgba(16, 48, 38, 0.96) 0%, rgba(19, 32, 68, 0.98) 100%);
-      border: 2px solid var(--success);
-      border-radius: 14px;
-      padding: 18px 22px;
-      margin-bottom: 20px;
-      animation: pulseRing 1.8s infinite;
-    }
-    .incoming-banner.active {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-    }
-    .incoming-card-ringing {
-      border-color: var(--success) !important;
-      box-shadow: 0 0 20px rgba(22, 199, 132, 0.2);
-    }
-    .kv-grid {
-      display: grid;
-      grid-template-columns: 115px 1fr;
-      gap: 6px 10px;
-      font-size: 12px;
-      background: var(--code-bg);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-      margin-bottom: 12px;
-    }
-    .kv-lbl { color: var(--muted); font-weight: 600; }
-    .kv-val { color: #fff; font-family: "JetBrains Mono", monospace; word-break: break-all; }
-  </style>
-</head>
-<body>
-  <div class="header">
-    <div>
-      <h1>
-        <span>📞 ZCA-JS Pure TypeScript Call Studio</span>
-        <span class="badge" id="engineBadge">100% Pure TS (Zero Zalo PC)</span>
-      </h1>
-      <div style="font-size: 12px; color: var(--muted); margin-top: 4px;" id="accountInfo">
-        Đang kết nối phiên đăng nhập Zalo...
-      </div>
-    </div>
-    <div style="display: flex; gap: 10px;">
-      <button class="btn-secondary" onclick="simulateIncoming(1)">🧪 Test Gọi Thoại Đến</button>
-      <button class="btn-secondary" onclick="simulateIncoming(3)">🧪 Test Gọi Video Đến</button>
-      <button class="btn-secondary" onclick="clearLogs()">🧹 Xoá Log</button>
-    </div>
-  </div>
-
-  <!-- Banner thông báo Cuộc Gọi Đến nổi bật toàn màn hình -->
-  <div class="incoming-banner" id="incomingBanner">
-    <div style="display: flex; align-items: center; gap: 14px;">
-      <div class="avatar" id="incomingBannerAvatar" style="width: 54px; height: 54px; font-size: 20px; background: var(--success); color: #042214;">📲</div>
-      <div>
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span class="badge" id="incomingBannerTypeBadge">🔔 CUỘC GỌI ĐẾN ĐANG ĐỔ CHUÔNG</span>
-          <span style="font-size: 11px; color: var(--muted);" id="incomingBannerRingStatus">Đã tự động gửi ringRing (407/506) ✓</span>
-        </div>
-        <div style="font-size: 18px; font-weight: 800; color: #fff; margin-top: 4px;" id="incomingBannerCaller">Đang chờ...</div>
-        <div style="font-size: 12px; color: #b8c9ee;" id="incomingBannerMeta">callId: — • rtp: —</div>
-      </div>
-    </div>
-    <div style="display: flex; flex-wrap: wrap; gap: 10px;">
-      <button class="btn-success" onclick="acceptIncoming(false, false)">📞 Nghe Máy (Thoại)</button>
-      <button class="btn-primary" onclick="acceptIncoming(true, false)">🎥 Nghe Máy (Có Video)</button>
-      <button class="btn-secondary" onclick="acceptIncoming(false, true)" title="Chấp nhận cuộc gọi trên Worker và xuất gói UDP InitCallCallee (cmd=12) + 5-byte Relay Header cho Mobile tự kết nối">
-        📲 Nghe Máy & Bàn Giao UDP Cho Mobile
-      </button>
-      <button class="btn-danger" onclick="rejectIncoming()">❌ Từ Chối (406/508)</button>
-    </div>
-  </div>
-
-  <div class="grid">
-    <!-- Cột điều khiển cuộc gọi -->
-    <div>
-      <!-- CARD 1: KHU VỰC NHẬN CUỘC GỌI ĐẾN (INCOMING CALL STUDIO) -->
-      <div class="card" id="incomingCallCard">
-        <div class="card-title">
-          <span>📲 Nhận Cuộc Gọi Đến (Incoming Call Studio)</span>
-          <span class="badge" id="incomingStatusBadge">Đang Trực Chiến (WS 601/604)</span>
-        </div>
-        <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px;">
-          Hãy dùng điện thoại Zalo gọi vào tài khoản này hoặc bấm nút <b>Giả Lập Cuộc Gọi Đến</b> bên dưới để kiểm tra luồng nhận cuộc gọi đến, bắt máy (405/507 + UDP <code>cmd=12</code>), từ chối (406/508) hoặc bàn giao UDP cho Mobile.
-        </div>
-
-        <div class="kv-grid">
-          <div class="kv-lbl">Trạng thái:</div>
-          <div class="kv-val" id="incStateText" style="color: var(--success);">Đang chờ cuộc gọi đến...</div>
-          <div class="kv-lbl">Người gọi đến:</div>
-          <div class="kv-val" id="incCallerText">—</div>
-          <div class="kv-lbl">Loại cuộc gọi:</div>
-          <div class="kv-val" id="incTypeText">—</div>
-          <div class="kv-lbl">Call ID / Session:</div>
-          <div class="kv-val" id="incCallIdText">—</div>
-          <div class="kv-lbl">UDP Relay Server:</div>
-          <div class="kv-val" id="incRelayText">—</div>
-          <div class="kv-lbl">32-bit UID Route:</div>
-          <div class="kv-val" id="incUid32Text">—</div>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn-success" id="btnAccept" onclick="acceptIncoming(false, false)" disabled>
-            📞 Nghe Máy (Thoại)
-          </button>
-          <button class="btn-primary" id="btnAcceptVideo" onclick="acceptIncoming(true, false)" disabled>
-            🎥 Nghe Máy (Video)
-          </button>
-        </div>
-        <div class="btn-row">
-          <button class="btn-secondary" id="btnAcceptHandoff" onclick="acceptIncoming(false, true)" disabled>
-            📲 Nghe & Bàn Giao Mobile
-          </button>
-          <button class="btn-danger" id="btnReject" onclick="rejectIncoming()" disabled>
-            ❌ Từ Chối Cuộc Gọi
-          </button>
-        </div>
-
-        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border);">
-          <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 600;">
-            🧪 Công Cụ Giả Lập Cuộc Gọi Đến (Test Nhanh Mọi Kịch Bản Gọi Đến):
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px;">
-            <button class="btn-secondary" style="padding: 8px 6px; font-size: 11px;" onclick="simulateIncoming(1)">
-              📞 Giả Lập Thoại 1-1
-            </button>
-            <button class="btn-secondary" style="padding: 8px 6px; font-size: 11px;" onclick="simulateIncoming(3)">
-              🎥 Giả Lập Video 1-1
-            </button>
-            <button class="btn-secondary" style="padding: 8px 6px; font-size: 11px;" onclick="simulateIncoming(6)">
-              👥 Giả Lập Gọi Nhóm
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- CARD 2: KHU VỰC GỌI ĐI (OUTGOING CALL) -->
-      <div class="card">
-        <div class="card-title">
-          <span>📤 Gọi Đi Cá Nhân (Outgoing Call)</span>
-        </div>
-
-        <div class="contact-card" onclick="selectPreset('5249661060655759359', 'Ly Van Bong (0332606964)')">
-          <div class="avatar">LB</div>
-          <div style="flex: 1;">
-            <div style="font-weight: 700; font-size: 14px;">Ly Van Bong</div>
-            <div style="font-size: 12px; color: var(--muted);">SĐT: 0332606964 • UID: 5249661060655759359</div>
-            <div style="font-size: 11px; color: var(--success);">✓ Đã xác minh đổ chuông & bắt máy thật</div>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Tìm kiếm theo Số Điện Thoại</label>
-          <div class="input-row">
-            <input type="text" id="phoneInput" value="0332606964" placeholder="Nhập SĐT Zalo..." />
-            <button class="btn-secondary" onclick="lookupPhone()">🔍 Tìm</button>
-          </div>
-        </div>
-
-        <div class="field">
-          <label>Target Callee UID (64-bit Zalo ID)</label>
-          <input type="text" id="calleeIdInput" value="5249661060655759359" />
-        </div>
-
-        <div class="field">
-          <label>Loại cuộc gọi (CallType)</label>
-          <select id="callTypeSelect">
-            <option value="1">Cuộc gọi Thoại (Audio Call — Hỗ trợ nâng cấp lên Video)</option>
-            <option value="3">Cuộc gọi Video (Video Call — Bật Camera ngay)</option>
-            <option value="3_offcam">Cuộc gọi Video Tắt Cam (Video Call — Tắt Cam lúc đầu)</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Chế độ đóng gói UDP (PacketMode)</label>
-          <select id="packetModeSelect">
-            <option value="1">Mode 1 — Relay 5-byte Header (0x03 / 0x05 / 0x0d / 0x0f — Mặc định chuẩn Relay)</option>
-            <option value="2">Mode 2 — ZRTC P2P 9-byte Header (0x7f — Chỉ dùng cho P2P trực tiếp)</option>
-          </select>
-        </div>
-
-        <div class="field">
-          <label>Mã hoá luồng Media (SRTP)</label>
-          <select id="srtpSelect">
-            <option value="0">Tắt (Plain RTP/RTCP — Tương thích cao nhất)</option>
-            <option value="1">Bật (RFC 3711 AES_CM_128_HMAC_SHA1_80)</option>
-          </select>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn-success" id="btnCall" onclick="startCall()">📞 Gọi Đi Ngay</button>
-          <button class="btn-danger" id="btnEnd" onclick="endCall()" disabled>📴 Kết Thúc</button>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn-primary" id="btnToggleMic" onclick="toggleMic()">
-            🎙️ Bật Mic (Opus 16kHz)
-          </button>
-          <button class="btn-primary" id="btnToggleCam" onclick="toggleCamera()">
-            📷 Bật Camera (H.264)
-          </button>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn-secondary" id="btnUpgradeVideo" onclick="upgradeToVideo()" disabled>
-            🔄 Chuyển Thoại ➔ Video
-          </button>
-          <button class="btn-secondary" id="btnHoldCall" onclick="toggleHoldCall()" disabled>
-            ⏸️ Tạm Giữ Cuộc Gọi
-          </button>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn-secondary" id="btnSendAudio" onclick="sendTestAudio()" disabled>
-            🔊 Bắn 25 Gói Opus Mẫu
-          </button>
-          <button class="btn-secondary" id="btnSendVideo" onclick="sendTestVideo()" disabled>
-            📹 Bắn 25 Gói H.264 Mẫu
-          </button>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn-secondary" id="btnCallSignalingOnly" onclick="startCall(true)" title="Worker chỉ gọi HTTP 401/416 để lấy thông số UDP Relay và đẩy về cho Mobile tự kết nối">
-            📲 Gọi Đi (Worker ➔ Mobile UDP)
-          </button>
-          <button class="btn-secondary" id="btnExportHandoff" onclick="exportMobileHandoff()" disabled>
-            📦 Xuất Gói Bàn Giao Mobile
-          </button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">👥 Gọi Nhóm (Group Audio = 5 / Group Video = 6)</div>
-        <div class="field">
-          <label>Group ID (Chọn hoặc nhập ID nhóm)</label>
-          <div class="input-row">
-            <input type="text" id="groupIdInput" placeholder="Nhập Group ID..." />
-            <button class="btn-secondary" onclick="loadGroups()">📂 Tải Nhóm</button>
-          </div>
-        </div>
-        <div class="field">
-          <label>Danh sách UID Thành Viên Mời Gọi Nhóm (cách nhau dấu phẩy)</label>
-          <input type="text" id="groupPartnersInput" value="5249661060655759359" />
-        </div>
-        <div class="btn-row">
-          <button class="btn-primary" onclick="startGroupCallUI(5)">👥 Gọi Nhóm Thoại</button>
-          <button class="btn-success" onclick="startGroupCallUI(6)">🎥 Gọi Nhóm Video</button>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="card-title">📋 Danh Bạ Bạn Bè Khả Dụng</div>
-        <div id="friendsList" style="max-height: 240px; overflow-y: auto; font-size: 12px; color: var(--muted);">
-          Đang tải danh bạ...
-        </div>
-      </div>
-    </div>
-
-    <!-- Cột giám sát thời gian thực -->
-    <div>
-      <div class="card">
-        <div class="status-banner">
-          <div>
-            <div style="font-size: 12px; color: var(--muted);">Trạng Thái Phiên Gọi (ZaloRtcSession)</div>
-            <div style="font-size: 16px; font-weight: 700;" id="callHeadline">Sẵn sàng khởi tạo cuộc gọi</div>
-          </div>
-          <span class="state-pill state-idle" id="statePill">IDLE</span>
-        </div>
-
-        <div class="metrics" style="grid-template-columns: repeat(5, 1fr);">
-          <div class="metric-box">
-            <div class="metric-val" id="mRoutingToken">—</div>
-            <div class="metric-lbl">UDP Routing Token</div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-val" id="mRtpIn">0</div>
-            <div class="metric-lbl">Audio RTP Nhận</div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-val" id="mVideoIn">0</div>
-            <div class="metric-lbl">Video H.264 Nhận</div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-val" id="mRtcpIn">0</div>
-            <div class="metric-lbl">Gói RTCP Nhận</div>
-          </div>
-          <div class="metric-box">
-            <div class="metric-val" id="mRtpOut">0</div>
-            <div class="metric-lbl">Media RTP Đã Gửi</div>
-          </div>
-        </div>
-
-        <!-- Khu vực Media Trực Tiếp: Mic / Loa / Camera / Video Đối Phương -->
-        <div style="background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-bottom: 16px;">
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-            <span style="font-size: 13px; font-weight: 700; color: #fff;">🎬 Phòng Media Trực Tiếp (WebCodecs Opus 16kHz & H.264 Annex-B)</span>
-            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="requestPliKeyframe()">🔄 Yêu Cầu Keyframe (PLI)</button>
-          </div>
-
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px;">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>ZCA-JS Call Studio — Bộ Máy Gọi Thuần TypeScript (Không Cần Zalo PC)</title>
+        <style>
+            :root {
+                --bg: #0b1020;
+                --panel: #131b33;
+                --panel-2: #192342;
+                --border: #273561;
+                --text: #eaf0ff;
+                --muted: #8ea0c8;
+                --primary: #0068ff;
+                --primary-hover: #1b7dff;
+                --success: #16c784;
+                --warning: #f5a623;
+                --danger: #ea3943;
+                --code-bg: #080c18;
+            }
+            * {
+                box-sizing: border-box;
+                margin: 0;
+                padding: 0;
+            }
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+                background: var(--bg);
+                color: var(--text);
+                line-height: 1.5;
+                padding: 20px;
+            }
+            .header {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                background: linear-gradient(135deg, #111c38 0%, #1a2a56 100%);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                padding: 18px 24px;
+                margin-bottom: 20px;
+            }
+            .header h1 {
+                font-size: 20px;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+            .badge {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                font-size: 12px;
+                font-weight: 600;
+                padding: 4px 10px;
+                border-radius: 999px;
+                background: rgba(22, 199, 132, 0.15);
+                color: var(--success);
+                border: 1px solid rgba(22, 199, 132, 0.35);
+            }
+            .grid {
+                display: grid;
+                grid-template-columns: 380px 1fr;
+                gap: 20px;
+            }
+            @media (max-width: 1024px) {
+                .grid {
+                    grid-template-columns: 1fr;
+                }
+            }
+            .card {
+                background: var(--panel);
+                border: 1px solid var(--border);
+                border-radius: 14px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }
+            .card-title {
+                font-size: 15px;
+                font-weight: 700;
+                margin-bottom: 14px;
+                color: #fff;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .field {
+                margin-bottom: 14px;
+            }
+            .field label {
+                display: block;
+                font-size: 12px;
+                color: var(--muted);
+                margin-bottom: 6px;
+                font-weight: 600;
+            }
+            .input-row {
+                display: flex;
+                gap: 8px;
+            }
+            input,
+            select {
+                width: 100%;
+                padding: 10px 12px;
+                background: var(--code-bg);
+                border: 1px solid var(--border);
+                border-radius: 8px;
+                color: var(--text);
+                font-size: 13px;
+                outline: none;
+            }
+            input:focus,
+            select:focus {
+                border-color: var(--primary);
+            }
+            button {
+                cursor: pointer;
+                border: none;
+                border-radius: 8px;
+                padding: 10px 16px;
+                font-size: 13px;
+                font-weight: 600;
+                color: #fff;
+                transition: all 0.15s ease;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                gap: 6px;
+            }
+            button:disabled {
+                opacity: 0.45;
+                cursor: not-allowed;
+            }
+            .btn-primary {
+                background: var(--primary);
+            }
+            .btn-primary:hover:not(:disabled) {
+                background: var(--primary-hover);
+            }
+            .btn-success {
+                background: var(--success);
+                color: #052315;
+            }
+            .btn-danger {
+                background: var(--danger);
+            }
+            .btn-secondary {
+                background: var(--panel-2);
+                border: 1px solid var(--border);
+            }
+            .btn-row {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+                margin-top: 10px;
+            }
+            .contact-card {
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                padding: 12px;
+                background: var(--panel-2);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                margin-bottom: 14px;
+                cursor: pointer;
+            }
+            .contact-card:hover {
+                border-color: var(--primary);
+            }
+            .avatar {
+                width: 44px;
+                height: 44px;
+                border-radius: 50%;
+                background: var(--primary);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+                font-size: 16px;
+                object-fit: cover;
+            }
+            .status-banner {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                padding: 14px 18px;
+                border-radius: 10px;
+                background: var(--panel-2);
+                border: 1px solid var(--border);
+                margin-bottom: 16px;
+            }
+            .state-pill {
+                padding: 4px 12px;
+                border-radius: 999px;
+                font-size: 12px;
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+            .state-idle {
+                background: rgba(142, 160, 200, 0.2);
+                color: var(--muted);
+            }
+            .state-allocating,
+            .state-handshaking_udp,
+            .state-ringing {
+                background: rgba(245, 166, 35, 0.2);
+                color: var(--warning);
+            }
+            .state-active {
+                background: rgba(22, 199, 132, 0.2);
+                color: var(--success);
+            }
+            .state-ended,
+            .state-error {
+                background: rgba(234, 57, 67, 0.2);
+                color: var(--danger);
+            }
+            .metrics {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+                margin-bottom: 16px;
+            }
+            .metric-box {
+                background: var(--code-bg);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                padding: 12px;
+                text-align: center;
+            }
+            .metric-val {
+                font-size: 20px;
+                font-weight: 800;
+                color: #fff;
+            }
+            .metric-lbl {
+                font-size: 11px;
+                color: var(--muted);
+                margin-top: 2px;
+            }
+            pre {
+                background: var(--code-bg);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                padding: 14px;
+                font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+                font-size: 12px;
+                color: #c5d4f5;
+                overflow-x: auto;
+                max-height: 280px;
+                overflow-y: auto;
+            }
+            .log-list {
+                background: var(--code-bg);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                padding: 12px;
+                height: 300px;
+                overflow-y: auto;
+                font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+                font-size: 12px;
+            }
+            .log-item {
+                padding: 4px 0;
+                border-bottom: 1px solid rgba(39, 53, 97, 0.4);
+            }
+            .log-time {
+                color: var(--muted);
+                margin-right: 8px;
+            }
+            .log-ok {
+                color: var(--success);
+            }
+            .log-warn {
+                color: var(--warning);
+            }
+            .log-err {
+                color: var(--danger);
+            }
+            @keyframes pulseRing {
+                0% {
+                    box-shadow: 0 0 0 0 rgba(22, 199, 132, 0.55);
+                }
+                70% {
+                    box-shadow: 0 0 0 14px rgba(22, 199, 132, 0);
+                }
+                100% {
+                    box-shadow: 0 0 0 0 rgba(22, 199, 132, 0);
+                }
+            }
+            .incoming-banner {
+                display: none;
+                background: linear-gradient(135deg, rgba(16, 48, 38, 0.96) 0%, rgba(19, 32, 68, 0.98) 100%);
+                border: 2px solid var(--success);
+                border-radius: 14px;
+                padding: 18px 22px;
+                margin-bottom: 20px;
+                animation: pulseRing 1.8s infinite;
+            }
+            .incoming-banner.active {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                flex-wrap: wrap;
+                gap: 16px;
+            }
+            .incoming-card-ringing {
+                border-color: var(--success) !important;
+                box-shadow: 0 0 20px rgba(22, 199, 132, 0.2);
+            }
+            .kv-grid {
+                display: grid;
+                grid-template-columns: 115px 1fr;
+                gap: 6px 10px;
+                font-size: 12px;
+                background: var(--code-bg);
+                border: 1px solid var(--border);
+                border-radius: 10px;
+                padding: 12px;
+                margin-bottom: 12px;
+            }
+            .kv-lbl {
+                color: var(--muted);
+                font-weight: 600;
+            }
+            .kv-val {
+                color: #fff;
+                font-family: "JetBrains Mono", monospace;
+                word-break: break-all;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="header">
             <div>
-              <div style="font-size: 11px; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between;">
-                <span>🎙️ Cường độ Mic Gửi Đi (Opus 16kHz)</span>
-                <span id="micStatusText" style="color: var(--warning);">Đang tắt</span>
-              </div>
-              <div style="height: 8px; background: #141c33; border-radius: 99px; overflow: hidden;">
-                <div id="micMeterFill" style="height: 100%; width: 0%; background: var(--success); transition: width 0.06s;"></div>
-              </div>
+                <h1>
+                    <span>📞 ZCA-JS Pure TypeScript Call Studio</span>
+                    <span class="badge" id="engineBadge">100% Pure TS (Zero Zalo PC)</span>
+                </h1>
+                <div style="font-size: 12px; color: var(--muted); margin-top: 4px" id="accountInfo">
+                    Đang kết nối phiên đăng nhập Zalo...
+                </div>
             </div>
+            <div style="display: flex; gap: 10px">
+                <button class="btn-secondary" onclick="simulateIncoming(1)">🧪 Test Gọi Thoại Đến</button>
+                <button class="btn-secondary" onclick="simulateIncoming(3)">🧪 Test Gọi Video Đến</button>
+                <button class="btn-secondary" onclick="clearLogs()">🧹 Xoá Log</button>
+            </div>
+        </div>
+
+        <!-- Banner thông báo Cuộc Gọi Đến nổi bật toàn màn hình -->
+        <div class="incoming-banner" id="incomingBanner">
+            <div style="display: flex; align-items: center; gap: 14px">
+                <div
+                    class="avatar"
+                    id="incomingBannerAvatar"
+                    style="width: 54px; height: 54px; font-size: 20px; background: var(--success); color: #042214"
+                >
+                    📲
+                </div>
+                <div>
+                    <div style="display: flex; align-items: center; gap: 8px">
+                        <span class="badge" id="incomingBannerTypeBadge">🔔 CUỘC GỌI ĐẾN ĐANG ĐỔ CHUÔNG</span>
+                        <span style="font-size: 11px; color: var(--muted)" id="incomingBannerRingStatus"
+                            >Đã tự động gửi ringRing (407/506) ✓</span
+                        >
+                    </div>
+                    <div
+                        style="font-size: 18px; font-weight: 800; color: #fff; margin-top: 4px"
+                        id="incomingBannerCaller"
+                    >
+                        Đang chờ...
+                    </div>
+                    <div style="font-size: 12px; color: #b8c9ee" id="incomingBannerMeta">callId: — • rtp: —</div>
+                </div>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px">
+                <button class="btn-success" onclick="acceptIncoming(false, false)">📞 Nghe Máy (Thoại)</button>
+                <button class="btn-primary" onclick="acceptIncoming(true, false)">🎥 Nghe Máy (Có Video)</button>
+                <button
+                    class="btn-secondary"
+                    onclick="acceptIncoming(false, true)"
+                    title="Chấp nhận cuộc gọi trên Worker và xuất gói UDP InitCallCallee (cmd=12) + 5-byte Relay Header cho Mobile tự kết nối"
+                >
+                    📲 Nghe Máy & Bàn Giao UDP Cho Mobile
+                </button>
+                <button class="btn-danger" onclick="rejectIncoming()">❌ Từ Chối (406/508)</button>
+            </div>
+        </div>
+
+        <div class="grid">
+            <!-- Cột điều khiển cuộc gọi -->
             <div>
-              <div style="font-size: 11px; color: var(--muted); margin-bottom: 4px; display: flex; justify-content: space-between;">
-                <span>🔊 Cường độ Loa Nhận Về (Từ Điện Thoại)</span>
-                <span id="speakerStatusText" style="color: var(--success);">Sẵn sàng phát</span>
-              </div>
-              <div style="height: 8px; background: #141c33; border-radius: 99px; overflow: hidden;">
-                <div id="speakerMeterFill" style="height: 100%; width: 0%; background: var(--primary); transition: width 0.06s;"></div>
-              </div>
-            </div>
-          </div>
+                <!-- CARD 1: KHU VỰC NHẬN CUỘC GỌI ĐẾN (INCOMING CALL STUDIO) -->
+                <div class="card" id="incomingCallCard">
+                    <div class="card-title">
+                        <span>📲 Nhận Cuộc Gọi Đến (Incoming Call Studio)</span>
+                        <span class="badge" id="incomingStatusBadge">Đang Trực Chiến (WS 601/604)</span>
+                    </div>
+                    <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px">
+                        Hãy dùng điện thoại Zalo gọi vào tài khoản này hoặc bấm nút <b>Giả Lập Cuộc Gọi Đến</b> bên dưới
+                        để kiểm tra luồng nhận cuộc gọi đến, bắt máy (405/507 + UDP <code>cmd=12</code>), từ chối
+                        (406/508) hoặc bàn giao UDP cho Mobile.
+                    </div>
 
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
-            <div style="position: relative; background: #050811; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center;">
-              <video id="localVideo" autoplay muted playsinline style="width: 100%; height: 100%; object-fit: cover;"></video>
-              <div style="position: absolute; bottom: 6px; left: 8px; font-size: 11px; background: rgba(0,0,0,0.65); padding: 2px 8px; border-radius: 4px;">
-                📷 Camera Của Bạn (H.264 Gửi Đi)
-              </div>
+                    <div class="kv-grid">
+                        <div class="kv-lbl">Trạng thái:</div>
+                        <div class="kv-val" id="incStateText" style="color: var(--success)">
+                            Đang chờ cuộc gọi đến...
+                        </div>
+                        <div class="kv-lbl">Người gọi đến:</div>
+                        <div class="kv-val" id="incCallerText">—</div>
+                        <div class="kv-lbl">Loại cuộc gọi:</div>
+                        <div class="kv-val" id="incTypeText">—</div>
+                        <div class="kv-lbl">Call ID / Session:</div>
+                        <div class="kv-val" id="incCallIdText">—</div>
+                        <div class="kv-lbl">UDP Relay Server:</div>
+                        <div class="kv-val" id="incRelayText">—</div>
+                        <div class="kv-lbl">32-bit UID Route:</div>
+                        <div class="kv-val" id="incUid32Text">—</div>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn-success" id="btnAccept" onclick="acceptIncoming(false, false)" disabled>
+                            📞 Nghe Máy (Thoại)
+                        </button>
+                        <button class="btn-primary" id="btnAcceptVideo" onclick="acceptIncoming(true, false)" disabled>
+                            🎥 Nghe Máy (Video)
+                        </button>
+                    </div>
+                    <div class="btn-row">
+                        <button
+                            class="btn-secondary"
+                            id="btnAcceptHandoff"
+                            onclick="acceptIncoming(false, true)"
+                            disabled
+                        >
+                            📲 Nghe & Bàn Giao Mobile
+                        </button>
+                        <button class="btn-danger" id="btnReject" onclick="rejectIncoming()" disabled>
+                            ❌ Từ Chối Cuộc Gọi
+                        </button>
+                    </div>
+
+                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border)">
+                        <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 600">
+                            🧪 Công Cụ Giả Lập Cuộc Gọi Đến (Test Nhanh Mọi Kịch Bản Gọi Đến):
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px">
+                            <button
+                                class="btn-secondary"
+                                style="padding: 8px 6px; font-size: 11px"
+                                onclick="simulateIncoming(1)"
+                            >
+                                📞 Giả Lập Thoại 1-1
+                            </button>
+                            <button
+                                class="btn-secondary"
+                                style="padding: 8px 6px; font-size: 11px"
+                                onclick="simulateIncoming(3)"
+                            >
+                                🎥 Giả Lập Video 1-1
+                            </button>
+                            <button
+                                class="btn-secondary"
+                                style="padding: 8px 6px; font-size: 11px"
+                                onclick="simulateIncoming(6)"
+                            >
+                                👥 Giả Lập Gọi Nhóm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CARD 2: KHU VỰC GỌI ĐI (OUTGOING CALL) -->
+                <div class="card">
+                    <div class="card-title">
+                        <span>📤 Gọi Đi Cá Nhân (Outgoing Call)</span>
+                    </div>
+
+                    <div class="contact-card" onclick="selectPreset('5249661060655759359', 'Ly Van Bong (0332606964)')">
+                        <div class="avatar">LB</div>
+                        <div style="flex: 1">
+                            <div style="font-weight: 700; font-size: 14px">Ly Van Bong</div>
+                            <div style="font-size: 12px; color: var(--muted)">
+                                SĐT: 0332606964 • UID: 5249661060655759359
+                            </div>
+                            <div style="font-size: 11px; color: var(--success)">
+                                ✓ Đã xác minh đổ chuông & bắt máy thật
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Tìm kiếm theo Số Điện Thoại</label>
+                        <div class="input-row">
+                            <input type="text" id="phoneInput" value="0332606964" placeholder="Nhập SĐT Zalo..." />
+                            <button class="btn-secondary" onclick="lookupPhone()">🔍 Tìm</button>
+                        </div>
+                    </div>
+
+                    <div class="field">
+                        <label>Target Callee UID (64-bit Zalo ID)</label>
+                        <input type="text" id="calleeIdInput" value="5249661060655759359" />
+                    </div>
+
+                    <div class="field">
+                        <label>Loại cuộc gọi (CallType)</label>
+                        <select id="callTypeSelect">
+                            <option value="1">Cuộc gọi Thoại (Audio Call — Hỗ trợ nâng cấp lên Video)</option>
+                            <option value="3">Cuộc gọi Video (Video Call — Bật Camera ngay)</option>
+                            <option value="3_offcam">Cuộc gọi Video Tắt Cam (Video Call — Tắt Cam lúc đầu)</option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Chế độ đóng gói UDP (PacketMode)</label>
+                        <select id="packetModeSelect">
+                            <option value="1">
+                                Mode 1 — Relay 5-byte Header (0x03 / 0x05 / 0x0d / 0x0f — Mặc định chuẩn Relay)
+                            </option>
+                            <option value="2">
+                                Mode 2 — ZRTC P2P 9-byte Header (0x7f — Chỉ dùng cho P2P trực tiếp)
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="field">
+                        <label>Mã hoá luồng Media (SRTP)</label>
+                        <select id="srtpSelect">
+                            <option value="0">Tắt (Plain RTP/RTCP — Tương thích cao nhất)</option>
+                            <option value="1">Bật (RFC 3711 AES_CM_128_HMAC_SHA1_80)</option>
+                        </select>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn-success" id="btnCall" onclick="startCall()">📞 Gọi Đi Ngay</button>
+                        <button class="btn-danger" id="btnEnd" onclick="endCall()" disabled>📴 Kết Thúc</button>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn-primary" id="btnToggleMic" onclick="toggleMic()">
+                            🎙️ Bật Mic (Opus 16kHz)
+                        </button>
+                        <button class="btn-primary" id="btnToggleCam" onclick="toggleCamera()">
+                            📷 Bật Camera (H.264)
+                        </button>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn-secondary" id="btnUpgradeVideo" onclick="upgradeToVideo()" disabled>
+                            🔄 Chuyển Thoại ➔ Video
+                        </button>
+                        <button class="btn-secondary" id="btnHoldCall" onclick="toggleHoldCall()" disabled>
+                            ⏸️ Tạm Giữ Cuộc Gọi
+                        </button>
+                    </div>
+
+                    <div class="btn-row">
+                        <button class="btn-secondary" id="btnSendAudio" onclick="sendTestAudio()" disabled>
+                            🔊 Bắn 25 Gói Opus Mẫu
+                        </button>
+                        <button class="btn-secondary" id="btnSendVideo" onclick="sendTestVideo()" disabled>
+                            📹 Bắn 25 Gói H.264 Mẫu
+                        </button>
+                    </div>
+
+                    <div class="btn-row">
+                        <button
+                            class="btn-secondary"
+                            id="btnCallSignalingOnly"
+                            onclick="startCall(true)"
+                            title="Worker chỉ gọi HTTP 401/416 để lấy thông số UDP Relay và đẩy về cho Mobile tự kết nối"
+                        >
+                            📲 Gọi Đi (Worker ➔ Mobile UDP)
+                        </button>
+                        <button class="btn-secondary" id="btnExportHandoff" onclick="exportMobileHandoff()" disabled>
+                            📦 Xuất Gói Bàn Giao Mobile
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">👥 Gọi Nhóm (Group Audio = 5 / Group Video = 6)</div>
+                    <div class="field">
+                        <label>Group ID (Chọn hoặc nhập ID nhóm)</label>
+                        <div class="input-row">
+                            <input type="text" id="groupIdInput" placeholder="Nhập Group ID..." />
+                            <button class="btn-secondary" onclick="loadGroups()">📂 Tải Nhóm</button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label>Danh sách UID Thành Viên Mời Gọi Nhóm (cách nhau dấu phẩy)</label>
+                        <input type="text" id="groupPartnersInput" value="5249661060655759359" />
+                    </div>
+                    <div class="btn-row">
+                        <button class="btn-primary" onclick="startGroupCallUI(5)">👥 Gọi Nhóm Thoại</button>
+                        <button class="btn-success" onclick="startGroupCallUI(6)">🎥 Gọi Nhóm Video</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📋 Danh Bạ Bạn Bè Khả Dụng</div>
+                    <div
+                        id="friendsList"
+                        style="max-height: 240px; overflow-y: auto; font-size: 12px; color: var(--muted)"
+                    >
+                        Đang tải danh bạ...
+                    </div>
+                </div>
             </div>
-            <div style="position: relative; background: #050811; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; aspect-ratio: 4/3; display: flex; align-items: center; justify-content: center;">
-              <canvas id="remoteVideoCanvas" width="480" height="640" style="width: 100%; height: 100%; object-fit: contain;"></canvas>
-              <div style="position: absolute; bottom: 6px; left: 8px; font-size: 11px; background: rgba(0,0,0,0.65); padding: 2px 8px; border-radius: 4px;">
-                📱 Video Từ Điện Thoại Đối Phương (H.264 Nhận Về)
-              </div>
+
+            <!-- Cột giám sát thời gian thực -->
+            <div>
+                <div class="card">
+                    <div class="status-banner">
+                        <div>
+                            <div style="font-size: 12px; color: var(--muted)">
+                                Trạng Thái Phiên Gọi (ZaloRtcSession)
+                            </div>
+                            <div style="font-size: 16px; font-weight: 700" id="callHeadline">
+                                Sẵn sàng khởi tạo cuộc gọi
+                            </div>
+                        </div>
+                        <span class="state-pill state-idle" id="statePill">IDLE</span>
+                    </div>
+
+                    <div class="metrics" style="grid-template-columns: repeat(5, 1fr)">
+                        <div class="metric-box">
+                            <div class="metric-val" id="mRoutingToken">—</div>
+                            <div class="metric-lbl">UDP Routing Token</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-val" id="mRtpIn">0</div>
+                            <div class="metric-lbl">Audio RTP Nhận</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-val" id="mVideoIn">0</div>
+                            <div class="metric-lbl">Video H.264 Nhận</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-val" id="mRtcpIn">0</div>
+                            <div class="metric-lbl">Gói RTCP Nhận</div>
+                        </div>
+                        <div class="metric-box">
+                            <div class="metric-val" id="mRtpOut">0</div>
+                            <div class="metric-lbl">Media RTP Đã Gửi</div>
+                        </div>
+                    </div>
+
+                    <!-- Khu vực Media Trực Tiếp: Mic / Loa / Camera / Video Đối Phương -->
+                    <div
+                        style="
+                            background: var(--code-bg);
+                            border: 1px solid var(--border);
+                            border-radius: 10px;
+                            padding: 14px;
+                            margin-bottom: 16px;
+                        "
+                    >
+                        <div
+                            style="
+                                display: flex;
+                                justify-content: space-between;
+                                align-items: center;
+                                margin-bottom: 10px;
+                            "
+                        >
+                            <span style="font-size: 13px; font-weight: 700; color: #fff"
+                                >🎬 Phòng Media Trực Tiếp (WebCodecs Opus 16kHz & H.264 Annex-B)</span
+                            >
+                            <button
+                                class="btn-secondary"
+                                style="padding: 4px 10px; font-size: 11px"
+                                onclick="requestPliKeyframe()"
+                            >
+                                🔄 Yêu Cầu Keyframe (PLI)
+                            </button>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px">
+                            <div>
+                                <div
+                                    style="
+                                        font-size: 11px;
+                                        color: var(--muted);
+                                        margin-bottom: 4px;
+                                        display: flex;
+                                        justify-content: space-between;
+                                    "
+                                >
+                                    <span>🎙️ Cường độ Mic Gửi Đi (Opus 16kHz)</span>
+                                    <span id="micStatusText" style="color: var(--warning)">Đang tắt</span>
+                                </div>
+                                <div style="height: 8px; background: #141c33; border-radius: 99px; overflow: hidden">
+                                    <div
+                                        id="micMeterFill"
+                                        style="
+                                            height: 100%;
+                                            width: 0%;
+                                            background: var(--success);
+                                            transition: width 0.06s;
+                                        "
+                                    ></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div
+                                    style="
+                                        font-size: 11px;
+                                        color: var(--muted);
+                                        margin-bottom: 4px;
+                                        display: flex;
+                                        justify-content: space-between;
+                                    "
+                                >
+                                    <span>🔊 Cường độ Loa Nhận Về (Từ Điện Thoại)</span>
+                                    <span id="speakerStatusText" style="color: var(--success)">Sẵn sàng phát</span>
+                                </div>
+                                <div style="height: 8px; background: #141c33; border-radius: 99px; overflow: hidden">
+                                    <div
+                                        id="speakerMeterFill"
+                                        style="
+                                            height: 100%;
+                                            width: 0%;
+                                            background: var(--primary);
+                                            transition: width 0.06s;
+                                        "
+                                    ></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px">
+                            <div
+                                style="
+                                    position: relative;
+                                    background: #050811;
+                                    border: 1px solid var(--border);
+                                    border-radius: 8px;
+                                    overflow: hidden;
+                                    aspect-ratio: 4/3;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                "
+                            >
+                                <video
+                                    id="localVideo"
+                                    autoplay
+                                    muted
+                                    playsinline
+                                    style="width: 100%; height: 100%; object-fit: cover"
+                                ></video>
+                                <div
+                                    style="
+                                        position: absolute;
+                                        bottom: 6px;
+                                        left: 8px;
+                                        font-size: 11px;
+                                        background: rgba(0, 0, 0, 0.65);
+                                        padding: 2px 8px;
+                                        border-radius: 4px;
+                                    "
+                                >
+                                    📷 Camera Của Bạn (H.264 Gửi Đi)
+                                </div>
+                            </div>
+                            <div
+                                style="
+                                    position: relative;
+                                    background: #050811;
+                                    border: 1px solid var(--border);
+                                    border-radius: 8px;
+                                    overflow: hidden;
+                                    aspect-ratio: 4/3;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                "
+                            >
+                                <canvas
+                                    id="remoteVideoCanvas"
+                                    width="480"
+                                    height="640"
+                                    style="width: 100%; height: 100%; object-fit: contain"
+                                ></canvas>
+                                <div
+                                    style="
+                                        position: absolute;
+                                        bottom: 6px;
+                                        left: 8px;
+                                        font-size: 11px;
+                                        background: rgba(0, 0, 0, 0.65);
+                                        padding: 2px 8px;
+                                        border-radius: 4px;
+                                    "
+                                >
+                                    📱 Video Từ Điện Thoại Đối Phương (H.264 Nhận Về)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-title">
+                        <span>📡 Nhật Ký Tín Hiệu HTTP 401/416, WebSocket & Gói UDP ZRTP Thời Gian Thực</span>
+                    </div>
+                    <div class="log-list" id="logList"></div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <span>🔑 Thông Số Kết Nối Phiên Gọi (`getConnectionParams()` & `mobileDirectHandoff`)</span>
+                        <div style="display: flex; gap: 6px">
+                            <button
+                                class="btn-secondary"
+                                style="padding: 4px 10px; font-size: 11px"
+                                onclick="exportMobileHandoff()"
+                            >
+                                📲 Bàn Giao UDP Cho Mobile
+                            </button>
+                            <button
+                                class="btn-secondary"
+                                style="padding: 4px 10px; font-size: 11px"
+                                onclick="reconnectUdpUI()"
+                            >
+                                🔄 Tái Kết Nối UDP
+                            </button>
+                        </div>
+                    </div>
+                    <pre id="paramsJson">
+// Nhấn "📞 Gọi Đi Ngay" hoặc "📞 Nghe Máy" để xem thông số phiên & gói UDP bàn giao cho Mobile...</pre
+                    >
+                </div>
             </div>
-          </div>
         </div>
 
-        <div class="card-title">
-          <span>📡 Nhật Ký Tín Hiệu HTTP 401/416, WebSocket & Gói UDP ZRTP Thời Gian Thực</span>
-        </div>
-        <div class="log-list" id="logList"></div>
-      </div>
+        <script>
+            let rtpInCount = 0;
+            let rtcpInCount = 0;
+            let rtpOutCount = 0;
+            let lastIncomingEvent = null;
 
-      <div class="card">
-        <div class="card-title">
-          <span>🔑 Thông Số Kết Nối Phiên Gọi (`getConnectionParams()` & `mobileDirectHandoff`)</span>
-          <div style="display: flex; gap: 6px;">
-            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="exportMobileHandoff()">📲 Bàn Giao UDP Cho Mobile</button>
-            <button class="btn-secondary" style="padding: 4px 10px; font-size: 11px;" onclick="reconnectUdpUI()">🔄 Tái Kết Nối UDP</button>
-          </div>
-        </div>
-        <pre id="paramsJson">// Nhấn "📞 Gọi Đi Ngay" hoặc "📞 Nghe Máy" để xem thông số phiên & gói UDP bàn giao cho Mobile...</pre>
-      </div>
-    </div>
-  </div>
+            let wsMedia = null;
+            let audioCtx = null;
+            let nextPlayTime = 0;
+            let audioDecoder = null;
+            let remoteAudioTs = 0;
 
-  <script>
-    let rtpInCount = 0;
-    let rtcpInCount = 0;
-    let rtpOutCount = 0;
-    let lastIncomingEvent = null;
+            let micStream = null;
+            let micSource = null;
+            let micProcessor = null;
+            let audioEncoder = null;
+            let micSampleBuffer = new Float32Array(0);
+            let micTs = 0;
+            let isMicOn = false;
 
-    let wsMedia = null;
-    let audioCtx = null;
-    let nextPlayTime = 0;
-    let audioDecoder = null;
-    let remoteAudioTs = 0;
+            let camStream = null;
+            let camTimer = null;
+            let videoEncoder = null;
+            let camFrameCount = 0;
+            let isCamOn = false;
 
-    let micStream = null;
-    let micSource = null;
-    let micProcessor = null;
-    let audioEncoder = null;
-    let micSampleBuffer = new Float32Array(0);
-    let micTs = 0;
-    let isMicOn = false;
+            let videoDecoder = null;
+            let seenRemoteKeyframe = false;
+            let remoteVideoTs = 0;
+            let lastPliSentAt = 0;
+            let forceNextKeyframe = false;
 
-    let camStream = null;
-    let camTimer = null;
-    let videoEncoder = null;
-    let camFrameCount = 0;
-    let isCamOn = false;
+            function ensureAudioOutput() {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+                }
+                if (audioCtx.state === "suspended") {
+                    audioCtx.resume();
+                }
+                if ((!audioDecoder || audioDecoder.state === "closed") && typeof AudioDecoder !== "undefined") {
+                    audioDecoder = new AudioDecoder({
+                        output: (audioData) => {
+                            try {
+                                const frames = audioData.numberOfFrames;
+                                const sr = audioData.sampleRate || 16000;
+                                const pcm = new Float32Array(frames);
+                                audioData.copyTo(pcm, { planeIndex: 0 });
+                                audioData.close();
 
-    let videoDecoder = null;
-    let seenRemoteKeyframe = false;
-    let remoteVideoTs = 0;
-    let lastPliSentAt = 0;
-    let forceNextKeyframe = false;
+                                let sumSq = 0;
+                                for (let i = 0; i < pcm.length; i++) sumSq += pcm[i] * pcm[i];
+                                const rms = Math.sqrt(sumSq / (pcm.length || 1));
+                                const pct = Math.min(100, Math.round(rms * 400));
+                                document.getElementById("speakerMeterFill").style.width = pct + "%";
 
-    function ensureAudioOutput() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
-      }
-      if (audioCtx.state === "suspended") {
-        audioCtx.resume();
-      }
-      if ((!audioDecoder || audioDecoder.state === "closed") && typeof AudioDecoder !== "undefined") {
-        audioDecoder = new AudioDecoder({
-          output: (audioData) => {
-            try {
-              const frames = audioData.numberOfFrames;
-              const sr = audioData.sampleRate || 16000;
-              const pcm = new Float32Array(frames);
-              audioData.copyTo(pcm, { planeIndex: 0 });
-              audioData.close();
-
-              let sumSq = 0;
-              for (let i = 0; i < pcm.length; i++) sumSq += pcm[i] * pcm[i];
-              const rms = Math.sqrt(sumSq / (pcm.length || 1));
-              const pct = Math.min(100, Math.round(rms * 400));
-              document.getElementById("speakerMeterFill").style.width = pct + "%";
-
-              const buf = audioCtx.createBuffer(1, pcm.length, sr);
-              buf.getChannelData(0).set(pcm);
-              const src = audioCtx.createBufferSource();
-              src.buffer = buf;
-              src.connect(audioCtx.destination);
-              const now = audioCtx.currentTime;
-              if (nextPlayTime < now || nextPlayTime > now + 0.4) {
-                nextPlayTime = now + 0.03;
-              }
-              src.start(nextPlayTime);
-              nextPlayTime += pcm.length / sr;
-            } catch (e) {
-              // Ignore decode glitch
+                                const buf = audioCtx.createBuffer(1, pcm.length, sr);
+                                buf.getChannelData(0).set(pcm);
+                                const src = audioCtx.createBufferSource();
+                                src.buffer = buf;
+                                src.connect(audioCtx.destination);
+                                const now = audioCtx.currentTime;
+                                if (nextPlayTime < now || nextPlayTime > now + 0.4) {
+                                    nextPlayTime = now + 0.03;
+                                }
+                                src.start(nextPlayTime);
+                                nextPlayTime += pcm.length / sr;
+                            } catch (e) {
+                                // Ignore decode glitch
+                            }
+                        },
+                        error: (err) => {
+                            addLog(`⚠️ AudioDecoder: ${err.message}`, "warn");
+                        },
+                    });
+                    audioDecoder.configure({
+                        codec: "opus",
+                        sampleRate: 16000,
+                        numberOfChannels: 1,
+                    });
+                }
             }
-          },
-          error: (err) => {
-            addLog(`⚠️ AudioDecoder: ${err.message}`, "warn");
-          },
-        });
-        audioDecoder.configure({
-          codec: "opus",
-          sampleRate: 16000,
-          numberOfChannels: 1,
-        });
-      }
-    }
 
-    let currentVideoCodec = "avc1.42c01f";
-    let isHoldOn = false;
+            let currentVideoCodec = "avc1.42c01f";
+            let isHoldOn = false;
 
-    function extractCodecFromAnnexB(u8) {
-      for (let i = 0; i + 7 < u8.length; i++) {
-        if (u8[i] === 0 && u8[i + 1] === 0 && u8[i + 2] === 0 && u8[i + 3] === 1) {
-          const nalType = u8[i + 4] & 0x1f;
-          if (nalType === 7) {
-            const p = u8[i + 5].toString(16).padStart(2, "0");
-            const c = u8[i + 6].toString(16).padStart(2, "0");
-            const l = u8[i + 7].toString(16).padStart(2, "0");
-            return `avc1.${p}${c}${l}`;
-          }
-        }
-      }
-      return null;
-    }
-
-    function ensureVideoDecoder(codecStr) {
-      const targetCodec = codecStr || currentVideoCodec || "avc1.42c01f";
-      if (typeof VideoDecoder === "undefined") return;
-      if (videoDecoder && videoDecoder.state === "configured" && currentVideoCodec === targetCodec) {
-        return;
-      }
-      if (videoDecoder && videoDecoder.state !== "closed") {
-        try { videoDecoder.close(); } catch {}
-      }
-      const canvas = document.getElementById("remoteVideoCanvas");
-      const ctx2d = canvas.getContext("2d");
-      currentVideoCodec = targetCodec;
-
-      videoDecoder = new VideoDecoder({
-        output: (videoFrame) => {
-          try {
-            if (canvas.width !== videoFrame.displayWidth || canvas.height !== videoFrame.displayHeight) {
-              canvas.width = videoFrame.displayWidth || 480;
-              canvas.height = videoFrame.displayHeight || 640;
+            function extractCodecFromAnnexB(u8) {
+                for (let i = 0; i + 7 < u8.length; i++) {
+                    if (u8[i] === 0 && u8[i + 1] === 0 && u8[i + 2] === 0 && u8[i + 3] === 1) {
+                        const nalType = u8[i + 4] & 0x1f;
+                        if (nalType === 7) {
+                            const p = u8[i + 5].toString(16).padStart(2, "0");
+                            const c = u8[i + 6].toString(16).padStart(2, "0");
+                            const l = u8[i + 7].toString(16).padStart(2, "0");
+                            return `avc1.${p}${c}${l}`;
+                        }
+                    }
+                }
+                return null;
             }
-            ctx2d.drawImage(videoFrame, 0, 0, canvas.width, canvas.height);
-          } finally {
-            videoFrame.close();
-          }
-        },
-        error: () => {
-          seenRemoteKeyframe = false;
-          requestPliKeyframe();
-        },
-      });
-      try {
-        videoDecoder.configure({
-          codec: currentVideoCodec,
-          avc: { format: "annexb" },
-          optimizeForLatency: true,
-        });
-      } catch {
-        currentVideoCodec = "avc1.42001f";
-        videoDecoder.configure({
-          codec: currentVideoCodec,
-          avc: { format: "annexb" },
-        });
-      }
-    }
 
-    function resetMediaPipelineForNewCall() {
-      seenRemoteKeyframe = false;
-      remoteVideoTs = 0;
-      lastPliSentAt = 0;
-      forceNextKeyframe = true;
-      isHoldOn = false;
-      const holdBtn = document.getElementById("btnHoldCall");
-      if (holdBtn) holdBtn.textContent = "⏸️ Tạm Giữ Cuộc Gọi";
-      const canvas = document.getElementById("remoteVideoCanvas");
-      if (canvas) {
-        const ctx2d = canvas.getContext("2d");
-        ctx2d.clearRect(0, 0, canvas.width, canvas.height);
-      }
-      if (videoDecoder && videoDecoder.state !== "closed") {
-        try { videoDecoder.close(); } catch {}
-        videoDecoder = null;
-      }
-      if (audioDecoder && audioDecoder.state !== "closed") {
-        try { audioDecoder.close(); } catch {}
-        audioDecoder = null;
-      }
-      ensureAudioOutput();
-      ensureVideoDecoder();
-    }
+            function ensureVideoDecoder(codecStr) {
+                const targetCodec = codecStr || currentVideoCodec || "avc1.42c01f";
+                if (typeof VideoDecoder === "undefined") return;
+                if (videoDecoder && videoDecoder.state === "configured" && currentVideoCodec === targetCodec) {
+                    return;
+                }
+                if (videoDecoder && videoDecoder.state !== "closed") {
+                    try {
+                        videoDecoder.close();
+                    } catch {}
+                }
+                const canvas = document.getElementById("remoteVideoCanvas");
+                const ctx2d = canvas.getContext("2d");
+                currentVideoCodec = targetCodec;
 
-    function connectMediaWs() {
-      const proto = location.protocol === "https:" ? "wss:" : "ws:";
-      wsMedia = new WebSocket(`${proto}//${location.host}/ws-media`);
-      wsMedia.binaryType = "arraybuffer";
-      wsMedia.onmessage = (ev) => {
-        const u8 = new Uint8Array(ev.data);
-        if (u8.length < 2) return;
-        const kind = u8[0];
-        if (kind === 0x01) {
-          ensureAudioOutput();
-          if (audioDecoder && audioDecoder.state === "configured") {
-            const opusPayload = u8.subarray(1);
-            try {
-              audioDecoder.decode(
-                new EncodedAudioChunk({
-                  type: "key",
-                  timestamp: remoteAudioTs,
-                  data: opusPayload,
-                })
-              );
-              remoteAudioTs += 20000;
-            } catch {}
-          }
-        } else if (kind === 0x02 && u8.length > 2) {
-          const isKey = u8[1] === 1;
-          const annexB = u8.subarray(2);
-          if (isKey) {
-            const spsCodec = extractCodecFromAnnexB(annexB);
-            ensureVideoDecoder(spsCodec || currentVideoCodec);
-            seenRemoteKeyframe = true;
-          } else {
-            ensureVideoDecoder(currentVideoCodec);
-            if (!seenRemoteKeyframe && Date.now() - lastPliSentAt > 1000) {
-              requestPliKeyframe();
+                videoDecoder = new VideoDecoder({
+                    output: (videoFrame) => {
+                        try {
+                            if (
+                                canvas.width !== videoFrame.displayWidth ||
+                                canvas.height !== videoFrame.displayHeight
+                            ) {
+                                canvas.width = videoFrame.displayWidth || 480;
+                                canvas.height = videoFrame.displayHeight || 640;
+                            }
+                            ctx2d.drawImage(videoFrame, 0, 0, canvas.width, canvas.height);
+                        } finally {
+                            videoFrame.close();
+                        }
+                    },
+                    error: () => {
+                        seenRemoteKeyframe = false;
+                        requestPliKeyframe();
+                    },
+                });
+                try {
+                    videoDecoder.configure({
+                        codec: currentVideoCodec,
+                        avc: { format: "annexb" },
+                        optimizeForLatency: true,
+                    });
+                } catch {
+                    currentVideoCodec = "avc1.42001f";
+                    videoDecoder.configure({
+                        codec: currentVideoCodec,
+                        avc: { format: "annexb" },
+                    });
+                }
             }
-          }
-          if (seenRemoteKeyframe && videoDecoder && videoDecoder.state === "configured") {
-            try {
-              videoDecoder.decode(
-                new EncodedVideoChunk({
-                  type: isKey ? "key" : "delta",
-                  timestamp: remoteVideoTs,
-                  data: annexB,
-                })
-              );
-              remoteVideoTs += 66666;
-            } catch {
-              seenRemoteKeyframe = false;
-              requestPliKeyframe();
+
+            function resetMediaPipelineForNewCall() {
+                seenRemoteKeyframe = false;
+                remoteVideoTs = 0;
+                lastPliSentAt = 0;
+                forceNextKeyframe = true;
+                isHoldOn = false;
+                const holdBtn = document.getElementById("btnHoldCall");
+                if (holdBtn) holdBtn.textContent = "⏸️ Tạm Giữ Cuộc Gọi";
+                const canvas = document.getElementById("remoteVideoCanvas");
+                if (canvas) {
+                    const ctx2d = canvas.getContext("2d");
+                    ctx2d.clearRect(0, 0, canvas.width, canvas.height);
+                }
+                if (videoDecoder && videoDecoder.state !== "closed") {
+                    try {
+                        videoDecoder.close();
+                    } catch {}
+                    videoDecoder = null;
+                }
+                if (audioDecoder && audioDecoder.state !== "closed") {
+                    try {
+                        audioDecoder.close();
+                    } catch {}
+                    audioDecoder = null;
+                }
+                ensureAudioOutput();
+                ensureVideoDecoder();
             }
-          }
-        }
-      };
-      wsMedia.onclose = () => {
-        setTimeout(connectMediaWs, 1500);
-      };
-    }
 
-    function requestPliKeyframe() {
-      lastPliSentAt = Date.now();
-      if (wsMedia && wsMedia.readyState === 1) {
-        wsMedia.send(new Uint8Array([0x03]));
-      }
-    }
+            function connectMediaWs() {
+                const proto = location.protocol === "https:" ? "wss:" : "ws:";
+                wsMedia = new WebSocket(`${proto}//${location.host}/ws-media`);
+                wsMedia.binaryType = "arraybuffer";
+                wsMedia.onmessage = (ev) => {
+                    const u8 = new Uint8Array(ev.data);
+                    if (u8.length < 2) return;
+                    const kind = u8[0];
+                    if (kind === 0x01) {
+                        ensureAudioOutput();
+                        if (audioDecoder && audioDecoder.state === "configured") {
+                            const opusPayload = u8.subarray(1);
+                            try {
+                                audioDecoder.decode(
+                                    new EncodedAudioChunk({
+                                        type: "key",
+                                        timestamp: remoteAudioTs,
+                                        data: opusPayload,
+                                    }),
+                                );
+                                remoteAudioTs += 20000;
+                            } catch {}
+                        }
+                    } else if (kind === 0x02 && u8.length > 2) {
+                        const isKey = u8[1] === 1;
+                        const annexB = u8.subarray(2);
+                        if (isKey) {
+                            const spsCodec = extractCodecFromAnnexB(annexB);
+                            ensureVideoDecoder(spsCodec || currentVideoCodec);
+                            seenRemoteKeyframe = true;
+                        } else {
+                            ensureVideoDecoder(currentVideoCodec);
+                            if (!seenRemoteKeyframe && Date.now() - lastPliSentAt > 1000) {
+                                requestPliKeyframe();
+                            }
+                        }
+                        if (seenRemoteKeyframe && videoDecoder && videoDecoder.state === "configured") {
+                            try {
+                                videoDecoder.decode(
+                                    new EncodedVideoChunk({
+                                        type: isKey ? "key" : "delta",
+                                        timestamp: remoteVideoTs,
+                                        data: annexB,
+                                    }),
+                                );
+                                remoteVideoTs += 66666;
+                            } catch {
+                                seenRemoteKeyframe = false;
+                                requestPliKeyframe();
+                            }
+                        }
+                    }
+                };
+                wsMedia.onclose = () => {
+                    setTimeout(connectMediaWs, 1500);
+                };
+            }
 
-    async function toggleMic() {
-      ensureAudioOutput();
-      if (isMicOn) {
-        stopMic();
-        return;
-      }
-      try {
-        micStream = await navigator.mediaDevices.getUserMedia({
-          audio: {
-            channelCount: 1,
-            sampleRate: 16000,
-            echoCancellation: true,
-            noiseSuppression: true,
-            autoGainControl: true,
-          },
-        });
-        audioEncoder = new AudioEncoder({
-          output: (chunk) => {
-            if (!wsMedia || wsMedia.readyState !== 1) return;
-            const out = new Uint8Array(1 + chunk.byteLength);
-            out[0] = 0x01;
-            chunk.copyTo(out.subarray(1));
-            wsMedia.send(out);
-          },
-          error: (err) => addLog(`❌ AudioEncoder: ${err.message}`, "err"),
-        });
-        audioEncoder.configure({
-          codec: "opus",
-          sampleRate: 16000,
-          numberOfChannels: 1,
-          bitrate: 24000,
-          opus: { frameDuration: 20000 },
-        });
+            function requestPliKeyframe() {
+                lastPliSentAt = Date.now();
+                if (wsMedia && wsMedia.readyState === 1) {
+                    wsMedia.send(new Uint8Array([0x03]));
+                }
+            }
 
-        micSource = audioCtx.createMediaStreamSource(micStream);
-        micProcessor = audioCtx.createScriptProcessor(512, 1, 1);
-        micSampleBuffer = new Float32Array(0);
-        micTs = 0;
+            async function toggleMic() {
+                ensureAudioOutput();
+                if (isMicOn) {
+                    stopMic();
+                    return;
+                }
+                try {
+                    micStream = await navigator.mediaDevices.getUserMedia({
+                        audio: {
+                            channelCount: 1,
+                            sampleRate: 16000,
+                            echoCancellation: true,
+                            noiseSuppression: true,
+                            autoGainControl: true,
+                        },
+                    });
+                    audioEncoder = new AudioEncoder({
+                        output: (chunk) => {
+                            if (!wsMedia || wsMedia.readyState !== 1) return;
+                            const out = new Uint8Array(1 + chunk.byteLength);
+                            out[0] = 0x01;
+                            chunk.copyTo(out.subarray(1));
+                            wsMedia.send(out);
+                        },
+                        error: (err) => addLog(`❌ AudioEncoder: ${err.message}`, "err"),
+                    });
+                    audioEncoder.configure({
+                        codec: "opus",
+                        sampleRate: 16000,
+                        numberOfChannels: 1,
+                        bitrate: 24000,
+                        opus: { frameDuration: 20000 },
+                    });
 
-        micProcessor.onaudioprocess = (e) => {
-          if (!isMicOn || !audioEncoder || audioEncoder.state !== "configured") return;
-          const input = e.inputBuffer.getChannelData(0);
-          let sumSq = 0;
-          for (let i = 0; i < input.length; i++) sumSq += input[i] * input[i];
-          const rms = Math.sqrt(sumSq / (input.length || 1));
-          document.getElementById("micMeterFill").style.width = Math.min(100, Math.round(rms * 400)) + "%";
+                    micSource = audioCtx.createMediaStreamSource(micStream);
+                    micProcessor = audioCtx.createScriptProcessor(512, 1, 1);
+                    micSampleBuffer = new Float32Array(0);
+                    micTs = 0;
 
-          const combined = new Float32Array(micSampleBuffer.length + input.length);
-          combined.set(micSampleBuffer, 0);
-          combined.set(input, micSampleBuffer.length);
+                    micProcessor.onaudioprocess = (e) => {
+                        if (!isMicOn || !audioEncoder || audioEncoder.state !== "configured") return;
+                        const input = e.inputBuffer.getChannelData(0);
+                        let sumSq = 0;
+                        for (let i = 0; i < input.length; i++) sumSq += input[i] * input[i];
+                        const rms = Math.sqrt(sumSq / (input.length || 1));
+                        document.getElementById("micMeterFill").style.width =
+                            Math.min(100, Math.round(rms * 400)) + "%";
 
-          let offset = 0;
-          while (offset + 320 <= combined.length) {
-            const frame320 = combined.subarray(offset, offset + 320);
-            const ad = new AudioData({
-              format: "f32",
-              sampleRate: 16000,
-              numberOfFrames: 320,
-              numberOfChannels: 1,
-              timestamp: micTs,
-              data: frame320,
-            });
-            audioEncoder.encode(ad);
-            ad.close();
-            micTs += 20000;
-            offset += 320;
-          }
-          micSampleBuffer = combined.slice(offset);
-        };
+                        const combined = new Float32Array(micSampleBuffer.length + input.length);
+                        combined.set(micSampleBuffer, 0);
+                        combined.set(input, micSampleBuffer.length);
 
-        micSource.connect(micProcessor);
-        micProcessor.connect(audioCtx.destination);
-        isMicOn = true;
-        if (wsMedia && wsMedia.readyState === 1) {
-          wsMedia.send(new Uint8Array([0x05, 0]));
-        }
-        fetch("/api/call/mic", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ muted: false }),
-        }).catch(() => {});
-        document.getElementById("btnToggleMic").textContent = "🔇 Tắt Mic";
-        document.getElementById("btnToggleMic").className = "btn-danger";
-        document.getElementById("micStatusText").textContent = "Đang thu & phát Opus 16kHz";
-        document.getElementById("micStatusText").style.color = "var(--success)";
-        addLog("🎙️ Đã bật Microphone thực tế (WebCodecs Opus 16kHz 20ms -> UDP Relay + /api/voicecall/conf)", "ok");
-      } catch (err) {
-        addLog(`❌ Không thể mở Microphone: ${err.message}`, "err");
-      }
-    }
+                        let offset = 0;
+                        while (offset + 320 <= combined.length) {
+                            const frame320 = combined.subarray(offset, offset + 320);
+                            const ad = new AudioData({
+                                format: "f32",
+                                sampleRate: 16000,
+                                numberOfFrames: 320,
+                                numberOfChannels: 1,
+                                timestamp: micTs,
+                                data: frame320,
+                            });
+                            audioEncoder.encode(ad);
+                            ad.close();
+                            micTs += 20000;
+                            offset += 320;
+                        }
+                        micSampleBuffer = combined.slice(offset);
+                    };
 
-    function stopMic(notifyServer = true) {
-      isMicOn = false;
-      if (micProcessor) {
-        try { micProcessor.disconnect(); } catch {}
-        micProcessor = null;
-      }
-      if (micSource) {
-        try { micSource.disconnect(); } catch {}
-        micSource = null;
-      }
-      if (micStream) {
-        micStream.getTracks().forEach(t => t.stop());
-        micStream = null;
-      }
-      if (audioEncoder && audioEncoder.state !== "closed") {
-        try { audioEncoder.close(); } catch {}
-        audioEncoder = null;
-      }
-      if (notifyServer) {
-        if (wsMedia && wsMedia.readyState === 1) {
-          wsMedia.send(new Uint8Array([0x05, 1]));
-        }
-        fetch("/api/call/mic", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ muted: true }),
-        }).catch(() => {});
-      }
-      document.getElementById("micMeterFill").style.width = "0%";
-      document.getElementById("btnToggleMic").textContent = "🎙️ Bật Mic (Opus 16kHz)";
-      document.getElementById("btnToggleMic").className = "btn-primary";
-      document.getElementById("micStatusText").textContent = "Đang tắt";
-      document.getElementById("micStatusText").style.color = "var(--warning)";
-      addLog("🔇 Đã tắt Microphone (đã đồng bộ UDP OffMic + /api/voicecall/conf)");
-    }
+                    micSource.connect(micProcessor);
+                    micProcessor.connect(audioCtx.destination);
+                    isMicOn = true;
+                    if (wsMedia && wsMedia.readyState === 1) {
+                        wsMedia.send(new Uint8Array([0x05, 0]));
+                    }
+                    fetch("/api/call/mic", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ muted: false }),
+                    }).catch(() => {});
+                    document.getElementById("btnToggleMic").textContent = "🔇 Tắt Mic";
+                    document.getElementById("btnToggleMic").className = "btn-danger";
+                    document.getElementById("micStatusText").textContent = "Đang thu & phát Opus 16kHz";
+                    document.getElementById("micStatusText").style.color = "var(--success)";
+                    addLog(
+                        "🎙️ Đã bật Microphone thực tế (WebCodecs Opus 16kHz 20ms -> UDP Relay + /api/voicecall/conf)",
+                        "ok",
+                    );
+                } catch (err) {
+                    addLog(`❌ Không thể mở Microphone: ${err.message}`, "err");
+                }
+            }
 
-    async function toggleCamera() {
-      if (isCamOn) {
-        stopCamera();
-        return;
-      }
-      try {
-        camStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: 480, height: 640, frameRate: 15 },
-          audio: false,
-        });
-        const videoEl = document.getElementById("localVideo");
-        videoEl.srcObject = camStream;
-        await videoEl.play();
+            function stopMic(notifyServer = true) {
+                isMicOn = false;
+                if (micProcessor) {
+                    try {
+                        micProcessor.disconnect();
+                    } catch {}
+                    micProcessor = null;
+                }
+                if (micSource) {
+                    try {
+                        micSource.disconnect();
+                    } catch {}
+                    micSource = null;
+                }
+                if (micStream) {
+                    micStream.getTracks().forEach((t) => t.stop());
+                    micStream = null;
+                }
+                if (audioEncoder && audioEncoder.state !== "closed") {
+                    try {
+                        audioEncoder.close();
+                    } catch {}
+                    audioEncoder = null;
+                }
+                if (notifyServer) {
+                    if (wsMedia && wsMedia.readyState === 1) {
+                        wsMedia.send(new Uint8Array([0x05, 1]));
+                    }
+                    fetch("/api/call/mic", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ muted: true }),
+                    }).catch(() => {});
+                }
+                document.getElementById("micMeterFill").style.width = "0%";
+                document.getElementById("btnToggleMic").textContent = "🎙️ Bật Mic (Opus 16kHz)";
+                document.getElementById("btnToggleMic").className = "btn-primary";
+                document.getElementById("micStatusText").textContent = "Đang tắt";
+                document.getElementById("micStatusText").style.color = "var(--warning)";
+                addLog("🔇 Đã tắt Microphone (đã đồng bộ UDP OffMic + /api/voicecall/conf)");
+            }
 
-        const encW = 480;
-        const encH = 640;
-        const captureCanvas = document.createElement("canvas");
-        captureCanvas.width = encW;
-        captureCanvas.height = encH;
-        const captureCtx = captureCanvas.getContext("2d");
+            async function toggleCamera() {
+                if (isCamOn) {
+                    stopCamera();
+                    return;
+                }
+                try {
+                    camStream = await navigator.mediaDevices.getUserMedia({
+                        video: { width: 480, height: 640, frameRate: 15 },
+                        audio: false,
+                    });
+                    const videoEl = document.getElementById("localVideo");
+                    videoEl.srcObject = camStream;
+                    await videoEl.play();
 
-        videoEncoder = new VideoEncoder({
-          output: (chunk) => {
-            if (!wsMedia || wsMedia.readyState !== 1) return;
-            const out = new Uint8Array(1 + chunk.byteLength);
-            out[0] = 0x02;
-            chunk.copyTo(out.subarray(1));
-            wsMedia.send(out);
-          },
-          error: (err) => addLog(`❌ VideoEncoder: ${err.message}`, "err"),
-        });
+                    const encW = 480;
+                    const encH = 640;
+                    const captureCanvas = document.createElement("canvas");
+                    captureCanvas.width = encW;
+                    captureCanvas.height = encH;
+                    const captureCtx = captureCanvas.getContext("2d");
 
-        videoEncoder.configure({
-          codec: "avc1.42c01f",
-          width: encW,
-          height: encH,
-          bitrate: 450000,
-          framerate: 15,
-          avc: { format: "annexb" },
-        });
+                    videoEncoder = new VideoEncoder({
+                        output: (chunk) => {
+                            if (!wsMedia || wsMedia.readyState !== 1) return;
+                            const out = new Uint8Array(1 + chunk.byteLength);
+                            out[0] = 0x02;
+                            chunk.copyTo(out.subarray(1));
+                            wsMedia.send(out);
+                        },
+                        error: (err) => addLog(`❌ VideoEncoder: ${err.message}`, "err"),
+                    });
 
-        if (wsMedia && wsMedia.readyState === 1) {
-          wsMedia.send(new Uint8Array([0x04, 1]));
-        }
-        fetch("/api/call/camera", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ enabled: true }),
-        }).catch(() => {});
+                    videoEncoder.configure({
+                        codec: "avc1.42c01f",
+                        width: encW,
+                        height: encH,
+                        bitrate: 450000,
+                        framerate: 15,
+                        avc: { format: "annexb" },
+                    });
 
-        camFrameCount = 0;
-        camTimer = setInterval(() => {
-          if (!isCamOn || !videoEncoder || videoEncoder.state !== "configured" || videoEl.readyState < 2) return;
-          try {
-            captureCtx.drawImage(videoEl, 0, 0, encW, encH);
-            const vf = new VideoFrame(captureCanvas, { timestamp: camFrameCount * 66666 });
-            const isKey = forceNextKeyframe || camFrameCount === 0 || camFrameCount === 3 || camFrameCount === 8 || camFrameCount % 15 === 0;
-            forceNextKeyframe = false;
-            videoEncoder.encode(vf, { keyFrame: isKey });
-            vf.close();
-            camFrameCount++;
-          } catch {}
-        }, 66);
+                    if (wsMedia && wsMedia.readyState === 1) {
+                        wsMedia.send(new Uint8Array([0x04, 1]));
+                    }
+                    fetch("/api/call/camera", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ enabled: true }),
+                    }).catch(() => {});
 
-        isCamOn = true;
-        document.getElementById("btnToggleCam").textContent = "🚫 Tắt Camera";
-        document.getElementById("btnToggleCam").className = "btn-danger";
-        addLog(`📷 Đã bật Camera thực tế (${encW}x${encH} @ 15fps H.264 Annex-B -> RFC 6184 FU-A -> UDP Relay)`, "ok");
-      } catch (err) {
-        addLog(`❌ Không thể mở Camera: ${err.message}`, "err");
-      }
-    }
+                    camFrameCount = 0;
+                    camTimer = setInterval(() => {
+                        if (!isCamOn || !videoEncoder || videoEncoder.state !== "configured" || videoEl.readyState < 2)
+                            return;
+                        try {
+                            captureCtx.drawImage(videoEl, 0, 0, encW, encH);
+                            const vf = new VideoFrame(captureCanvas, { timestamp: camFrameCount * 66666 });
+                            const isKey =
+                                forceNextKeyframe ||
+                                camFrameCount === 0 ||
+                                camFrameCount === 3 ||
+                                camFrameCount === 8 ||
+                                camFrameCount % 15 === 0;
+                            forceNextKeyframe = false;
+                            videoEncoder.encode(vf, { keyFrame: isKey });
+                            vf.close();
+                            camFrameCount++;
+                        } catch {}
+                    }, 66);
 
-    function stopCamera(notifyServer = true) {
-      isCamOn = false;
-      if (camTimer) {
-        clearInterval(camTimer);
-        camTimer = null;
-      }
-      if (camStream) {
-        camStream.getTracks().forEach(t => t.stop());
-        camStream = null;
-      }
-      const videoEl = document.getElementById("localVideo");
-      videoEl.srcObject = null;
-      if (videoEncoder && videoEncoder.state !== "closed") {
-        try { videoEncoder.close(); } catch {}
-        videoEncoder = null;
-      }
-      if (notifyServer) {
-        if (wsMedia && wsMedia.readyState === 1) {
-          wsMedia.send(new Uint8Array([0x04, 0]));
-        }
-        fetch("/api/call/camera", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ enabled: false }),
-        }).catch(() => {});
-      }
-      document.getElementById("btnToggleCam").textContent = "📷 Bật Camera (H.264)";
-      document.getElementById("btnToggleCam").className = "btn-primary";
-      addLog("🚫 Đã tắt Camera (đã đồng bộ UDP OffCamera + /api/voicecall/conf)");
-    }
+                    isCamOn = true;
+                    document.getElementById("btnToggleCam").textContent = "🚫 Tắt Camera";
+                    document.getElementById("btnToggleCam").className = "btn-danger";
+                    addLog(
+                        `📷 Đã bật Camera thực tế (${encW}x${encH} @ 15fps H.264 Annex-B -> RFC 6184 FU-A -> UDP Relay)`,
+                        "ok",
+                    );
+                } catch (err) {
+                    addLog(`❌ Không thể mở Camera: ${err.message}`, "err");
+                }
+            }
 
-    function addLog(text, level = "info") {
-      const list = document.getElementById("logList");
-      const item = document.createElement("div");
-      item.className = "log-item";
-      const time = new Date().toLocaleTimeString("vi-VN", { hour12: false });
-      const cls = level === "ok" ? "log-ok" : level === "warn" ? "log-warn" : level === "err" ? "log-err" : "";
-      item.innerHTML = `<span class="log-time">[${time}]</span><span class="${cls}">${escapeHtml(text)}</span>`;
-      list.prepend(item);
-    }
+            function stopCamera(notifyServer = true) {
+                isCamOn = false;
+                if (camTimer) {
+                    clearInterval(camTimer);
+                    camTimer = null;
+                }
+                if (camStream) {
+                    camStream.getTracks().forEach((t) => t.stop());
+                    camStream = null;
+                }
+                const videoEl = document.getElementById("localVideo");
+                videoEl.srcObject = null;
+                if (videoEncoder && videoEncoder.state !== "closed") {
+                    try {
+                        videoEncoder.close();
+                    } catch {}
+                    videoEncoder = null;
+                }
+                if (notifyServer) {
+                    if (wsMedia && wsMedia.readyState === 1) {
+                        wsMedia.send(new Uint8Array([0x04, 0]));
+                    }
+                    fetch("/api/call/camera", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ enabled: false }),
+                    }).catch(() => {});
+                }
+                document.getElementById("btnToggleCam").textContent = "📷 Bật Camera (H.264)";
+                document.getElementById("btnToggleCam").className = "btn-primary";
+                addLog("🚫 Đã tắt Camera (đã đồng bộ UDP OffCamera + /api/voicecall/conf)");
+            }
 
-    function clearLogs() {
-      document.getElementById("logList").innerHTML = "";
-    }
+            function addLog(text, level = "info") {
+                const list = document.getElementById("logList");
+                const item = document.createElement("div");
+                item.className = "log-item";
+                const time = new Date().toLocaleTimeString("vi-VN", { hour12: false });
+                const cls =
+                    level === "ok" ? "log-ok" : level === "warn" ? "log-warn" : level === "err" ? "log-err" : "";
+                item.innerHTML = `<span class="log-time">[${time}]</span><span class="${cls}">${escapeHtml(text)}</span>`;
+                list.prepend(item);
+            }
 
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;");
-    }
+            function clearLogs() {
+                document.getElementById("logList").innerHTML = "";
+            }
 
-    let ringtoneTimer = null;
+            function escapeHtml(str) {
+                return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            }
 
-    function playIncomingRingtone() {
-      stopIncomingRingtone();
-      const ringOnce = () => {
-        try {
-          if (!audioCtx) {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
-          }
-          if (audioCtx.state === "suspended") audioCtx.resume();
-          const now = audioCtx.currentTime;
-          const osc1 = audioCtx.createOscillator();
-          const osc2 = audioCtx.createOscillator();
-          const gain = audioCtx.createGain();
-          osc1.type = "sine";
-          osc2.type = "sine";
-          osc1.frequency.setValueAtTime(523.25, now); // C5
-          osc2.frequency.setValueAtTime(659.25, now + 0.18); // E5
-          gain.gain.setValueAtTime(0.08, now);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
-          osc1.connect(gain);
-          osc2.connect(gain);
-          gain.connect(audioCtx.destination);
-          osc1.start(now);
-          osc1.stop(now + 0.18);
-          osc2.start(now + 0.18);
-          osc2.stop(now + 0.55);
-        } catch {}
-      };
-      ringOnce();
-      ringtoneTimer = setInterval(ringOnce, 2000);
-    }
+            let ringtoneTimer = null;
 
-    function stopIncomingRingtone() {
-      if (ringtoneTimer) {
-        clearInterval(ringtoneTimer);
-        ringtoneTimer = null;
-      }
-    }
+            function playIncomingRingtone() {
+                stopIncomingRingtone();
+                const ringOnce = () => {
+                    try {
+                        if (!audioCtx) {
+                            audioCtx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+                        }
+                        if (audioCtx.state === "suspended") audioCtx.resume();
+                        const now = audioCtx.currentTime;
+                        const osc1 = audioCtx.createOscillator();
+                        const osc2 = audioCtx.createOscillator();
+                        const gain = audioCtx.createGain();
+                        osc1.type = "sine";
+                        osc2.type = "sine";
+                        osc1.frequency.setValueAtTime(523.25, now); // C5
+                        osc2.frequency.setValueAtTime(659.25, now + 0.18); // E5
+                        gain.gain.setValueAtTime(0.08, now);
+                        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.55);
+                        osc1.connect(gain);
+                        osc2.connect(gain);
+                        gain.connect(audioCtx.destination);
+                        osc1.start(now);
+                        osc1.stop(now + 0.18);
+                        osc2.start(now + 0.18);
+                        osc2.stop(now + 0.55);
+                    } catch {}
+                };
+                ringOnce();
+                ringtoneTimer = setInterval(ringOnce, 2000);
+            }
 
-    function renderIncomingCallUI(data) {
-      const p = data.parsedInfo || {};
-      const callId = p.callId || data.callId || "—";
-      const callerId = p.callerId || data.callerId || "—";
-      const callerName = p.callerName || data.callerName || callerId;
-      const isGroup = Boolean(p.isGroupCall ?? data.isGroupCall);
-      const isVideo = Boolean(p.isVideo ?? data.isVideo);
-      const simTag = data.isSimulated ? " [GIẢ LẬP TEST]" : " [CUỘC GỌI THẬT]";
-      const kindLabel = isGroup
-        ? (isVideo ? "👥🎥 Cuộc Gọi Nhóm Video" : "👥📞 Cuộc Gọi Nhóm Thoại")
-        : (isVideo ? "🎥 Cuộc Gọi Video 1-1" : "📞 Cuộc Gọi Thoại 1-1");
+            function stopIncomingRingtone() {
+                if (ringtoneTimer) {
+                    clearInterval(ringtoneTimer);
+                    ringtoneTimer = null;
+                }
+            }
 
-      document.getElementById("incomingBanner").classList.add("active");
-      document.getElementById("incomingCallCard").classList.add("incoming-card-ringing");
-      document.getElementById("incomingStatusBadge").textContent = "🔔 ĐANG ĐỔ CHUÔNG!";
-      document.getElementById("incomingBannerTypeBadge").textContent = `🔔 ${kindLabel}${simTag}`;
-      document.getElementById("incomingBannerRingStatus").textContent = data.isSimulated
-        ? "Chế độ Giả Lập (Local UDP Relay 127.0.0.1 sẵn sàng bắt tay cmd=12)"
-        : "Đã tự động gửi ringRing (407/506) ✓";
-      document.getElementById("incomingBannerCaller").textContent =
-        callerName !== callerId ? `${callerName} (UID: ${callerId})` : `UID: ${callerId}`;
-      document.getElementById("incomingBannerMeta").textContent =
-        `callId: ${callId} • sessId: ${p.sessId || "—"} • UDP Relay: ${p.rtpAddress || "—"} • fromUid32: ${p.fromUid32 || "—"} -> toUid32: ${p.toUid32 || "—"}`;
+            function renderIncomingCallUI(data) {
+                const p = data.parsedInfo || {};
+                const callId = p.callId || data.callId || "—";
+                const callerId = p.callerId || data.callerId || "—";
+                const callerName = p.callerName || data.callerName || callerId;
+                const isGroup = Boolean(p.isGroupCall ?? data.isGroupCall);
+                const isVideo = Boolean(p.isVideo ?? data.isVideo);
+                const simTag = data.isSimulated ? " [GIẢ LẬP TEST]" : " [CUỘC GỌI THẬT]";
+                const kindLabel = isGroup
+                    ? isVideo
+                        ? "👥🎥 Cuộc Gọi Nhóm Video"
+                        : "👥📞 Cuộc Gọi Nhóm Thoại"
+                    : isVideo
+                      ? "🎥 Cuộc Gọi Video 1-1"
+                      : "📞 Cuộc Gọi Thoại 1-1";
 
-      document.getElementById("incStateText").textContent = `🔔 Đang đổ chuông đến${simTag}`;
-      document.getElementById("incStateText").style.color = "var(--warning)";
-      document.getElementById("incCallerText").textContent =
-        callerName !== callerId ? `${callerName} (${callerId})` : String(callerId);
-      document.getElementById("incTypeText").textContent = `${kindLabel} (callType=${p.callType || data.callType || 1})`;
-      document.getElementById("incCallIdText").textContent = `${callId} / ${p.sessId || "—"}`;
-      document.getElementById("incRelayText").textContent = `${p.rtpAddress || "—"} (RTCP: ${p.rtcpAddress || "—"})`;
-      document.getElementById("incUid32Text").textContent = `local=${p.fromUid32 || "—"} ➔ remote=${p.toUid32 || "—"}`;
+                document.getElementById("incomingBanner").classList.add("active");
+                document.getElementById("incomingCallCard").classList.add("incoming-card-ringing");
+                document.getElementById("incomingStatusBadge").textContent = "🔔 ĐANG ĐỔ CHUÔNG!";
+                document.getElementById("incomingBannerTypeBadge").textContent = `🔔 ${kindLabel}${simTag}`;
+                document.getElementById("incomingBannerRingStatus").textContent = data.isSimulated
+                    ? "Chế độ Giả Lập (Local UDP Relay 127.0.0.1 sẵn sàng bắt tay cmd=12)"
+                    : "Đã tự động gửi ringRing (407/506) ✓";
+                document.getElementById("incomingBannerCaller").textContent =
+                    callerName !== callerId ? `${callerName} (UID: ${callerId})` : `UID: ${callerId}`;
+                document.getElementById("incomingBannerMeta").textContent =
+                    `callId: ${callId} • sessId: ${p.sessId || "—"} • UDP Relay: ${p.rtpAddress || "—"} • fromUid32: ${p.fromUid32 || "—"} -> toUid32: ${p.toUid32 || "—"}`;
 
-      document.getElementById("btnAccept").disabled = false;
-      document.getElementById("btnAcceptVideo").disabled = false;
-      document.getElementById("btnAcceptHandoff").disabled = false;
-      document.getElementById("btnReject").disabled = false;
+                document.getElementById("incStateText").textContent = `🔔 Đang đổ chuông đến${simTag}`;
+                document.getElementById("incStateText").style.color = "var(--warning)";
+                document.getElementById("incCallerText").textContent =
+                    callerName !== callerId ? `${callerName} (${callerId})` : String(callerId);
+                document.getElementById("incTypeText").textContent =
+                    `${kindLabel} (callType=${p.callType || data.callType || 1})`;
+                document.getElementById("incCallIdText").textContent = `${callId} / ${p.sessId || "—"}`;
+                document.getElementById("incRelayText").textContent =
+                    `${p.rtpAddress || "—"} (RTCP: ${p.rtcpAddress || "—"})`;
+                document.getElementById("incUid32Text").textContent =
+                    `local=${p.fromUid32 || "—"} ➔ remote=${p.toUid32 || "—"}`;
 
-      document.getElementById("paramsJson").textContent = JSON.stringify(
-        {
-          incomingCallParsed: p,
-          rawCallEvent: data.raw,
-        },
-        null,
-        2
-      );
-      playIncomingRingtone();
-    }
+                document.getElementById("btnAccept").disabled = false;
+                document.getElementById("btnAcceptVideo").disabled = false;
+                document.getElementById("btnAcceptHandoff").disabled = false;
+                document.getElementById("btnReject").disabled = false;
 
-    function clearIncomingCallUI(statusText = "Đang chờ cuộc gọi đến...") {
-      stopIncomingRingtone();
-      lastIncomingEvent = null;
-      document.getElementById("incomingBanner").classList.remove("active");
-      document.getElementById("incomingCallCard").classList.remove("incoming-card-ringing");
-      document.getElementById("incomingStatusBadge").textContent = "Đang Trực Chiến (WS 601/604)";
-      document.getElementById("incStateText").textContent = statusText;
-      document.getElementById("incStateText").style.color = "var(--success)";
-      document.getElementById("btnAccept").disabled = true;
-      document.getElementById("btnAcceptVideo").disabled = true;
-      document.getElementById("btnAcceptHandoff").disabled = true;
-      document.getElementById("btnReject").disabled = true;
-    }
+                document.getElementById("paramsJson").textContent = JSON.stringify(
+                    {
+                        incomingCallParsed: p,
+                        rawCallEvent: data.raw,
+                    },
+                    null,
+                    2,
+                );
+                playIncomingRingtone();
+            }
 
-    function updateStateUI(state, headline) {
-      const pill = document.getElementById("statePill");
-      pill.textContent = state.toUpperCase();
-      pill.className = "state-pill state-" + state;
-      if (headline) {
-        document.getElementById("callHeadline").textContent = headline;
-      }
-      const inCall = state === "allocating" || state === "handshaking_udp" || state === "ringing" || state === "active";
-      document.getElementById("btnCall").disabled = inCall;
-      document.getElementById("btnCallSignalingOnly").disabled = inCall;
-      document.getElementById("btnEnd").disabled = !inCall;
-      document.getElementById("btnSendAudio").disabled = !inCall;
-      document.getElementById("btnSendVideo").disabled = !inCall;
-      document.getElementById("btnUpgradeVideo").disabled = !inCall;
-      document.getElementById("btnHoldCall").disabled = !inCall;
-      document.getElementById("btnExportHandoff").disabled = !inCall;
-    }
+            function clearIncomingCallUI(statusText = "Đang chờ cuộc gọi đến...") {
+                stopIncomingRingtone();
+                lastIncomingEvent = null;
+                document.getElementById("incomingBanner").classList.remove("active");
+                document.getElementById("incomingCallCard").classList.remove("incoming-card-ringing");
+                document.getElementById("incomingStatusBadge").textContent = "Đang Trực Chiến (WS 601/604)";
+                document.getElementById("incStateText").textContent = statusText;
+                document.getElementById("incStateText").style.color = "var(--success)";
+                document.getElementById("btnAccept").disabled = true;
+                document.getElementById("btnAcceptVideo").disabled = true;
+                document.getElementById("btnAcceptHandoff").disabled = true;
+                document.getElementById("btnReject").disabled = true;
+            }
 
-    function selectPreset(uid, label) {
-      document.getElementById("calleeIdInput").value = uid;
-      addLog(`Đã chọn người nhận: ${label} (UID: ${uid})`, "ok");
-    }
+            function updateStateUI(state, headline) {
+                const pill = document.getElementById("statePill");
+                pill.textContent = state.toUpperCase();
+                pill.className = "state-pill state-" + state;
+                if (headline) {
+                    document.getElementById("callHeadline").textContent = headline;
+                }
+                const inCall =
+                    state === "allocating" || state === "handshaking_udp" || state === "ringing" || state === "active";
+                document.getElementById("btnCall").disabled = inCall;
+                document.getElementById("btnCallSignalingOnly").disabled = inCall;
+                document.getElementById("btnEnd").disabled = !inCall;
+                document.getElementById("btnSendAudio").disabled = !inCall;
+                document.getElementById("btnSendVideo").disabled = !inCall;
+                document.getElementById("btnUpgradeVideo").disabled = !inCall;
+                document.getElementById("btnHoldCall").disabled = !inCall;
+                document.getElementById("btnExportHandoff").disabled = !inCall;
+            }
 
-    async function lookupPhone() {
-      const phone = document.getElementById("phoneInput").value.trim();
-      if (!phone) return;
-      addLog(`Đang tra cứu SĐT ${phone}...`);
-      const res = await fetch(`/api/find-user?phone=${encodeURIComponent(phone)}`).then(r => r.json());
-      if (res.ok && res.user) {
-        document.getElementById("calleeIdInput").value = res.user.uid;
-        addLog(`Tìm thấy: ${res.user.display_name || res.user.zalo_name} — UID: ${res.user.uid}`, "ok");
-      } else {
-        addLog(`Không tìm thấy SĐT ${phone}: ${res.error || ""}`, "err");
-      }
-    }
+            function selectPreset(uid, label) {
+                document.getElementById("calleeIdInput").value = uid;
+                addLog(`Đã chọn người nhận: ${label} (UID: ${uid})`, "ok");
+            }
 
-    async function simulateIncoming(callType = 1) {
-      ensureAudioOutput();
-      const callerId = document.getElementById("calleeIdInput").value.trim() || "5249661060655759359";
-      addLog(`🧪 Đang giả lập sự kiện Cuộc Gọi Đến (callType=${callType}, caller=${callerId})...`, "warn");
-      const res = await fetch("/api/call/simulate-incoming", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          callType,
-          callerId,
-          callerName: callerId === "5249661060655759359" ? "Ly Van Bong (0332606964)" : `Đối tác (${callerId})`,
-        }),
-      }).then(r => r.json());
-      if (res.ok) {
-        addLog(
-          `🔔 Đã kích hoạt Cuộc Gọi Đến (callId=${res.parsedInfo.callId}, rtp=${res.parsedInfo.rtpAddress})! Hãy bấm "📞 Nghe Máy", "🎥 Nghe Máy Video", "📲 Nghe & Bàn Giao Mobile" hoặc "❌ Từ Chối"!`,
-          "ok"
-        );
-      }
-    }
+            async function lookupPhone() {
+                const phone = document.getElementById("phoneInput").value.trim();
+                if (!phone) return;
+                addLog(`Đang tra cứu SĐT ${phone}...`);
+                const res = await fetch(`/api/find-user?phone=${encodeURIComponent(phone)}`).then((r) => r.json());
+                if (res.ok && res.user) {
+                    document.getElementById("calleeIdInput").value = res.user.uid;
+                    addLog(`Tìm thấy: ${res.user.display_name || res.user.zalo_name} — UID: ${res.user.uid}`, "ok");
+                } else {
+                    addLog(`Không tìm thấy SĐT ${phone}: ${res.error || ""}`, "err");
+                }
+            }
 
-    async function startCall(signalingOnly = false) {
-      resetMediaPipelineForNewCall();
+            async function simulateIncoming(callType = 1) {
+                ensureAudioOutput();
+                const callerId = document.getElementById("calleeIdInput").value.trim() || "5249661060655759359";
+                addLog(`🧪 Đang giả lập sự kiện Cuộc Gọi Đến (callType=${callType}, caller=${callerId})...`, "warn");
+                const res = await fetch("/api/call/simulate-incoming", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        callType,
+                        callerId,
+                        callerName:
+                            callerId === "5249661060655759359" ? "Ly Van Bong (0332606964)" : `Đối tác (${callerId})`,
+                    }),
+                }).then((r) => r.json());
+                if (res.ok) {
+                    addLog(
+                        `🔔 Đã kích hoạt Cuộc Gọi Đến (callId=${res.parsedInfo.callId}, rtp=${res.parsedInfo.rtpAddress})! Hãy bấm "📞 Nghe Máy", "🎥 Nghe Máy Video", "📲 Nghe & Bàn Giao Mobile" hoặc "❌ Từ Chối"!`,
+                        "ok",
+                    );
+                }
+            }
 
-      const calleeId = document.getElementById("calleeIdInput").value.trim();
-      const rawTypeVal = document.getElementById("callTypeSelect").value;
-      const offCameraAtStart = rawTypeVal === "3_offcam";
-      const callType = rawTypeVal === "1" ? 1 : 3;
-      const packetMode = Number(document.getElementById("packetModeSelect").value);
-      const enableSrtp = document.getElementById("srtpSelect").value === "1";
+            async function startCall(signalingOnly = false) {
+                resetMediaPipelineForNewCall();
 
-      rtpInCount = 0;
-      rtcpInCount = 0;
-      rtpOutCount = 0;
-      document.getElementById("mRtpIn").textContent = "0";
-      document.getElementById("mVideoIn").textContent = "0";
-      document.getElementById("mRtcpIn").textContent = "0";
-      document.getElementById("mRtpOut").textContent = "0";
+                const calleeId = document.getElementById("calleeIdInput").value.trim();
+                const rawTypeVal = document.getElementById("callTypeSelect").value;
+                const offCameraAtStart = rawTypeVal === "3_offcam";
+                const callType = rawTypeVal === "1" ? 1 : 3;
+                const packetMode = Number(document.getElementById("packetModeSelect").value);
+                const enableSrtp = document.getElementById("srtpSelect").value === "1";
 
-      updateStateUI("allocating", `Đang khởi tạo cuộc gọi tới ${calleeId}...`);
-      addLog(
-        `🚀 Bắt đầu gọi tới UID ${calleeId} (callType=${callType}, signalingOnly=${signalingOnly}, offCameraAtStart=${offCameraAtStart}, packetMode=${packetMode}, srtp=${enableSrtp})...`,
-        "warn"
-      );
+                rtpInCount = 0;
+                rtcpInCount = 0;
+                rtpOutCount = 0;
+                document.getElementById("mRtpIn").textContent = "0";
+                document.getElementById("mVideoIn").textContent = "0";
+                document.getElementById("mRtcpIn").textContent = "0";
+                document.getElementById("mRtpOut").textContent = "0";
 
-      const res = await fetch("/api/call/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          calleeId,
-          callType,
-          signalingOnly,
-          offCameraAtStart,
-          allowVideoUpgrade: true,
-          packetMode,
-          enableSrtp,
-        }),
-      }).then(r => r.json());
+                updateStateUI("allocating", `Đang khởi tạo cuộc gọi tới ${calleeId}...`);
+                addLog(
+                    `🚀 Bắt đầu gọi tới UID ${calleeId} (callType=${callType}, signalingOnly=${signalingOnly}, offCameraAtStart=${offCameraAtStart}, packetMode=${packetMode}, srtp=${enableSrtp})...`,
+                    "warn",
+                );
 
-      if (!res.ok) {
-        updateStateUI("error", "Lỗi khởi tạo cuộc gọi");
-        addLog(`❌ Lỗi: ${res.error}`, "err");
-        return;
-      }
+                const res = await fetch("/api/call/start", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        calleeId,
+                        callType,
+                        signalingOnly,
+                        offCameraAtStart,
+                        allowVideoUpgrade: true,
+                        packetMode,
+                        enableSrtp,
+                    }),
+                }).then((r) => r.json());
 
-      if (!signalingOnly) {
-        if (!isMicOn) {
-          await toggleMic();
-        }
-        if (callType === 3 && !offCameraAtStart && !isCamOn) {
-          await toggleCamera();
-        } else if ((callType === 1 || offCameraAtStart) && isCamOn) {
-          stopCamera(false);
-        }
-      }
+                if (!res.ok) {
+                    updateStateUI("error", "Lỗi khởi tạo cuộc gọi");
+                    addLog(`❌ Lỗi: ${res.error}`, "err");
+                    return;
+                }
 
-      document.getElementById("paramsJson").textContent = JSON.stringify(res.params, null, 2);
-      document.getElementById("mRoutingToken").textContent = String(res.params.routingToken);
-      if (signalingOnly) {
-        addLog(
-          `📲 [Worker Signaling-Only] Đã tạo cuộc gọi callId=${res.params.callId} và trích xuất gói mobileDirectHandoff (UDP Relay=${res.params.rtpAddress}) cho Mobile tự kết nối trực tiếp!`,
-          "ok"
-        );
-      } else {
-        addLog(
-          `✅ Bắt tay UDP 0x01 0x7e thành công (verified=${res.params.udpHandshakeVerified}, routingToken=${res.params.routingToken}, rtp=${res.params.rtpAddress})! Máy người nhận đang đổ chuông...`,
-          "ok"
-        );
-      }
-    }
+                if (!signalingOnly) {
+                    if (!isMicOn) {
+                        await toggleMic();
+                    }
+                    if (callType === 3 && !offCameraAtStart && !isCamOn) {
+                        await toggleCamera();
+                    } else if ((callType === 1 || offCameraAtStart) && isCamOn) {
+                        stopCamera(false);
+                    }
+                }
 
-    async function exportMobileHandoff() {
-      const res = await fetch("/api/call/handoff-mobile", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      }).then(r => r.json());
-      if (!res.ok) {
-        addLog(`⚠️ Không thể xuất gói Handoff Mobile: ${res.error}`, "warn");
-        return;
-      }
-      if (isMicOn) stopMic(false);
-      if (isCamOn) stopCamera(false);
-      document.getElementById("paramsJson").textContent = JSON.stringify(
-        {
-          note: "Gói thông số bàn giao để App Mobile tự mở UDP Socket kết nối trực tiếp tới Zalo Relay (không đi qua Worker)",
-          mobileDirectHandoff: res.handoff,
-          connectionParams: res.params,
-        },
-        null,
-        2
-      );
-      addLog(
-        `📲 Đã ngắt UDP trên Worker và xuất gói MobileDirectUdpHandoffBundle (callId=${res.handoff.callId}, rtp=${res.handoff.rtpHost}:${res.handoff.rtpPort}, initPacketHex=${res.handoff.udpInitPacketHex.slice(0, 24)}...)!`,
-        "ok"
-      );
-    }
+                document.getElementById("paramsJson").textContent = JSON.stringify(res.params, null, 2);
+                document.getElementById("mRoutingToken").textContent = String(res.params.routingToken);
+                if (signalingOnly) {
+                    addLog(
+                        `📲 [Worker Signaling-Only] Đã tạo cuộc gọi callId=${res.params.callId} và trích xuất gói mobileDirectHandoff (UDP Relay=${res.params.rtpAddress}) cho Mobile tự kết nối trực tiếp!`,
+                        "ok",
+                    );
+                } else {
+                    addLog(
+                        `✅ Bắt tay UDP 0x01 0x7e thành công (verified=${res.params.udpHandshakeVerified}, routingToken=${res.params.routingToken}, rtp=${res.params.rtpAddress})! Máy người nhận đang đổ chuông...`,
+                        "ok",
+                    );
+                }
+            }
 
-    async function endCall() {
-      addLog("📴 Đang gửi lệnh kết thúc cuộc gọi (UDP cmd=3 RequestEndCall + HTTP cancel/endcall)...");
-      stopIncomingRingtone();
-      stopMic(false);
-      stopCamera(false);
-      isHoldOn = false;
-      document.getElementById("btnHoldCall").textContent = "⏸️ Tạm Giữ Cuộc Gọi";
-      await fetch("/api/call/end", { method: "POST" });
-      clearIncomingCallUI("Đang chờ cuộc gọi đến...");
-      updateStateUI("ended", "Cuộc gọi đã kết thúc");
-    }
+            async function exportMobileHandoff() {
+                const res = await fetch("/api/call/handoff-mobile", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({}),
+                }).then((r) => r.json());
+                if (!res.ok) {
+                    addLog(`⚠️ Không thể xuất gói Handoff Mobile: ${res.error}`, "warn");
+                    return;
+                }
+                if (isMicOn) stopMic(false);
+                if (isCamOn) stopCamera(false);
+                document.getElementById("paramsJson").textContent = JSON.stringify(
+                    {
+                        note: "Gói thông số bàn giao để App Mobile tự mở UDP Socket kết nối trực tiếp tới Zalo Relay (không đi qua Worker)",
+                        mobileDirectHandoff: res.handoff,
+                        connectionParams: res.params,
+                    },
+                    null,
+                    2,
+                );
+                addLog(
+                    `📲 Đã ngắt UDP trên Worker và xuất gói MobileDirectUdpHandoffBundle (callId=${res.handoff.callId}, rtp=${res.handoff.rtpHost}:${res.handoff.rtpPort}, initPacketHex=${res.handoff.udpInitPacketHex.slice(0, 24)}...)!`,
+                    "ok",
+                );
+            }
 
-    async function upgradeToVideo() {
-      addLog("🔄 Đang nâng cấp cuộc gọi Thoại ➔ Video (UDP cmd=32 subCmd=7 OnCamera + /api/voicecall/conf isOnCam=1)...", "warn");
-      const res = await fetch("/api/call/upgrade-video", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: 1 }),
-      }).then(r => r.json());
-      if (res.ok) {
-        document.getElementById("callTypeSelect").value = "3";
-        forceNextKeyframe = true;
-        if (!isCamOn) {
-          await toggleCamera();
-        }
-        addLog("✅ Đã nâng cấp cuộc gọi lên Video thành công & bật Camera H.264!", "ok");
-      } else {
-        addLog(`❌ Không thể nâng cấp lên Video: ${res.error}`, "err");
-      }
-    }
+            async function endCall() {
+                addLog("📴 Đang gửi lệnh kết thúc cuộc gọi (UDP cmd=3 RequestEndCall + HTTP cancel/endcall)...");
+                stopIncomingRingtone();
+                stopMic(false);
+                stopCamera(false);
+                isHoldOn = false;
+                document.getElementById("btnHoldCall").textContent = "⏸️ Tạm Giữ Cuộc Gọi";
+                await fetch("/api/call/end", { method: "POST" });
+                clearIncomingCallUI("Đang chờ cuộc gọi đến...");
+                updateStateUI("ended", "Cuộc gọi đã kết thúc");
+            }
 
-    async function toggleHoldCall() {
-      isHoldOn = !isHoldOn;
-      const res = await fetch("/api/call/hold", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ isHold: isHoldOn }),
-      }).then(r => r.json());
-      if (res.ok) {
-        document.getElementById("btnHoldCall").textContent = isHoldOn
-          ? "▶️ Tiếp Tục Cuộc Gọi"
-          : "⏸️ Tạm Giữ Cuộc Gọi";
-        addLog(isHoldOn ? "⏸️ Đã tạm giữ cuộc gọi (holdreq)" : "▶️ Đã tiếp tục cuộc gọi (unholdreq)", "ok");
-      }
-    }
+            async function upgradeToVideo() {
+                addLog(
+                    "🔄 Đang nâng cấp cuộc gọi Thoại ➔ Video (UDP cmd=32 subCmd=7 OnCamera + /api/voicecall/conf isOnCam=1)...",
+                    "warn",
+                );
+                const res = await fetch("/api/call/upgrade-video", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status: 1 }),
+                }).then((r) => r.json());
+                if (res.ok) {
+                    document.getElementById("callTypeSelect").value = "3";
+                    forceNextKeyframe = true;
+                    if (!isCamOn) {
+                        await toggleCamera();
+                    }
+                    addLog("✅ Đã nâng cấp cuộc gọi lên Video thành công & bật Camera H.264!", "ok");
+                } else {
+                    addLog(`❌ Không thể nâng cấp lên Video: ${res.error}`, "err");
+                }
+            }
 
-    async function reconnectUdpUI() {
-      addLog("🔄 Đang tái kết nối UDP Socket & chạy lại bắt tay 0x01 0x7e (InitCall cmd=11/12) + PLI Keyframe...", "warn");
-      seenRemoteKeyframe = false;
-      forceNextKeyframe = true;
-      const res = await fetch("/api/call/reconnect-udp", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({}),
-      }).then(r => r.json());
-      if (res.ok) {
-        document.getElementById("paramsJson").textContent = JSON.stringify(res.params, null, 2);
-        document.getElementById("mRoutingToken").textContent = String(res.params.routingToken);
-        addLog(
-          `✅ Tái kích hoạt UDP thành công (verified=${res.params.udpHandshakeVerified}, routingToken=${res.params.routingToken}, rtp=${res.params.rtpAddress})!`,
-          "ok"
-        );
-      } else {
-        addLog(`❌ Không thể tái kết nối UDP: ${res.error}`, "err");
-      }
-    }
+            async function toggleHoldCall() {
+                isHoldOn = !isHoldOn;
+                const res = await fetch("/api/call/hold", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ isHold: isHoldOn }),
+                }).then((r) => r.json());
+                if (res.ok) {
+                    document.getElementById("btnHoldCall").textContent = isHoldOn
+                        ? "▶️ Tiếp Tục Cuộc Gọi"
+                        : "⏸️ Tạm Giữ Cuộc Gọi";
+                    addLog(isHoldOn ? "⏸️ Đã tạm giữ cuộc gọi (holdreq)" : "▶️ Đã tiếp tục cuộc gọi (unholdreq)", "ok");
+                }
+            }
 
-    async function loadGroups() {
-      addLog("📂 Đang tải danh sách nhóm của bạn...");
-      const res = await fetch("/api/groups").then(r => r.json());
-      if (res.ok && res.groupIds && res.groupIds.length) {
-        document.getElementById("groupIdInput").value = res.groupIds[0];
-        addLog(`✅ Đã tải ${res.groupIds.length} nhóm. Đã điền tự động Group ID đầu tiên: ${res.groupIds[0]}`, "ok");
-      } else {
-        addLog(`⚠️ Không tìm thấy nhóm nào hoặc lỗi: ${res.error || "Trống"}`, "warn");
-      }
-    }
+            async function reconnectUdpUI() {
+                addLog(
+                    "🔄 Đang tái kết nối UDP Socket & chạy lại bắt tay 0x01 0x7e (InitCall cmd=11/12) + PLI Keyframe...",
+                    "warn",
+                );
+                seenRemoteKeyframe = false;
+                forceNextKeyframe = true;
+                const res = await fetch("/api/call/reconnect-udp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({}),
+                }).then((r) => r.json());
+                if (res.ok) {
+                    document.getElementById("paramsJson").textContent = JSON.stringify(res.params, null, 2);
+                    document.getElementById("mRoutingToken").textContent = String(res.params.routingToken);
+                    addLog(
+                        `✅ Tái kích hoạt UDP thành công (verified=${res.params.udpHandshakeVerified}, routingToken=${res.params.routingToken}, rtp=${res.params.rtpAddress})!`,
+                        "ok",
+                    );
+                } else {
+                    addLog(`❌ Không thể tái kết nối UDP: ${res.error}`, "err");
+                }
+            }
 
-    async function startGroupCallUI(callType) {
-      resetMediaPipelineForNewCall();
-      const groupId = document.getElementById("groupIdInput").value.trim();
-      const partnersRaw = document.getElementById("groupPartnersInput").value.trim();
-      if (!groupId) {
-        addLog("⚠️ Vui lòng nhập Group ID hoặc bấm '📂 Tải Nhóm' trước khi gọi nhóm!", "warn");
-        return;
-      }
-      const partners = partnersRaw.split(",").map(s => s.trim()).filter(Boolean);
-      updateStateUI("allocating", `Đang khởi tạo gọi nhóm ${groupId}...`);
-      addLog(`👥 Bắt đầu gọi nhóm tới Group ${groupId} (callType=${callType}, thành viên=${partners.join(", ")})...`, "warn");
-      const res = await fetch("/api/group-call/start", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ groupId, partners, callType }),
-      }).then(r => r.json());
-      if (!res.ok) {
-        updateStateUI("error", "Lỗi khởi tạo gọi nhóm");
-        addLog(`❌ Lỗi gọi nhóm: ${res.error}`, "err");
-        return;
-      }
-      if (!isMicOn) await toggleMic();
-      if (callType === 6 && !isCamOn) await toggleCamera();
-      document.getElementById("paramsJson").textContent = JSON.stringify(res.params, null, 2);
-      document.getElementById("mRoutingToken").textContent = String(res.params.routingToken);
-      addLog(`✅ Đã khởi tạo phiên Gọi Nhóm thành công (callId=${res.params.callId}, rtp=${res.params.rtpAddress})!`, "ok");
-    }
+            async function loadGroups() {
+                addLog("📂 Đang tải danh sách nhóm của bạn...");
+                const res = await fetch("/api/groups").then((r) => r.json());
+                if (res.ok && res.groupIds && res.groupIds.length) {
+                    document.getElementById("groupIdInput").value = res.groupIds[0];
+                    addLog(
+                        `✅ Đã tải ${res.groupIds.length} nhóm. Đã điền tự động Group ID đầu tiên: ${res.groupIds[0]}`,
+                        "ok",
+                    );
+                } else {
+                    addLog(`⚠️ Không tìm thấy nhóm nào hoặc lỗi: ${res.error || "Trống"}`, "warn");
+                }
+            }
 
-    async function sendTestAudio() {
-      const res = await fetch("/api/call/send-audio", { method: "POST" }).then(r => r.json());
-      if (res.ok) {
-        rtpOutCount += res.sentFrames;
-        document.getElementById("mRtpOut").textContent = String(rtpOutCount);
-        addLog(`🔊 Đã bắn ${res.sentFrames} khung âm thanh Opus RTP qua UDP Relay (${res.rtpAddress})`, "ok");
-      }
-    }
+            async function startGroupCallUI(callType) {
+                resetMediaPipelineForNewCall();
+                const groupId = document.getElementById("groupIdInput").value.trim();
+                const partnersRaw = document.getElementById("groupPartnersInput").value.trim();
+                if (!groupId) {
+                    addLog("⚠️ Vui lòng nhập Group ID hoặc bấm '📂 Tải Nhóm' trước khi gọi nhóm!", "warn");
+                    return;
+                }
+                const partners = partnersRaw
+                    .split(",")
+                    .map((s) => s.trim())
+                    .filter(Boolean);
+                updateStateUI("allocating", `Đang khởi tạo gọi nhóm ${groupId}...`);
+                addLog(
+                    `👥 Bắt đầu gọi nhóm tới Group ${groupId} (callType=${callType}, thành viên=${partners.join(", ")})...`,
+                    "warn",
+                );
+                const res = await fetch("/api/group-call/start", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ groupId, partners, callType }),
+                }).then((r) => r.json());
+                if (!res.ok) {
+                    updateStateUI("error", "Lỗi khởi tạo gọi nhóm");
+                    addLog(`❌ Lỗi gọi nhóm: ${res.error}`, "err");
+                    return;
+                }
+                if (!isMicOn) await toggleMic();
+                if (callType === 6 && !isCamOn) await toggleCamera();
+                document.getElementById("paramsJson").textContent = JSON.stringify(res.params, null, 2);
+                document.getElementById("mRoutingToken").textContent = String(res.params.routingToken);
+                addLog(
+                    `✅ Đã khởi tạo phiên Gọi Nhóm thành công (callId=${res.params.callId}, rtp=${res.params.rtpAddress})!`,
+                    "ok",
+                );
+            }
 
-    async function sendTestVideo() {
-      const res = await fetch("/api/call/send-video", { method: "POST" }).then(r => r.json());
-      if (res.ok) {
-        rtpOutCount += res.sentFrames;
-        document.getElementById("mRtpOut").textContent = String(rtpOutCount);
-        addLog(`📹 Đã bắn ${res.sentFrames} khung hình Video H.264 RTP (PT=97) qua UDP Relay (${res.rtpAddress})`, "ok");
-      }
-    }
+            async function sendTestAudio() {
+                const res = await fetch("/api/call/send-audio", { method: "POST" }).then((r) => r.json());
+                if (res.ok) {
+                    rtpOutCount += res.sentFrames;
+                    document.getElementById("mRtpOut").textContent = String(rtpOutCount);
+                    addLog(
+                        `🔊 Đã bắn ${res.sentFrames} khung âm thanh Opus RTP qua UDP Relay (${res.rtpAddress})`,
+                        "ok",
+                    );
+                }
+            }
 
-    async function acceptIncoming(withVideo = false, signalingOnly = false) {
-      if (!lastIncomingEvent) return;
-      stopIncomingRingtone();
-      resetMediaPipelineForNewCall();
-      addLog(
-        `✅ Đang chấp nhận cuộc gọi đến (withVideo=${withVideo}, signalingOnly=${signalingOnly}) -> gửi answer (405/507) + bắt tay UDP InitCallCallee (cmd=12)...`,
-        "ok"
-      );
-      const res = await fetch("/api/call/accept", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ withVideo, signalingOnly }),
-      }).then(r => r.json());
-      if (res.ok) {
-        clearIncomingCallUI("✅ Đã bắt máy cuộc gọi đến!");
-        if (!signalingOnly) {
-          if (!isMicOn) await toggleMic();
-          const shouldCam =
-            withVideo ||
-            (res.params && (res.params.callType === 3 || res.params.callType === 6));
-          if (shouldCam && !isCamOn) {
-            await toggleCamera();
-          }
-        }
-        document.getElementById("paramsJson").textContent = JSON.stringify(
-          signalingOnly
-            ? {
-                note: "Đã chấp nhận cuộc gọi đến ở chế độ Signaling-Only! Đẩy gói mobileDirectHandoff này xuống App Mobile để kết nối UDP trực tiếp:",
-                mobileDirectHandoff: res.handoff,
-                connectionParams: res.params,
-              }
-            : res.params,
-          null,
-          2
-        );
-        document.getElementById("mRoutingToken").textContent = String(res.params.routingToken);
-        addLog(
-          signalingOnly
-            ? `📲 Đã bắt máy & xuất gói MobileDirectUdpHandoffBundle (InitCallCallee cmd=12) cho Mobile (callId=${res.params.callId}, rtp=${res.params.rtpAddress})!`
-            : `🎉 Đã kết nối cuộc gọi đến thành công (callId=${res.params.callId}, routingToken=${res.params.routingToken}, rtp=${res.params.rtpAddress})!`,
-          "ok"
-        );
-      } else {
-        addLog(`❌ Lỗi khi bắt máy cuộc gọi đến: ${res.error}`, "err");
-      }
-    }
+            async function sendTestVideo() {
+                const res = await fetch("/api/call/send-video", { method: "POST" }).then((r) => r.json());
+                if (res.ok) {
+                    rtpOutCount += res.sentFrames;
+                    document.getElementById("mRtpOut").textContent = String(rtpOutCount);
+                    addLog(
+                        `📹 Đã bắn ${res.sentFrames} khung hình Video H.264 RTP (PT=97) qua UDP Relay (${res.rtpAddress})`,
+                        "ok",
+                    );
+                }
+            }
 
-    async function rejectIncoming() {
-      if (!lastIncomingEvent) return;
-      stopIncomingRingtone();
-      addLog("❌ Đang từ chối cuộc gọi đến (gửi subCmd 406 / 508 status=409)...", "warn");
-      const res = await fetch("/api/call/reject", { method: "POST" }).then(r => r.json());
-      clearIncomingCallUI("❌ Đã từ chối cuộc gọi đến gần nhất");
-      const currentState = document.getElementById("statePill").textContent.trim();
-      if (currentState !== "active") {
-        updateStateUI("ended", "Đã từ chối cuộc gọi đến");
-      }
-      if (res.ok) {
-        addLog(`✅ Đã từ chối cuộc gọi đến (callId=${res.callId}, caller=${res.callerId})`, "ok");
-      }
-    }
+            async function acceptIncoming(withVideo = false, signalingOnly = false) {
+                if (!lastIncomingEvent) return;
+                stopIncomingRingtone();
+                resetMediaPipelineForNewCall();
+                addLog(
+                    `✅ Đang chấp nhận cuộc gọi đến (withVideo=${withVideo}, signalingOnly=${signalingOnly}) -> gửi answer (405/507) + bắt tay UDP InitCallCallee (cmd=12)...`,
+                    "ok",
+                );
+                const res = await fetch("/api/call/accept", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ withVideo, signalingOnly }),
+                }).then((r) => r.json());
+                if (res.ok) {
+                    clearIncomingCallUI("✅ Đã bắt máy cuộc gọi đến!");
+                    if (!signalingOnly) {
+                        if (!isMicOn) await toggleMic();
+                        const shouldCam =
+                            withVideo || (res.params && (res.params.callType === 3 || res.params.callType === 6));
+                        if (shouldCam && !isCamOn) {
+                            await toggleCamera();
+                        }
+                    }
+                    document.getElementById("paramsJson").textContent = JSON.stringify(
+                        signalingOnly
+                            ? {
+                                  note: "Đã chấp nhận cuộc gọi đến ở chế độ Signaling-Only! Đẩy gói mobileDirectHandoff này xuống App Mobile để kết nối UDP trực tiếp:",
+                                  mobileDirectHandoff: res.handoff,
+                                  connectionParams: res.params,
+                              }
+                            : res.params,
+                        null,
+                        2,
+                    );
+                    document.getElementById("mRoutingToken").textContent = String(res.params.routingToken);
+                    addLog(
+                        signalingOnly
+                            ? `📲 Đã bắt máy & xuất gói MobileDirectUdpHandoffBundle (InitCallCallee cmd=12) cho Mobile (callId=${res.params.callId}, rtp=${res.params.rtpAddress})!`
+                            : `🎉 Đã kết nối cuộc gọi đến thành công (callId=${res.params.callId}, routingToken=${res.params.routingToken}, rtp=${res.params.rtpAddress})!`,
+                        "ok",
+                    );
+                } else {
+                    addLog(`❌ Lỗi khi bắt máy cuộc gọi đến: ${res.error}`, "err");
+                }
+            }
 
-    async function initStudio() {
-      connectMediaWs();
-      const info = await fetch("/api/status").then(r => r.json());
-      if (info.ok) {
-        document.getElementById("accountInfo").textContent =
-          `Đã đăng nhập UID: ${info.uid} • VoiceCall Service: ${info.voiceCallService} • Lắng nghe cuộc gọi đến: BẬT`;
-        if (info.lastVerifiedProof) {
-          document.getElementById("paramsJson").textContent = JSON.stringify(info.lastVerifiedProof, null, 2);
-          document.getElementById("mRoutingToken").textContent = String(info.lastVerifiedProof.routingToken || "—");
-          addLog(
-            `🏆 Đã nạp bằng chứng cuộc gọi thực tế tới Ly Van Bong (0332606964): callId=${info.lastVerifiedProof.callId}, routingToken=${info.lastVerifiedProof.routingToken}, trạng thái=${info.lastVerifiedProof.finalState}`,
-            "ok"
-          );
-        }
-        if (info.pendingIncomingCall && info.pendingIncomingCall.raw) {
-          lastIncomingEvent = info.pendingIncomingCall.raw;
-          renderIncomingCallUI({
-            parsedInfo: info.pendingIncomingCall.parsedInfo,
-            isSimulated: info.pendingIncomingCall.isSimulated,
-            raw: info.pendingIncomingCall.raw,
-          });
-        }
-        const fBox = document.getElementById("friendsList");
-        if (info.friends && info.friends.length) {
-          fBox.innerHTML = info.friends
-            .map(
-              f =>
-                `<div style="padding:6px 8px; border-bottom:1px solid rgba(39,53,97,0.4); cursor:pointer; display:flex; justify-content:space-between;" onclick="selectPreset('${f.userId}', '${escapeHtml(f.displayName)}')">
+            async function rejectIncoming() {
+                if (!lastIncomingEvent) return;
+                stopIncomingRingtone();
+                addLog("❌ Đang từ chối cuộc gọi đến (gửi subCmd 406 / 508 status=409)...", "warn");
+                const res = await fetch("/api/call/reject", { method: "POST" }).then((r) => r.json());
+                clearIncomingCallUI("❌ Đã từ chối cuộc gọi đến gần nhất");
+                const currentState = document.getElementById("statePill").textContent.trim();
+                if (currentState !== "active") {
+                    updateStateUI("ended", "Đã từ chối cuộc gọi đến");
+                }
+                if (res.ok) {
+                    addLog(`✅ Đã từ chối cuộc gọi đến (callId=${res.callId}, caller=${res.callerId})`, "ok");
+                }
+            }
+
+            async function initStudio() {
+                connectMediaWs();
+                const info = await fetch("/api/status").then((r) => r.json());
+                if (info.ok) {
+                    document.getElementById("accountInfo").textContent =
+                        `Đã đăng nhập UID: ${info.uid} • VoiceCall Service: ${info.voiceCallService} • Lắng nghe cuộc gọi đến: BẬT`;
+                    if (info.lastVerifiedProof) {
+                        document.getElementById("paramsJson").textContent = JSON.stringify(
+                            info.lastVerifiedProof,
+                            null,
+                            2,
+                        );
+                        document.getElementById("mRoutingToken").textContent = String(
+                            info.lastVerifiedProof.routingToken || "—",
+                        );
+                        addLog(
+                            `🏆 Đã nạp bằng chứng cuộc gọi thực tế tới Ly Van Bong (0332606964): callId=${info.lastVerifiedProof.callId}, routingToken=${info.lastVerifiedProof.routingToken}, trạng thái=${info.lastVerifiedProof.finalState}`,
+                            "ok",
+                        );
+                    }
+                    if (info.pendingIncomingCall && info.pendingIncomingCall.raw) {
+                        lastIncomingEvent = info.pendingIncomingCall.raw;
+                        renderIncomingCallUI({
+                            parsedInfo: info.pendingIncomingCall.parsedInfo,
+                            isSimulated: info.pendingIncomingCall.isSimulated,
+                            raw: info.pendingIncomingCall.raw,
+                        });
+                    }
+                    const fBox = document.getElementById("friendsList");
+                    if (info.friends && info.friends.length) {
+                        fBox.innerHTML = info.friends
+                            .map(
+                                (f) =>
+                                    `<div style="padding:6px 8px; border-bottom:1px solid rgba(39,53,97,0.4); cursor:pointer; display:flex; justify-content:space-between;" onclick="selectPreset('${f.userId}', '${escapeHtml(f.displayName)}')">
                   <span style="color:#fff; font-weight:600;">${escapeHtml(f.displayName)}</span>
                   <span>${f.userId}</span>
-                </div>`
-            )
-            .join("");
-        }
-      }
+                </div>`,
+                            )
+                            .join("");
+                    }
+                }
 
-      const es = new EventSource("/api/events");
-      es.onmessage = (ev) => {
-        const data = JSON.parse(ev.data);
-        if (data.type === "state") {
-          updateStateUI(data.state, `Trạng thái phiên: ${data.state.toUpperCase()}`);
-          addLog(`🔔 [State] -> ${data.state.toUpperCase()}`, data.state === "active" ? "ok" : "warn");
-          if (data.state === "active") {
-            forceNextKeyframe = true;
-            requestPliKeyframe();
-          } else if (data.state === "ended") {
-            stopIncomingRingtone();
-            if (isMicOn) stopMic(false);
-            if (isCamOn) stopCamera(false);
-            isHoldOn = false;
-            document.getElementById("btnHoldCall").textContent = "⏸️ Tạm Giữ Cuộc Gọi";
-          }
-        } else if (data.type === "ended") {
-          stopIncomingRingtone();
-          updateStateUI("ended", `Cuộc gọi đã kết thúc (${data.reason || "ended"})`);
-          if (isMicOn) stopMic(false);
-          if (isCamOn) stopCamera(false);
-          isHoldOn = false;
-          document.getElementById("btnHoldCall").textContent = "⏸️ Tạm Giữ Cuộc Gọi";
-        } else if (data.type === "zrtp_control") {
-          const isErr = typeof data.pkt.errorCode === "number" && data.pkt.errorCode !== 0;
-          if (data.pkt.cmd === 11 || data.pkt.cmd === 12) {
-            addLog(
-              `📦 [UDP 0x02 0x7e] Bắt tay thành công cmd=${data.pkt.cmd} (${data.pkt.cmd === 12 ? "InitCallCallee" : "InitCallCaller"}) errorCode=${data.pkt.errorCode ?? 0} routingToken=${data.pkt.routingToken} callId=${data.pkt.callId}`,
-              isErr ? "err" : "ok"
-            );
-          } else if (data.pkt.cmd === 3) {
-            addLog(
-              `📴 [UDP EndCall cmd=3] Tín hiệu kết thúc cuộc gọi từ Relay (callId=${data.pkt.callId})`,
-              "warn"
-            );
-          } else {
-            addLog(
-              `💓 [UDP Relay Keepalive] cmd=${data.pkt.cmd} subCmd=${data.pkt.subCmd ?? "-"} seq=${data.pkt.headerCallId ?? 0} status=OK`,
-              "ok"
-            );
-          }
-          if (data.pkt.routingToken) {
-            document.getElementById("mRoutingToken").textContent = String(data.pkt.routingToken);
-          }
-        } else if (data.type === "call_event") {
-          addLog(
-            `📲 [WebSocket call_event] act=${data.act} callId=${data.callId} caller=${data.callerName || data.callerId || "-"}`,
-            "ok"
-          );
-          if (data.act === "request" || data.act === "group_request") {
-            lastIncomingEvent = data.raw;
-            renderIncomingCallUI(data);
-            const callerLabel = data.callerName && data.callerName !== data.callerId
-              ? `${data.callerName} (${data.callerId})`
-              : (data.callerId || "Đối tác");
-            const kindLabel = data.isGroupCall ? "Nhóm" : (data.isVideo ? "Video" : "Thoại");
-            updateStateUI("ringing", `📲 Cuộc gọi đến (${kindLabel}) từ ${callerLabel}!`);
-          } else if (data.act === "cancel" || data.act === "end" || data.act === "reject") {
-            clearIncomingCallUI("Đối phương đã huỷ / kết thúc cuộc gọi đến");
-            updateStateUI("ended", "Cuộc gọi đến đã kết thúc");
-          }
-        } else if (data.type === "media_state_change") {
-          const ms = data.mediaState || {};
-          if (ms.reason === 2 || ms.reason === 3) {
-            forceNextKeyframe = true;
-            requestPliKeyframe();
-          }
-          addLog(
-            `🎛️ [Media State] ${ms.isLocal ? "Local" : "Đối phương"}: act=${ms.rawAct || "update"} cam=${ms.isCameraOn ?? "-"} micMuted=${ms.isMicMuted ?? "-"} hold=${ms.isHold ?? "-"}`,
-            "ok"
-          );
-        } else if (data.type === "rtp_stats") {
-          rtpInCount = data.rtpIn || 0;
-          rtcpInCount = data.rtcpIn || 0;
-          rtpOutCount = (data.rtpOut || 0) + (data.videoOut || 0);
-          document.getElementById("mRtpIn").textContent = String(rtpInCount);
-          document.getElementById("mVideoIn").textContent = String(data.videoIn || 0);
-          document.getElementById("mRtcpIn").textContent = String(rtcpInCount);
-          document.getElementById("mRtpOut").textContent = String(rtpOutCount);
-        } else if (data.type === "log") {
-          addLog(data.message, data.level || "info");
-        }
-      };
-    }
+                const es = new EventSource("/api/events");
+                es.onmessage = (ev) => {
+                    const data = JSON.parse(ev.data);
+                    if (data.type === "state") {
+                        updateStateUI(data.state, `Trạng thái phiên: ${data.state.toUpperCase()}`);
+                        addLog(`🔔 [State] -> ${data.state.toUpperCase()}`, data.state === "active" ? "ok" : "warn");
+                        if (data.state === "active") {
+                            forceNextKeyframe = true;
+                            requestPliKeyframe();
+                        } else if (data.state === "ended") {
+                            stopIncomingRingtone();
+                            if (isMicOn) stopMic(false);
+                            if (isCamOn) stopCamera(false);
+                            isHoldOn = false;
+                            document.getElementById("btnHoldCall").textContent = "⏸️ Tạm Giữ Cuộc Gọi";
+                        }
+                    } else if (data.type === "ended") {
+                        stopIncomingRingtone();
+                        updateStateUI("ended", `Cuộc gọi đã kết thúc (${data.reason || "ended"})`);
+                        if (isMicOn) stopMic(false);
+                        if (isCamOn) stopCamera(false);
+                        isHoldOn = false;
+                        document.getElementById("btnHoldCall").textContent = "⏸️ Tạm Giữ Cuộc Gọi";
+                    } else if (data.type === "zrtp_control") {
+                        const isErr = typeof data.pkt.errorCode === "number" && data.pkt.errorCode !== 0;
+                        if (data.pkt.cmd === 11 || data.pkt.cmd === 12) {
+                            addLog(
+                                `📦 [UDP 0x02 0x7e] Bắt tay thành công cmd=${data.pkt.cmd} (${data.pkt.cmd === 12 ? "InitCallCallee" : "InitCallCaller"}) errorCode=${data.pkt.errorCode ?? 0} routingToken=${data.pkt.routingToken} callId=${data.pkt.callId}`,
+                                isErr ? "err" : "ok",
+                            );
+                        } else if (data.pkt.cmd === 3) {
+                            addLog(
+                                `📴 [UDP EndCall cmd=3] Tín hiệu kết thúc cuộc gọi từ Relay (callId=${data.pkt.callId})`,
+                                "warn",
+                            );
+                        } else {
+                            addLog(
+                                `💓 [UDP Relay Keepalive] cmd=${data.pkt.cmd} subCmd=${data.pkt.subCmd ?? "-"} seq=${data.pkt.headerCallId ?? 0} status=OK`,
+                                "ok",
+                            );
+                        }
+                        if (data.pkt.routingToken) {
+                            document.getElementById("mRoutingToken").textContent = String(data.pkt.routingToken);
+                        }
+                    } else if (data.type === "call_event") {
+                        addLog(
+                            `📲 [WebSocket call_event] act=${data.act} callId=${data.callId} caller=${data.callerName || data.callerId || "-"}`,
+                            "ok",
+                        );
+                        if (data.act === "request" || data.act === "group_request") {
+                            lastIncomingEvent = data.raw;
+                            renderIncomingCallUI(data);
+                            const callerLabel =
+                                data.callerName && data.callerName !== data.callerId
+                                    ? `${data.callerName} (${data.callerId})`
+                                    : data.callerId || "Đối tác";
+                            const kindLabel = data.isGroupCall ? "Nhóm" : data.isVideo ? "Video" : "Thoại";
+                            updateStateUI("ringing", `📲 Cuộc gọi đến (${kindLabel}) từ ${callerLabel}!`);
+                        } else if (data.act === "cancel" || data.act === "end" || data.act === "reject") {
+                            clearIncomingCallUI("Đối phương đã huỷ / kết thúc cuộc gọi đến");
+                            updateStateUI("ended", "Cuộc gọi đến đã kết thúc");
+                        }
+                    } else if (data.type === "media_state_change") {
+                        const ms = data.mediaState || {};
+                        if (ms.reason === 2 || ms.reason === 3) {
+                            forceNextKeyframe = true;
+                            requestPliKeyframe();
+                        }
+                        addLog(
+                            `🎛️ [Media State] ${ms.isLocal ? "Local" : "Đối phương"}: act=${ms.rawAct || "update"} cam=${ms.isCameraOn ?? "-"} micMuted=${ms.isMicMuted ?? "-"} hold=${ms.isHold ?? "-"}`,
+                            "ok",
+                        );
+                    } else if (data.type === "rtp_stats") {
+                        rtpInCount = data.rtpIn || 0;
+                        rtcpInCount = data.rtcpIn || 0;
+                        rtpOutCount = (data.rtpOut || 0) + (data.videoOut || 0);
+                        document.getElementById("mRtpIn").textContent = String(rtpInCount);
+                        document.getElementById("mVideoIn").textContent = String(data.videoIn || 0);
+                        document.getElementById("mRtcpIn").textContent = String(rtcpInCount);
+                        document.getElementById("mRtpOut").textContent = String(rtpOutCount);
+                    } else if (data.type === "log") {
+                        addLog(data.message, data.level || "info");
+                    }
+                };
+            }
 
-    initStudio();
-  </script>
-</body>
+            initStudio();
+        </script>
+    </body>
 </html>

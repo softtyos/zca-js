@@ -11,41 +11,41 @@ Quản lý danh sách bạn bè, lời mời kết bạn, gợi ý kết bạn, 
 
 ## Danh sách nhanh
 
-| Phương thức | HTTP | Endpoint Zalo | Mô tả |
-| :--- | :---: | :--- | :--- |
-| [`acceptFriendRequest`](#acceptfriendrequest) | `POST` | `/api/friend/accept` | Đồng ý lời mời kết bạn từ một người dùng. |
-| [`blockUser`](#blockuser) | `POST` | `/api/friend/block` | Chặn tin nhắn từ một người dùng theo UID. |
-| [`blockViewFeed`](#blockviewfeed) | `POST` | `/api/friend/feed/block` | Chặn hoặc mở chặn quyền xem Nhật ký (Timeline Feed) đối với một người bạn. |
-| [`changeFriendAlias`](#changefriendalias) | `GET` | `/api/alias/update` | Đặt hoặc đổi tên gợi nhớ (Biệt danh / Alias) cho bạn bè. |
-| [`clearUnreadFriendRequests`](#clearunreadfriendrequests) | `POST` | `/api/friend/recommendsv2/read-requests` | Đánh dấu đã xem danh sách lời mời kết bạn chưa đọc (command 12232) |
-| [`findUser`](#finduser) | `GET` | `/api/friend/profile/get` | Tìm kiếm thông tin tài khoản Zalo thông qua số điện thoại. |
-| [`findUserByUsername`](#finduserbyusername) | `GET` | `/api/friend/search/by-user-name` | Tìm kiếm thông tin tài khoản Zalo thông qua Username. |
-| [`getAliasList`](#getaliaslist) | `GET` | `/api/alias/list` | Lấy danh sách toàn bộ tên gợi nhớ (Alias) đã đặt cho bạn bè. |
-| [`getAliasListV2`](#getaliaslistv2) | `GET` | `/api/alias/list/v2` | Lấy danh sách tên gợi nhớ (Alias) của bạn bè chuẩn V2 có hỗ trợ phân trang (command 12205) |
-| [`getAllFriends`](#getallfriends) | `GET` | `/api/social/friend/getfriends` | Lấy toàn bộ danh sách bạn bè trong danh bạ tài khoản hiện tại. |
-| [`getBlockFriends`](#getblockfriends) | `GET` | `/api/friend/blocklistv2` | Lấy danh sách người dùng đang bị chặn chuẩn V2 (command 11429) |
-| [`getCloseFriends`](#getclosefriends) | `GET` | `/api/social/friend/getclosedfriends` | Lấy danh sách bạn thân (Close Friends). |
-| [`getExtraFriendInfo`](#getextrafriendinfo) | `POST` | `/api/friend/context/multiget` | Lấy ngữ cảnh và vai trò mở rộng (ví dụ `role: ["boss"]`) của danh sách bạn bè (command 11442) |
-| [`getFriendBoardList`](#getfriendboardlist) | `GET` | `/api/friendboard/list` | Lấy thông tin bảng tin chung với một người bạn. |
-| [`getFriendOnlines`](#getfriendonlines) | `GET` | `/api/social/friend/onlines` | Lấy danh sách bạn bè đang trực tuyến (Online) kèm trạng thái thiết bị. |
-| [`getFriendProfilesV2`](#getfriendprofilesv2) | `POST` | `/api/social/friend/getprofiles/v2` | Lấy hàng loạt hồ sơ chi tiết của danh sách bạn bè kèm trạng thái online qua `/api/social/friend/getprofiles/v2` (command 11140) |
-| [`getFriendRecommendations`](#getfriendrecommendations) | `GET` | `/api/friend/recommendsv2/list` | Lấy danh sách gợi ý kết bạn và lời mời kết bạn đã nhận. |
-| [`getFriendRequestStatus`](#getfriendrequeststatus) | `GET` | `/api/friend/reqstatus` | Kiểm tra trạng thái quan hệ bạn bè và lời mời kết bạn với một UID. |
-| [`getFriendsActivePCWeb`](#getfriendsactivepcweb) | `GET` | `/api/social/friend/active-pcweb` | Lấy danh sách bạn bè đang hoạt động trên Zalo PC / Web qua `/api/social/friend/active-pcweb` (command 12072) |
-| [`getFriendsEmojiStatus`](#getfriendsemojistatus) | `GET` | `/api/v1/emoji-status/friends` | Lấy danh sách trạng thái Emoji (Emoji Status) hiện tại của bạn bè (command 16301) |
-| [`getLastReadContactTab`](#getlastreadcontacttab) | `GET` | `/api/friend/last-read-contact-tab` | Lấy dấu thời gian lần cuối đọc tab Danh bạ (command 12230) |
-| [`getMultiUsersByPhones`](#getmultiusersbyphones) | `GET` | `/api/friend/profile/multiget` | Tra cứu hàng loạt thông tin tài khoản Zalo từ danh sách nhiều số điện thoại cùng lúc. |
-| [`getPhonebookV2`](#getphonebookv2) | `GET` | `/api/social/friend/phonebook/v2` | Lấy danh bạ bạn bè đồng bộ từ số điện thoại chuẩn V2 (command 12428) |
-| [`getSentFriendRequest`](#getsentfriendrequest) | `GET` | `/api/friend/requested/list` | Lấy danh sách các lời mời kết bạn mà tài khoản hiện tại đã gửi đi nhưng chưa được phản hồi. |
-| [`lastOnline`](#lastonline) | `GET` | `/api/social/profile/lastOnline` | Kiểm tra thời điểm truy cập (Online) gần nhất của một người dùng. |
-| [`readContactTab`](#readcontacttab) | `POST` | `/api/friend/read-contact-tab` | Đánh dấu đã đọc tab Danh bạ (command 12231) |
-| [`rejectFriendRequest`](#rejectfriendrequest) | `POST` | `/api/friend/reject` | Từ chối lời mời kết bạn từ một người dùng. |
-| [`removeFriend`](#removefriend) | `POST` | `/api/friend/remove` | Hủy kết bạn (Xóa bạn) với một người dùng trong danh bạ. |
-| [`removeFriendAlias`](#removefriendalias) | `GET` | `/api/alias/remove` | Xóa tên gợi nhớ (Biệt danh / Alias) đã đặt cho một người bạn. |
-| [`sendFriendRequest`](#sendfriendrequest) | `POST` | `/api/friend/sendreq` | Gửi lời mời kết bạn kèm lời chào tới một người dùng theo UID. |
-| [`unblockUser`](#unblockuser) | `POST` | `/api/friend/unblock` | Bỏ chặn tin nhắn đối với một người dùng. |
-| [`undoFriendRequest`](#undofriendrequest) | `POST` | `/api/friend/undo` | Thu hồi (Hủy) lời mời kết bạn đã gửi trước đó. |
-| [`verifyFriend`](#verifyfriend) | `POST` | `/api/social/friend/verify` | Kiểm tra và xác thực danh sách bạn bè qua `/api/social/friend/verify` (command 11138) |
+| Phương thức                                               |  HTTP  | Endpoint Zalo                            | Mô tả                                                                                                                           |
+| :-------------------------------------------------------- | :----: | :--------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------ |
+| [`acceptFriendRequest`](#acceptfriendrequest)             | `POST` | `/api/friend/accept`                     | Đồng ý lời mời kết bạn từ một người dùng.                                                                                       |
+| [`blockUser`](#blockuser)                                 | `POST` | `/api/friend/block`                      | Chặn tin nhắn từ một người dùng theo UID.                                                                                       |
+| [`blockViewFeed`](#blockviewfeed)                         | `POST` | `/api/friend/feed/block`                 | Chặn hoặc mở chặn quyền xem Nhật ký (Timeline Feed) đối với một người bạn.                                                      |
+| [`changeFriendAlias`](#changefriendalias)                 | `GET`  | `/api/alias/update`                      | Đặt hoặc đổi tên gợi nhớ (Biệt danh / Alias) cho bạn bè.                                                                        |
+| [`clearUnreadFriendRequests`](#clearunreadfriendrequests) | `POST` | `/api/friend/recommendsv2/read-requests` | Đánh dấu đã xem danh sách lời mời kết bạn chưa đọc (command 12232)                                                              |
+| [`findUser`](#finduser)                                   | `GET`  | `/api/friend/profile/get`                | Tìm kiếm thông tin tài khoản Zalo thông qua số điện thoại.                                                                      |
+| [`findUserByUsername`](#finduserbyusername)               | `GET`  | `/api/friend/search/by-user-name`        | Tìm kiếm thông tin tài khoản Zalo thông qua Username.                                                                           |
+| [`getAliasList`](#getaliaslist)                           | `GET`  | `/api/alias/list`                        | Lấy danh sách toàn bộ tên gợi nhớ (Alias) đã đặt cho bạn bè.                                                                    |
+| [`getAliasListV2`](#getaliaslistv2)                       | `GET`  | `/api/alias/list/v2`                     | Lấy danh sách tên gợi nhớ (Alias) của bạn bè chuẩn V2 có hỗ trợ phân trang (command 12205)                                      |
+| [`getAllFriends`](#getallfriends)                         | `GET`  | `/api/social/friend/getfriends`          | Lấy toàn bộ danh sách bạn bè trong danh bạ tài khoản hiện tại.                                                                  |
+| [`getBlockFriends`](#getblockfriends)                     | `GET`  | `/api/friend/blocklistv2`                | Lấy danh sách người dùng đang bị chặn chuẩn V2 (command 11429)                                                                  |
+| [`getCloseFriends`](#getclosefriends)                     | `GET`  | `/api/social/friend/getclosedfriends`    | Lấy danh sách bạn thân (Close Friends).                                                                                         |
+| [`getExtraFriendInfo`](#getextrafriendinfo)               | `POST` | `/api/friend/context/multiget`           | Lấy ngữ cảnh và vai trò mở rộng (ví dụ `role: ["boss"]`) của danh sách bạn bè (command 11442)                                   |
+| [`getFriendBoardList`](#getfriendboardlist)               | `GET`  | `/api/friendboard/list`                  | Lấy thông tin bảng tin chung với một người bạn.                                                                                 |
+| [`getFriendOnlines`](#getfriendonlines)                   | `GET`  | `/api/social/friend/onlines`             | Lấy danh sách bạn bè đang trực tuyến (Online) kèm trạng thái thiết bị.                                                          |
+| [`getFriendProfilesV2`](#getfriendprofilesv2)             | `POST` | `/api/social/friend/getprofiles/v2`      | Lấy hàng loạt hồ sơ chi tiết của danh sách bạn bè kèm trạng thái online qua `/api/social/friend/getprofiles/v2` (command 11140) |
+| [`getFriendRecommendations`](#getfriendrecommendations)   | `GET`  | `/api/friend/recommendsv2/list`          | Lấy danh sách gợi ý kết bạn và lời mời kết bạn đã nhận.                                                                         |
+| [`getFriendRequestStatus`](#getfriendrequeststatus)       | `GET`  | `/api/friend/reqstatus`                  | Kiểm tra trạng thái quan hệ bạn bè và lời mời kết bạn với một UID.                                                              |
+| [`getFriendsActivePCWeb`](#getfriendsactivepcweb)         | `GET`  | `/api/social/friend/active-pcweb`        | Lấy danh sách bạn bè đang hoạt động trên Zalo PC / Web qua `/api/social/friend/active-pcweb` (command 12072)                    |
+| [`getFriendsEmojiStatus`](#getfriendsemojistatus)         | `GET`  | `/api/v1/emoji-status/friends`           | Lấy danh sách trạng thái Emoji (Emoji Status) hiện tại của bạn bè (command 16301)                                               |
+| [`getLastReadContactTab`](#getlastreadcontacttab)         | `GET`  | `/api/friend/last-read-contact-tab`      | Lấy dấu thời gian lần cuối đọc tab Danh bạ (command 12230)                                                                      |
+| [`getMultiUsersByPhones`](#getmultiusersbyphones)         | `GET`  | `/api/friend/profile/multiget`           | Tra cứu hàng loạt thông tin tài khoản Zalo từ danh sách nhiều số điện thoại cùng lúc.                                           |
+| [`getPhonebookV2`](#getphonebookv2)                       | `GET`  | `/api/social/friend/phonebook/v2`        | Lấy danh bạ bạn bè đồng bộ từ số điện thoại chuẩn V2 (command 12428)                                                            |
+| [`getSentFriendRequest`](#getsentfriendrequest)           | `GET`  | `/api/friend/requested/list`             | Lấy danh sách các lời mời kết bạn mà tài khoản hiện tại đã gửi đi nhưng chưa được phản hồi.                                     |
+| [`lastOnline`](#lastonline)                               | `GET`  | `/api/social/profile/lastOnline`         | Kiểm tra thời điểm truy cập (Online) gần nhất của một người dùng.                                                               |
+| [`readContactTab`](#readcontacttab)                       | `POST` | `/api/friend/read-contact-tab`           | Đánh dấu đã đọc tab Danh bạ (command 12231)                                                                                     |
+| [`rejectFriendRequest`](#rejectfriendrequest)             | `POST` | `/api/friend/reject`                     | Từ chối lời mời kết bạn từ một người dùng.                                                                                      |
+| [`removeFriend`](#removefriend)                           | `POST` | `/api/friend/remove`                     | Hủy kết bạn (Xóa bạn) với một người dùng trong danh bạ.                                                                         |
+| [`removeFriendAlias`](#removefriendalias)                 | `GET`  | `/api/alias/remove`                      | Xóa tên gợi nhớ (Biệt danh / Alias) đã đặt cho một người bạn.                                                                   |
+| [`sendFriendRequest`](#sendfriendrequest)                 | `POST` | `/api/friend/sendreq`                    | Gửi lời mời kết bạn kèm lời chào tới một người dùng theo UID.                                                                   |
+| [`unblockUser`](#unblockuser)                             | `POST` | `/api/friend/unblock`                    | Bỏ chặn tin nhắn đối với một người dùng.                                                                                        |
+| [`undoFriendRequest`](#undofriendrequest)                 | `POST` | `/api/friend/undo`                       | Thu hồi (Hủy) lời mời kết bạn đã gửi trước đó.                                                                                  |
+| [`verifyFriend`](#verifyfriend)                           | `POST` | `/api/social/friend/verify`              | Kiểm tra và xác thực danh sách bạn bè qua `/api/social/friend/verify` (command 11138)                                           |
 
 ---
 
@@ -361,9 +361,9 @@ Lấy danh sách bạn thân (Close Friends).
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.friend.getCloseFriends()
+await api.friend.getCloseFriends();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getCloseFriends()
+await api.getCloseFriends();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -435,9 +435,9 @@ Lấy danh sách bạn bè đang trực tuyến (Online) kèm trạng thái thi�
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.friend.getFriendOnlines()
+await api.friend.getFriendOnlines();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getFriendOnlines()
+await api.getFriendOnlines();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -515,9 +515,9 @@ Lấy danh sách gợi ý kết bạn và lời mời kết bạn đã nhận.
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.friend.getFriendRecommendations()
+await api.friend.getFriendRecommendations();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getFriendRecommendations()
+await api.getFriendRecommendations();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -610,9 +610,9 @@ Lấy danh sách bạn bè đang hoạt động trên Zalo PC / Web qua `/api/so
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.friend.getFriendsActivePCWeb()
+await api.friend.getFriendsActivePCWeb();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getFriendsActivePCWeb()
+await api.getFriendsActivePCWeb();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -676,9 +676,9 @@ Lấy dấu thời gian lần cuối đọc tab Danh bạ (command 12230)
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.friend.getLastReadContactTab()
+await api.friend.getLastReadContactTab();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getLastReadContactTab()
+await api.getLastReadContactTab();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -756,9 +756,9 @@ Lấy danh sách các lời mời kết bạn mà tài khoản hiện tại đã
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.friend.getSentFriendRequest()
+await api.friend.getSentFriendRequest();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getSentFriendRequest()
+await api.getSentFriendRequest();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)

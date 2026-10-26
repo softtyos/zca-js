@@ -574,20 +574,48 @@ export class API {
     public get auth(): AuthDomainAPI {
         if (!this._domains.auth) {
             const createNamespace = (api: API): AuthDomainAPI => ({
-                get decryptGids() { return api.decryptGids; },
-                get encryptGids() { return api.encryptGids; },
-                get exportSession() { return api.exportSession; },
-                get getContext() { return api.getContext; },
-                get getCookie() { return api.getCookie; },
-                get getListDevice() { return api.getListDevice; },
-                get getNoisedIds() { return api.getNoisedIds; },
-                get getOwnId() { return api.getOwnId; },
-                get getQR() { return api.getQR; },
-                get keepAlive() { return api.keepAlive; },
-                get lostFocus() { return api.lostFocus; },
-                get scanURL() { return api.scanURL; },
-                get updateActiveStatus() { return api.updateActiveStatus; },
-                get updateLang() { return api.updateLang; },
+                get decryptGids() {
+                    return api.decryptGids;
+                },
+                get encryptGids() {
+                    return api.encryptGids;
+                },
+                get exportSession() {
+                    return api.exportSession;
+                },
+                get getContext() {
+                    return api.getContext;
+                },
+                get getCookie() {
+                    return api.getCookie;
+                },
+                get getListDevice() {
+                    return api.getListDevice;
+                },
+                get getNoisedIds() {
+                    return api.getNoisedIds;
+                },
+                get getOwnId() {
+                    return api.getOwnId;
+                },
+                get getQR() {
+                    return api.getQR;
+                },
+                get keepAlive() {
+                    return api.keepAlive;
+                },
+                get lostFocus() {
+                    return api.lostFocus;
+                },
+                get scanURL() {
+                    return api.scanURL;
+                },
+                get updateActiveStatus() {
+                    return api.updateActiveStatus;
+                },
+                get updateLang() {
+                    return api.updateLang;
+                },
             });
             this._domains.auth = createNamespace(this);
         }
@@ -597,22 +625,54 @@ export class API {
     public get board(): BoardDomainAPI {
         if (!this._domains.board) {
             const createNamespace = (api: API): BoardDomainAPI => ({
-                get addPollOptions() { return api.addPollOptions; },
-                get createNote() { return api.createNote; },
-                get createPoll() { return api.createPoll; },
-                get createReminder() { return api.createReminder; },
-                get editNote() { return api.editNote; },
-                get editReminder() { return api.editReminder; },
-                get getListBoard() { return api.getListBoard; },
-                get getListPinTopics() { return api.getListPinTopics; },
-                get getListReminder() { return api.getListReminder; },
-                get getPollDetail() { return api.getPollDetail; },
-                get getReminder() { return api.getReminder; },
-                get getReminderResponses() { return api.getReminderResponses; },
-                get lockPoll() { return api.lockPoll; },
-                get removeReminder() { return api.removeReminder; },
-                get sharePoll() { return api.sharePoll; },
-                get votePoll() { return api.votePoll; },
+                get addPollOptions() {
+                    return api.addPollOptions;
+                },
+                get createNote() {
+                    return api.createNote;
+                },
+                get createPoll() {
+                    return api.createPoll;
+                },
+                get createReminder() {
+                    return api.createReminder;
+                },
+                get editNote() {
+                    return api.editNote;
+                },
+                get editReminder() {
+                    return api.editReminder;
+                },
+                get getListBoard() {
+                    return api.getListBoard;
+                },
+                get getListPinTopics() {
+                    return api.getListPinTopics;
+                },
+                get getListReminder() {
+                    return api.getListReminder;
+                },
+                get getPollDetail() {
+                    return api.getPollDetail;
+                },
+                get getReminder() {
+                    return api.getReminder;
+                },
+                get getReminderResponses() {
+                    return api.getReminderResponses;
+                },
+                get lockPoll() {
+                    return api.lockPoll;
+                },
+                get removeReminder() {
+                    return api.removeReminder;
+                },
+                get sharePoll() {
+                    return api.sharePoll;
+                },
+                get votePoll() {
+                    return api.votePoll;
+                },
             });
             this._domains.board = createNamespace(this);
         }
@@ -622,36 +682,96 @@ export class API {
     public get business(): BusinessDomainAPI {
         if (!this._domains.business) {
             const createNamespace = (api: API): BusinessDomainAPI => ({
-                get addQuickMessage() { return api.addQuickMessage; },
-                get blockOA() { return api.blockOA; },
-                get convertOAIds() { return api.convertOAIds; },
-                get createAutoReply() { return api.createAutoReply; },
-                get createBankAccount() { return api.createBankAccount; },
-                get createCatalog() { return api.createCatalog; },
-                get createProductCatalog() { return api.createProductCatalog; },
-                get deleteAutoReply() { return api.deleteAutoReply; },
-                get deleteBankAccount() { return api.deleteBankAccount; },
-                get deleteCatalog() { return api.deleteCatalog; },
-                get deleteProductCatalog() { return api.deleteProductCatalog; },
-                get getAutoReplyList() { return api.getAutoReplyList; },
-                get getBizAccount() { return api.getBizAccount; },
-                get getCatalogList() { return api.getCatalogList; },
-                get getLabels() { return api.getLabels; },
-                get getListBank() { return api.getListBank; },
-                get getListBankAccount() { return api.getListBankAccount; },
-                get getOAProfile() { return api.getOAProfile; },
-                get getProductCatalogList() { return api.getProductCatalogList; },
-                get getQuickMessageList() { return api.getQuickMessageList; },
-                get registerCatalog() { return api.registerCatalog; },
-                get removeQuickMessage() { return api.removeQuickMessage; },
-                get unblockOA() { return api.unblockOA; },
-                get updateAutoReply() { return api.updateAutoReply; },
-                get updateBankAccount() { return api.updateBankAccount; },
-                get updateCatalog() { return api.updateCatalog; },
-                get updateLabels() { return api.updateLabels; },
-                get updateProductCatalog() { return api.updateProductCatalog; },
-                get updateQuickMessage() { return api.updateQuickMessage; },
-                get uploadProductPhoto() { return api.uploadProductPhoto; },
+                get addQuickMessage() {
+                    return api.addQuickMessage;
+                },
+                get blockOA() {
+                    return api.blockOA;
+                },
+                get convertOAIds() {
+                    return api.convertOAIds;
+                },
+                get createAutoReply() {
+                    return api.createAutoReply;
+                },
+                get createBankAccount() {
+                    return api.createBankAccount;
+                },
+                get createCatalog() {
+                    return api.createCatalog;
+                },
+                get createProductCatalog() {
+                    return api.createProductCatalog;
+                },
+                get deleteAutoReply() {
+                    return api.deleteAutoReply;
+                },
+                get deleteBankAccount() {
+                    return api.deleteBankAccount;
+                },
+                get deleteCatalog() {
+                    return api.deleteCatalog;
+                },
+                get deleteProductCatalog() {
+                    return api.deleteProductCatalog;
+                },
+                get getAutoReplyList() {
+                    return api.getAutoReplyList;
+                },
+                get getBizAccount() {
+                    return api.getBizAccount;
+                },
+                get getCatalogList() {
+                    return api.getCatalogList;
+                },
+                get getLabels() {
+                    return api.getLabels;
+                },
+                get getListBank() {
+                    return api.getListBank;
+                },
+                get getListBankAccount() {
+                    return api.getListBankAccount;
+                },
+                get getOAProfile() {
+                    return api.getOAProfile;
+                },
+                get getProductCatalogList() {
+                    return api.getProductCatalogList;
+                },
+                get getQuickMessageList() {
+                    return api.getQuickMessageList;
+                },
+                get registerCatalog() {
+                    return api.registerCatalog;
+                },
+                get removeQuickMessage() {
+                    return api.removeQuickMessage;
+                },
+                get unblockOA() {
+                    return api.unblockOA;
+                },
+                get updateAutoReply() {
+                    return api.updateAutoReply;
+                },
+                get updateBankAccount() {
+                    return api.updateBankAccount;
+                },
+                get updateCatalog() {
+                    return api.updateCatalog;
+                },
+                get updateLabels() {
+                    return api.updateLabels;
+                },
+                get updateProductCatalog() {
+                    return api.updateProductCatalog;
+                },
+                get updateQuickMessage() {
+                    return api.updateQuickMessage;
+                },
+                get uploadProductPhoto() {
+                    return api.uploadProductPhoto;
+                },
             });
             this._domains.business = createNamespace(this);
         }
@@ -661,36 +781,96 @@ export class API {
     public get call(): CallDomainAPI {
         if (!this._domains.call) {
             const createNamespace = (api: API): CallDomainAPI => ({
-                get addUserGroupCall() { return api.addUserGroupCall; },
-                get answerAckVoiceCall() { return api.answerAckVoiceCall; },
-                get answerGroupCall() { return api.answerGroupCall; },
-                get answerVoiceCall() { return api.answerVoiceCall; },
-                get broadcastGroupCallState() { return api.broadcastGroupCallState; },
-                get cancelGroupCall() { return api.cancelGroupCall; },
-                get cancelVoiceCall() { return api.cancelVoiceCall; },
-                get createController() { return api.createController; },
-                get createRtcSession() { return api.createRtcSession; },
-                get endGroupCall() { return api.endGroupCall; },
-                get endVoiceCall() { return api.endVoiceCall; },
-                get finishGroupCall() { return api.finishGroupCall; },
-                get getGroupCallState() { return api.getGroupCallState; },
-                get holdVoiceCall() { return api.holdVoiceCall; },
-                get joinGroupCall() { return api.joinGroupCall; },
-                get logEndVoiceCall() { return api.logEndVoiceCall; },
-                get notifyGroupCall() { return api.notifyGroupCall; },
-                get pingGroupCall() { return api.pingGroupCall; },
-                get requestAudioToVideoCall() { return api.requestAudioToVideoCall; },
-                get requestGroupCall() { return api.requestGroupCall; },
-                get requestShareScreenCall() { return api.requestShareScreenCall; },
-                get requestVoiceCall() { return api.requestVoiceCall; },
-                get ringRingGroupCall() { return api.ringRingGroupCall; },
-                get ringRingVoiceCall() { return api.ringRingVoiceCall; },
-                get sendRequestGroupCall() { return api.sendRequestGroupCall; },
-                get sendRequestVoiceCall() { return api.sendRequestVoiceCall; },
-                get sendVoiceCall() { return api.sendVoiceCall; },
-                get shareScreenGroupCall() { return api.shareScreenGroupCall; },
-                get unholdVoiceCall() { return api.unholdVoiceCall; },
-                get updateCallMediaState() { return api.updateCallMediaState; },
+                get addUserGroupCall() {
+                    return api.addUserGroupCall;
+                },
+                get answerAckVoiceCall() {
+                    return api.answerAckVoiceCall;
+                },
+                get answerGroupCall() {
+                    return api.answerGroupCall;
+                },
+                get answerVoiceCall() {
+                    return api.answerVoiceCall;
+                },
+                get broadcastGroupCallState() {
+                    return api.broadcastGroupCallState;
+                },
+                get cancelGroupCall() {
+                    return api.cancelGroupCall;
+                },
+                get cancelVoiceCall() {
+                    return api.cancelVoiceCall;
+                },
+                get createController() {
+                    return api.createController;
+                },
+                get createRtcSession() {
+                    return api.createRtcSession;
+                },
+                get endGroupCall() {
+                    return api.endGroupCall;
+                },
+                get endVoiceCall() {
+                    return api.endVoiceCall;
+                },
+                get finishGroupCall() {
+                    return api.finishGroupCall;
+                },
+                get getGroupCallState() {
+                    return api.getGroupCallState;
+                },
+                get holdVoiceCall() {
+                    return api.holdVoiceCall;
+                },
+                get joinGroupCall() {
+                    return api.joinGroupCall;
+                },
+                get logEndVoiceCall() {
+                    return api.logEndVoiceCall;
+                },
+                get notifyGroupCall() {
+                    return api.notifyGroupCall;
+                },
+                get pingGroupCall() {
+                    return api.pingGroupCall;
+                },
+                get requestAudioToVideoCall() {
+                    return api.requestAudioToVideoCall;
+                },
+                get requestGroupCall() {
+                    return api.requestGroupCall;
+                },
+                get requestShareScreenCall() {
+                    return api.requestShareScreenCall;
+                },
+                get requestVoiceCall() {
+                    return api.requestVoiceCall;
+                },
+                get ringRingGroupCall() {
+                    return api.ringRingGroupCall;
+                },
+                get ringRingVoiceCall() {
+                    return api.ringRingVoiceCall;
+                },
+                get sendRequestGroupCall() {
+                    return api.sendRequestGroupCall;
+                },
+                get sendRequestVoiceCall() {
+                    return api.sendRequestVoiceCall;
+                },
+                get sendVoiceCall() {
+                    return api.sendVoiceCall;
+                },
+                get shareScreenGroupCall() {
+                    return api.shareScreenGroupCall;
+                },
+                get unholdVoiceCall() {
+                    return api.unholdVoiceCall;
+                },
+                get updateCallMediaState() {
+                    return api.updateCallMediaState;
+                },
             });
             this._domains.call = createNamespace(this);
         }
@@ -700,47 +880,129 @@ export class API {
     public get chat(): ChatDomainAPI {
         if (!this._domains.chat) {
             const createNamespace = (api: API): ChatDomainAPI => ({
-                get addReaction() { return api.addReaction; },
-                get addUnreadMark() { return api.addUnreadMark; },
-                get deleteChat() { return api.deleteChat; },
-                get deleteMessage() { return api.deleteMessage; },
-                get forwardMessage() { return api.forwardMessage; },
-                get getArchivedChatList() { return api.getArchivedChatList; },
-                get getAutoDeleteChat() { return api.getAutoDeleteChat; },
-                get getDirectMessageStatus() { return api.getDirectMessageStatus; },
-                get getHiddenConversations() { return api.getHiddenConversations; },
-                get getLastSeen() { return api.getLastSeen; },
-                get getLastSeenReaction() { return api.getLastSeenReaction; },
-                get getMute() { return api.getMute; },
-                get getPinConversations() { return api.getPinConversations; },
-                get getRecentSearchList() { return api.getRecentSearchList; },
-                get getSuggestedConversations() { return api.getSuggestedConversations; },
-                get getUnreadMark() { return api.getUnreadMark; },
-                get parseLink() { return api.parseLink; },
-                get preloadConversations() { return api.preloadConversations; },
-                get removeUnreadMark() { return api.removeUnreadMark; },
-                get resetHiddenConversPin() { return api.resetHiddenConversPin; },
-                get sendBankCard() { return api.sendBankCard; },
-                get sendCard() { return api.sendCard; },
-                get sendDeliveredEvent() { return api.sendDeliveredEvent; },
-                get sendLink() { return api.sendLink; },
-                get sendMessage() { return api.sendMessage; },
-                get sendReport() { return api.sendReport; },
-                get sendSeenEvent() { return api.sendSeenEvent; },
-                get sendSticker() { return api.sendSticker; },
-                get sendTypingEvent() { return api.sendTypingEvent; },
-                get sendVideo() { return api.sendVideo; },
-                get sendVoice() { return api.sendVoice; },
-                get setHiddenConversations() { return api.setHiddenConversations; },
-                get setMute() { return api.setMute; },
-                get setPinnedConversations() { return api.setPinnedConversations; },
-                get undo() { return api.undo; },
-                get undoMultiMessage() { return api.undoMultiMessage; },
-                get updateArchivedChatList() { return api.updateArchivedChatList; },
-                get updateAutoDeleteChat() { return api.updateAutoDeleteChat; },
-                get updateHiddenConversPin() { return api.updateHiddenConversPin; },
-                get updatePinConversations() { return api.updatePinConversations; },
-                get updateRecentSearch() { return api.updateRecentSearch; },
+                get addReaction() {
+                    return api.addReaction;
+                },
+                get addUnreadMark() {
+                    return api.addUnreadMark;
+                },
+                get deleteChat() {
+                    return api.deleteChat;
+                },
+                get deleteMessage() {
+                    return api.deleteMessage;
+                },
+                get forwardMessage() {
+                    return api.forwardMessage;
+                },
+                get getArchivedChatList() {
+                    return api.getArchivedChatList;
+                },
+                get getAutoDeleteChat() {
+                    return api.getAutoDeleteChat;
+                },
+                get getDirectMessageStatus() {
+                    return api.getDirectMessageStatus;
+                },
+                get getHiddenConversations() {
+                    return api.getHiddenConversations;
+                },
+                get getLastSeen() {
+                    return api.getLastSeen;
+                },
+                get getLastSeenReaction() {
+                    return api.getLastSeenReaction;
+                },
+                get getMute() {
+                    return api.getMute;
+                },
+                get getPinConversations() {
+                    return api.getPinConversations;
+                },
+                get getRecentSearchList() {
+                    return api.getRecentSearchList;
+                },
+                get getSuggestedConversations() {
+                    return api.getSuggestedConversations;
+                },
+                get getUnreadMark() {
+                    return api.getUnreadMark;
+                },
+                get parseLink() {
+                    return api.parseLink;
+                },
+                get preloadConversations() {
+                    return api.preloadConversations;
+                },
+                get removeUnreadMark() {
+                    return api.removeUnreadMark;
+                },
+                get resetHiddenConversPin() {
+                    return api.resetHiddenConversPin;
+                },
+                get sendBankCard() {
+                    return api.sendBankCard;
+                },
+                get sendCard() {
+                    return api.sendCard;
+                },
+                get sendDeliveredEvent() {
+                    return api.sendDeliveredEvent;
+                },
+                get sendLink() {
+                    return api.sendLink;
+                },
+                get sendMessage() {
+                    return api.sendMessage;
+                },
+                get sendReport() {
+                    return api.sendReport;
+                },
+                get sendSeenEvent() {
+                    return api.sendSeenEvent;
+                },
+                get sendSticker() {
+                    return api.sendSticker;
+                },
+                get sendTypingEvent() {
+                    return api.sendTypingEvent;
+                },
+                get sendVideo() {
+                    return api.sendVideo;
+                },
+                get sendVoice() {
+                    return api.sendVoice;
+                },
+                get setHiddenConversations() {
+                    return api.setHiddenConversations;
+                },
+                get setMute() {
+                    return api.setMute;
+                },
+                get setPinnedConversations() {
+                    return api.setPinnedConversations;
+                },
+                get undo() {
+                    return api.undo;
+                },
+                get undoMultiMessage() {
+                    return api.undoMultiMessage;
+                },
+                get updateArchivedChatList() {
+                    return api.updateArchivedChatList;
+                },
+                get updateAutoDeleteChat() {
+                    return api.updateAutoDeleteChat;
+                },
+                get updateHiddenConversPin() {
+                    return api.updateHiddenConversPin;
+                },
+                get updatePinConversations() {
+                    return api.updatePinConversations;
+                },
+                get updateRecentSearch() {
+                    return api.updateRecentSearch;
+                },
             });
             this._domains.chat = createNamespace(this);
         }
@@ -750,39 +1012,105 @@ export class API {
     public get friend(): FriendDomainAPI {
         if (!this._domains.friend) {
             const createNamespace = (api: API): FriendDomainAPI => ({
-                get acceptFriendRequest() { return api.acceptFriendRequest; },
-                get blockUser() { return api.blockUser; },
-                get blockViewFeed() { return api.blockViewFeed; },
-                get changeFriendAlias() { return api.changeFriendAlias; },
-                get clearUnreadFriendRequests() { return api.clearUnreadFriendRequests; },
-                get findUser() { return api.findUser; },
-                get findUserByUsername() { return api.findUserByUsername; },
-                get getAliasList() { return api.getAliasList; },
-                get getAliasListV2() { return api.getAliasListV2; },
-                get getAllFriends() { return api.getAllFriends; },
-                get getBlockFriends() { return api.getBlockFriends; },
-                get getCloseFriends() { return api.getCloseFriends; },
-                get getExtraFriendInfo() { return api.getExtraFriendInfo; },
-                get getFriendBoardList() { return api.getFriendBoardList; },
-                get getFriendOnlines() { return api.getFriendOnlines; },
-                get getFriendProfilesV2() { return api.getFriendProfilesV2; },
-                get getFriendRecommendations() { return api.getFriendRecommendations; },
-                get getFriendRequestStatus() { return api.getFriendRequestStatus; },
-                get getFriendsActivePCWeb() { return api.getFriendsActivePCWeb; },
-                get getFriendsEmojiStatus() { return api.getFriendsEmojiStatus; },
-                get getLastReadContactTab() { return api.getLastReadContactTab; },
-                get getMultiUsersByPhones() { return api.getMultiUsersByPhones; },
-                get getPhonebookV2() { return api.getPhonebookV2; },
-                get getSentFriendRequest() { return api.getSentFriendRequest; },
-                get lastOnline() { return api.lastOnline; },
-                get readContactTab() { return api.readContactTab; },
-                get rejectFriendRequest() { return api.rejectFriendRequest; },
-                get removeFriend() { return api.removeFriend; },
-                get removeFriendAlias() { return api.removeFriendAlias; },
-                get sendFriendRequest() { return api.sendFriendRequest; },
-                get unblockUser() { return api.unblockUser; },
-                get undoFriendRequest() { return api.undoFriendRequest; },
-                get verifyFriend() { return api.verifyFriend; },
+                get acceptFriendRequest() {
+                    return api.acceptFriendRequest;
+                },
+                get blockUser() {
+                    return api.blockUser;
+                },
+                get blockViewFeed() {
+                    return api.blockViewFeed;
+                },
+                get changeFriendAlias() {
+                    return api.changeFriendAlias;
+                },
+                get clearUnreadFriendRequests() {
+                    return api.clearUnreadFriendRequests;
+                },
+                get findUser() {
+                    return api.findUser;
+                },
+                get findUserByUsername() {
+                    return api.findUserByUsername;
+                },
+                get getAliasList() {
+                    return api.getAliasList;
+                },
+                get getAliasListV2() {
+                    return api.getAliasListV2;
+                },
+                get getAllFriends() {
+                    return api.getAllFriends;
+                },
+                get getBlockFriends() {
+                    return api.getBlockFriends;
+                },
+                get getCloseFriends() {
+                    return api.getCloseFriends;
+                },
+                get getExtraFriendInfo() {
+                    return api.getExtraFriendInfo;
+                },
+                get getFriendBoardList() {
+                    return api.getFriendBoardList;
+                },
+                get getFriendOnlines() {
+                    return api.getFriendOnlines;
+                },
+                get getFriendProfilesV2() {
+                    return api.getFriendProfilesV2;
+                },
+                get getFriendRecommendations() {
+                    return api.getFriendRecommendations;
+                },
+                get getFriendRequestStatus() {
+                    return api.getFriendRequestStatus;
+                },
+                get getFriendsActivePCWeb() {
+                    return api.getFriendsActivePCWeb;
+                },
+                get getFriendsEmojiStatus() {
+                    return api.getFriendsEmojiStatus;
+                },
+                get getLastReadContactTab() {
+                    return api.getLastReadContactTab;
+                },
+                get getMultiUsersByPhones() {
+                    return api.getMultiUsersByPhones;
+                },
+                get getPhonebookV2() {
+                    return api.getPhonebookV2;
+                },
+                get getSentFriendRequest() {
+                    return api.getSentFriendRequest;
+                },
+                get lastOnline() {
+                    return api.lastOnline;
+                },
+                get readContactTab() {
+                    return api.readContactTab;
+                },
+                get rejectFriendRequest() {
+                    return api.rejectFriendRequest;
+                },
+                get removeFriend() {
+                    return api.removeFriend;
+                },
+                get removeFriendAlias() {
+                    return api.removeFriendAlias;
+                },
+                get sendFriendRequest() {
+                    return api.sendFriendRequest;
+                },
+                get unblockUser() {
+                    return api.unblockUser;
+                },
+                get undoFriendRequest() {
+                    return api.undoFriendRequest;
+                },
+                get verifyFriend() {
+                    return api.verifyFriend;
+                },
             });
             this._domains.friend = createNamespace(this);
         }
@@ -792,50 +1120,138 @@ export class API {
     public get group(): GroupDomainAPI {
         if (!this._domains.group) {
             const createNamespace = (api: API): GroupDomainAPI => ({
-                get addGroupBlockedMember() { return api.addGroupBlockedMember; },
-                get addGroupDeputy() { return api.addGroupDeputy; },
-                get addUserToGroup() { return api.addUserToGroup; },
-                get analyseGroup() { return api.analyseGroup; },
-                get changeGroupAvatar() { return api.changeGroupAvatar; },
-                get changeGroupName() { return api.changeGroupName; },
-                get changeGroupOwner() { return api.changeGroupOwner; },
-                get checkQuotaCommunityMember() { return api.checkQuotaCommunityMember; },
-                get createGroup() { return api.createGroup; },
-                get deleteGroupInviteBox() { return api.deleteGroupInviteBox; },
-                get disableGroupLink() { return api.disableGroupLink; },
-                get disperseGroup() { return api.disperseGroup; },
-                get enableGroupLink() { return api.enableGroupLink; },
-                get getAllGroups() { return api.getAllGroups; },
-                get getE2eeGroupList() { return api.getE2eeGroupList; },
-                get getExtraGroupInfo() { return api.getExtraGroupInfo; },
-                get getGroupBlockedMember() { return api.getGroupBlockedMember; },
-                get getGroupChatHistory() { return api.getGroupChatHistory; },
-                get getGroupCloudMessageJump() { return api.getGroupCloudMessageJump; },
-                get getGroupCloudMessagePath() { return api.getGroupCloudMessagePath; },
-                get getGroupHistoryLegacy() { return api.getGroupHistoryLegacy; },
-                get getGroupInfo() { return api.getGroupInfo; },
-                get getGroupInfoV2() { return api.getGroupInfoV2; },
-                get getGroupInviteBoxInfo() { return api.getGroupInviteBoxInfo; },
-                get getGroupInviteBoxList() { return api.getGroupInviteBoxList; },
-                get getGroupLinkDetail() { return api.getGroupLinkDetail; },
-                get getGroupLinkInfo() { return api.getGroupLinkInfo; },
-                get getGroupListV3() { return api.getGroupListV3; },
-                get getGroupMembersInfo() { return api.getGroupMembersInfo; },
-                get getGroupMessageStatus() { return api.getGroupMessageStatus; },
-                get getMultiGroupCloudMessages() { return api.getMultiGroupCloudMessages; },
-                get getPendingGroupMembers() { return api.getPendingGroupMembers; },
-                get getQuotaCommunity() { return api.getQuotaCommunity; },
-                get getRelatedFriendGroup() { return api.getRelatedFriendGroup; },
-                get inviteUserToGroups() { return api.inviteUserToGroups; },
-                get joinGroupInviteBox() { return api.joinGroupInviteBox; },
-                get joinGroupLink() { return api.joinGroupLink; },
-                get leaveGroup() { return api.leaveGroup; },
-                get removeGroupBlockedMember() { return api.removeGroupBlockedMember; },
-                get removeGroupDeputy() { return api.removeGroupDeputy; },
-                get removeUserFromGroup() { return api.removeUserFromGroup; },
-                get reviewPendingMemberRequest() { return api.reviewPendingMemberRequest; },
-                get updateGroupSettings() { return api.updateGroupSettings; },
-                get upgradeGroupToCommunity() { return api.upgradeGroupToCommunity; },
+                get addGroupBlockedMember() {
+                    return api.addGroupBlockedMember;
+                },
+                get addGroupDeputy() {
+                    return api.addGroupDeputy;
+                },
+                get addUserToGroup() {
+                    return api.addUserToGroup;
+                },
+                get analyseGroup() {
+                    return api.analyseGroup;
+                },
+                get changeGroupAvatar() {
+                    return api.changeGroupAvatar;
+                },
+                get changeGroupName() {
+                    return api.changeGroupName;
+                },
+                get changeGroupOwner() {
+                    return api.changeGroupOwner;
+                },
+                get checkQuotaCommunityMember() {
+                    return api.checkQuotaCommunityMember;
+                },
+                get createGroup() {
+                    return api.createGroup;
+                },
+                get deleteGroupInviteBox() {
+                    return api.deleteGroupInviteBox;
+                },
+                get disableGroupLink() {
+                    return api.disableGroupLink;
+                },
+                get disperseGroup() {
+                    return api.disperseGroup;
+                },
+                get enableGroupLink() {
+                    return api.enableGroupLink;
+                },
+                get getAllGroups() {
+                    return api.getAllGroups;
+                },
+                get getE2eeGroupList() {
+                    return api.getE2eeGroupList;
+                },
+                get getExtraGroupInfo() {
+                    return api.getExtraGroupInfo;
+                },
+                get getGroupBlockedMember() {
+                    return api.getGroupBlockedMember;
+                },
+                get getGroupChatHistory() {
+                    return api.getGroupChatHistory;
+                },
+                get getGroupCloudMessageJump() {
+                    return api.getGroupCloudMessageJump;
+                },
+                get getGroupCloudMessagePath() {
+                    return api.getGroupCloudMessagePath;
+                },
+                get getGroupHistoryLegacy() {
+                    return api.getGroupHistoryLegacy;
+                },
+                get getGroupInfo() {
+                    return api.getGroupInfo;
+                },
+                get getGroupInfoV2() {
+                    return api.getGroupInfoV2;
+                },
+                get getGroupInviteBoxInfo() {
+                    return api.getGroupInviteBoxInfo;
+                },
+                get getGroupInviteBoxList() {
+                    return api.getGroupInviteBoxList;
+                },
+                get getGroupLinkDetail() {
+                    return api.getGroupLinkDetail;
+                },
+                get getGroupLinkInfo() {
+                    return api.getGroupLinkInfo;
+                },
+                get getGroupListV3() {
+                    return api.getGroupListV3;
+                },
+                get getGroupMembersInfo() {
+                    return api.getGroupMembersInfo;
+                },
+                get getGroupMessageStatus() {
+                    return api.getGroupMessageStatus;
+                },
+                get getMultiGroupCloudMessages() {
+                    return api.getMultiGroupCloudMessages;
+                },
+                get getPendingGroupMembers() {
+                    return api.getPendingGroupMembers;
+                },
+                get getQuotaCommunity() {
+                    return api.getQuotaCommunity;
+                },
+                get getRelatedFriendGroup() {
+                    return api.getRelatedFriendGroup;
+                },
+                get inviteUserToGroups() {
+                    return api.inviteUserToGroups;
+                },
+                get joinGroupInviteBox() {
+                    return api.joinGroupInviteBox;
+                },
+                get joinGroupLink() {
+                    return api.joinGroupLink;
+                },
+                get leaveGroup() {
+                    return api.leaveGroup;
+                },
+                get removeGroupBlockedMember() {
+                    return api.removeGroupBlockedMember;
+                },
+                get removeGroupDeputy() {
+                    return api.removeGroupDeputy;
+                },
+                get removeUserFromGroup() {
+                    return api.removeUserFromGroup;
+                },
+                get reviewPendingMemberRequest() {
+                    return api.reviewPendingMemberRequest;
+                },
+                get updateGroupSettings() {
+                    return api.updateGroupSettings;
+                },
+                get upgradeGroupToCommunity() {
+                    return api.upgradeGroupToCommunity;
+                },
             });
             this._domains.group = createNamespace(this);
         }
@@ -845,14 +1261,30 @@ export class API {
     public get media(): MediaDomainAPI {
         if (!this._domains.media) {
             const createNamespace = (api: API): MediaDomainAPI => ({
-                get getConversationMedia() { return api.getConversationMedia; },
-                get getMediaStorePreview() { return api.getMediaStorePreview; },
-                get getPersonalMedia() { return api.getPersonalMedia; },
-                get getPersonalMediaPreview() { return api.getPersonalMediaPreview; },
-                get removeConversationMedia() { return api.removeConversationMedia; },
-                get removePersonalMedia() { return api.removePersonalMedia; },
-                get uploadAttachment() { return api.uploadAttachment; },
-                get voiceToText() { return api.voiceToText; },
+                get getConversationMedia() {
+                    return api.getConversationMedia;
+                },
+                get getMediaStorePreview() {
+                    return api.getMediaStorePreview;
+                },
+                get getPersonalMedia() {
+                    return api.getPersonalMedia;
+                },
+                get getPersonalMediaPreview() {
+                    return api.getPersonalMediaPreview;
+                },
+                get removeConversationMedia() {
+                    return api.removeConversationMedia;
+                },
+                get removePersonalMedia() {
+                    return api.removePersonalMedia;
+                },
+                get uploadAttachment() {
+                    return api.uploadAttachment;
+                },
+                get voiceToText() {
+                    return api.voiceToText;
+                },
             });
             this._domains.media = createNamespace(this);
         }
@@ -862,22 +1294,54 @@ export class API {
     public get profile(): ProfileDomainAPI {
         if (!this._domains.profile) {
             const createNamespace = (api: API): ProfileDomainAPI => ({
-                get changeAccountAvatar() { return api.changeAccountAvatar; },
-                get deleteAvatar() { return api.deleteAvatar; },
-                get fetchAccountInfo() { return api.fetchAccountInfo; },
-                get getAvatarList() { return api.getAvatarList; },
-                get getAvatarUrlProfile() { return api.getAvatarUrlProfile; },
-                get getEmojiStatusConfig() { return api.getEmojiStatusConfig; },
-                get getFullAvatar() { return api.getFullAvatar; },
-                get getMiniProfile() { return api.getMiniProfile; },
-                get getProfileRank() { return api.getProfileRank; },
-                get getProfileVerificationStatus() { return api.getProfileVerificationStatus; },
-                get getSettings() { return api.getSettings; },
-                get getUserInfo() { return api.getUserInfo; },
-                get reuseAvatar() { return api.reuseAvatar; },
-                get updateProfile() { return api.updateProfile; },
-                get updateProfileBio() { return api.updateProfileBio; },
-                get updateSettings() { return api.updateSettings; },
+                get changeAccountAvatar() {
+                    return api.changeAccountAvatar;
+                },
+                get deleteAvatar() {
+                    return api.deleteAvatar;
+                },
+                get fetchAccountInfo() {
+                    return api.fetchAccountInfo;
+                },
+                get getAvatarList() {
+                    return api.getAvatarList;
+                },
+                get getAvatarUrlProfile() {
+                    return api.getAvatarUrlProfile;
+                },
+                get getEmojiStatusConfig() {
+                    return api.getEmojiStatusConfig;
+                },
+                get getFullAvatar() {
+                    return api.getFullAvatar;
+                },
+                get getMiniProfile() {
+                    return api.getMiniProfile;
+                },
+                get getProfileRank() {
+                    return api.getProfileRank;
+                },
+                get getProfileVerificationStatus() {
+                    return api.getProfileVerificationStatus;
+                },
+                get getSettings() {
+                    return api.getSettings;
+                },
+                get getUserInfo() {
+                    return api.getUserInfo;
+                },
+                get reuseAvatar() {
+                    return api.reuseAvatar;
+                },
+                get updateProfile() {
+                    return api.updateProfile;
+                },
+                get updateProfileBio() {
+                    return api.updateProfileBio;
+                },
+                get updateSettings() {
+                    return api.updateSettings;
+                },
             });
             this._domains.profile = createNamespace(this);
         }
@@ -887,16 +1351,36 @@ export class API {
     public get sticker(): StickerDomainAPI {
         if (!this._domains.sticker) {
             const createNamespace = (api: API): StickerDomainAPI => ({
-                get getPersonalizedStickerList() { return api.getPersonalizedStickerList; },
-                get getStickerCategoriesV2() { return api.getStickerCategoriesV2; },
-                get getStickerCategoryData() { return api.getStickerCategoryData; },
-                get getStickerCategoryDetail() { return api.getStickerCategoryDetail; },
-                get getStickerHello() { return api.getStickerHello; },
-                get getStickers() { return api.getStickers; },
-                get getStickersDetail() { return api.getStickersDetail; },
-                get getStickerSuggestion() { return api.getStickerSuggestion; },
-                get getStickerSuggestKeywords() { return api.getStickerSuggestKeywords; },
-                get searchSticker() { return api.searchSticker; },
+                get getPersonalizedStickerList() {
+                    return api.getPersonalizedStickerList;
+                },
+                get getStickerCategoriesV2() {
+                    return api.getStickerCategoriesV2;
+                },
+                get getStickerCategoryData() {
+                    return api.getStickerCategoryData;
+                },
+                get getStickerCategoryDetail() {
+                    return api.getStickerCategoryDetail;
+                },
+                get getStickerHello() {
+                    return api.getStickerHello;
+                },
+                get getStickers() {
+                    return api.getStickers;
+                },
+                get getStickersDetail() {
+                    return api.getStickersDetail;
+                },
+                get getStickerSuggestion() {
+                    return api.getStickerSuggestion;
+                },
+                get getStickerSuggestKeywords() {
+                    return api.getStickerSuggestKeywords;
+                },
+                get searchSticker() {
+                    return api.searchSticker;
+                },
             });
             this._domains.sticker = createNamespace(this);
         }
@@ -906,11 +1390,21 @@ export class API {
     public get sync(): SyncDomainAPI {
         if (!this._domains.sync) {
             const createNamespace = (api: API): SyncDomainAPI => ({
-                get cancelPullMobile() { return api.cancelPullMobile; },
-                get downloadTransferSync() { return api.downloadTransferSync; },
-                get getSyncData() { return api.getSyncData; },
-                get pullMobile() { return api.pullMobile; },
-                get requestSyncFromPhone() { return api.requestSyncFromPhone; },
+                get cancelPullMobile() {
+                    return api.cancelPullMobile;
+                },
+                get downloadTransferSync() {
+                    return api.downloadTransferSync;
+                },
+                get getSyncData() {
+                    return api.getSyncData;
+                },
+                get pullMobile() {
+                    return api.pullMobile;
+                },
+                get requestSyncFromPhone() {
+                    return api.requestSyncFromPhone;
+                },
             });
             this._domains.sync = createNamespace(this);
         }
@@ -920,15 +1414,33 @@ export class API {
     public get zcloud(): ZcloudDomainAPI {
         if (!this._domains.zcloud) {
             const createNamespace = (api: API): ZcloudDomainAPI => ({
-                get getCloudInfo() { return api.getCloudInfo; },
-                get getCloudSettings() { return api.getCloudSettings; },
-                get getCloudViewerKey() { return api.getCloudViewerKey; },
-                get getFamilyProfile() { return api.getFamilyProfile; },
-                get getFamilyUsage() { return api.getFamilyUsage; },
-                get getFamilyViewerKey() { return api.getFamilyViewerKey; },
-                get getUsageMyCloud() { return api.getUsageMyCloud; },
-                get getUsageZCloud() { return api.getUsageZCloud; },
-                get verifyCloudMedia() { return api.verifyCloudMedia; },
+                get getCloudInfo() {
+                    return api.getCloudInfo;
+                },
+                get getCloudSettings() {
+                    return api.getCloudSettings;
+                },
+                get getCloudViewerKey() {
+                    return api.getCloudViewerKey;
+                },
+                get getFamilyProfile() {
+                    return api.getFamilyProfile;
+                },
+                get getFamilyUsage() {
+                    return api.getFamilyUsage;
+                },
+                get getFamilyViewerKey() {
+                    return api.getFamilyViewerKey;
+                },
+                get getUsageMyCloud() {
+                    return api.getUsageMyCloud;
+                },
+                get getUsageZCloud() {
+                    return api.getUsageZCloud;
+                },
+                get verifyCloudMedia() {
+                    return api.verifyCloudMedia;
+                },
             });
             this._domains.zcloud = createNamespace(this);
         }
@@ -940,55 +1452,81 @@ export class API {
     // =========================================================================
 
     public get acceptFriendRequest(): ReturnType<typeof acceptFriendRequestFactory> {
-        return (this._cache.acceptFriendRequest ??= acceptFriendRequestFactory(this.ctx, this)) as ReturnType<typeof acceptFriendRequestFactory>;
+        return (this._cache.acceptFriendRequest ??= acceptFriendRequestFactory(this.ctx, this)) as ReturnType<
+            typeof acceptFriendRequestFactory
+        >;
     }
 
     public get addGroupBlockedMember(): ReturnType<typeof addGroupBlockedMemberFactory> {
-        return (this._cache.addGroupBlockedMember ??= addGroupBlockedMemberFactory(this.ctx, this)) as ReturnType<typeof addGroupBlockedMemberFactory>;
+        return (this._cache.addGroupBlockedMember ??= addGroupBlockedMemberFactory(this.ctx, this)) as ReturnType<
+            typeof addGroupBlockedMemberFactory
+        >;
     }
 
     public get addGroupDeputy(): ReturnType<typeof addGroupDeputyFactory> {
-        return (this._cache.addGroupDeputy ??= addGroupDeputyFactory(this.ctx, this)) as ReturnType<typeof addGroupDeputyFactory>;
+        return (this._cache.addGroupDeputy ??= addGroupDeputyFactory(this.ctx, this)) as ReturnType<
+            typeof addGroupDeputyFactory
+        >;
     }
 
     public get addPollOptions(): ReturnType<typeof addPollOptionsFactory> {
-        return (this._cache.addPollOptions ??= addPollOptionsFactory(this.ctx, this)) as ReturnType<typeof addPollOptionsFactory>;
+        return (this._cache.addPollOptions ??= addPollOptionsFactory(this.ctx, this)) as ReturnType<
+            typeof addPollOptionsFactory
+        >;
     }
 
     public get addQuickMessage(): ReturnType<typeof addQuickMessageFactory> {
-        return (this._cache.addQuickMessage ??= addQuickMessageFactory(this.ctx, this)) as ReturnType<typeof addQuickMessageFactory>;
+        return (this._cache.addQuickMessage ??= addQuickMessageFactory(this.ctx, this)) as ReturnType<
+            typeof addQuickMessageFactory
+        >;
     }
 
     public get addReaction(): ReturnType<typeof addReactionFactory> {
-        return (this._cache.addReaction ??= addReactionFactory(this.ctx, this)) as ReturnType<typeof addReactionFactory>;
+        return (this._cache.addReaction ??= addReactionFactory(this.ctx, this)) as ReturnType<
+            typeof addReactionFactory
+        >;
     }
 
     public get addUnreadMark(): ReturnType<typeof addUnreadMarkFactory> {
-        return (this._cache.addUnreadMark ??= addUnreadMarkFactory(this.ctx, this)) as ReturnType<typeof addUnreadMarkFactory>;
+        return (this._cache.addUnreadMark ??= addUnreadMarkFactory(this.ctx, this)) as ReturnType<
+            typeof addUnreadMarkFactory
+        >;
     }
 
     public get addUserGroupCall(): ReturnType<typeof addUserGroupCallFactory> {
-        return (this._cache.addUserGroupCall ??= addUserGroupCallFactory(this.ctx, this)) as ReturnType<typeof addUserGroupCallFactory>;
+        return (this._cache.addUserGroupCall ??= addUserGroupCallFactory(this.ctx, this)) as ReturnType<
+            typeof addUserGroupCallFactory
+        >;
     }
 
     public get addUserToGroup(): ReturnType<typeof addUserToGroupFactory> {
-        return (this._cache.addUserToGroup ??= addUserToGroupFactory(this.ctx, this)) as ReturnType<typeof addUserToGroupFactory>;
+        return (this._cache.addUserToGroup ??= addUserToGroupFactory(this.ctx, this)) as ReturnType<
+            typeof addUserToGroupFactory
+        >;
     }
 
     public get analyseGroup(): ReturnType<typeof analyseGroupFactory> {
-        return (this._cache.analyseGroup ??= analyseGroupFactory(this.ctx, this)) as ReturnType<typeof analyseGroupFactory>;
+        return (this._cache.analyseGroup ??= analyseGroupFactory(this.ctx, this)) as ReturnType<
+            typeof analyseGroupFactory
+        >;
     }
 
     public get answerAckVoiceCall(): ReturnType<typeof answerAckVoiceCallFactory> {
-        return (this._cache.answerAckVoiceCall ??= answerAckVoiceCallFactory(this.ctx, this)) as ReturnType<typeof answerAckVoiceCallFactory>;
+        return (this._cache.answerAckVoiceCall ??= answerAckVoiceCallFactory(this.ctx, this)) as ReturnType<
+            typeof answerAckVoiceCallFactory
+        >;
     }
 
     public get answerGroupCall(): ReturnType<typeof answerGroupCallFactory> {
-        return (this._cache.answerGroupCall ??= answerGroupCallFactory(this.ctx, this)) as ReturnType<typeof answerGroupCallFactory>;
+        return (this._cache.answerGroupCall ??= answerGroupCallFactory(this.ctx, this)) as ReturnType<
+            typeof answerGroupCallFactory
+        >;
     }
 
     public get answerVoiceCall(): ReturnType<typeof answerVoiceCallFactory> {
-        return (this._cache.answerVoiceCall ??= answerVoiceCallFactory(this.ctx, this)) as ReturnType<typeof answerVoiceCallFactory>;
+        return (this._cache.answerVoiceCall ??= answerVoiceCallFactory(this.ctx, this)) as ReturnType<
+            typeof answerVoiceCallFactory
+        >;
     }
 
     public get blockOA(): ReturnType<typeof blockOAFactory> {
@@ -1000,75 +1538,113 @@ export class API {
     }
 
     public get blockViewFeed(): ReturnType<typeof blockViewFeedFactory> {
-        return (this._cache.blockViewFeed ??= blockViewFeedFactory(this.ctx, this)) as ReturnType<typeof blockViewFeedFactory>;
+        return (this._cache.blockViewFeed ??= blockViewFeedFactory(this.ctx, this)) as ReturnType<
+            typeof blockViewFeedFactory
+        >;
     }
 
     public get broadcastGroupCallState(): ReturnType<typeof broadcastGroupCallStateFactory> {
-        return (this._cache.broadcastGroupCallState ??= broadcastGroupCallStateFactory(this.ctx, this)) as ReturnType<typeof broadcastGroupCallStateFactory>;
+        return (this._cache.broadcastGroupCallState ??= broadcastGroupCallStateFactory(this.ctx, this)) as ReturnType<
+            typeof broadcastGroupCallStateFactory
+        >;
     }
 
     public get cancelGroupCall(): ReturnType<typeof cancelGroupCallFactory> {
-        return (this._cache.cancelGroupCall ??= cancelGroupCallFactory(this.ctx, this)) as ReturnType<typeof cancelGroupCallFactory>;
+        return (this._cache.cancelGroupCall ??= cancelGroupCallFactory(this.ctx, this)) as ReturnType<
+            typeof cancelGroupCallFactory
+        >;
     }
 
     public get cancelPullMobile(): ReturnType<typeof cancelPullMobileFactory> {
-        return (this._cache.cancelPullMobile ??= cancelPullMobileFactory(this.ctx, this)) as ReturnType<typeof cancelPullMobileFactory>;
+        return (this._cache.cancelPullMobile ??= cancelPullMobileFactory(this.ctx, this)) as ReturnType<
+            typeof cancelPullMobileFactory
+        >;
     }
 
     public get cancelVoiceCall(): ReturnType<typeof cancelVoiceCallFactory> {
-        return (this._cache.cancelVoiceCall ??= cancelVoiceCallFactory(this.ctx, this)) as ReturnType<typeof cancelVoiceCallFactory>;
+        return (this._cache.cancelVoiceCall ??= cancelVoiceCallFactory(this.ctx, this)) as ReturnType<
+            typeof cancelVoiceCallFactory
+        >;
     }
 
     public get changeAccountAvatar(): ReturnType<typeof changeAccountAvatarFactory> {
-        return (this._cache.changeAccountAvatar ??= changeAccountAvatarFactory(this.ctx, this)) as ReturnType<typeof changeAccountAvatarFactory>;
+        return (this._cache.changeAccountAvatar ??= changeAccountAvatarFactory(this.ctx, this)) as ReturnType<
+            typeof changeAccountAvatarFactory
+        >;
     }
 
     public get changeFriendAlias(): ReturnType<typeof changeFriendAliasFactory> {
-        return (this._cache.changeFriendAlias ??= changeFriendAliasFactory(this.ctx, this)) as ReturnType<typeof changeFriendAliasFactory>;
+        return (this._cache.changeFriendAlias ??= changeFriendAliasFactory(this.ctx, this)) as ReturnType<
+            typeof changeFriendAliasFactory
+        >;
     }
 
     public get changeGroupAvatar(): ReturnType<typeof changeGroupAvatarFactory> {
-        return (this._cache.changeGroupAvatar ??= changeGroupAvatarFactory(this.ctx, this)) as ReturnType<typeof changeGroupAvatarFactory>;
+        return (this._cache.changeGroupAvatar ??= changeGroupAvatarFactory(this.ctx, this)) as ReturnType<
+            typeof changeGroupAvatarFactory
+        >;
     }
 
     public get changeGroupName(): ReturnType<typeof changeGroupNameFactory> {
-        return (this._cache.changeGroupName ??= changeGroupNameFactory(this.ctx, this)) as ReturnType<typeof changeGroupNameFactory>;
+        return (this._cache.changeGroupName ??= changeGroupNameFactory(this.ctx, this)) as ReturnType<
+            typeof changeGroupNameFactory
+        >;
     }
 
     public get changeGroupOwner(): ReturnType<typeof changeGroupOwnerFactory> {
-        return (this._cache.changeGroupOwner ??= changeGroupOwnerFactory(this.ctx, this)) as ReturnType<typeof changeGroupOwnerFactory>;
+        return (this._cache.changeGroupOwner ??= changeGroupOwnerFactory(this.ctx, this)) as ReturnType<
+            typeof changeGroupOwnerFactory
+        >;
     }
 
     public get checkQuotaCommunityMember(): ReturnType<typeof checkQuotaCommunityMemberFactory> {
-        return (this._cache.checkQuotaCommunityMember ??= checkQuotaCommunityMemberFactory(this.ctx, this)) as ReturnType<typeof checkQuotaCommunityMemberFactory>;
+        return (this._cache.checkQuotaCommunityMember ??= checkQuotaCommunityMemberFactory(
+            this.ctx,
+            this,
+        )) as ReturnType<typeof checkQuotaCommunityMemberFactory>;
     }
 
     public get clearUnreadFriendRequests(): ReturnType<typeof clearUnreadFriendRequestsFactory> {
-        return (this._cache.clearUnreadFriendRequests ??= clearUnreadFriendRequestsFactory(this.ctx, this)) as ReturnType<typeof clearUnreadFriendRequestsFactory>;
+        return (this._cache.clearUnreadFriendRequests ??= clearUnreadFriendRequestsFactory(
+            this.ctx,
+            this,
+        )) as ReturnType<typeof clearUnreadFriendRequestsFactory>;
     }
 
     public get convertOAIds(): ReturnType<typeof convertOAIdsFactory> {
-        return (this._cache.convertOAIds ??= convertOAIdsFactory(this.ctx, this)) as ReturnType<typeof convertOAIdsFactory>;
+        return (this._cache.convertOAIds ??= convertOAIdsFactory(this.ctx, this)) as ReturnType<
+            typeof convertOAIdsFactory
+        >;
     }
 
     public get createAutoReply(): ReturnType<typeof createAutoReplyFactory> {
-        return (this._cache.createAutoReply ??= createAutoReplyFactory(this.ctx, this)) as ReturnType<typeof createAutoReplyFactory>;
+        return (this._cache.createAutoReply ??= createAutoReplyFactory(this.ctx, this)) as ReturnType<
+            typeof createAutoReplyFactory
+        >;
     }
 
     public get createBankAccount(): ReturnType<typeof createBankAccountFactory> {
-        return (this._cache.createBankAccount ??= createBankAccountFactory(this.ctx, this)) as ReturnType<typeof createBankAccountFactory>;
+        return (this._cache.createBankAccount ??= createBankAccountFactory(this.ctx, this)) as ReturnType<
+            typeof createBankAccountFactory
+        >;
     }
 
     public get createCatalog(): ReturnType<typeof createCatalogFactory> {
-        return (this._cache.createCatalog ??= createCatalogFactory(this.ctx, this)) as ReturnType<typeof createCatalogFactory>;
+        return (this._cache.createCatalog ??= createCatalogFactory(this.ctx, this)) as ReturnType<
+            typeof createCatalogFactory
+        >;
     }
 
     public get createController(): ReturnType<typeof createControllerFactory> {
-        return (this._cache.createController ??= createControllerFactory(this.ctx, this)) as ReturnType<typeof createControllerFactory>;
+        return (this._cache.createController ??= createControllerFactory(this.ctx, this)) as ReturnType<
+            typeof createControllerFactory
+        >;
     }
 
     public get createGroup(): ReturnType<typeof createGroupFactory> {
-        return (this._cache.createGroup ??= createGroupFactory(this.ctx, this)) as ReturnType<typeof createGroupFactory>;
+        return (this._cache.createGroup ??= createGroupFactory(this.ctx, this)) as ReturnType<
+            typeof createGroupFactory
+        >;
     }
 
     public get createNote(): ReturnType<typeof createNoteFactory> {
@@ -1080,35 +1656,51 @@ export class API {
     }
 
     public get createProductCatalog(): ReturnType<typeof createProductCatalogFactory> {
-        return (this._cache.createProductCatalog ??= createProductCatalogFactory(this.ctx, this)) as ReturnType<typeof createProductCatalogFactory>;
+        return (this._cache.createProductCatalog ??= createProductCatalogFactory(this.ctx, this)) as ReturnType<
+            typeof createProductCatalogFactory
+        >;
     }
 
     public get createReminder(): ReturnType<typeof createReminderFactory> {
-        return (this._cache.createReminder ??= createReminderFactory(this.ctx, this)) as ReturnType<typeof createReminderFactory>;
+        return (this._cache.createReminder ??= createReminderFactory(this.ctx, this)) as ReturnType<
+            typeof createReminderFactory
+        >;
     }
 
     public get createRtcSession(): ReturnType<typeof createRtcSessionFactory> {
-        return (this._cache.createRtcSession ??= createRtcSessionFactory(this.ctx, this)) as ReturnType<typeof createRtcSessionFactory>;
+        return (this._cache.createRtcSession ??= createRtcSessionFactory(this.ctx, this)) as ReturnType<
+            typeof createRtcSessionFactory
+        >;
     }
 
     public get decryptGids(): ReturnType<typeof decryptGidsFactory> {
-        return (this._cache.decryptGids ??= decryptGidsFactory(this.ctx, this)) as ReturnType<typeof decryptGidsFactory>;
+        return (this._cache.decryptGids ??= decryptGidsFactory(this.ctx, this)) as ReturnType<
+            typeof decryptGidsFactory
+        >;
     }
 
     public get deleteAutoReply(): ReturnType<typeof deleteAutoReplyFactory> {
-        return (this._cache.deleteAutoReply ??= deleteAutoReplyFactory(this.ctx, this)) as ReturnType<typeof deleteAutoReplyFactory>;
+        return (this._cache.deleteAutoReply ??= deleteAutoReplyFactory(this.ctx, this)) as ReturnType<
+            typeof deleteAutoReplyFactory
+        >;
     }
 
     public get deleteAvatar(): ReturnType<typeof deleteAvatarFactory> {
-        return (this._cache.deleteAvatar ??= deleteAvatarFactory(this.ctx, this)) as ReturnType<typeof deleteAvatarFactory>;
+        return (this._cache.deleteAvatar ??= deleteAvatarFactory(this.ctx, this)) as ReturnType<
+            typeof deleteAvatarFactory
+        >;
     }
 
     public get deleteBankAccount(): ReturnType<typeof deleteBankAccountFactory> {
-        return (this._cache.deleteBankAccount ??= deleteBankAccountFactory(this.ctx, this)) as ReturnType<typeof deleteBankAccountFactory>;
+        return (this._cache.deleteBankAccount ??= deleteBankAccountFactory(this.ctx, this)) as ReturnType<
+            typeof deleteBankAccountFactory
+        >;
     }
 
     public get deleteCatalog(): ReturnType<typeof deleteCatalogFactory> {
-        return (this._cache.deleteCatalog ??= deleteCatalogFactory(this.ctx, this)) as ReturnType<typeof deleteCatalogFactory>;
+        return (this._cache.deleteCatalog ??= deleteCatalogFactory(this.ctx, this)) as ReturnType<
+            typeof deleteCatalogFactory
+        >;
     }
 
     public get deleteChat(): ReturnType<typeof deleteChatFactory> {
@@ -1116,27 +1708,39 @@ export class API {
     }
 
     public get deleteGroupInviteBox(): ReturnType<typeof deleteGroupInviteBoxFactory> {
-        return (this._cache.deleteGroupInviteBox ??= deleteGroupInviteBoxFactory(this.ctx, this)) as ReturnType<typeof deleteGroupInviteBoxFactory>;
+        return (this._cache.deleteGroupInviteBox ??= deleteGroupInviteBoxFactory(this.ctx, this)) as ReturnType<
+            typeof deleteGroupInviteBoxFactory
+        >;
     }
 
     public get deleteMessage(): ReturnType<typeof deleteMessageFactory> {
-        return (this._cache.deleteMessage ??= deleteMessageFactory(this.ctx, this)) as ReturnType<typeof deleteMessageFactory>;
+        return (this._cache.deleteMessage ??= deleteMessageFactory(this.ctx, this)) as ReturnType<
+            typeof deleteMessageFactory
+        >;
     }
 
     public get deleteProductCatalog(): ReturnType<typeof deleteProductCatalogFactory> {
-        return (this._cache.deleteProductCatalog ??= deleteProductCatalogFactory(this.ctx, this)) as ReturnType<typeof deleteProductCatalogFactory>;
+        return (this._cache.deleteProductCatalog ??= deleteProductCatalogFactory(this.ctx, this)) as ReturnType<
+            typeof deleteProductCatalogFactory
+        >;
     }
 
     public get disableGroupLink(): ReturnType<typeof disableGroupLinkFactory> {
-        return (this._cache.disableGroupLink ??= disableGroupLinkFactory(this.ctx, this)) as ReturnType<typeof disableGroupLinkFactory>;
+        return (this._cache.disableGroupLink ??= disableGroupLinkFactory(this.ctx, this)) as ReturnType<
+            typeof disableGroupLinkFactory
+        >;
     }
 
     public get disperseGroup(): ReturnType<typeof disperseGroupFactory> {
-        return (this._cache.disperseGroup ??= disperseGroupFactory(this.ctx, this)) as ReturnType<typeof disperseGroupFactory>;
+        return (this._cache.disperseGroup ??= disperseGroupFactory(this.ctx, this)) as ReturnType<
+            typeof disperseGroupFactory
+        >;
     }
 
     public get downloadTransferSync(): ReturnType<typeof downloadTransferSyncFactory> {
-        return (this._cache.downloadTransferSync ??= downloadTransferSyncFactory(this.ctx, this)) as ReturnType<typeof downloadTransferSyncFactory>;
+        return (this._cache.downloadTransferSync ??= downloadTransferSyncFactory(this.ctx, this)) as ReturnType<
+            typeof downloadTransferSyncFactory
+        >;
     }
 
     public get editNote(): ReturnType<typeof editNoteFactory> {
@@ -1144,31 +1748,45 @@ export class API {
     }
 
     public get editReminder(): ReturnType<typeof editReminderFactory> {
-        return (this._cache.editReminder ??= editReminderFactory(this.ctx, this)) as ReturnType<typeof editReminderFactory>;
+        return (this._cache.editReminder ??= editReminderFactory(this.ctx, this)) as ReturnType<
+            typeof editReminderFactory
+        >;
     }
 
     public get enableGroupLink(): ReturnType<typeof enableGroupLinkFactory> {
-        return (this._cache.enableGroupLink ??= enableGroupLinkFactory(this.ctx, this)) as ReturnType<typeof enableGroupLinkFactory>;
+        return (this._cache.enableGroupLink ??= enableGroupLinkFactory(this.ctx, this)) as ReturnType<
+            typeof enableGroupLinkFactory
+        >;
     }
 
     public get encryptGids(): ReturnType<typeof encryptGidsFactory> {
-        return (this._cache.encryptGids ??= encryptGidsFactory(this.ctx, this)) as ReturnType<typeof encryptGidsFactory>;
+        return (this._cache.encryptGids ??= encryptGidsFactory(this.ctx, this)) as ReturnType<
+            typeof encryptGidsFactory
+        >;
     }
 
     public get endGroupCall(): ReturnType<typeof endGroupCallFactory> {
-        return (this._cache.endGroupCall ??= endGroupCallFactory(this.ctx, this)) as ReturnType<typeof endGroupCallFactory>;
+        return (this._cache.endGroupCall ??= endGroupCallFactory(this.ctx, this)) as ReturnType<
+            typeof endGroupCallFactory
+        >;
     }
 
     public get endVoiceCall(): ReturnType<typeof endVoiceCallFactory> {
-        return (this._cache.endVoiceCall ??= endVoiceCallFactory(this.ctx, this)) as ReturnType<typeof endVoiceCallFactory>;
+        return (this._cache.endVoiceCall ??= endVoiceCallFactory(this.ctx, this)) as ReturnType<
+            typeof endVoiceCallFactory
+        >;
     }
 
     public get exportSession(): ReturnType<typeof exportSessionFactory> {
-        return (this._cache.exportSession ??= exportSessionFactory(this.ctx, this)) as ReturnType<typeof exportSessionFactory>;
+        return (this._cache.exportSession ??= exportSessionFactory(this.ctx, this)) as ReturnType<
+            typeof exportSessionFactory
+        >;
     }
 
     public get fetchAccountInfo(): ReturnType<typeof fetchAccountInfoFactory> {
-        return (this._cache.fetchAccountInfo ??= fetchAccountInfoFactory(this.ctx, this)) as ReturnType<typeof fetchAccountInfoFactory>;
+        return (this._cache.fetchAccountInfo ??= fetchAccountInfoFactory(this.ctx, this)) as ReturnType<
+            typeof fetchAccountInfoFactory
+        >;
     }
 
     public get findUser(): ReturnType<typeof findUserFactory> {
@@ -1176,79 +1794,117 @@ export class API {
     }
 
     public get findUserByUsername(): ReturnType<typeof findUserByUsernameFactory> {
-        return (this._cache.findUserByUsername ??= findUserByUsernameFactory(this.ctx, this)) as ReturnType<typeof findUserByUsernameFactory>;
+        return (this._cache.findUserByUsername ??= findUserByUsernameFactory(this.ctx, this)) as ReturnType<
+            typeof findUserByUsernameFactory
+        >;
     }
 
     public get finishGroupCall(): ReturnType<typeof finishGroupCallFactory> {
-        return (this._cache.finishGroupCall ??= finishGroupCallFactory(this.ctx, this)) as ReturnType<typeof finishGroupCallFactory>;
+        return (this._cache.finishGroupCall ??= finishGroupCallFactory(this.ctx, this)) as ReturnType<
+            typeof finishGroupCallFactory
+        >;
     }
 
     public get forwardMessage(): ReturnType<typeof forwardMessageFactory> {
-        return (this._cache.forwardMessage ??= forwardMessageFactory(this.ctx, this)) as ReturnType<typeof forwardMessageFactory>;
+        return (this._cache.forwardMessage ??= forwardMessageFactory(this.ctx, this)) as ReturnType<
+            typeof forwardMessageFactory
+        >;
     }
 
     public get getAliasList(): ReturnType<typeof getAliasListFactory> {
-        return (this._cache.getAliasList ??= getAliasListFactory(this.ctx, this)) as ReturnType<typeof getAliasListFactory>;
+        return (this._cache.getAliasList ??= getAliasListFactory(this.ctx, this)) as ReturnType<
+            typeof getAliasListFactory
+        >;
     }
 
     public get getAliasListV2(): ReturnType<typeof getAliasListV2Factory> {
-        return (this._cache.getAliasListV2 ??= getAliasListV2Factory(this.ctx, this)) as ReturnType<typeof getAliasListV2Factory>;
+        return (this._cache.getAliasListV2 ??= getAliasListV2Factory(this.ctx, this)) as ReturnType<
+            typeof getAliasListV2Factory
+        >;
     }
 
     public get getAllFriends(): ReturnType<typeof getAllFriendsFactory> {
-        return (this._cache.getAllFriends ??= getAllFriendsFactory(this.ctx, this)) as ReturnType<typeof getAllFriendsFactory>;
+        return (this._cache.getAllFriends ??= getAllFriendsFactory(this.ctx, this)) as ReturnType<
+            typeof getAllFriendsFactory
+        >;
     }
 
     public get getAllGroups(): ReturnType<typeof getAllGroupsFactory> {
-        return (this._cache.getAllGroups ??= getAllGroupsFactory(this.ctx, this)) as ReturnType<typeof getAllGroupsFactory>;
+        return (this._cache.getAllGroups ??= getAllGroupsFactory(this.ctx, this)) as ReturnType<
+            typeof getAllGroupsFactory
+        >;
     }
 
     public get getArchivedChatList(): ReturnType<typeof getArchivedChatListFactory> {
-        return (this._cache.getArchivedChatList ??= getArchivedChatListFactory(this.ctx, this)) as ReturnType<typeof getArchivedChatListFactory>;
+        return (this._cache.getArchivedChatList ??= getArchivedChatListFactory(this.ctx, this)) as ReturnType<
+            typeof getArchivedChatListFactory
+        >;
     }
 
     public get getAutoDeleteChat(): ReturnType<typeof getAutoDeleteChatFactory> {
-        return (this._cache.getAutoDeleteChat ??= getAutoDeleteChatFactory(this.ctx, this)) as ReturnType<typeof getAutoDeleteChatFactory>;
+        return (this._cache.getAutoDeleteChat ??= getAutoDeleteChatFactory(this.ctx, this)) as ReturnType<
+            typeof getAutoDeleteChatFactory
+        >;
     }
 
     public get getAutoReplyList(): ReturnType<typeof getAutoReplyListFactory> {
-        return (this._cache.getAutoReplyList ??= getAutoReplyListFactory(this.ctx, this)) as ReturnType<typeof getAutoReplyListFactory>;
+        return (this._cache.getAutoReplyList ??= getAutoReplyListFactory(this.ctx, this)) as ReturnType<
+            typeof getAutoReplyListFactory
+        >;
     }
 
     public get getAvatarList(): ReturnType<typeof getAvatarListFactory> {
-        return (this._cache.getAvatarList ??= getAvatarListFactory(this.ctx, this)) as ReturnType<typeof getAvatarListFactory>;
+        return (this._cache.getAvatarList ??= getAvatarListFactory(this.ctx, this)) as ReturnType<
+            typeof getAvatarListFactory
+        >;
     }
 
     public get getAvatarUrlProfile(): ReturnType<typeof getAvatarUrlProfileFactory> {
-        return (this._cache.getAvatarUrlProfile ??= getAvatarUrlProfileFactory(this.ctx, this)) as ReturnType<typeof getAvatarUrlProfileFactory>;
+        return (this._cache.getAvatarUrlProfile ??= getAvatarUrlProfileFactory(this.ctx, this)) as ReturnType<
+            typeof getAvatarUrlProfileFactory
+        >;
     }
 
     public get getBizAccount(): ReturnType<typeof getBizAccountFactory> {
-        return (this._cache.getBizAccount ??= getBizAccountFactory(this.ctx, this)) as ReturnType<typeof getBizAccountFactory>;
+        return (this._cache.getBizAccount ??= getBizAccountFactory(this.ctx, this)) as ReturnType<
+            typeof getBizAccountFactory
+        >;
     }
 
     public get getBlockFriends(): ReturnType<typeof getBlockFriendsFactory> {
-        return (this._cache.getBlockFriends ??= getBlockFriendsFactory(this.ctx, this)) as ReturnType<typeof getBlockFriendsFactory>;
+        return (this._cache.getBlockFriends ??= getBlockFriendsFactory(this.ctx, this)) as ReturnType<
+            typeof getBlockFriendsFactory
+        >;
     }
 
     public get getCatalogList(): ReturnType<typeof getCatalogListFactory> {
-        return (this._cache.getCatalogList ??= getCatalogListFactory(this.ctx, this)) as ReturnType<typeof getCatalogListFactory>;
+        return (this._cache.getCatalogList ??= getCatalogListFactory(this.ctx, this)) as ReturnType<
+            typeof getCatalogListFactory
+        >;
     }
 
     public get getCloseFriends(): ReturnType<typeof getCloseFriendsFactory> {
-        return (this._cache.getCloseFriends ??= getCloseFriendsFactory(this.ctx, this)) as ReturnType<typeof getCloseFriendsFactory>;
+        return (this._cache.getCloseFriends ??= getCloseFriendsFactory(this.ctx, this)) as ReturnType<
+            typeof getCloseFriendsFactory
+        >;
     }
 
     public get getCloudInfo(): ReturnType<typeof getCloudInfoFactory> {
-        return (this._cache.getCloudInfo ??= getCloudInfoFactory(this.ctx, this)) as ReturnType<typeof getCloudInfoFactory>;
+        return (this._cache.getCloudInfo ??= getCloudInfoFactory(this.ctx, this)) as ReturnType<
+            typeof getCloudInfoFactory
+        >;
     }
 
     public get getCloudSettings(): ReturnType<typeof getCloudSettingsFactory> {
-        return (this._cache.getCloudSettings ??= getCloudSettingsFactory(this.ctx, this)) as ReturnType<typeof getCloudSettingsFactory>;
+        return (this._cache.getCloudSettings ??= getCloudSettingsFactory(this.ctx, this)) as ReturnType<
+            typeof getCloudSettingsFactory
+        >;
     }
 
     public get getCloudViewerKey(): ReturnType<typeof getCloudViewerKeyFactory> {
-        return (this._cache.getCloudViewerKey ??= getCloudViewerKeyFactory(this.ctx, this)) as ReturnType<typeof getCloudViewerKeyFactory>;
+        return (this._cache.getCloudViewerKey ??= getCloudViewerKeyFactory(this.ctx, this)) as ReturnType<
+            typeof getCloudViewerKeyFactory
+        >;
     }
 
     public get getContext(): ReturnType<typeof getContextFactory> {
@@ -1256,7 +1912,9 @@ export class API {
     }
 
     public get getConversationMedia(): ReturnType<typeof getConversationMediaFactory> {
-        return (this._cache.getConversationMedia ??= getConversationMediaFactory(this.ctx, this)) as ReturnType<typeof getConversationMediaFactory>;
+        return (this._cache.getConversationMedia ??= getConversationMediaFactory(this.ctx, this)) as ReturnType<
+            typeof getConversationMediaFactory
+        >;
     }
 
     public get getCookie(): ReturnType<typeof getCookieFactory> {
@@ -1264,131 +1922,195 @@ export class API {
     }
 
     public get getDirectMessageStatus(): ReturnType<typeof getDirectMessageStatusFactory> {
-        return (this._cache.getDirectMessageStatus ??= getDirectMessageStatusFactory(this.ctx, this)) as ReturnType<typeof getDirectMessageStatusFactory>;
+        return (this._cache.getDirectMessageStatus ??= getDirectMessageStatusFactory(this.ctx, this)) as ReturnType<
+            typeof getDirectMessageStatusFactory
+        >;
     }
 
     public get getE2eeGroupList(): ReturnType<typeof getE2eeGroupListFactory> {
-        return (this._cache.getE2eeGroupList ??= getE2eeGroupListFactory(this.ctx, this)) as ReturnType<typeof getE2eeGroupListFactory>;
+        return (this._cache.getE2eeGroupList ??= getE2eeGroupListFactory(this.ctx, this)) as ReturnType<
+            typeof getE2eeGroupListFactory
+        >;
     }
 
     public get getEmojiStatusConfig(): ReturnType<typeof getEmojiStatusConfigFactory> {
-        return (this._cache.getEmojiStatusConfig ??= getEmojiStatusConfigFactory(this.ctx, this)) as ReturnType<typeof getEmojiStatusConfigFactory>;
+        return (this._cache.getEmojiStatusConfig ??= getEmojiStatusConfigFactory(this.ctx, this)) as ReturnType<
+            typeof getEmojiStatusConfigFactory
+        >;
     }
 
     public get getExtraFriendInfo(): ReturnType<typeof getExtraFriendInfoFactory> {
-        return (this._cache.getExtraFriendInfo ??= getExtraFriendInfoFactory(this.ctx, this)) as ReturnType<typeof getExtraFriendInfoFactory>;
+        return (this._cache.getExtraFriendInfo ??= getExtraFriendInfoFactory(this.ctx, this)) as ReturnType<
+            typeof getExtraFriendInfoFactory
+        >;
     }
 
     public get getExtraGroupInfo(): ReturnType<typeof getExtraGroupInfoFactory> {
-        return (this._cache.getExtraGroupInfo ??= getExtraGroupInfoFactory(this.ctx, this)) as ReturnType<typeof getExtraGroupInfoFactory>;
+        return (this._cache.getExtraGroupInfo ??= getExtraGroupInfoFactory(this.ctx, this)) as ReturnType<
+            typeof getExtraGroupInfoFactory
+        >;
     }
 
     public get getFamilyProfile(): ReturnType<typeof getFamilyProfileFactory> {
-        return (this._cache.getFamilyProfile ??= getFamilyProfileFactory(this.ctx, this)) as ReturnType<typeof getFamilyProfileFactory>;
+        return (this._cache.getFamilyProfile ??= getFamilyProfileFactory(this.ctx, this)) as ReturnType<
+            typeof getFamilyProfileFactory
+        >;
     }
 
     public get getFamilyUsage(): ReturnType<typeof getFamilyUsageFactory> {
-        return (this._cache.getFamilyUsage ??= getFamilyUsageFactory(this.ctx, this)) as ReturnType<typeof getFamilyUsageFactory>;
+        return (this._cache.getFamilyUsage ??= getFamilyUsageFactory(this.ctx, this)) as ReturnType<
+            typeof getFamilyUsageFactory
+        >;
     }
 
     public get getFamilyViewerKey(): ReturnType<typeof getFamilyViewerKeyFactory> {
-        return (this._cache.getFamilyViewerKey ??= getFamilyViewerKeyFactory(this.ctx, this)) as ReturnType<typeof getFamilyViewerKeyFactory>;
+        return (this._cache.getFamilyViewerKey ??= getFamilyViewerKeyFactory(this.ctx, this)) as ReturnType<
+            typeof getFamilyViewerKeyFactory
+        >;
     }
 
     public get getFriendBoardList(): ReturnType<typeof getFriendBoardListFactory> {
-        return (this._cache.getFriendBoardList ??= getFriendBoardListFactory(this.ctx, this)) as ReturnType<typeof getFriendBoardListFactory>;
+        return (this._cache.getFriendBoardList ??= getFriendBoardListFactory(this.ctx, this)) as ReturnType<
+            typeof getFriendBoardListFactory
+        >;
     }
 
     public get getFriendOnlines(): ReturnType<typeof getFriendOnlinesFactory> {
-        return (this._cache.getFriendOnlines ??= getFriendOnlinesFactory(this.ctx, this)) as ReturnType<typeof getFriendOnlinesFactory>;
+        return (this._cache.getFriendOnlines ??= getFriendOnlinesFactory(this.ctx, this)) as ReturnType<
+            typeof getFriendOnlinesFactory
+        >;
     }
 
     public get getFriendProfilesV2(): ReturnType<typeof getFriendProfilesV2Factory> {
-        return (this._cache.getFriendProfilesV2 ??= getFriendProfilesV2Factory(this.ctx, this)) as ReturnType<typeof getFriendProfilesV2Factory>;
+        return (this._cache.getFriendProfilesV2 ??= getFriendProfilesV2Factory(this.ctx, this)) as ReturnType<
+            typeof getFriendProfilesV2Factory
+        >;
     }
 
     public get getFriendRecommendations(): ReturnType<typeof getFriendRecommendationsFactory> {
-        return (this._cache.getFriendRecommendations ??= getFriendRecommendationsFactory(this.ctx, this)) as ReturnType<typeof getFriendRecommendationsFactory>;
+        return (this._cache.getFriendRecommendations ??= getFriendRecommendationsFactory(this.ctx, this)) as ReturnType<
+            typeof getFriendRecommendationsFactory
+        >;
     }
 
     public get getFriendRequestStatus(): ReturnType<typeof getFriendRequestStatusFactory> {
-        return (this._cache.getFriendRequestStatus ??= getFriendRequestStatusFactory(this.ctx, this)) as ReturnType<typeof getFriendRequestStatusFactory>;
+        return (this._cache.getFriendRequestStatus ??= getFriendRequestStatusFactory(this.ctx, this)) as ReturnType<
+            typeof getFriendRequestStatusFactory
+        >;
     }
 
     public get getFriendsActivePCWeb(): ReturnType<typeof getFriendsActivePCWebFactory> {
-        return (this._cache.getFriendsActivePCWeb ??= getFriendsActivePCWebFactory(this.ctx, this)) as ReturnType<typeof getFriendsActivePCWebFactory>;
+        return (this._cache.getFriendsActivePCWeb ??= getFriendsActivePCWebFactory(this.ctx, this)) as ReturnType<
+            typeof getFriendsActivePCWebFactory
+        >;
     }
 
     public get getFriendsEmojiStatus(): ReturnType<typeof getFriendsEmojiStatusFactory> {
-        return (this._cache.getFriendsEmojiStatus ??= getFriendsEmojiStatusFactory(this.ctx, this)) as ReturnType<typeof getFriendsEmojiStatusFactory>;
+        return (this._cache.getFriendsEmojiStatus ??= getFriendsEmojiStatusFactory(this.ctx, this)) as ReturnType<
+            typeof getFriendsEmojiStatusFactory
+        >;
     }
 
     public get getFullAvatar(): ReturnType<typeof getFullAvatarFactory> {
-        return (this._cache.getFullAvatar ??= getFullAvatarFactory(this.ctx, this)) as ReturnType<typeof getFullAvatarFactory>;
+        return (this._cache.getFullAvatar ??= getFullAvatarFactory(this.ctx, this)) as ReturnType<
+            typeof getFullAvatarFactory
+        >;
     }
 
     public get getGroupBlockedMember(): ReturnType<typeof getGroupBlockedMemberFactory> {
-        return (this._cache.getGroupBlockedMember ??= getGroupBlockedMemberFactory(this.ctx, this)) as ReturnType<typeof getGroupBlockedMemberFactory>;
+        return (this._cache.getGroupBlockedMember ??= getGroupBlockedMemberFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupBlockedMemberFactory
+        >;
     }
 
     public get getGroupCallState(): ReturnType<typeof getGroupCallStateFactory> {
-        return (this._cache.getGroupCallState ??= getGroupCallStateFactory(this.ctx, this)) as ReturnType<typeof getGroupCallStateFactory>;
+        return (this._cache.getGroupCallState ??= getGroupCallStateFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupCallStateFactory
+        >;
     }
 
     public get getGroupChatHistory(): ReturnType<typeof getGroupChatHistoryFactory> {
-        return (this._cache.getGroupChatHistory ??= getGroupChatHistoryFactory(this.ctx, this)) as ReturnType<typeof getGroupChatHistoryFactory>;
+        return (this._cache.getGroupChatHistory ??= getGroupChatHistoryFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupChatHistoryFactory
+        >;
     }
 
     public get getGroupCloudMessageJump(): ReturnType<typeof getGroupCloudMessageJumpFactory> {
-        return (this._cache.getGroupCloudMessageJump ??= getGroupCloudMessageJumpFactory(this.ctx, this)) as ReturnType<typeof getGroupCloudMessageJumpFactory>;
+        return (this._cache.getGroupCloudMessageJump ??= getGroupCloudMessageJumpFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupCloudMessageJumpFactory
+        >;
     }
 
     public get getGroupCloudMessagePath(): ReturnType<typeof getGroupCloudMessagePathFactory> {
-        return (this._cache.getGroupCloudMessagePath ??= getGroupCloudMessagePathFactory(this.ctx, this)) as ReturnType<typeof getGroupCloudMessagePathFactory>;
+        return (this._cache.getGroupCloudMessagePath ??= getGroupCloudMessagePathFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupCloudMessagePathFactory
+        >;
     }
 
     public get getGroupHistoryLegacy(): ReturnType<typeof getGroupHistoryLegacyFactory> {
-        return (this._cache.getGroupHistoryLegacy ??= getGroupHistoryLegacyFactory(this.ctx, this)) as ReturnType<typeof getGroupHistoryLegacyFactory>;
+        return (this._cache.getGroupHistoryLegacy ??= getGroupHistoryLegacyFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupHistoryLegacyFactory
+        >;
     }
 
     public get getGroupInfo(): ReturnType<typeof getGroupInfoFactory> {
-        return (this._cache.getGroupInfo ??= getGroupInfoFactory(this.ctx, this)) as ReturnType<typeof getGroupInfoFactory>;
+        return (this._cache.getGroupInfo ??= getGroupInfoFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupInfoFactory
+        >;
     }
 
     public get getGroupInfoV2(): ReturnType<typeof getGroupInfoV2Factory> {
-        return (this._cache.getGroupInfoV2 ??= getGroupInfoV2Factory(this.ctx, this)) as ReturnType<typeof getGroupInfoV2Factory>;
+        return (this._cache.getGroupInfoV2 ??= getGroupInfoV2Factory(this.ctx, this)) as ReturnType<
+            typeof getGroupInfoV2Factory
+        >;
     }
 
     public get getGroupInviteBoxInfo(): ReturnType<typeof getGroupInviteBoxInfoFactory> {
-        return (this._cache.getGroupInviteBoxInfo ??= getGroupInviteBoxInfoFactory(this.ctx, this)) as ReturnType<typeof getGroupInviteBoxInfoFactory>;
+        return (this._cache.getGroupInviteBoxInfo ??= getGroupInviteBoxInfoFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupInviteBoxInfoFactory
+        >;
     }
 
     public get getGroupInviteBoxList(): ReturnType<typeof getGroupInviteBoxListFactory> {
-        return (this._cache.getGroupInviteBoxList ??= getGroupInviteBoxListFactory(this.ctx, this)) as ReturnType<typeof getGroupInviteBoxListFactory>;
+        return (this._cache.getGroupInviteBoxList ??= getGroupInviteBoxListFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupInviteBoxListFactory
+        >;
     }
 
     public get getGroupLinkDetail(): ReturnType<typeof getGroupLinkDetailFactory> {
-        return (this._cache.getGroupLinkDetail ??= getGroupLinkDetailFactory(this.ctx, this)) as ReturnType<typeof getGroupLinkDetailFactory>;
+        return (this._cache.getGroupLinkDetail ??= getGroupLinkDetailFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupLinkDetailFactory
+        >;
     }
 
     public get getGroupLinkInfo(): ReturnType<typeof getGroupLinkInfoFactory> {
-        return (this._cache.getGroupLinkInfo ??= getGroupLinkInfoFactory(this.ctx, this)) as ReturnType<typeof getGroupLinkInfoFactory>;
+        return (this._cache.getGroupLinkInfo ??= getGroupLinkInfoFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupLinkInfoFactory
+        >;
     }
 
     public get getGroupListV3(): ReturnType<typeof getGroupListV3Factory> {
-        return (this._cache.getGroupListV3 ??= getGroupListV3Factory(this.ctx, this)) as ReturnType<typeof getGroupListV3Factory>;
+        return (this._cache.getGroupListV3 ??= getGroupListV3Factory(this.ctx, this)) as ReturnType<
+            typeof getGroupListV3Factory
+        >;
     }
 
     public get getGroupMembersInfo(): ReturnType<typeof getGroupMembersInfoFactory> {
-        return (this._cache.getGroupMembersInfo ??= getGroupMembersInfoFactory(this.ctx, this)) as ReturnType<typeof getGroupMembersInfoFactory>;
+        return (this._cache.getGroupMembersInfo ??= getGroupMembersInfoFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupMembersInfoFactory
+        >;
     }
 
     public get getGroupMessageStatus(): ReturnType<typeof getGroupMessageStatusFactory> {
-        return (this._cache.getGroupMessageStatus ??= getGroupMessageStatusFactory(this.ctx, this)) as ReturnType<typeof getGroupMessageStatusFactory>;
+        return (this._cache.getGroupMessageStatus ??= getGroupMessageStatusFactory(this.ctx, this)) as ReturnType<
+            typeof getGroupMessageStatusFactory
+        >;
     }
 
     public get getHiddenConversations(): ReturnType<typeof getHiddenConversationsFactory> {
-        return (this._cache.getHiddenConversations ??= getHiddenConversationsFactory(this.ctx, this)) as ReturnType<typeof getHiddenConversationsFactory>;
+        return (this._cache.getHiddenConversations ??= getHiddenConversationsFactory(this.ctx, this)) as ReturnType<
+            typeof getHiddenConversationsFactory
+        >;
     }
 
     public get getLabels(): ReturnType<typeof getLabelsFactory> {
@@ -1396,55 +2118,82 @@ export class API {
     }
 
     public get getLastReadContactTab(): ReturnType<typeof getLastReadContactTabFactory> {
-        return (this._cache.getLastReadContactTab ??= getLastReadContactTabFactory(this.ctx, this)) as ReturnType<typeof getLastReadContactTabFactory>;
+        return (this._cache.getLastReadContactTab ??= getLastReadContactTabFactory(this.ctx, this)) as ReturnType<
+            typeof getLastReadContactTabFactory
+        >;
     }
 
     public get getLastSeen(): ReturnType<typeof getLastSeenFactory> {
-        return (this._cache.getLastSeen ??= getLastSeenFactory(this.ctx, this)) as ReturnType<typeof getLastSeenFactory>;
+        return (this._cache.getLastSeen ??= getLastSeenFactory(this.ctx, this)) as ReturnType<
+            typeof getLastSeenFactory
+        >;
     }
 
     public get getLastSeenReaction(): ReturnType<typeof getLastSeenReactionFactory> {
-        return (this._cache.getLastSeenReaction ??= getLastSeenReactionFactory(this.ctx, this)) as ReturnType<typeof getLastSeenReactionFactory>;
+        return (this._cache.getLastSeenReaction ??= getLastSeenReactionFactory(this.ctx, this)) as ReturnType<
+            typeof getLastSeenReactionFactory
+        >;
     }
 
     public get getListBank(): ReturnType<typeof getListBankFactory> {
-        return (this._cache.getListBank ??= getListBankFactory(this.ctx, this)) as ReturnType<typeof getListBankFactory>;
+        return (this._cache.getListBank ??= getListBankFactory(this.ctx, this)) as ReturnType<
+            typeof getListBankFactory
+        >;
     }
 
     public get getListBankAccount(): ReturnType<typeof getListBankAccountFactory> {
-        return (this._cache.getListBankAccount ??= getListBankAccountFactory(this.ctx, this)) as ReturnType<typeof getListBankAccountFactory>;
+        return (this._cache.getListBankAccount ??= getListBankAccountFactory(this.ctx, this)) as ReturnType<
+            typeof getListBankAccountFactory
+        >;
     }
 
     public get getListBoard(): ReturnType<typeof getListBoardFactory> {
-        return (this._cache.getListBoard ??= getListBoardFactory(this.ctx, this)) as ReturnType<typeof getListBoardFactory>;
+        return (this._cache.getListBoard ??= getListBoardFactory(this.ctx, this)) as ReturnType<
+            typeof getListBoardFactory
+        >;
     }
 
     public get getListDevice(): ReturnType<typeof getListDeviceFactory> {
-        return (this._cache.getListDevice ??= getListDeviceFactory(this.ctx, this)) as ReturnType<typeof getListDeviceFactory>;
+        return (this._cache.getListDevice ??= getListDeviceFactory(this.ctx, this)) as ReturnType<
+            typeof getListDeviceFactory
+        >;
     }
 
     public get getListPinTopics(): ReturnType<typeof getListPinTopicsFactory> {
-        return (this._cache.getListPinTopics ??= getListPinTopicsFactory(this.ctx, this)) as ReturnType<typeof getListPinTopicsFactory>;
+        return (this._cache.getListPinTopics ??= getListPinTopicsFactory(this.ctx, this)) as ReturnType<
+            typeof getListPinTopicsFactory
+        >;
     }
 
     public get getListReminder(): ReturnType<typeof getListReminderFactory> {
-        return (this._cache.getListReminder ??= getListReminderFactory(this.ctx, this)) as ReturnType<typeof getListReminderFactory>;
+        return (this._cache.getListReminder ??= getListReminderFactory(this.ctx, this)) as ReturnType<
+            typeof getListReminderFactory
+        >;
     }
 
     public get getMediaStorePreview(): ReturnType<typeof getMediaStorePreviewFactory> {
-        return (this._cache.getMediaStorePreview ??= getMediaStorePreviewFactory(this.ctx, this)) as ReturnType<typeof getMediaStorePreviewFactory>;
+        return (this._cache.getMediaStorePreview ??= getMediaStorePreviewFactory(this.ctx, this)) as ReturnType<
+            typeof getMediaStorePreviewFactory
+        >;
     }
 
     public get getMiniProfile(): ReturnType<typeof getMiniProfileFactory> {
-        return (this._cache.getMiniProfile ??= getMiniProfileFactory(this.ctx, this)) as ReturnType<typeof getMiniProfileFactory>;
+        return (this._cache.getMiniProfile ??= getMiniProfileFactory(this.ctx, this)) as ReturnType<
+            typeof getMiniProfileFactory
+        >;
     }
 
     public get getMultiGroupCloudMessages(): ReturnType<typeof getMultiGroupCloudMessagesFactory> {
-        return (this._cache.getMultiGroupCloudMessages ??= getMultiGroupCloudMessagesFactory(this.ctx, this)) as ReturnType<typeof getMultiGroupCloudMessagesFactory>;
+        return (this._cache.getMultiGroupCloudMessages ??= getMultiGroupCloudMessagesFactory(
+            this.ctx,
+            this,
+        )) as ReturnType<typeof getMultiGroupCloudMessagesFactory>;
     }
 
     public get getMultiUsersByPhones(): ReturnType<typeof getMultiUsersByPhonesFactory> {
-        return (this._cache.getMultiUsersByPhones ??= getMultiUsersByPhonesFactory(this.ctx, this)) as ReturnType<typeof getMultiUsersByPhonesFactory>;
+        return (this._cache.getMultiUsersByPhones ??= getMultiUsersByPhonesFactory(this.ctx, this)) as ReturnType<
+            typeof getMultiUsersByPhonesFactory
+        >;
     }
 
     public get getMute(): ReturnType<typeof getMuteFactory> {
@@ -1452,11 +2201,15 @@ export class API {
     }
 
     public get getNoisedIds(): ReturnType<typeof getNoisedIdsFactory> {
-        return (this._cache.getNoisedIds ??= getNoisedIdsFactory(this.ctx, this)) as ReturnType<typeof getNoisedIdsFactory>;
+        return (this._cache.getNoisedIds ??= getNoisedIdsFactory(this.ctx, this)) as ReturnType<
+            typeof getNoisedIdsFactory
+        >;
     }
 
     public get getOAProfile(): ReturnType<typeof getOAProfileFactory> {
-        return (this._cache.getOAProfile ??= getOAProfileFactory(this.ctx, this)) as ReturnType<typeof getOAProfileFactory>;
+        return (this._cache.getOAProfile ??= getOAProfileFactory(this.ctx, this)) as ReturnType<
+            typeof getOAProfileFactory
+        >;
     }
 
     public get getOwnId(): ReturnType<typeof getOwnIdFactory> {
@@ -1464,43 +2217,65 @@ export class API {
     }
 
     public get getPendingGroupMembers(): ReturnType<typeof getPendingGroupMembersFactory> {
-        return (this._cache.getPendingGroupMembers ??= getPendingGroupMembersFactory(this.ctx, this)) as ReturnType<typeof getPendingGroupMembersFactory>;
+        return (this._cache.getPendingGroupMembers ??= getPendingGroupMembersFactory(this.ctx, this)) as ReturnType<
+            typeof getPendingGroupMembersFactory
+        >;
     }
 
     public get getPersonalizedStickerList(): ReturnType<typeof getPersonalizedStickerListFactory> {
-        return (this._cache.getPersonalizedStickerList ??= getPersonalizedStickerListFactory(this.ctx, this)) as ReturnType<typeof getPersonalizedStickerListFactory>;
+        return (this._cache.getPersonalizedStickerList ??= getPersonalizedStickerListFactory(
+            this.ctx,
+            this,
+        )) as ReturnType<typeof getPersonalizedStickerListFactory>;
     }
 
     public get getPersonalMedia(): ReturnType<typeof getPersonalMediaFactory> {
-        return (this._cache.getPersonalMedia ??= getPersonalMediaFactory(this.ctx, this)) as ReturnType<typeof getPersonalMediaFactory>;
+        return (this._cache.getPersonalMedia ??= getPersonalMediaFactory(this.ctx, this)) as ReturnType<
+            typeof getPersonalMediaFactory
+        >;
     }
 
     public get getPersonalMediaPreview(): ReturnType<typeof getPersonalMediaPreviewFactory> {
-        return (this._cache.getPersonalMediaPreview ??= getPersonalMediaPreviewFactory(this.ctx, this)) as ReturnType<typeof getPersonalMediaPreviewFactory>;
+        return (this._cache.getPersonalMediaPreview ??= getPersonalMediaPreviewFactory(this.ctx, this)) as ReturnType<
+            typeof getPersonalMediaPreviewFactory
+        >;
     }
 
     public get getPhonebookV2(): ReturnType<typeof getPhonebookV2Factory> {
-        return (this._cache.getPhonebookV2 ??= getPhonebookV2Factory(this.ctx, this)) as ReturnType<typeof getPhonebookV2Factory>;
+        return (this._cache.getPhonebookV2 ??= getPhonebookV2Factory(this.ctx, this)) as ReturnType<
+            typeof getPhonebookV2Factory
+        >;
     }
 
     public get getPinConversations(): ReturnType<typeof getPinConversationsFactory> {
-        return (this._cache.getPinConversations ??= getPinConversationsFactory(this.ctx, this)) as ReturnType<typeof getPinConversationsFactory>;
+        return (this._cache.getPinConversations ??= getPinConversationsFactory(this.ctx, this)) as ReturnType<
+            typeof getPinConversationsFactory
+        >;
     }
 
     public get getPollDetail(): ReturnType<typeof getPollDetailFactory> {
-        return (this._cache.getPollDetail ??= getPollDetailFactory(this.ctx, this)) as ReturnType<typeof getPollDetailFactory>;
+        return (this._cache.getPollDetail ??= getPollDetailFactory(this.ctx, this)) as ReturnType<
+            typeof getPollDetailFactory
+        >;
     }
 
     public get getProductCatalogList(): ReturnType<typeof getProductCatalogListFactory> {
-        return (this._cache.getProductCatalogList ??= getProductCatalogListFactory(this.ctx, this)) as ReturnType<typeof getProductCatalogListFactory>;
+        return (this._cache.getProductCatalogList ??= getProductCatalogListFactory(this.ctx, this)) as ReturnType<
+            typeof getProductCatalogListFactory
+        >;
     }
 
     public get getProfileRank(): ReturnType<typeof getProfileRankFactory> {
-        return (this._cache.getProfileRank ??= getProfileRankFactory(this.ctx, this)) as ReturnType<typeof getProfileRankFactory>;
+        return (this._cache.getProfileRank ??= getProfileRankFactory(this.ctx, this)) as ReturnType<
+            typeof getProfileRankFactory
+        >;
     }
 
     public get getProfileVerificationStatus(): ReturnType<typeof getProfileVerificationStatusFactory> {
-        return (this._cache.getProfileVerificationStatus ??= getProfileVerificationStatusFactory(this.ctx, this)) as ReturnType<typeof getProfileVerificationStatusFactory>;
+        return (this._cache.getProfileVerificationStatus ??= getProfileVerificationStatusFactory(
+            this.ctx,
+            this,
+        )) as ReturnType<typeof getProfileVerificationStatusFactory>;
     }
 
     public get getQR(): ReturnType<typeof getQRFactory> {
@@ -1508,111 +2283,167 @@ export class API {
     }
 
     public get getQuickMessageList(): ReturnType<typeof getQuickMessageListFactory> {
-        return (this._cache.getQuickMessageList ??= getQuickMessageListFactory(this.ctx, this)) as ReturnType<typeof getQuickMessageListFactory>;
+        return (this._cache.getQuickMessageList ??= getQuickMessageListFactory(this.ctx, this)) as ReturnType<
+            typeof getQuickMessageListFactory
+        >;
     }
 
     public get getQuotaCommunity(): ReturnType<typeof getQuotaCommunityFactory> {
-        return (this._cache.getQuotaCommunity ??= getQuotaCommunityFactory(this.ctx, this)) as ReturnType<typeof getQuotaCommunityFactory>;
+        return (this._cache.getQuotaCommunity ??= getQuotaCommunityFactory(this.ctx, this)) as ReturnType<
+            typeof getQuotaCommunityFactory
+        >;
     }
 
     public get getRecentSearchList(): ReturnType<typeof getRecentSearchListFactory> {
-        return (this._cache.getRecentSearchList ??= getRecentSearchListFactory(this.ctx, this)) as ReturnType<typeof getRecentSearchListFactory>;
+        return (this._cache.getRecentSearchList ??= getRecentSearchListFactory(this.ctx, this)) as ReturnType<
+            typeof getRecentSearchListFactory
+        >;
     }
 
     public get getRelatedFriendGroup(): ReturnType<typeof getRelatedFriendGroupFactory> {
-        return (this._cache.getRelatedFriendGroup ??= getRelatedFriendGroupFactory(this.ctx, this)) as ReturnType<typeof getRelatedFriendGroupFactory>;
+        return (this._cache.getRelatedFriendGroup ??= getRelatedFriendGroupFactory(this.ctx, this)) as ReturnType<
+            typeof getRelatedFriendGroupFactory
+        >;
     }
 
     public get getReminder(): ReturnType<typeof getReminderFactory> {
-        return (this._cache.getReminder ??= getReminderFactory(this.ctx, this)) as ReturnType<typeof getReminderFactory>;
+        return (this._cache.getReminder ??= getReminderFactory(this.ctx, this)) as ReturnType<
+            typeof getReminderFactory
+        >;
     }
 
     public get getReminderResponses(): ReturnType<typeof getReminderResponsesFactory> {
-        return (this._cache.getReminderResponses ??= getReminderResponsesFactory(this.ctx, this)) as ReturnType<typeof getReminderResponsesFactory>;
+        return (this._cache.getReminderResponses ??= getReminderResponsesFactory(this.ctx, this)) as ReturnType<
+            typeof getReminderResponsesFactory
+        >;
     }
 
     public get getSentFriendRequest(): ReturnType<typeof getSentFriendRequestFactory> {
-        return (this._cache.getSentFriendRequest ??= getSentFriendRequestFactory(this.ctx, this)) as ReturnType<typeof getSentFriendRequestFactory>;
+        return (this._cache.getSentFriendRequest ??= getSentFriendRequestFactory(this.ctx, this)) as ReturnType<
+            typeof getSentFriendRequestFactory
+        >;
     }
 
     public get getSettings(): ReturnType<typeof getSettingsFactory> {
-        return (this._cache.getSettings ??= getSettingsFactory(this.ctx, this)) as ReturnType<typeof getSettingsFactory>;
+        return (this._cache.getSettings ??= getSettingsFactory(this.ctx, this)) as ReturnType<
+            typeof getSettingsFactory
+        >;
     }
 
     public get getStickerCategoriesV2(): ReturnType<typeof getStickerCategoriesV2Factory> {
-        return (this._cache.getStickerCategoriesV2 ??= getStickerCategoriesV2Factory(this.ctx, this)) as ReturnType<typeof getStickerCategoriesV2Factory>;
+        return (this._cache.getStickerCategoriesV2 ??= getStickerCategoriesV2Factory(this.ctx, this)) as ReturnType<
+            typeof getStickerCategoriesV2Factory
+        >;
     }
 
     public get getStickerCategoryData(): ReturnType<typeof getStickerCategoryDataFactory> {
-        return (this._cache.getStickerCategoryData ??= getStickerCategoryDataFactory(this.ctx, this)) as ReturnType<typeof getStickerCategoryDataFactory>;
+        return (this._cache.getStickerCategoryData ??= getStickerCategoryDataFactory(this.ctx, this)) as ReturnType<
+            typeof getStickerCategoryDataFactory
+        >;
     }
 
     public get getStickerCategoryDetail(): ReturnType<typeof getStickerCategoryDetailFactory> {
-        return (this._cache.getStickerCategoryDetail ??= getStickerCategoryDetailFactory(this.ctx, this)) as ReturnType<typeof getStickerCategoryDetailFactory>;
+        return (this._cache.getStickerCategoryDetail ??= getStickerCategoryDetailFactory(this.ctx, this)) as ReturnType<
+            typeof getStickerCategoryDetailFactory
+        >;
     }
 
     public get getStickerHello(): ReturnType<typeof getStickerHelloFactory> {
-        return (this._cache.getStickerHello ??= getStickerHelloFactory(this.ctx, this)) as ReturnType<typeof getStickerHelloFactory>;
+        return (this._cache.getStickerHello ??= getStickerHelloFactory(this.ctx, this)) as ReturnType<
+            typeof getStickerHelloFactory
+        >;
     }
 
     public get getStickers(): ReturnType<typeof getStickersFactory> {
-        return (this._cache.getStickers ??= getStickersFactory(this.ctx, this)) as ReturnType<typeof getStickersFactory>;
+        return (this._cache.getStickers ??= getStickersFactory(this.ctx, this)) as ReturnType<
+            typeof getStickersFactory
+        >;
     }
 
     public get getStickersDetail(): ReturnType<typeof getStickersDetailFactory> {
-        return (this._cache.getStickersDetail ??= getStickersDetailFactory(this.ctx, this)) as ReturnType<typeof getStickersDetailFactory>;
+        return (this._cache.getStickersDetail ??= getStickersDetailFactory(this.ctx, this)) as ReturnType<
+            typeof getStickersDetailFactory
+        >;
     }
 
     public get getStickerSuggestion(): ReturnType<typeof getStickerSuggestionFactory> {
-        return (this._cache.getStickerSuggestion ??= getStickerSuggestionFactory(this.ctx, this)) as ReturnType<typeof getStickerSuggestionFactory>;
+        return (this._cache.getStickerSuggestion ??= getStickerSuggestionFactory(this.ctx, this)) as ReturnType<
+            typeof getStickerSuggestionFactory
+        >;
     }
 
     public get getStickerSuggestKeywords(): ReturnType<typeof getStickerSuggestKeywordsFactory> {
-        return (this._cache.getStickerSuggestKeywords ??= getStickerSuggestKeywordsFactory(this.ctx, this)) as ReturnType<typeof getStickerSuggestKeywordsFactory>;
+        return (this._cache.getStickerSuggestKeywords ??= getStickerSuggestKeywordsFactory(
+            this.ctx,
+            this,
+        )) as ReturnType<typeof getStickerSuggestKeywordsFactory>;
     }
 
     public get getSuggestedConversations(): ReturnType<typeof getSuggestedConversationsFactory> {
-        return (this._cache.getSuggestedConversations ??= getSuggestedConversationsFactory(this.ctx, this)) as ReturnType<typeof getSuggestedConversationsFactory>;
+        return (this._cache.getSuggestedConversations ??= getSuggestedConversationsFactory(
+            this.ctx,
+            this,
+        )) as ReturnType<typeof getSuggestedConversationsFactory>;
     }
 
     public get getSyncData(): ReturnType<typeof getSyncDataFactory> {
-        return (this._cache.getSyncData ??= getSyncDataFactory(this.ctx, this)) as ReturnType<typeof getSyncDataFactory>;
+        return (this._cache.getSyncData ??= getSyncDataFactory(this.ctx, this)) as ReturnType<
+            typeof getSyncDataFactory
+        >;
     }
 
     public get getUnreadMark(): ReturnType<typeof getUnreadMarkFactory> {
-        return (this._cache.getUnreadMark ??= getUnreadMarkFactory(this.ctx, this)) as ReturnType<typeof getUnreadMarkFactory>;
+        return (this._cache.getUnreadMark ??= getUnreadMarkFactory(this.ctx, this)) as ReturnType<
+            typeof getUnreadMarkFactory
+        >;
     }
 
     public get getUsageMyCloud(): ReturnType<typeof getUsageMyCloudFactory> {
-        return (this._cache.getUsageMyCloud ??= getUsageMyCloudFactory(this.ctx, this)) as ReturnType<typeof getUsageMyCloudFactory>;
+        return (this._cache.getUsageMyCloud ??= getUsageMyCloudFactory(this.ctx, this)) as ReturnType<
+            typeof getUsageMyCloudFactory
+        >;
     }
 
     public get getUsageZCloud(): ReturnType<typeof getUsageZCloudFactory> {
-        return (this._cache.getUsageZCloud ??= getUsageZCloudFactory(this.ctx, this)) as ReturnType<typeof getUsageZCloudFactory>;
+        return (this._cache.getUsageZCloud ??= getUsageZCloudFactory(this.ctx, this)) as ReturnType<
+            typeof getUsageZCloudFactory
+        >;
     }
 
     public get getUserInfo(): ReturnType<typeof getUserInfoFactory> {
-        return (this._cache.getUserInfo ??= getUserInfoFactory(this.ctx, this)) as ReturnType<typeof getUserInfoFactory>;
+        return (this._cache.getUserInfo ??= getUserInfoFactory(this.ctx, this)) as ReturnType<
+            typeof getUserInfoFactory
+        >;
     }
 
     public get holdVoiceCall(): ReturnType<typeof holdVoiceCallFactory> {
-        return (this._cache.holdVoiceCall ??= holdVoiceCallFactory(this.ctx, this)) as ReturnType<typeof holdVoiceCallFactory>;
+        return (this._cache.holdVoiceCall ??= holdVoiceCallFactory(this.ctx, this)) as ReturnType<
+            typeof holdVoiceCallFactory
+        >;
     }
 
     public get inviteUserToGroups(): ReturnType<typeof inviteUserToGroupsFactory> {
-        return (this._cache.inviteUserToGroups ??= inviteUserToGroupsFactory(this.ctx, this)) as ReturnType<typeof inviteUserToGroupsFactory>;
+        return (this._cache.inviteUserToGroups ??= inviteUserToGroupsFactory(this.ctx, this)) as ReturnType<
+            typeof inviteUserToGroupsFactory
+        >;
     }
 
     public get joinGroupCall(): ReturnType<typeof joinGroupCallFactory> {
-        return (this._cache.joinGroupCall ??= joinGroupCallFactory(this.ctx, this)) as ReturnType<typeof joinGroupCallFactory>;
+        return (this._cache.joinGroupCall ??= joinGroupCallFactory(this.ctx, this)) as ReturnType<
+            typeof joinGroupCallFactory
+        >;
     }
 
     public get joinGroupInviteBox(): ReturnType<typeof joinGroupInviteBoxFactory> {
-        return (this._cache.joinGroupInviteBox ??= joinGroupInviteBoxFactory(this.ctx, this)) as ReturnType<typeof joinGroupInviteBoxFactory>;
+        return (this._cache.joinGroupInviteBox ??= joinGroupInviteBoxFactory(this.ctx, this)) as ReturnType<
+            typeof joinGroupInviteBoxFactory
+        >;
     }
 
     public get joinGroupLink(): ReturnType<typeof joinGroupLinkFactory> {
-        return (this._cache.joinGroupLink ??= joinGroupLinkFactory(this.ctx, this)) as ReturnType<typeof joinGroupLinkFactory>;
+        return (this._cache.joinGroupLink ??= joinGroupLinkFactory(this.ctx, this)) as ReturnType<
+            typeof joinGroupLinkFactory
+        >;
     }
 
     public get keepAlive(): ReturnType<typeof keepAliveFactory> {
@@ -1632,7 +2463,9 @@ export class API {
     }
 
     public get logEndVoiceCall(): ReturnType<typeof logEndVoiceCallFactory> {
-        return (this._cache.logEndVoiceCall ??= logEndVoiceCallFactory(this.ctx, this)) as ReturnType<typeof logEndVoiceCallFactory>;
+        return (this._cache.logEndVoiceCall ??= logEndVoiceCallFactory(this.ctx, this)) as ReturnType<
+            typeof logEndVoiceCallFactory
+        >;
     }
 
     public get lostFocus(): ReturnType<typeof lostFocusFactory> {
@@ -1640,7 +2473,9 @@ export class API {
     }
 
     public get notifyGroupCall(): ReturnType<typeof notifyGroupCallFactory> {
-        return (this._cache.notifyGroupCall ??= notifyGroupCallFactory(this.ctx, this)) as ReturnType<typeof notifyGroupCallFactory>;
+        return (this._cache.notifyGroupCall ??= notifyGroupCallFactory(this.ctx, this)) as ReturnType<
+            typeof notifyGroupCallFactory
+        >;
     }
 
     public get parseLink(): ReturnType<typeof parseLinkFactory> {
@@ -1648,11 +2483,15 @@ export class API {
     }
 
     public get pingGroupCall(): ReturnType<typeof pingGroupCallFactory> {
-        return (this._cache.pingGroupCall ??= pingGroupCallFactory(this.ctx, this)) as ReturnType<typeof pingGroupCallFactory>;
+        return (this._cache.pingGroupCall ??= pingGroupCallFactory(this.ctx, this)) as ReturnType<
+            typeof pingGroupCallFactory
+        >;
     }
 
     public get preloadConversations(): ReturnType<typeof preloadConversationsFactory> {
-        return (this._cache.preloadConversations ??= preloadConversationsFactory(this.ctx, this)) as ReturnType<typeof preloadConversationsFactory>;
+        return (this._cache.preloadConversations ??= preloadConversationsFactory(this.ctx, this)) as ReturnType<
+            typeof preloadConversationsFactory
+        >;
     }
 
     public get pullMobile(): ReturnType<typeof pullMobileFactory> {
@@ -1660,95 +2499,142 @@ export class API {
     }
 
     public get readContactTab(): ReturnType<typeof readContactTabFactory> {
-        return (this._cache.readContactTab ??= readContactTabFactory(this.ctx, this)) as ReturnType<typeof readContactTabFactory>;
+        return (this._cache.readContactTab ??= readContactTabFactory(this.ctx, this)) as ReturnType<
+            typeof readContactTabFactory
+        >;
     }
 
     public get registerCatalog(): ReturnType<typeof registerCatalogFactory> {
-        return (this._cache.registerCatalog ??= registerCatalogFactory(this.ctx, this)) as ReturnType<typeof registerCatalogFactory>;
+        return (this._cache.registerCatalog ??= registerCatalogFactory(this.ctx, this)) as ReturnType<
+            typeof registerCatalogFactory
+        >;
     }
 
     public get rejectFriendRequest(): ReturnType<typeof rejectFriendRequestFactory> {
-        return (this._cache.rejectFriendRequest ??= rejectFriendRequestFactory(this.ctx, this)) as ReturnType<typeof rejectFriendRequestFactory>;
+        return (this._cache.rejectFriendRequest ??= rejectFriendRequestFactory(this.ctx, this)) as ReturnType<
+            typeof rejectFriendRequestFactory
+        >;
     }
 
     public get removeConversationMedia(): ReturnType<typeof removeConversationMediaFactory> {
-        return (this._cache.removeConversationMedia ??= removeConversationMediaFactory(this.ctx, this)) as ReturnType<typeof removeConversationMediaFactory>;
+        return (this._cache.removeConversationMedia ??= removeConversationMediaFactory(this.ctx, this)) as ReturnType<
+            typeof removeConversationMediaFactory
+        >;
     }
 
     public get removeFriend(): ReturnType<typeof removeFriendFactory> {
-        return (this._cache.removeFriend ??= removeFriendFactory(this.ctx, this)) as ReturnType<typeof removeFriendFactory>;
+        return (this._cache.removeFriend ??= removeFriendFactory(this.ctx, this)) as ReturnType<
+            typeof removeFriendFactory
+        >;
     }
 
     public get removeFriendAlias(): ReturnType<typeof removeFriendAliasFactory> {
-        return (this._cache.removeFriendAlias ??= removeFriendAliasFactory(this.ctx, this)) as ReturnType<typeof removeFriendAliasFactory>;
+        return (this._cache.removeFriendAlias ??= removeFriendAliasFactory(this.ctx, this)) as ReturnType<
+            typeof removeFriendAliasFactory
+        >;
     }
 
     public get removeGroupBlockedMember(): ReturnType<typeof removeGroupBlockedMemberFactory> {
-        return (this._cache.removeGroupBlockedMember ??= removeGroupBlockedMemberFactory(this.ctx, this)) as ReturnType<typeof removeGroupBlockedMemberFactory>;
+        return (this._cache.removeGroupBlockedMember ??= removeGroupBlockedMemberFactory(this.ctx, this)) as ReturnType<
+            typeof removeGroupBlockedMemberFactory
+        >;
     }
 
     public get removeGroupDeputy(): ReturnType<typeof removeGroupDeputyFactory> {
-        return (this._cache.removeGroupDeputy ??= removeGroupDeputyFactory(this.ctx, this)) as ReturnType<typeof removeGroupDeputyFactory>;
+        return (this._cache.removeGroupDeputy ??= removeGroupDeputyFactory(this.ctx, this)) as ReturnType<
+            typeof removeGroupDeputyFactory
+        >;
     }
 
     public get removePersonalMedia(): ReturnType<typeof removePersonalMediaFactory> {
-        return (this._cache.removePersonalMedia ??= removePersonalMediaFactory(this.ctx, this)) as ReturnType<typeof removePersonalMediaFactory>;
+        return (this._cache.removePersonalMedia ??= removePersonalMediaFactory(this.ctx, this)) as ReturnType<
+            typeof removePersonalMediaFactory
+        >;
     }
 
     public get removeQuickMessage(): ReturnType<typeof removeQuickMessageFactory> {
-        return (this._cache.removeQuickMessage ??= removeQuickMessageFactory(this.ctx, this)) as ReturnType<typeof removeQuickMessageFactory>;
+        return (this._cache.removeQuickMessage ??= removeQuickMessageFactory(this.ctx, this)) as ReturnType<
+            typeof removeQuickMessageFactory
+        >;
     }
 
     public get removeReminder(): ReturnType<typeof removeReminderFactory> {
-        return (this._cache.removeReminder ??= removeReminderFactory(this.ctx, this)) as ReturnType<typeof removeReminderFactory>;
+        return (this._cache.removeReminder ??= removeReminderFactory(this.ctx, this)) as ReturnType<
+            typeof removeReminderFactory
+        >;
     }
 
     public get removeUnreadMark(): ReturnType<typeof removeUnreadMarkFactory> {
-        return (this._cache.removeUnreadMark ??= removeUnreadMarkFactory(this.ctx, this)) as ReturnType<typeof removeUnreadMarkFactory>;
+        return (this._cache.removeUnreadMark ??= removeUnreadMarkFactory(this.ctx, this)) as ReturnType<
+            typeof removeUnreadMarkFactory
+        >;
     }
 
     public get removeUserFromGroup(): ReturnType<typeof removeUserFromGroupFactory> {
-        return (this._cache.removeUserFromGroup ??= removeUserFromGroupFactory(this.ctx, this)) as ReturnType<typeof removeUserFromGroupFactory>;
+        return (this._cache.removeUserFromGroup ??= removeUserFromGroupFactory(this.ctx, this)) as ReturnType<
+            typeof removeUserFromGroupFactory
+        >;
     }
 
     public get requestAudioToVideoCall(): ReturnType<typeof requestAudioToVideoCallFactory> {
-        return (this._cache.requestAudioToVideoCall ??= requestAudioToVideoCallFactory(this.ctx, this)) as ReturnType<typeof requestAudioToVideoCallFactory>;
+        return (this._cache.requestAudioToVideoCall ??= requestAudioToVideoCallFactory(this.ctx, this)) as ReturnType<
+            typeof requestAudioToVideoCallFactory
+        >;
     }
 
     public get requestGroupCall(): ReturnType<typeof requestGroupCallFactory> {
-        return (this._cache.requestGroupCall ??= requestGroupCallFactory(this.ctx, this)) as ReturnType<typeof requestGroupCallFactory>;
+        return (this._cache.requestGroupCall ??= requestGroupCallFactory(this.ctx, this)) as ReturnType<
+            typeof requestGroupCallFactory
+        >;
     }
 
     public get requestShareScreenCall(): ReturnType<typeof requestShareScreenCallFactory> {
-        return (this._cache.requestShareScreenCall ??= requestShareScreenCallFactory(this.ctx, this)) as ReturnType<typeof requestShareScreenCallFactory>;
+        return (this._cache.requestShareScreenCall ??= requestShareScreenCallFactory(this.ctx, this)) as ReturnType<
+            typeof requestShareScreenCallFactory
+        >;
     }
 
     public get requestSyncFromPhone(): ReturnType<typeof requestSyncFromPhoneFactory> {
-        return (this._cache.requestSyncFromPhone ??= requestSyncFromPhoneFactory(this.ctx, this)) as ReturnType<typeof requestSyncFromPhoneFactory>;
+        return (this._cache.requestSyncFromPhone ??= requestSyncFromPhoneFactory(this.ctx, this)) as ReturnType<
+            typeof requestSyncFromPhoneFactory
+        >;
     }
 
     public get requestVoiceCall(): ReturnType<typeof requestVoiceCallFactory> {
-        return (this._cache.requestVoiceCall ??= requestVoiceCallFactory(this.ctx, this)) as ReturnType<typeof requestVoiceCallFactory>;
+        return (this._cache.requestVoiceCall ??= requestVoiceCallFactory(this.ctx, this)) as ReturnType<
+            typeof requestVoiceCallFactory
+        >;
     }
 
     public get resetHiddenConversPin(): ReturnType<typeof resetHiddenConversPinFactory> {
-        return (this._cache.resetHiddenConversPin ??= resetHiddenConversPinFactory(this.ctx, this)) as ReturnType<typeof resetHiddenConversPinFactory>;
+        return (this._cache.resetHiddenConversPin ??= resetHiddenConversPinFactory(this.ctx, this)) as ReturnType<
+            typeof resetHiddenConversPinFactory
+        >;
     }
 
     public get reuseAvatar(): ReturnType<typeof reuseAvatarFactory> {
-        return (this._cache.reuseAvatar ??= reuseAvatarFactory(this.ctx, this)) as ReturnType<typeof reuseAvatarFactory>;
+        return (this._cache.reuseAvatar ??= reuseAvatarFactory(this.ctx, this)) as ReturnType<
+            typeof reuseAvatarFactory
+        >;
     }
 
     public get reviewPendingMemberRequest(): ReturnType<typeof reviewPendingMemberRequestFactory> {
-        return (this._cache.reviewPendingMemberRequest ??= reviewPendingMemberRequestFactory(this.ctx, this)) as ReturnType<typeof reviewPendingMemberRequestFactory>;
+        return (this._cache.reviewPendingMemberRequest ??= reviewPendingMemberRequestFactory(
+            this.ctx,
+            this,
+        )) as ReturnType<typeof reviewPendingMemberRequestFactory>;
     }
 
     public get ringRingGroupCall(): ReturnType<typeof ringRingGroupCallFactory> {
-        return (this._cache.ringRingGroupCall ??= ringRingGroupCallFactory(this.ctx, this)) as ReturnType<typeof ringRingGroupCallFactory>;
+        return (this._cache.ringRingGroupCall ??= ringRingGroupCallFactory(this.ctx, this)) as ReturnType<
+            typeof ringRingGroupCallFactory
+        >;
     }
 
     public get ringRingVoiceCall(): ReturnType<typeof ringRingVoiceCallFactory> {
-        return (this._cache.ringRingVoiceCall ??= ringRingVoiceCallFactory(this.ctx, this)) as ReturnType<typeof ringRingVoiceCallFactory>;
+        return (this._cache.ringRingVoiceCall ??= ringRingVoiceCallFactory(this.ctx, this)) as ReturnType<
+            typeof ringRingVoiceCallFactory
+        >;
     }
 
     public get scanURL(): ReturnType<typeof scanURLFactory> {
@@ -1756,11 +2642,15 @@ export class API {
     }
 
     public get searchSticker(): ReturnType<typeof searchStickerFactory> {
-        return (this._cache.searchSticker ??= searchStickerFactory(this.ctx, this)) as ReturnType<typeof searchStickerFactory>;
+        return (this._cache.searchSticker ??= searchStickerFactory(this.ctx, this)) as ReturnType<
+            typeof searchStickerFactory
+        >;
     }
 
     public get sendBankCard(): ReturnType<typeof sendBankCardFactory> {
-        return (this._cache.sendBankCard ??= sendBankCardFactory(this.ctx, this)) as ReturnType<typeof sendBankCardFactory>;
+        return (this._cache.sendBankCard ??= sendBankCardFactory(this.ctx, this)) as ReturnType<
+            typeof sendBankCardFactory
+        >;
     }
 
     public get sendCard(): ReturnType<typeof sendCardFactory> {
@@ -1768,11 +2658,15 @@ export class API {
     }
 
     public get sendDeliveredEvent(): ReturnType<typeof sendDeliveredEventFactory> {
-        return (this._cache.sendDeliveredEvent ??= sendDeliveredEventFactory(this.ctx, this)) as ReturnType<typeof sendDeliveredEventFactory>;
+        return (this._cache.sendDeliveredEvent ??= sendDeliveredEventFactory(this.ctx, this)) as ReturnType<
+            typeof sendDeliveredEventFactory
+        >;
     }
 
     public get sendFriendRequest(): ReturnType<typeof sendFriendRequestFactory> {
-        return (this._cache.sendFriendRequest ??= sendFriendRequestFactory(this.ctx, this)) as ReturnType<typeof sendFriendRequestFactory>;
+        return (this._cache.sendFriendRequest ??= sendFriendRequestFactory(this.ctx, this)) as ReturnType<
+            typeof sendFriendRequestFactory
+        >;
     }
 
     public get sendLink(): ReturnType<typeof sendLinkFactory> {
@@ -1780,7 +2674,9 @@ export class API {
     }
 
     public get sendMessage(): ReturnType<typeof sendMessageFactory> {
-        return (this._cache.sendMessage ??= sendMessageFactory(this.ctx, this)) as ReturnType<typeof sendMessageFactory>;
+        return (this._cache.sendMessage ??= sendMessageFactory(this.ctx, this)) as ReturnType<
+            typeof sendMessageFactory
+        >;
     }
 
     public get sendReport(): ReturnType<typeof sendReportFactory> {
@@ -1788,23 +2684,33 @@ export class API {
     }
 
     public get sendRequestGroupCall(): ReturnType<typeof sendRequestGroupCallFactory> {
-        return (this._cache.sendRequestGroupCall ??= sendRequestGroupCallFactory(this.ctx, this)) as ReturnType<typeof sendRequestGroupCallFactory>;
+        return (this._cache.sendRequestGroupCall ??= sendRequestGroupCallFactory(this.ctx, this)) as ReturnType<
+            typeof sendRequestGroupCallFactory
+        >;
     }
 
     public get sendRequestVoiceCall(): ReturnType<typeof sendRequestVoiceCallFactory> {
-        return (this._cache.sendRequestVoiceCall ??= sendRequestVoiceCallFactory(this.ctx, this)) as ReturnType<typeof sendRequestVoiceCallFactory>;
+        return (this._cache.sendRequestVoiceCall ??= sendRequestVoiceCallFactory(this.ctx, this)) as ReturnType<
+            typeof sendRequestVoiceCallFactory
+        >;
     }
 
     public get sendSeenEvent(): ReturnType<typeof sendSeenEventFactory> {
-        return (this._cache.sendSeenEvent ??= sendSeenEventFactory(this.ctx, this)) as ReturnType<typeof sendSeenEventFactory>;
+        return (this._cache.sendSeenEvent ??= sendSeenEventFactory(this.ctx, this)) as ReturnType<
+            typeof sendSeenEventFactory
+        >;
     }
 
     public get sendSticker(): ReturnType<typeof sendStickerFactory> {
-        return (this._cache.sendSticker ??= sendStickerFactory(this.ctx, this)) as ReturnType<typeof sendStickerFactory>;
+        return (this._cache.sendSticker ??= sendStickerFactory(this.ctx, this)) as ReturnType<
+            typeof sendStickerFactory
+        >;
     }
 
     public get sendTypingEvent(): ReturnType<typeof sendTypingEventFactory> {
-        return (this._cache.sendTypingEvent ??= sendTypingEventFactory(this.ctx, this)) as ReturnType<typeof sendTypingEventFactory>;
+        return (this._cache.sendTypingEvent ??= sendTypingEventFactory(this.ctx, this)) as ReturnType<
+            typeof sendTypingEventFactory
+        >;
     }
 
     public get sendVideo(): ReturnType<typeof sendVideoFactory> {
@@ -1816,11 +2722,15 @@ export class API {
     }
 
     public get sendVoiceCall(): ReturnType<typeof sendVoiceCallFactory> {
-        return (this._cache.sendVoiceCall ??= sendVoiceCallFactory(this.ctx, this)) as ReturnType<typeof sendVoiceCallFactory>;
+        return (this._cache.sendVoiceCall ??= sendVoiceCallFactory(this.ctx, this)) as ReturnType<
+            typeof sendVoiceCallFactory
+        >;
     }
 
     public get setHiddenConversations(): ReturnType<typeof setHiddenConversationsFactory> {
-        return (this._cache.setHiddenConversations ??= setHiddenConversationsFactory(this.ctx, this)) as ReturnType<typeof setHiddenConversationsFactory>;
+        return (this._cache.setHiddenConversations ??= setHiddenConversationsFactory(this.ctx, this)) as ReturnType<
+            typeof setHiddenConversationsFactory
+        >;
     }
 
     public get setMute(): ReturnType<typeof setMuteFactory> {
@@ -1828,7 +2738,9 @@ export class API {
     }
 
     public get setPinnedConversations(): ReturnType<typeof setPinnedConversationsFactory> {
-        return (this._cache.setPinnedConversations ??= setPinnedConversationsFactory(this.ctx, this)) as ReturnType<typeof setPinnedConversationsFactory>;
+        return (this._cache.setPinnedConversations ??= setPinnedConversationsFactory(this.ctx, this)) as ReturnType<
+            typeof setPinnedConversationsFactory
+        >;
     }
 
     public get sharePoll(): ReturnType<typeof sharePollFactory> {
@@ -1836,7 +2748,9 @@ export class API {
     }
 
     public get shareScreenGroupCall(): ReturnType<typeof shareScreenGroupCallFactory> {
-        return (this._cache.shareScreenGroupCall ??= shareScreenGroupCallFactory(this.ctx, this)) as ReturnType<typeof shareScreenGroupCallFactory>;
+        return (this._cache.shareScreenGroupCall ??= shareScreenGroupCallFactory(this.ctx, this)) as ReturnType<
+            typeof shareScreenGroupCallFactory
+        >;
     }
 
     public get unblockOA(): ReturnType<typeof unblockOAFactory> {
@@ -1844,7 +2758,9 @@ export class API {
     }
 
     public get unblockUser(): ReturnType<typeof unblockUserFactory> {
-        return (this._cache.unblockUser ??= unblockUserFactory(this.ctx, this)) as ReturnType<typeof unblockUserFactory>;
+        return (this._cache.unblockUser ??= unblockUserFactory(this.ctx, this)) as ReturnType<
+            typeof unblockUserFactory
+        >;
     }
 
     public get undo(): ReturnType<typeof undoFactory> {
@@ -1852,55 +2768,81 @@ export class API {
     }
 
     public get undoFriendRequest(): ReturnType<typeof undoFriendRequestFactory> {
-        return (this._cache.undoFriendRequest ??= undoFriendRequestFactory(this.ctx, this)) as ReturnType<typeof undoFriendRequestFactory>;
+        return (this._cache.undoFriendRequest ??= undoFriendRequestFactory(this.ctx, this)) as ReturnType<
+            typeof undoFriendRequestFactory
+        >;
     }
 
     public get undoMultiMessage(): ReturnType<typeof undoMultiMessageFactory> {
-        return (this._cache.undoMultiMessage ??= undoMultiMessageFactory(this.ctx, this)) as ReturnType<typeof undoMultiMessageFactory>;
+        return (this._cache.undoMultiMessage ??= undoMultiMessageFactory(this.ctx, this)) as ReturnType<
+            typeof undoMultiMessageFactory
+        >;
     }
 
     public get unholdVoiceCall(): ReturnType<typeof unholdVoiceCallFactory> {
-        return (this._cache.unholdVoiceCall ??= unholdVoiceCallFactory(this.ctx, this)) as ReturnType<typeof unholdVoiceCallFactory>;
+        return (this._cache.unholdVoiceCall ??= unholdVoiceCallFactory(this.ctx, this)) as ReturnType<
+            typeof unholdVoiceCallFactory
+        >;
     }
 
     public get updateActiveStatus(): ReturnType<typeof updateActiveStatusFactory> {
-        return (this._cache.updateActiveStatus ??= updateActiveStatusFactory(this.ctx, this)) as ReturnType<typeof updateActiveStatusFactory>;
+        return (this._cache.updateActiveStatus ??= updateActiveStatusFactory(this.ctx, this)) as ReturnType<
+            typeof updateActiveStatusFactory
+        >;
     }
 
     public get updateArchivedChatList(): ReturnType<typeof updateArchivedChatListFactory> {
-        return (this._cache.updateArchivedChatList ??= updateArchivedChatListFactory(this.ctx, this)) as ReturnType<typeof updateArchivedChatListFactory>;
+        return (this._cache.updateArchivedChatList ??= updateArchivedChatListFactory(this.ctx, this)) as ReturnType<
+            typeof updateArchivedChatListFactory
+        >;
     }
 
     public get updateAutoDeleteChat(): ReturnType<typeof updateAutoDeleteChatFactory> {
-        return (this._cache.updateAutoDeleteChat ??= updateAutoDeleteChatFactory(this.ctx, this)) as ReturnType<typeof updateAutoDeleteChatFactory>;
+        return (this._cache.updateAutoDeleteChat ??= updateAutoDeleteChatFactory(this.ctx, this)) as ReturnType<
+            typeof updateAutoDeleteChatFactory
+        >;
     }
 
     public get updateAutoReply(): ReturnType<typeof updateAutoReplyFactory> {
-        return (this._cache.updateAutoReply ??= updateAutoReplyFactory(this.ctx, this)) as ReturnType<typeof updateAutoReplyFactory>;
+        return (this._cache.updateAutoReply ??= updateAutoReplyFactory(this.ctx, this)) as ReturnType<
+            typeof updateAutoReplyFactory
+        >;
     }
 
     public get updateBankAccount(): ReturnType<typeof updateBankAccountFactory> {
-        return (this._cache.updateBankAccount ??= updateBankAccountFactory(this.ctx, this)) as ReturnType<typeof updateBankAccountFactory>;
+        return (this._cache.updateBankAccount ??= updateBankAccountFactory(this.ctx, this)) as ReturnType<
+            typeof updateBankAccountFactory
+        >;
     }
 
     public get updateCallMediaState(): ReturnType<typeof updateCallMediaStateFactory> {
-        return (this._cache.updateCallMediaState ??= updateCallMediaStateFactory(this.ctx, this)) as ReturnType<typeof updateCallMediaStateFactory>;
+        return (this._cache.updateCallMediaState ??= updateCallMediaStateFactory(this.ctx, this)) as ReturnType<
+            typeof updateCallMediaStateFactory
+        >;
     }
 
     public get updateCatalog(): ReturnType<typeof updateCatalogFactory> {
-        return (this._cache.updateCatalog ??= updateCatalogFactory(this.ctx, this)) as ReturnType<typeof updateCatalogFactory>;
+        return (this._cache.updateCatalog ??= updateCatalogFactory(this.ctx, this)) as ReturnType<
+            typeof updateCatalogFactory
+        >;
     }
 
     public get updateGroupSettings(): ReturnType<typeof updateGroupSettingsFactory> {
-        return (this._cache.updateGroupSettings ??= updateGroupSettingsFactory(this.ctx, this)) as ReturnType<typeof updateGroupSettingsFactory>;
+        return (this._cache.updateGroupSettings ??= updateGroupSettingsFactory(this.ctx, this)) as ReturnType<
+            typeof updateGroupSettingsFactory
+        >;
     }
 
     public get updateHiddenConversPin(): ReturnType<typeof updateHiddenConversPinFactory> {
-        return (this._cache.updateHiddenConversPin ??= updateHiddenConversPinFactory(this.ctx, this)) as ReturnType<typeof updateHiddenConversPinFactory>;
+        return (this._cache.updateHiddenConversPin ??= updateHiddenConversPinFactory(this.ctx, this)) as ReturnType<
+            typeof updateHiddenConversPinFactory
+        >;
     }
 
     public get updateLabels(): ReturnType<typeof updateLabelsFactory> {
-        return (this._cache.updateLabels ??= updateLabelsFactory(this.ctx, this)) as ReturnType<typeof updateLabelsFactory>;
+        return (this._cache.updateLabels ??= updateLabelsFactory(this.ctx, this)) as ReturnType<
+            typeof updateLabelsFactory
+        >;
     }
 
     public get updateLang(): ReturnType<typeof updateLangFactory> {
@@ -1908,55 +2850,81 @@ export class API {
     }
 
     public get updatePinConversations(): ReturnType<typeof updatePinConversationsFactory> {
-        return (this._cache.updatePinConversations ??= updatePinConversationsFactory(this.ctx, this)) as ReturnType<typeof updatePinConversationsFactory>;
+        return (this._cache.updatePinConversations ??= updatePinConversationsFactory(this.ctx, this)) as ReturnType<
+            typeof updatePinConversationsFactory
+        >;
     }
 
     public get updateProductCatalog(): ReturnType<typeof updateProductCatalogFactory> {
-        return (this._cache.updateProductCatalog ??= updateProductCatalogFactory(this.ctx, this)) as ReturnType<typeof updateProductCatalogFactory>;
+        return (this._cache.updateProductCatalog ??= updateProductCatalogFactory(this.ctx, this)) as ReturnType<
+            typeof updateProductCatalogFactory
+        >;
     }
 
     public get updateProfile(): ReturnType<typeof updateProfileFactory> {
-        return (this._cache.updateProfile ??= updateProfileFactory(this.ctx, this)) as ReturnType<typeof updateProfileFactory>;
+        return (this._cache.updateProfile ??= updateProfileFactory(this.ctx, this)) as ReturnType<
+            typeof updateProfileFactory
+        >;
     }
 
     public get updateProfileBio(): ReturnType<typeof updateProfileBioFactory> {
-        return (this._cache.updateProfileBio ??= updateProfileBioFactory(this.ctx, this)) as ReturnType<typeof updateProfileBioFactory>;
+        return (this._cache.updateProfileBio ??= updateProfileBioFactory(this.ctx, this)) as ReturnType<
+            typeof updateProfileBioFactory
+        >;
     }
 
     public get updateQuickMessage(): ReturnType<typeof updateQuickMessageFactory> {
-        return (this._cache.updateQuickMessage ??= updateQuickMessageFactory(this.ctx, this)) as ReturnType<typeof updateQuickMessageFactory>;
+        return (this._cache.updateQuickMessage ??= updateQuickMessageFactory(this.ctx, this)) as ReturnType<
+            typeof updateQuickMessageFactory
+        >;
     }
 
     public get updateRecentSearch(): ReturnType<typeof updateRecentSearchFactory> {
-        return (this._cache.updateRecentSearch ??= updateRecentSearchFactory(this.ctx, this)) as ReturnType<typeof updateRecentSearchFactory>;
+        return (this._cache.updateRecentSearch ??= updateRecentSearchFactory(this.ctx, this)) as ReturnType<
+            typeof updateRecentSearchFactory
+        >;
     }
 
     public get updateSettings(): ReturnType<typeof updateSettingsFactory> {
-        return (this._cache.updateSettings ??= updateSettingsFactory(this.ctx, this)) as ReturnType<typeof updateSettingsFactory>;
+        return (this._cache.updateSettings ??= updateSettingsFactory(this.ctx, this)) as ReturnType<
+            typeof updateSettingsFactory
+        >;
     }
 
     public get upgradeGroupToCommunity(): ReturnType<typeof upgradeGroupToCommunityFactory> {
-        return (this._cache.upgradeGroupToCommunity ??= upgradeGroupToCommunityFactory(this.ctx, this)) as ReturnType<typeof upgradeGroupToCommunityFactory>;
+        return (this._cache.upgradeGroupToCommunity ??= upgradeGroupToCommunityFactory(this.ctx, this)) as ReturnType<
+            typeof upgradeGroupToCommunityFactory
+        >;
     }
 
     public get uploadAttachment(): ReturnType<typeof uploadAttachmentFactory> {
-        return (this._cache.uploadAttachment ??= uploadAttachmentFactory(this.ctx, this)) as ReturnType<typeof uploadAttachmentFactory>;
+        return (this._cache.uploadAttachment ??= uploadAttachmentFactory(this.ctx, this)) as ReturnType<
+            typeof uploadAttachmentFactory
+        >;
     }
 
     public get uploadProductPhoto(): ReturnType<typeof uploadProductPhotoFactory> {
-        return (this._cache.uploadProductPhoto ??= uploadProductPhotoFactory(this.ctx, this)) as ReturnType<typeof uploadProductPhotoFactory>;
+        return (this._cache.uploadProductPhoto ??= uploadProductPhotoFactory(this.ctx, this)) as ReturnType<
+            typeof uploadProductPhotoFactory
+        >;
     }
 
     public get verifyCloudMedia(): ReturnType<typeof verifyCloudMediaFactory> {
-        return (this._cache.verifyCloudMedia ??= verifyCloudMediaFactory(this.ctx, this)) as ReturnType<typeof verifyCloudMediaFactory>;
+        return (this._cache.verifyCloudMedia ??= verifyCloudMediaFactory(this.ctx, this)) as ReturnType<
+            typeof verifyCloudMediaFactory
+        >;
     }
 
     public get verifyFriend(): ReturnType<typeof verifyFriendFactory> {
-        return (this._cache.verifyFriend ??= verifyFriendFactory(this.ctx, this)) as ReturnType<typeof verifyFriendFactory>;
+        return (this._cache.verifyFriend ??= verifyFriendFactory(this.ctx, this)) as ReturnType<
+            typeof verifyFriendFactory
+        >;
     }
 
     public get voiceToText(): ReturnType<typeof voiceToTextFactory> {
-        return (this._cache.voiceToText ??= voiceToTextFactory(this.ctx, this)) as ReturnType<typeof voiceToTextFactory>;
+        return (this._cache.voiceToText ??= voiceToTextFactory(this.ctx, this)) as ReturnType<
+            typeof voiceToTextFactory
+        >;
     }
 
     public get votePoll(): ReturnType<typeof votePollFactory> {

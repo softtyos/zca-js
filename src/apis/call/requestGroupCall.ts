@@ -1,6 +1,6 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
-import type { CallType} from "./sendVoiceCall.js";
+import type { CallType } from "./sendVoiceCall.js";
 import { normalizeGroupCallType } from "./sendVoiceCall.js";
 
 export type RequestGroupCallOptions = {
@@ -95,6 +95,32 @@ export const requestGroupCallFactory = apiFactory<RequestGroupCallResponse>()((a
             method: "GET",
         });
 
-        return utils.resolve(response);
+        const resolved = await utils.resolve(response);
+        if (resolved && typeof resolved === "object" && !Array.isArray(resolved)) {
+            const resObj = resolved as Record<string, unknown>;
+            if (typeof resObj.params === "string") {
+                try {
+                    const parsedParams = JSON.parse(resObj.params);
+                    if (parsedParams && typeof parsedParams === "object" && !Array.isArray(parsedParams)) {
+                        const paramsRecord = parsedParams as Record<string, unknown>;
+                        if (typeof paramsRecord.callSetting === "string") {
+                            try {
+                                paramsRecord.callSetting = JSON.parse(paramsRecord.callSetting);
+                            } catch {
+                                // Keep raw string if invalid JSON
+                            }
+                        }
+                        return {
+                            ...paramsRecord,
+                            ...resObj,
+                            params: paramsRecord,
+                        };
+                    }
+                } catch {
+                    // Keep original resolved object if params is not JSON
+                }
+            }
+        }
+        return resolved;
     };
 });

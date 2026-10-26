@@ -11,24 +11,24 @@ Thông tin tài khoản, đổi ảnh đại diện, cài đặt quyền riêng 
 
 ## Danh sách nhanh
 
-| Phương thức | HTTP | Endpoint Zalo | Mô tả |
-| :--- | :---: | :--- | :--- |
-| [`changeAccountAvatar`](#changeaccountavatar) | `POST` | `/api/profile/upavatar` | Thay đổi ảnh đại diện (Avatar) cho tài khoản cá nhân. |
-| [`deleteAvatar`](#deleteavatar) | `GET` | `/api/social/del-avatars` | Xóa một hoặc nhiều ảnh đại diện cũ trong kho ảnh đại diện. |
-| [`fetchAccountInfo`](#fetchaccountinfo) | `GET` | `/api/social/profile/me-v2` | API `fetchAccountInfo` thuộc phân hệ `profile`. |
-| [`getAvatarList`](#getavatarlist) | `GET` | `/api/social/avatar-list` | Lấy danh sách lịch sử các ảnh đại diện đã từng sử dụng của tài khoản. |
-| [`getAvatarUrlProfile`](#getavatarurlprofile) | `GET` | `/api/social/profile/avatar-url` | Lấy đường dẫn ảnh đại diện của danh sách hồ sơ người dùng. |
-| [`getEmojiStatusConfig`](#getemojistatusconfig) | `GET` | `/api/v1/emoji-status/resource-config` | Lấy cấu hình và danh sách bộ biểu tượng Trạng thái Emoji (Emoji Status - command 16300) |
-| [`getFullAvatar`](#getfullavatar) | `GET` | `/api/social/profile/avatar` | Lấy ảnh đại diện kích thước gốc (Full HD) của một người dùng theo UID. |
-| [`getMiniProfile`](#getminiprofile) | `POST` | `/api/social/friend/getminiprofiles` | Lấy nhanh thông tin hồ sơ rút gọn (Avatar, Global ID, gói Biz) của danh sách người dùng (command 12134) |
-| [`getProfileRank`](#getprofilerank) | `GET` | `/api/social/profile/getrank` | Lấy hạng tài khoản Zalo của một người dùng (ví dụ `"WHITE"`, `"GOLD"` - command 12012) |
-| [`getProfileVerificationStatus`](#getprofileverificationstatus) | `GET` | `/api/social/profile/verification/status` | Kiểm tra trạng thái xác thực định danh (eKYC) của tài khoản Zalo (command 12150) |
-| [`getSettings`](#getsettings) | `GET` | `Internal` | Lấy toàn bộ cấu hình quyền riêng tư và cài đặt của tài khoản hiện tại. |
-| [`getUserInfo`](#getuserinfo) | `POST` | `/api/social/friend/getprofiles/v2` | Lấy thông tin hồ sơ chi tiết (Tên, Ảnh bìa, Ngày sinh, Giới tính, Bio, Zalo Business) của một hoặc nhiều UID. |
-| [`reuseAvatar`](#reuseavatar) | `GET` | `/api/social/reuse-avatar` | Sử dụng lại một ảnh đại diện cũ từ kho lịch sử ảnh đại diện. |
-| [`updateProfile`](#updateprofile) | `POST` | `/api/social/profile/update` | Cập nhật thông tin cá nhân (Tên hiển thị, Ngày sinh, Giới tính) và thông tin Zalo Business. |
-| [`updateProfileBio`](#updateprofilebio) | `POST` | `/api/social/profile/status` | Cập nhật dòng tiểu sử (Status / Bio) trên trang cá nhân. |
-| [`updateSettings`](#updatesettings) | `GET` | `Internal` | Cập nhật cài đặt quyền riêng tư (Hiển thị ngày sinh, Trạng thái Online, Đã xem, Nguồn nhận tin nhắn/cuộc gọi, Nguồn kết bạn). |
+| Phương thức                                                     |  HTTP  | Endpoint Zalo                             | Mô tả                                                                                                                         |
+| :-------------------------------------------------------------- | :----: | :---------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------- |
+| [`changeAccountAvatar`](#changeaccountavatar)                   | `POST` | `/api/profile/upavatar`                   | Thay đổi ảnh đại diện (Avatar) cho tài khoản cá nhân.                                                                         |
+| [`deleteAvatar`](#deleteavatar)                                 | `GET`  | `/api/social/del-avatars`                 | Xóa một hoặc nhiều ảnh đại diện cũ trong kho ảnh đại diện.                                                                    |
+| [`fetchAccountInfo`](#fetchaccountinfo)                         | `GET`  | `/api/social/profile/me-v2`               | API `fetchAccountInfo` thuộc phân hệ `profile`.                                                                               |
+| [`getAvatarList`](#getavatarlist)                               | `GET`  | `/api/social/avatar-list`                 | Lấy danh sách lịch sử các ảnh đại diện đã từng sử dụng của tài khoản.                                                         |
+| [`getAvatarUrlProfile`](#getavatarurlprofile)                   | `GET`  | `/api/social/profile/avatar-url`          | Lấy đường dẫn ảnh đại diện của danh sách hồ sơ người dùng.                                                                    |
+| [`getEmojiStatusConfig`](#getemojistatusconfig)                 | `GET`  | `/api/v1/emoji-status/resource-config`    | Lấy cấu hình và danh sách bộ biểu tượng Trạng thái Emoji (Emoji Status - command 16300)                                       |
+| [`getFullAvatar`](#getfullavatar)                               | `GET`  | `/api/social/profile/avatar`              | Lấy ảnh đại diện kích thước gốc (Full HD) của một người dùng theo UID.                                                        |
+| [`getMiniProfile`](#getminiprofile)                             | `POST` | `/api/social/friend/getminiprofiles`      | Lấy nhanh thông tin hồ sơ rút gọn (Avatar, Global ID, gói Biz) của danh sách người dùng (command 12134)                       |
+| [`getProfileRank`](#getprofilerank)                             | `GET`  | `/api/social/profile/getrank`             | Lấy hạng tài khoản Zalo của một người dùng (ví dụ `"WHITE"`, `"GOLD"` - command 12012)                                        |
+| [`getProfileVerificationStatus`](#getprofileverificationstatus) | `GET`  | `/api/social/profile/verification/status` | Kiểm tra trạng thái xác thực định danh (eKYC) của tài khoản Zalo (command 12150)                                              |
+| [`getSettings`](#getsettings)                                   | `GET`  | `Internal`                                | Lấy toàn bộ cấu hình quyền riêng tư và cài đặt của tài khoản hiện tại.                                                        |
+| [`getUserInfo`](#getuserinfo)                                   | `POST` | `/api/social/friend/getprofiles/v2`       | Lấy thông tin hồ sơ chi tiết (Tên, Ảnh bìa, Ngày sinh, Giới tính, Bio, Zalo Business) của một hoặc nhiều UID.                 |
+| [`reuseAvatar`](#reuseavatar)                                   | `GET`  | `/api/social/reuse-avatar`                | Sử dụng lại một ảnh đại diện cũ từ kho lịch sử ảnh đại diện.                                                                  |
+| [`updateProfile`](#updateprofile)                               | `POST` | `/api/social/profile/update`              | Cập nhật thông tin cá nhân (Tên hiển thị, Ngày sinh, Giới tính) và thông tin Zalo Business.                                   |
+| [`updateProfileBio`](#updateprofilebio)                         | `POST` | `/api/social/profile/status`              | Cập nhật dòng tiểu sử (Status / Bio) trên trang cá nhân.                                                                      |
+| [`updateSettings`](#updatesettings)                             | `GET`  | `Internal`                                | Cập nhật cài đặt quyền riêng tư (Hiển thị ngày sinh, Trạng thái Online, Đã xem, Nguồn nhận tin nhắn/cuộc gọi, Nguồn kết bạn). |
 
 ---
 
@@ -97,9 +97,9 @@ API `fetchAccountInfo` thuộc phân hệ `profile`.
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.profile.fetchAccountInfo()
+await api.profile.fetchAccountInfo();
 // Hoặc gọi phẳng (Flat Alias):
-await api.fetchAccountInfo()
+await api.fetchAccountInfo();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -319,9 +319,9 @@ Kiểm tra trạng thái xác thực định danh (eKYC) của tài khoản Zalo
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.profile.getProfileVerificationStatus()
+await api.profile.getProfileVerificationStatus();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getProfileVerificationStatus()
+await api.getProfileVerificationStatus();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -343,9 +343,9 @@ Lấy toàn bộ cấu hình quyền riêng tư và cài đặt của tài kho�
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.profile.getSettings()
+await api.profile.getSettings();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getSettings()
+await api.getSettings();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)

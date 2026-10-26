@@ -6,15 +6,17 @@ import { Buffer } from "node:buffer";
 import { WebSocketServer, type WebSocket } from "ws";
 import {
     Zalo,
+    API,
     CallType,
     CallEventType,
     parseIncomingCallEvent,
     parseZRTPPacket,
     buildInitCallResponse,
-    type API,
     type ZaloRtcSession,
     type CallEvent,
 } from "../src/index.js";
+import { createContext, type ContextSession } from "../src/context.js";
+import toughCookie from "tough-cookie";
 
 const PORT = Number(process.env.CALL_STUDIO_PORT ?? 3388);
 const CREDENTIALS_PATH = path.resolve(process.cwd(), "test", "credentials.json");
@@ -96,8 +98,7 @@ function wireSessionEvents(session: ZaloRtcSession): void {
             pkt.cmd === 11 ||
             pkt.cmd === 12 ||
             pkt.cmd === 3 ||
-            (pkt.cmd === 32 &&
-                (pkt.flags === 5 || pkt.flags === 6 || pkt.flags === 7 || pkt.flags === 8));
+            (pkt.cmd === 32 && (pkt.flags === 5 || pkt.flags === 6 || pkt.flags === 7 || pkt.flags === 8));
         if (isImportant || controlPktCount === 1 || controlPktCount % 10 === 0) {
             console.log(
                 `📦 [UDP ZRTPControl #${controlPktCount}] isResp=${pkt.isResponse} cmd=${pkt.cmd} subCmd=${pkt.flags} err=${pkt.errorCode ?? 0} routingToken=${pkt.routingToken ?? session.getConnectionParams().routingToken}`,
@@ -142,7 +143,9 @@ function wireSessionEvents(session: ZaloRtcSession): void {
         broadcastMediaBinary(out);
 
         if (rtpIn === 1 || rtpIn % 20 === 0) {
-            console.log(`🔊 [Audio Frame In #${rtpIn}] seq=${frame.sequenceNumber} pt=${frame.payloadType} len=${frame.payload.length}B`);
+            console.log(
+                `🔊 [Audio Frame In #${rtpIn}] seq=${frame.sequenceNumber} pt=${frame.payloadType} len=${frame.payload.length}B`,
+            );
             broadcastSse({ type: "rtp_stats", rtpIn, videoIn, rtcpIn, rtpOut, videoOut });
         }
     });
@@ -166,10 +169,7 @@ function wireSessionEvents(session: ZaloRtcSession): void {
     let annexBCount = 0;
     session.on("video_annexb_frame", (frame) => {
         annexBCount++;
-        const spsProfileHex =
-            frame.sps && frame.sps.length >= 4
-                ? frame.sps.subarray(1, 4).toString("hex")
-                : "";
+        const spsProfileHex = frame.sps && frame.sps.length >= 4 ? frame.sps.subarray(1, 4).toString("hex") : "";
         if (annexBCount <= 5 || frame.isKeyframe || annexBCount % 30 === 0) {
             console.log(
                 `🎬 [H.264 Annex-B Frame #${annexBCount}] key=${frame.isKeyframe} nals=[${(frame.nalTypes ?? []).join(",")}] spsProfile=${spsProfileHex || "cached"} len=${frame.annexB.length}B`,
@@ -227,9 +227,7 @@ function handleIncomingOrControlCallEvent(ev: CallEvent, isSimulated = false): v
                     })
                     .catch(() => {});
             } else {
-                void api?.call
-                    .ringRingVoiceCall(parsedInfo.callerId, parsedInfo.callId)
-                    .catch(() => {});
+                void api?.call.ringRingVoiceCall(parsedInfo.callerId, parsedInfo.callId).catch(() => {});
             }
         }
     } else if (ev.act === "cancel" || ev.act === "end" || ev.act === "reject") {
@@ -262,11 +260,7 @@ async function ensureSimRelaySocket(): Promise<number> {
     simRelaySocket = dgram.createSocket("udp4");
     simRelaySocket.on("message", (msg, rinfo) => {
         const parsed = parseZRTPPacket(msg);
-        if (
-            parsed.family === "control" &&
-            !parsed.isResponse &&
-            (parsed.cmd === 11 || parsed.cmd === 12)
-        ) {
+        if (parsed.family === "control" && !parsed.isResponse && (parsed.cmd === 11 || parsed.cmd === 12)) {
             const resp = buildInitCallResponse({
                 callId: parsed.callId ?? parsed.headerCallId,
                 isCaller: parsed.cmd === 11,
@@ -284,37 +278,110 @@ async function ensureSimRelaySocket(): Promise<number> {
     return simRelayPort;
 }
 
+function createOfflineSimulationApi(): API {
+    const ctx = createContext(30, 689) as ContextSession;
+    ctx.uid = "687719761480069038";
+    ctx.imei = "sim-studio-imei-0001";
+    ctx.cookie = new toughCookie.CookieJar();
+    ctx.userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 Chrome/133.0.0.0 Safari/537.36";
+    ctx.language = "vi";
+    ctx.secretKey = Buffer.from("0123456789abcdef0123456789abcdef", "utf-8").toString("base64");
+    ctx.settings = {
+        features: {
+            sharefile: {
+                big_file_domain_list: [],
+                max_size_share_file_v2: 100,
+                max_size_share_file_v3: 100,
+                file_upload_show_icon_1GB: true,
+                restricted_ext: "",
+                next_file_time: 0,
+                max_file: 10,
+                max_size_photo: 20,
+                max_size_share_file: 100,
+                max_size_resize_photo: 10,
+                max_size_gif: 10,
+                max_size_original_photo: 20,
+                chunk_size_file: 1024 * 1024,
+                restricted_ext_file: [],
+            },
+            socket: {
+                rotate_error_codes: [3000],
+                retries: { internal: { max: 3, times: [1000] } },
+                debug: { enable: false },
+                ping_interval: 20000,
+                reset_endpoint: 1,
+                queue_ctrl_actionid_map: {
+                    "611_0": "",
+                    "610_1": "",
+                    "610_0": "",
+                    "603_0": "",
+                    "611_1": "",
+                },
+                close_and_retry_codes: [1006],
+                max_msg_size: 4096,
+                enable_ctrl_socket: true,
+                reconnect_after_fallback: true,
+                enable_chat_socket: true,
+                submit_wss_log: false,
+                disable_lp: false,
+                offline_monitor: { enable: true },
+            },
+        },
+        keepalive: { alway_keepalive: 1, keepalive_duration: 60, time_deactive: 300 },
+    };
+    ctx.options.logging = false;
+    return new API(
+        ctx,
+        {
+            voice_call: ["https://voicecall.zalo.me"],
+            chat: ["https://tt-chat1-wpa.chat.zalo.me"],
+            group: ["https://tt-group-wpa.chat.zalo.me"],
+            profile: ["https://profile.zalo.me"],
+        } as unknown as API["zpwServiceMap"],
+        ["wss://ws1.chat.zalo.me"],
+    );
+}
+
 async function initZaloSession(): Promise<void> {
     if (!fs.existsSync(CREDENTIALS_PATH)) {
-        throw new Error(`Không tìm thấy file phiên đăng nhập tại ${CREDENTIALS_PATH}`);
+        api = createOfflineSimulationApi();
+        console.warn(`⚠️ Không tìm thấy ${CREDENTIALS_PATH} — dùng phiên giả lập cục bộ.`);
+        return;
     }
 
-    const creds = JSON.parse(fs.readFileSync(CREDENTIALS_PATH, "utf-8"));
-    const zalo = new Zalo({ logging: false });
-    api = await zalo.login(creds);
-
-    api.listener.on("cipher_key", () => {
-        // Mở khoá và kéo hàng đợi sự kiện điều khiển VoIP (cmd 604 / 603) ngay khi WebSocket xác thực
-        api?.listener.requestOfflineVoipControls();
-    });
-
-    api.listener.on("call_event", (ev) => {
-        handleIncomingOrControlCallEvent(ev, false);
-    });
-
-    api.listener.start({ retryOnClose: true });
-
     try {
-        const all = await api.getAllFriends();
-        cachedFriends = all
-            .filter((f) => f.userId && f.userId !== "7613400763746053261")
-            .slice(0, 50)
-            .map((f) => ({
-                userId: String(f.userId),
-                displayName: String(f.displayName || f.zaloName || f.userId),
-            }));
-    } catch {
-        // Ignore friend list fetch failure
+        const creds = JSON.parse(fs.readFileSync(CREDENTIALS_PATH, "utf-8"));
+        const zalo = new Zalo({ logging: false });
+        api = await zalo.login(creds);
+
+        api.listener.on("cipher_key", () => {
+            // Mở khoá và kéo hàng đợi sự kiện điều khiển VoIP (cmd 604 / 603) ngay khi WebSocket xác thực
+            api?.listener.requestOfflineVoipControls();
+        });
+
+        api.listener.on("call_event", (ev) => {
+            handleIncomingOrControlCallEvent(ev, false);
+        });
+
+        api.listener.start({ retryOnClose: true });
+
+        try {
+            const all = await api.getAllFriends();
+            cachedFriends = all
+                .filter((f) => f.userId && f.userId !== "7613400763746053261")
+                .slice(0, 50)
+                .map((f) => ({
+                    userId: String(f.userId),
+                    displayName: String(f.displayName || f.zaloName || f.userId),
+                }));
+        } catch {
+            // Ignore friend list fetch failure
+        }
+    } catch (err) {
+        api = createOfflineSimulationApi();
+        console.warn(
+            `⚠️ Phiên trong ${CREDENTIALS_PATH} đã hết hạn hoặc không khả dụng (${err instanceof Error ? err.message : String(err)}). Đã kích hoạt chế độ giả lập/kiểm định cục bộ cho Call Studio.`,
+        );
     }
 }
 
@@ -337,7 +404,9 @@ async function startServer(): Promise<void> {
                 "Cache-Control": "no-cache",
                 Connection: "keep-alive",
             });
-            res.write(`data: ${JSON.stringify({ type: "log", level: "ok", message: "Đã kết nối kênh giám sát thời gian thực (SSE)" })}\n\n`);
+            res.write(
+                `data: ${JSON.stringify({ type: "log", level: "ok", message: "Đã kết nối kênh giám sát thời gian thực (SSE)" })}\n\n`,
+            );
             sseClients.add(res);
             req.on("close", () => sseClients.delete(res));
             return;
@@ -349,10 +418,7 @@ async function startServer(): Promise<void> {
                 : null;
             const pendingIncomingCall = lastIncomingCallEvent
                 ? {
-                      parsedInfo: parseIncomingCallEvent(
-                          lastIncomingCallEvent,
-                          api?.getContext().uid,
-                      ),
+                      parsedInfo: parseIncomingCallEvent(lastIncomingCallEvent, api?.getContext().uid),
                       isSimulated: isLastIncomingSimulated,
                       raw: lastIncomingCallEvent,
                   }
@@ -397,8 +463,7 @@ async function startServer(): Promise<void> {
             const enableSrtp = Boolean(body.enableSrtp);
             const signalingOnly = Boolean(body.signalingOnly);
             const offCameraAtStart = Boolean(body.offCameraAtStart);
-            const allowVideoUpgrade =
-                body.allowVideoUpgrade !== undefined ? Boolean(body.allowVideoUpgrade) : true;
+            const allowVideoUpgrade = body.allowVideoUpgrade !== undefined ? Boolean(body.allowVideoUpgrade) : true;
 
             try {
                 if (currentSession) {
@@ -441,8 +506,7 @@ async function startServer(): Promise<void> {
                 return;
             }
             const body = await readJsonBody(req);
-            const routingToken =
-                body.routingToken !== undefined ? Number(body.routingToken) : undefined;
+            const routingToken = body.routingToken !== undefined ? Number(body.routingToken) : undefined;
             const handoff = currentSession.handoffUdpToExternal(routingToken);
             res.writeHead(200, { "Content-Type": "application/json; charset=utf-8" });
             res.end(JSON.stringify({ ok: true, handoff, params: currentSession.getConnectionParams() }));
@@ -526,10 +590,8 @@ async function startServer(): Promise<void> {
         if (req.method === "POST" && u.pathname === "/api/call/simulate-incoming") {
             const body = await readJsonBody(req);
             const rawCallType = Number(body.callType) || CallType.Audio;
-            const isGroup =
-                rawCallType === CallType.GroupAudio || rawCallType === CallType.GroupVideo;
-            const isVideo =
-                rawCallType === CallType.Video || rawCallType === CallType.GroupVideo;
+            const isGroup = rawCallType === CallType.GroupAudio || rawCallType === CallType.GroupVideo;
+            const isVideo = rawCallType === CallType.Video || rawCallType === CallType.GroupVideo;
             const callerId = String(body.callerId ?? "5249661060655759359");
             const callerName = String(body.callerName ?? "Ly Van Bong (0332606964)");
             const relayPort = await ensureSimRelaySocket();
@@ -606,12 +668,8 @@ async function startServer(): Promise<void> {
             }
             const body = await readJsonBody(req);
             const signalingOnly = Boolean(body.signalingOnly);
-            const withVideo =
-                body.withVideo !== undefined ? Boolean(body.withVideo) : undefined;
-            const parsedInfo = parseIncomingCallEvent(
-                lastIncomingCallEvent,
-                api?.getContext().uid,
-            );
+            const withVideo = body.withVideo !== undefined ? Boolean(body.withVideo) : undefined;
+            const parsedInfo = parseIncomingCallEvent(lastIncomingCallEvent, api?.getContext().uid);
             try {
                 if (currentSession) {
                     await currentSession.endCall("accept_incoming").catch(() => {});
@@ -622,8 +680,7 @@ async function startServer(): Promise<void> {
                     signalingOnly,
                 });
                 wireSessionEvents(currentSession);
-                const offCameraAtStart =
-                    withVideo === false ? true : withVideo === true ? false : !parsedInfo.isVideo;
+                const offCameraAtStart = withVideo === false ? true : withVideo === true ? false : !parsedInfo.isVideo;
                 const params = parsedInfo.isGroupCall
                     ? await currentSession.acceptIncomingGroupCall(lastIncomingCallEvent, {
                           signalingOnly,
@@ -672,10 +729,7 @@ async function startServer(): Promise<void> {
                 return;
             }
             try {
-                const parsedInfo = parseIncomingCallEvent(
-                    lastIncomingCallEvent,
-                    api?.getContext().uid,
-                );
+                const parsedInfo = parseIncomingCallEvent(lastIncomingCallEvent, api?.getContext().uid);
                 const rejectSession = api!.call.createRtcSession({ autoAttachListener: false });
                 if (!isLastIncomingSimulated) {
                     await rejectSession.rejectIncomingCall(lastIncomingCallEvent);
@@ -712,7 +766,9 @@ async function startServer(): Promise<void> {
 
         if (req.method === "POST" && u.pathname === "/api/call/end") {
             if (currentSession) {
-                console.log(`📴 [HTTP /api/call/end] Đang ngắt cuộc gọi callId=${currentSession.getMediaState().callId}...`);
+                console.log(
+                    `📴 [HTTP /api/call/end] Đang ngắt cuộc gọi callId=${currentSession.getMediaState().callId}...`,
+                );
                 await currentSession.endCall("local_end").catch(() => {});
                 currentSession = null;
             }
@@ -810,10 +866,7 @@ async function startServer(): Promise<void> {
                       .split(",")
                       .map((s) => s.trim())
                       .filter(Boolean);
-            const callType =
-                Number(body.callType) === CallType.GroupVideo
-                    ? CallType.GroupVideo
-                    : CallType.GroupAudio;
+            const callType = Number(body.callType) === CallType.GroupVideo ? CallType.GroupVideo : CallType.GroupAudio;
 
             try {
                 if (currentSession) {
@@ -847,10 +900,7 @@ async function startServer(): Promise<void> {
             const body = await readJsonBody(req);
             const callId = Number(body.callId ?? 0);
             const hostCall = String(body.hostCall ?? body.groupId ?? "").trim();
-            const callType =
-                Number(body.callType) === CallType.GroupVideo
-                    ? CallType.GroupVideo
-                    : CallType.GroupAudio;
+            const callType = Number(body.callType) === CallType.GroupVideo ? CallType.GroupVideo : CallType.GroupAudio;
             try {
                 if (currentSession) {
                     await currentSession.endCall("join_group_call").catch(() => {});

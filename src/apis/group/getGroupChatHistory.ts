@@ -75,8 +75,7 @@ export const getGroupChatHistoryFactory = apiFactory<GetGroupChatHistoryResponse
             typeof countOrOptions === "number" ? { count: countOrOptions } : countOrOptions || {};
 
         const requestedCount = Math.max(options.count ?? 50, 1);
-        const maxPages =
-            options.maxPages ?? Math.max(10, Math.ceil(requestedCount / 50) + 2);
+        const maxPages = options.maxPages ?? Math.max(10, Math.ceil(requestedCount / 50) + 2);
         const targetServiceURL = options.useOldEndpoint ? oldServiceURL : recentServiceURL;
         const msgIds = options.msgIds ?? [];
         const src = options.src ?? 3;

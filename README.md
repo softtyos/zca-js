@@ -54,20 +54,20 @@ const zalo = new Zalo({ imageMetadataGetter });
 
 ## Kiến trúc 12 Phân hệ (Domains)
 
-| Phân hệ | Namespace | Số lượng API | Tài liệu chi tiết |
-| :--- | :--- | :---: | :--- |
-| **Xác thực & Phiên** | `api.auth` | 14 | [`docs/api/auth.md`](docs/api/auth.md) |
-| **Tin nhắn & Hội thoại** | `api.chat` | 41 | [`docs/api/chat.md`](docs/api/chat.md) |
-| **Nhóm & Cộng đồng** | `api.group` | 44 | [`docs/api/group.md`](docs/api/group.md) |
-| **Bạn bè & Danh bạ** | `api.friend` | 33 | [`docs/api/friend.md`](docs/api/friend.md) |
-| **Hồ sơ cá nhân** | `api.profile` | 16 | [`docs/api/profile.md`](docs/api/profile.md) |
-| **Đồng bộ Mobile ZDB 4.0** | `api.sync` | 5 | [`docs/api/sync.md`](docs/api/sync.md) |
-| **Đám mây ZCloud & ZFamily** | `api.zcloud` | 9 | [`docs/api/zcloud.md`](docs/api/zcloud.md) |
-| **Gọi thoại, Video & Gọi nhóm** | `api.call` | 30 | [`docs/api/call.md`](docs/api/call.md) |
-| **Kho lưu trữ & Voice-to-Text** | `api.media` | 8 | [`docs/api/media.md`](docs/api/media.md) |
-| **Nhãn dán & Biểu cảm** | `api.sticker` | 10 | [`docs/api/sticker.md`](docs/api/sticker.md) |
-| **Bảng tin, Bình chọn & Lịch hẹn** | `api.board` | 16 | [`docs/api/board.md`](docs/api/board.md) |
-| **Zalo Business, OA & Danh mục** | `api.business` | 30 | [`docs/api/business.md`](docs/api/business.md) |
+| Phân hệ                            | Namespace      | Số lượng API | Tài liệu chi tiết                              |
+| :--------------------------------- | :------------- | :----------: | :--------------------------------------------- |
+| **Xác thực & Phiên**               | `api.auth`     |      14      | [`docs/api/auth.md`](docs/api/auth.md)         |
+| **Tin nhắn & Hội thoại**           | `api.chat`     |      41      | [`docs/api/chat.md`](docs/api/chat.md)         |
+| **Nhóm & Cộng đồng**               | `api.group`    |      44      | [`docs/api/group.md`](docs/api/group.md)       |
+| **Bạn bè & Danh bạ**               | `api.friend`   |      33      | [`docs/api/friend.md`](docs/api/friend.md)     |
+| **Hồ sơ cá nhân**                  | `api.profile`  |      16      | [`docs/api/profile.md`](docs/api/profile.md)   |
+| **Đồng bộ Mobile ZDB 4.0**         | `api.sync`     |      5       | [`docs/api/sync.md`](docs/api/sync.md)         |
+| **Đám mây ZCloud & ZFamily**       | `api.zcloud`   |      9       | [`docs/api/zcloud.md`](docs/api/zcloud.md)     |
+| **Gọi thoại, Video & Gọi nhóm**    | `api.call`     |      30      | [`docs/api/call.md`](docs/api/call.md)         |
+| **Kho lưu trữ & Voice-to-Text**    | `api.media`    |      8       | [`docs/api/media.md`](docs/api/media.md)       |
+| **Nhãn dán & Biểu cảm**            | `api.sticker`  |      10      | [`docs/api/sticker.md`](docs/api/sticker.md)   |
+| **Bảng tin, Bình chọn & Lịch hẹn** | `api.board`    |      16      | [`docs/api/board.md`](docs/api/board.md)       |
+| **Zalo Business, OA & Danh mục**   | `api.business` |      30      | [`docs/api/business.md`](docs/api/business.md) |
 
 > Xem tổng quan toàn bộ tài liệu tại [`docs/api/index.md`](docs/api/index.md) hoặc chạy trang tài liệu VitePress cục bộ bằng lệnh `npm run docs:dev`.
 

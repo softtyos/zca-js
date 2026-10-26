@@ -1,13 +1,13 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
-import type { CallType} from "./sendVoiceCall.js";
-import { normalizeGroupCallType } from "./sendVoiceCall.js";
+import type { CallType } from "./sendVoiceCall.js";
+import { normalizeGroupCallType, toVoipInt } from "./sendVoiceCall.js";
 
 export type AddUserGroupCallOptions = {
     calleeId?: string;
     callType?: CallType | number;
-    hostCall: string;
-    groupId?: string;
+    hostCall: string | number;
+    groupId?: string | number;
     groupName?: string;
     groupAvatar?: string;
     maxUsers?: number;
@@ -43,11 +43,11 @@ export const addUserGroupCallFactory = apiFactory<AddUserGroupCallResponse>()((a
 
         const partnersList = (options.partners ?? []).map(String);
         const callType = normalizeGroupCallType(options.callType);
-        const groupIdStr = String(options.groupId ?? options.hostCall);
-        const hostCallStr = String(options.hostCall);
+        const groupIdVal = toVoipInt(options.groupId ?? options.hostCall);
+        const hostCallVal = toVoipInt(options.hostCall);
         const innerGroupData = {
-            groupId: groupIdStr,
-            hostCall: hostCallStr,
+            groupId: groupIdVal,
+            hostCall: hostCallVal,
             groupName: options.groupName ?? "",
             groupAvatar: options.groupAvatar ?? "",
             maxUsers: options.maxUsers ?? 8,
@@ -69,7 +69,7 @@ export const addUserGroupCallFactory = apiFactory<AddUserGroupCallResponse>()((a
                 rtcpAddress: options.rtcpAddress ?? options.rtpAddress ?? "",
                 rtpAddressIPv6: "",
                 rtcpAddressIPv6: "",
-                hostCall: hostCallStr,
+                hostCall: hostCallVal,
                 noiseId: JSON.stringify(partnersList),
                 data: JSON.stringify(innerGroupData),
             });
@@ -99,7 +99,7 @@ export const addUserGroupCallFactory = apiFactory<AddUserGroupCallResponse>()((a
                 rtcpAddress: resolvedRtcp,
                 rtpAddressIPv6: String(rawObj.rtpAddressIPv6 ?? ""),
                 rtcpAddressIPv6: String(rawObj.rtcpAddressIPv6 ?? ""),
-                hostCall: rawObj.hostCall ?? hostCallStr,
+                hostCall: rawObj.hostCall !== undefined ? toVoipInt(rawObj.hostCall as string | number) : hostCallVal,
                 noiseId: rawObj.noiseId ?? JSON.stringify(partnersList),
                 data: resolvedInner,
             });
@@ -109,8 +109,8 @@ export const addUserGroupCallFactory = apiFactory<AddUserGroupCallResponse>()((a
             calleeId: options.calleeId ?? "",
             callId,
             callType,
-            hostCall: hostCallStr,
-            groupId: groupIdStr,
+            hostCall: hostCallVal,
+            groupId: groupIdVal,
             data: dataStr,
             session: options.session,
             partners: partnersList,
@@ -128,6 +128,27 @@ export const addUserGroupCallFactory = apiFactory<AddUserGroupCallResponse>()((a
             method: "GET",
         });
 
-        return utils.resolve(response);
+        const raw = await utils.resolve(response);
+        const resObj: Record<string, unknown> =
+            typeof raw === "string"
+                ? (JSON.parse(raw) as Record<string, unknown>)
+                : ((raw ?? {}) as Record<string, unknown>);
+
+        // Trong ZMessageDeserializer::_parseResponseAddUserGroup (0x100022180),
+        // dữ liệu phản hồi thật nằm trong chuỗi JSON `params`.
+        if (typeof resObj.params === "string" && resObj.params.length > 0) {
+            try {
+                const innerParams = JSON.parse(resObj.params) as Record<string, unknown>;
+                if (innerParams && typeof innerParams === "object") {
+                    return {
+                        ...innerParams,
+                        ...resObj,
+                    };
+                }
+            } catch {
+                // Giữ nguyên nếu params không phải JSON
+            }
+        }
+        return resObj;
     };
 });

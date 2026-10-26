@@ -19,9 +19,24 @@ const countDomains = (doms: string[]) => allApis.filter((a) => doms.includes(a.d
 const categories = [
     { key: "all", label: "Tất cả Phân hệ", count: apiData.totalApis },
     { key: "messaging", label: "💬 Chat & Nhóm", domains: ["chat", "group"], count: countDomains(["chat", "group"]) },
-    { key: "social", label: "👥 Bạn bè & Hồ sơ", domains: ["friend", "profile"], count: countDomains(["friend", "profile"]) },
-    { key: "sync_cloud", label: "🔄 Đồng bộ, Cloud & Call", domains: ["sync", "zcloud", "media", "call"], count: countDomains(["sync", "zcloud", "media", "call"]) },
-    { key: "tools_biz", label: "💼 Tiện ích & Business", domains: ["auth", "sticker", "board", "business"], count: countDomains(["auth", "sticker", "board", "business"]) },
+    {
+        key: "social",
+        label: "👥 Bạn bè & Hồ sơ",
+        domains: ["friend", "profile"],
+        count: countDomains(["friend", "profile"]),
+    },
+    {
+        key: "sync_cloud",
+        label: "🔄 Đồng bộ, Cloud & Call",
+        domains: ["sync", "zcloud", "media", "call"],
+        count: countDomains(["sync", "zcloud", "media", "call"]),
+    },
+    {
+        key: "tools_biz",
+        label: "💼 Tiện ích & Business",
+        domains: ["auth", "sticker", "board", "business"],
+        count: countDomains(["auth", "sticker", "board", "business"]),
+    },
 ];
 
 function selectCategory(catKey: string) {
@@ -131,8 +146,19 @@ onUnmounted(() => {
             <div class="zca-search-row">
                 <div class="zca-search-box">
                     <span class="zca-search-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="17"
+                            height="17"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2.2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <circle cx="11" cy="11" r="8" />
+                            <path d="m21 21-4.3-4.3" />
                         </svg>
                     </span>
                     <input
@@ -143,7 +169,13 @@ onUnmounted(() => {
                         :placeholder="`Tìm kiếm trong ${apiData.totalApis} API (tên hàm, endpoint, từ khóa...)...`"
                     />
                     <div class="zca-search-right">
-                        <button v-if="searchQuery" type="button" class="zca-clear-search-btn" title="Xóa tìm kiếm" @click="searchQuery = ''">
+                        <button
+                            v-if="searchQuery"
+                            type="button"
+                            class="zca-clear-search-btn"
+                            title="Xóa tìm kiếm"
+                            @click="searchQuery = ''"
+                        >
                             ✕
                         </button>
                         <kbd class="zca-shortcut-badge">⌘K</kbd>
@@ -211,12 +243,26 @@ onUnmounted(() => {
         <!-- Filter Stats & Quick Reset Bar -->
         <div class="zca-statusbar">
             <div class="zca-statusbar-left">
-                <span>Hiển thị <strong>{{ visibleApis.length }}</strong> / <strong>{{ filteredApis.length }}</strong> kết quả (Tổng {{ apiData.totalApis }} APIs)</span>
+                <span
+                    >Hiển thị <strong>{{ visibleApis.length }}</strong> / <strong>{{ filteredApis.length }}</strong> kết
+                    quả (Tổng {{ apiData.totalApis }} APIs)</span
+                >
             </div>
             <div v-if="activeFiltersCount > 0" class="zca-statusbar-right">
                 <button type="button" class="zca-reset-filters-btn" @click="resetFilters">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                        <path d="M3 3v5h5" />
                     </svg>
                     Đặt lại bộ lọc ({{ activeFiltersCount }})
                 </button>
@@ -225,11 +271,7 @@ onUnmounted(() => {
 
         <!-- API List -->
         <div class="zca-api-grid">
-            <div
-                v-for="api in visibleApis"
-                :key="`${api.domain}-${api.name}`"
-                class="zca-card"
-            >
+            <div v-for="api in visibleApis" :key="`${api.domain}-${api.name}`" class="zca-card">
                 <!-- Card Header -->
                 <div class="zca-card-head">
                     <div class="zca-card-title-group">
@@ -250,8 +292,20 @@ onUnmounted(() => {
                             @click="copyCall(api.signature, `${api.domain}.${api.name}`)"
                             :title="`Sao chép lệnh gọi await ${api.signature}`"
                         >
-                            <svg v-if="copiedKey !== `${api.domain}.${api.name}`" xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                            <svg
+                                v-if="copiedKey !== `${api.domain}.${api.name}`"
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="13"
+                                height="13"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                stroke="currentColor"
+                                stroke-width="2"
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                            >
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                             </svg>
                             <span v-if="copiedKey === `${api.domain}.${api.name}`">✓ Đã chép</span>
                             <span v-else>Sao chép</span>
@@ -285,7 +339,10 @@ onUnmounted(() => {
             <div v-if="filteredApis.length === 0" class="zca-empty-box">
                 <div class="zca-empty-icon">🔍</div>
                 <h3 class="zca-empty-title">Không tìm thấy API phù hợp</h3>
-                <p class="zca-empty-desc">Không có phương thức nào khớp với từ khóa <strong>"{{ searchQuery }}"</strong> trong phân hệ đã chọn.</p>
+                <p class="zca-empty-desc">
+                    Không có phương thức nào khớp với từ khóa <strong>"{{ searchQuery }}"</strong> trong phân hệ đã
+                    chọn.
+                </p>
                 <button type="button" class="zca-empty-reset-btn" @click="resetFilters">Xóa bộ lọc và thử lại</button>
             </div>
 
@@ -616,7 +673,10 @@ onUnmounted(() => {
     border-radius: 14px;
     background-color: var(--vp-c-bg-soft);
     border: 1px solid var(--vp-c-divider);
-    transition: border-color 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+    transition:
+        border-color 0.18s ease,
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
 }
 
 .dark .zca-card {

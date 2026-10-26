@@ -81,10 +81,7 @@ function syncVersionFiles() {
     // 3. Đồng bộ ZALO_PROTOCOL.SDK_VERSION trong src/constants/protocol.ts
     if (fs.existsSync(protocolPath)) {
         const protocolRaw = fs.readFileSync(protocolPath, "utf-8");
-        const updatedProtocol = protocolRaw.replace(
-            /SDK_VERSION:\s*"[^"]+"/,
-            `SDK_VERSION: "${targetVersion}"`,
-        );
+        const updatedProtocol = protocolRaw.replace(/SDK_VERSION:\s*"[^"]+"/, `SDK_VERSION: "${targetVersion}"`);
         if (updatedProtocol !== protocolRaw) {
             fs.writeFileSync(protocolPath, updatedProtocol, "utf-8");
             stagedFiles.push("src/constants/protocol.ts");

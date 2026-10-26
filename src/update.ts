@@ -12,10 +12,8 @@ export async function checkUpdate(ctx: ContextBase) {
     const isAgentUndiciDispatcher = Boolean(
         ctx.options.agent && typeof (ctx.options.agent as { dispatch?: unknown }).dispatch === "function",
     );
-    const resolvedDispatcher =
-        ctx.options.dispatcher ?? (isAgentUndiciDispatcher ? ctx.options.agent : undefined);
-    const resolvedAgent =
-        ctx.options.agent && !isAgentUndiciDispatcher ? ctx.options.agent : undefined;
+    const resolvedDispatcher = ctx.options.dispatcher ?? (isAgentUndiciDispatcher ? ctx.options.agent : undefined);
+    const resolvedAgent = ctx.options.agent && !isAgentUndiciDispatcher ? ctx.options.agent : undefined;
 
     const _options = {
         ...(isBun

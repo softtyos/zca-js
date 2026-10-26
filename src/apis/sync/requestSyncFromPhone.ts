@@ -35,14 +35,15 @@ export const requestSyncFromPhoneFactory = apiFactory<RequestSyncFromPhoneRespon
     return async function requestSyncFromPhone(
         options: RequestSyncFromPhoneOptions = {},
     ): Promise<RequestSyncFromPhoneResponse> {
-        const generated = options.publicKeyBase64 && options.privateKey
-            ? {
-                  publicKeyBase64: options.publicKeyBase64,
-                  privateKeyBase64: options.privateKeyBase64 ?? "",
-                  publicKey: options.publicKey ?? options.publicKeyBase64,
-                  privateKey: options.privateKey,
-              }
-            : generateRSAKeyPair();
+        const generated =
+            options.publicKeyBase64 && options.privateKey
+                ? {
+                      publicKeyBase64: options.publicKeyBase64,
+                      privateKeyBase64: options.privateKeyBase64 ?? "",
+                      publicKey: options.publicKey ?? options.publicKeyBase64,
+                      privateKey: options.privateKey,
+                  }
+                : generateRSAKeyPair();
 
         const pcName = options.pcName ?? "Web";
 
