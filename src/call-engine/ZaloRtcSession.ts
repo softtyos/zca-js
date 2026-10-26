@@ -292,6 +292,16 @@ export type ZaloCallMediaStateEvent = {
     reason?: number;
 };
 
+type SsrcVideoAssembler = {
+    ssrc: number;
+    remoteSpsNal: Buffer | null;
+    remotePpsNal: Buffer | null;
+    fuaFragments: Buffer[];
+    currentAccessUnitNals: Buffer[];
+    currentAccessUnitTs: number;
+    currentAccessUnitHasIdr: boolean;
+};
+
 export type IncomingRtpEvent = {
     isVideo: boolean;
     isFec: boolean;
@@ -894,6 +904,7 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
     private currentAccessUnitNals: Buffer[] = [];
     private currentAccessUnitTs = -1;
     private currentAccessUnitHasIdr = false;
+    private videoAssemblers = new Map<number, SsrcVideoAssembler>();
 
     private srtpSession: ZaloSrtpSession | null = null;
     private readonly options: Required<
@@ -1182,11 +1193,40 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
         }
     }
 
-    private clearIncomingVideoAssemblyBuffers(): void {
+    private clearIncomingVideoAssemblyBuffers(ssrc?: number): void {
+        if (ssrc !== undefined) {
+            const asm = this.videoAssemblers.get(ssrc >>> 0);
+            if (asm) {
+                asm.fuaFragments = [];
+                asm.currentAccessUnitNals = [];
+                asm.currentAccessUnitTs = -1;
+                asm.currentAccessUnitHasIdr = false;
+            }
+            return;
+        }
         this.fuaFragments = [];
         this.currentAccessUnitNals = [];
         this.currentAccessUnitTs = -1;
         this.currentAccessUnitHasIdr = false;
+        this.videoAssemblers.clear();
+    }
+
+    private getOrCreateVideoAssembler(ssrc: number): SsrcVideoAssembler {
+        const normalizedSsrc = ssrc >>> 0;
+        let asm = this.videoAssemblers.get(normalizedSsrc);
+        if (!asm) {
+            asm = {
+                ssrc: normalizedSsrc,
+                remoteSpsNal: null,
+                remotePpsNal: null,
+                fuaFragments: [],
+                currentAccessUnitNals: [],
+                currentAccessUnitTs: -1,
+                currentAccessUnitHasIdr: false,
+            };
+            this.videoAssemblers.set(normalizedSsrc, asm);
+        }
+        return asm;
     }
 
     /**
@@ -1868,6 +1908,28 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             if (ansServerInfo.rtpServer || ansServerInfo.rtpIP || ansServerInfo.servers?.length) {
                 this.applyServerInfo(ansServerInfo);
             }
+            if (ansServerInfo.fromId !== undefined && Number(ansServerInfo.fromId) > 0) {
+                this.localVoipUid = String(ansServerInfo.fromId);
+                const nextFromUid32 = Number(ansServerInfo.fromId) >>> 0;
+                if (this.fromUid32 !== nextFromUid32) {
+                    this.fromUid32 = nextFromUid32;
+                    if (!isSignalingOnly && this.udpSocket && this.rtpEndpoint.port > 0) {
+                        const toUid = this.toUid32 || uidToUint32(this.partnerId);
+                        const rebindInit = buildInitCallRequest({
+                            isCaller: false,
+                            seqNum: 0,
+                            headerCallId: this.callId,
+                            callId: this.callId,
+                            fromUid: this.fromUid32,
+                            toUid,
+                            flags: 1,
+                            subFlags: toUid,
+                            sessId: this.sessId,
+                        });
+                        void this.sendRawUdp(rebindInit, this.rtpEndpoint.host, this.rtpEndpoint.port).catch(() => {});
+                    }
+                }
+            }
         }
 
         if (!isSignalingOnly) {
@@ -1982,6 +2044,10 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
         this.localVoipUid = String(serverInfo.fromId ?? serverInfo.hostCall ?? hostCallVal);
         this.internalGroupId = String(serverInfo.groupId ?? this.groupId);
         this.partnerId = hostCallVal;
+        const initialHostUid32 = Number(serverInfo.fromId ?? serverInfo.hostCall);
+        if (Number.isFinite(initialHostUid32) && initialHostUid32 > 0 && initialHostUid32 <= 0xffffffff) {
+            this.fromUid32 = initialHostUid32 >>> 0;
+        }
 
         if (!isSignalingOnly) {
             await this.ensureUdpSocket();
@@ -2043,14 +2109,30 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             data: this.extendData,
         });
         const createCallInfo = this.extractGroupResponseServerInfo(createCallRes);
+        let didUpdateFromUid32 = false;
         if (
             createCallInfo.hostCall !== undefined &&
             createCallInfo.hostCall !== null &&
             String(createCallInfo.hostCall).length > 0
         ) {
             this.hostCall = String(createCallInfo.hostCall);
-            if (!this.localVoipUid) {
-                this.localVoipUid = this.hostCall;
+            this.localVoipUid = this.hostCall;
+            this.partnerId = this.hostCall;
+            const hostUid32 = Number(this.hostCall);
+            if (Number.isFinite(hostUid32) && hostUid32 > 0) {
+                const nextFromUid32 = hostUid32 >>> 0;
+                if (this.fromUid32 !== nextFromUid32) {
+                    this.fromUid32 = nextFromUid32;
+                    didUpdateFromUid32 = true;
+                }
+            }
+        }
+        if (createCallInfo.fromId !== undefined && Number(createCallInfo.fromId) > 0) {
+            this.localVoipUid = String(createCallInfo.fromId);
+            const nextFromUid32 = Number(createCallInfo.fromId) >>> 0;
+            if (this.fromUid32 !== nextFromUid32) {
+                this.fromUid32 = nextFromUid32;
+                didUpdateFromUid32 = true;
             }
         }
         if (
@@ -2059,6 +2141,33 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             String(createCallInfo.groupId).length > 0
         ) {
             this.internalGroupId = String(createCallInfo.groupId);
+        }
+        if (didUpdateFromUid32 && !isSignalingOnly && this.udpSocket && this.rtpEndpoint.port > 0) {
+            const fromUid = this.fromUid32;
+            const toUid = this.toUid32 || uidToUint32(this.partnerId);
+            const token = (this.routingToken || this.callId) >>> 0;
+            const rebindInit = buildInitCallRequest({
+                isCaller: true,
+                seqNum: 0,
+                headerCallId: this.callId,
+                callId: this.callId,
+                fromUid,
+                toUid,
+                flags: 1,
+                subFlags: toUid,
+                sessId: this.sessId,
+            });
+            void this.sendRawUdp(rebindInit, this.rtpEndpoint.host, this.rtpEndpoint.port).catch(() => {});
+            if (this.sessId) {
+                const rebindRelayPing = buildRelayPingRequest({
+                    seqNum: 0,
+                    callId: 0,
+                    fromUid,
+                    routingToken: token,
+                    sessId: this.sessId,
+                });
+                void this.sendRawUdp(rebindRelayPing, this.rtpEndpoint.host, this.rtpEndpoint.port).catch(() => {});
+            }
         }
 
         if (!isSignalingOnly) {
@@ -2661,15 +2770,30 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
      * Gửi gói RTCP PLI (Picture Loss Indication — `PT=206, FMT=1`) yêu cầu máy đối phương
      * gửi ngay khung hình khoá H.264 IDR kèm SPS/PPS.
      */
-    public async sendRtcpPli(): Promise<void> {
-        if (!this.remoteVideoSsrc) return;
-        const pli = Buffer.alloc(12);
-        pli.writeUInt8(0x81, 0); // V=2, FMT=1 (PLI)
-        pli.writeUInt8(206, 1); // PT=206 (PSFB)
-        pli.writeUInt16BE(2, 2); // length = 2 words (12 bytes)
-        pli.writeUInt32BE(this.getLocalVideoSsrc(), 4);
-        pli.writeUInt32BE(this.remoteVideoSsrc >>> 0, 8);
-        await this.sendRtcp(pli, true);
+    public async sendRtcpPli(targetSsrc?: number): Promise<void> {
+        const ssrcsToRequest = new Set<number>();
+        if (targetSsrc !== undefined && targetSsrc !== 0) {
+            ssrcsToRequest.add(targetSsrc >>> 0);
+        } else {
+            for (const ssrc of this.videoAssemblers.keys()) {
+                if (ssrc !== 0) ssrcsToRequest.add(ssrc >>> 0);
+            }
+            if (this.remoteVideoSsrc !== 0) {
+                ssrcsToRequest.add(this.remoteVideoSsrc >>> 0);
+            }
+        }
+        if (ssrcsToRequest.size === 0) return;
+
+        const localSsrc = this.getLocalVideoSsrc();
+        for (const remoteSsrc of ssrcsToRequest) {
+            const pli = Buffer.alloc(12);
+            pli.writeUInt8(0x81, 0); // V=2, FMT=1 (PLI)
+            pli.writeUInt8(206, 1); // PT=206 (PSFB)
+            pli.writeUInt16BE(2, 2); // length = 2 words (12 bytes)
+            pli.writeUInt32BE(localSsrc, 4);
+            pli.writeUInt32BE(remoteSsrc >>> 0, 8);
+            await this.sendRtcp(pli, true);
+        }
     }
 
     /**
@@ -2936,6 +3060,23 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
                 const answeringUid = String(
                     rawParams.fromId ?? rawParams.userId ?? event.data.fromId ?? event.data.userId ?? "",
                 );
+                if (this.groupId && this.callId > 0) {
+                    const hostCallTarget = this.hostCall || this.partnerId || this.groupId;
+                    const localUserIdTarget =
+                        this.localVoipUid || (this.fromUid32 ? String(this.fromUid32) : "") || hostCallTarget;
+                    void this.api.call
+                        .broadcastGroupCallState(this.callId, {
+                            hostCall: hostCallTarget,
+                            userId: localUserIdTarget,
+                            callState: this.isCaller ? 2 : 1,
+                            audioState: this.isMicMuted ? 0 : 1,
+                            videoState: this.isCameraOn ? 1 : 0,
+                        })
+                        .catch(() => {});
+                }
+                void this.sendMicState(!this.isMicMuted).catch(() => {});
+                void this.sendCameraState(this.isCameraOn).catch(() => {});
+                void this.sendRtcpPli().catch(() => {});
                 const audioStateVal = rawParams.audioState ?? event.data.audioState;
                 const videoStateVal = rawParams.videoState ?? event.data.videoState;
                 if (audioStateVal !== undefined || videoStateVal !== undefined) {
@@ -3446,7 +3587,8 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             this.groupPingTimer = null;
         }
         if (!this.groupId || !this.callId) return;
-        this.groupPingTimer = setInterval(() => {
+
+        const sendGroupPing = () => {
             if (this.state === "ended" || !this.groupId || !this.callId) return;
             const hostCallTarget = this.hostCall || this.partnerId || this.groupId;
             const localUserIdTarget =
@@ -3467,7 +3609,22 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
                     }
                 })
                 .catch(() => {});
-        }, 10000);
+        };
+
+        const hostCallTarget = this.hostCall || this.partnerId || this.groupId;
+        const localUserIdTarget = this.localVoipUid || (this.fromUid32 ? String(this.fromUid32) : "") || hostCallTarget;
+        void this.api.call
+            .broadcastGroupCallState(this.callId, {
+                hostCall: hostCallTarget,
+                userId: localUserIdTarget,
+                callState: this.isCaller ? 2 : 1,
+                audioState: this.isMicMuted ? 0 : 1,
+                videoState: this.isCameraOn ? 1 : 0,
+            })
+            .catch(() => {});
+        sendGroupPing();
+
+        this.groupPingTimer = setInterval(sendGroupPing, 10000);
         if (typeof this.groupPingTimer.unref === "function") {
             this.groupPingTimer.unref();
         }
@@ -3523,8 +3680,14 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             if (activeVideo) {
                 const videoRtcp = this.buildCompoundRtcpReport(true);
                 void this.sendRtcp(videoRtcp, true).catch(() => {});
-                if (this.remoteVideoSsrc !== 0 && !this.remoteSpsNal) {
-                    void this.sendRtcpPli().catch(() => {});
+                if (this.videoAssemblers.size > 0) {
+                    for (const asm of this.videoAssemblers.values()) {
+                        if (asm.ssrc !== 0 && !asm.remoteSpsNal) {
+                            void this.sendRtcpPli(asm.ssrc).catch(() => {});
+                        }
+                    }
+                } else if (this.remoteVideoSsrc !== 0 && !this.remoteSpsNal) {
+                    void this.sendRtcpPli(this.remoteVideoSsrc).catch(() => {});
                 }
             }
         };
@@ -3879,22 +4042,26 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
         // Bỏ qua ngay các gói RTP padding rỗng (P=1) để không làm flush nhầm frame đang ghép
         if (!payload || payload.length < 1) return;
 
-        if (this.currentAccessUnitTs !== -1 && parsedRtp.timestamp !== this.currentAccessUnitTs) {
-            this.flushIncomingAccessUnit(this.currentAccessUnitTs, parsedRtp.ssrc);
+        const asm = this.getOrCreateVideoAssembler(parsedRtp.ssrc);
+
+        if (asm.currentAccessUnitTs !== -1 && parsedRtp.timestamp !== asm.currentAccessUnitTs) {
+            this.flushIncomingAccessUnit(asm, asm.currentAccessUnitTs, parsedRtp.ssrc);
         }
+        asm.currentAccessUnitTs = parsedRtp.timestamp;
         this.currentAccessUnitTs = parsedRtp.timestamp;
 
         if (isZaloKeyframePayloadType(parsedRtp.payloadType)) {
+            asm.currentAccessUnitHasIdr = true;
             this.currentAccessUnitHasIdr = true;
         }
 
         // Trường hợp 1: Payload đã bắt đầu trực tiếp bằng Annex-B start code (00 00 00 01 hoặc 00 00 01)
         if (startsWithAnnexBStartCode(payload)) {
             for (const nal of splitAnnexBNals(payload)) {
-                this.recordIncomingNal(nal);
+                this.recordIncomingNal(asm, nal);
             }
             if (parsedRtp.marker) {
-                this.flushIncomingAccessUnit(parsedRtp.timestamp, parsedRtp.ssrc);
+                this.flushIncomingAccessUnit(asm, parsedRtp.timestamp, parsedRtp.ssrc);
             }
             return;
         }
@@ -3909,17 +4076,17 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             if (agg) {
                 for (const chunk of agg) {
                     for (const nal of splitAnnexBNals(chunk)) {
-                        this.recordIncomingNal(nal);
+                        this.recordIncomingNal(asm, nal);
                     }
                 }
             } else {
                 for (const nal of splitAnnexBNals(payload)) {
-                    this.recordIncomingNal(nal);
+                    this.recordIncomingNal(asm, nal);
                 }
             }
         } else if (nalType >= 1 && nalType <= 23) {
             for (const nal of splitAnnexBNals(payload)) {
-                this.recordIncomingNal(nal);
+                this.recordIncomingNal(asm, nal);
             }
         } else if (nalType === 24) {
             // RFC 6184 STAP-A (Single-Time Aggregation Packet)
@@ -3927,7 +4094,7 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             if (agg) {
                 for (const chunk of agg) {
                     for (const nal of splitAnnexBNals(chunk)) {
-                        this.recordIncomingNal(nal);
+                        this.recordIncomingNal(asm, nal);
                     }
                 }
             } else {
@@ -3937,7 +4104,7 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
                     offset += 2;
                     if (nalSize > 0 && offset + nalSize <= payload.length) {
                         for (const nal of splitAnnexBNals(payload.subarray(offset, offset + nalSize))) {
-                            this.recordIncomingNal(nal);
+                            this.recordIncomingNal(asm, nal);
                         }
                     }
                     offset += nalSize;
@@ -3959,34 +4126,34 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
                     // Nếu origNalType === 0 hoặc body đã bắt đầu bằng Annex-B start code (00 00 00 01 / 00 00 01),
                     // TUYỆT ĐỐI KHÔNG chèn thêm byte 0x00 vào đầu để không biến 00 00 00 01 thành 5 byte!
                     if (origNalType === 0 || startsWithAnnexBStartCode(body)) {
-                        this.fuaFragments = [body];
+                        asm.fuaFragments = [body];
                     } else {
-                        this.fuaFragments = [Buffer.from([reconstructedNalHeader]), body];
+                        asm.fuaFragments = [Buffer.from([reconstructedNalHeader]), body];
                     }
-                } else if (this.fuaFragments.length > 0) {
-                    if (this.fuaFragments.length >= 512) {
-                        this.fuaFragments = [];
+                } else if (asm.fuaFragments.length > 0) {
+                    if (asm.fuaFragments.length >= 512) {
+                        asm.fuaFragments = [];
                     } else {
-                        this.fuaFragments.push(body);
+                        asm.fuaFragments.push(body);
                     }
                 }
 
-                if (isEnd && this.fuaFragments.length > 0) {
-                    const fullNal = Buffer.concat(this.fuaFragments);
-                    this.fuaFragments = [];
+                if (isEnd && asm.fuaFragments.length > 0) {
+                    const fullNal = Buffer.concat(asm.fuaFragments);
+                    asm.fuaFragments = [];
                     for (const nal of splitAnnexBNals(fullNal)) {
-                        this.recordIncomingNal(nal);
+                        this.recordIncomingNal(asm, nal);
                     }
                 }
             }
         }
 
         if (parsedRtp.marker) {
-            this.flushIncomingAccessUnit(parsedRtp.timestamp, parsedRtp.ssrc);
+            this.flushIncomingAccessUnit(asm, parsedRtp.timestamp, parsedRtp.ssrc);
         }
     }
 
-    private recordIncomingNal(rawNal: Buffer): void {
+    private recordIncomingNal(asm: SsrcVideoAssembler, rawNal: Buffer): void {
         if (!rawNal || rawNal.length === 0) return;
         const nal = stripLeadingAnnexBStartCode(rawNal);
         if (!nal || nal.length === 0) return;
@@ -3996,23 +4163,28 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
         if (nalType === 0 || nalType === 9) return;
 
         if (nalType === 7) {
-            this.remoteSpsNal = Buffer.from(nal);
+            const spsCopy = Buffer.from(nal);
+            asm.remoteSpsNal = spsCopy;
+            this.remoteSpsNal = spsCopy;
         } else if (nalType === 8) {
-            this.remotePpsNal = Buffer.from(nal);
+            const ppsCopy = Buffer.from(nal);
+            asm.remotePpsNal = ppsCopy;
+            this.remotePpsNal = ppsCopy;
         } else if (nalType === 5) {
+            asm.currentAccessUnitHasIdr = true;
             this.currentAccessUnitHasIdr = true;
         }
-        if (this.currentAccessUnitNals.length >= 256) {
-            this.currentAccessUnitNals = [];
+        if (asm.currentAccessUnitNals.length >= 256) {
+            asm.currentAccessUnitNals = [];
         }
-        this.currentAccessUnitNals.push(Buffer.from(nal));
+        asm.currentAccessUnitNals.push(Buffer.from(nal));
     }
 
-    private flushIncomingAccessUnit(timestamp: number, ssrc: number): void {
-        if (this.currentAccessUnitNals.length === 0) return;
+    private flushIncomingAccessUnit(asm: SsrcVideoAssembler, timestamp: number, ssrc: number): void {
+        if (asm.currentAccessUnitNals.length === 0) return;
         const startCode = Buffer.from([0x00, 0x00, 0x00, 0x01]);
         const chunks: Buffer[] = [];
-        const nalTypes = this.currentAccessUnitNals.map((n) => n[0] & 0x1f);
+        const nalTypes = asm.currentAccessUnitNals.map((n) => n[0] & 0x1f);
 
         const hasInlineSps = nalTypes.includes(7);
         const hasInlinePps = nalTypes.includes(8);
@@ -4023,32 +4195,32 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             return;
         }
 
-        if (this.currentAccessUnitHasIdr) {
-            if (!hasInlineSps && this.remoteSpsNal) {
-                chunks.push(startCode, this.remoteSpsNal);
+        if (asm.currentAccessUnitHasIdr) {
+            if (!hasInlineSps && asm.remoteSpsNal) {
+                chunks.push(startCode, asm.remoteSpsNal);
             }
-            if (!hasInlinePps && this.remotePpsNal) {
-                chunks.push(startCode, this.remotePpsNal);
+            if (!hasInlinePps && asm.remotePpsNal) {
+                chunks.push(startCode, asm.remotePpsNal);
             }
         }
 
-        for (const nal of this.currentAccessUnitNals) {
+        for (const nal of asm.currentAccessUnitNals) {
             chunks.push(startCode, nal);
         }
 
         const annexB = Buffer.concat(chunks);
-        const isKeyframe = this.currentAccessUnitHasIdr;
-        this.currentAccessUnitNals = [];
-        this.currentAccessUnitHasIdr = false;
-        this.currentAccessUnitTs = -1;
+        const isKeyframe = asm.currentAccessUnitHasIdr;
+        asm.currentAccessUnitNals = [];
+        asm.currentAccessUnitHasIdr = false;
+        asm.currentAccessUnitTs = -1;
 
         this.emit("video_annexb_frame", {
             annexB,
             isKeyframe,
             timestamp,
             ssrc,
-            sps: this.remoteSpsNal ?? undefined,
-            pps: this.remotePpsNal ?? undefined,
+            sps: asm.remoteSpsNal ?? undefined,
+            pps: asm.remotePpsNal ?? undefined,
             nalTypes,
         });
     }

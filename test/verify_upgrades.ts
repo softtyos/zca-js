@@ -2325,6 +2325,168 @@ async function runVerificationSuite() {
         "Khi thành viên cuối cùng rời cuộc gọi nhóm (remaining=0), phiên gọi phải tự động kết thúc",
     );
 
+    // Kiểm định 3 cải tiến Group Video Call:
+    // 1. Khi sendRequestGroupCall (12434) trả về hostCall 32-bit (ví dụ 450859586), phải cập nhật hostCall, localVoipUid và fromUid32 = 450859586
+    // 2. Phát ngay pingGroupCall + broadcastGroupCallState với userId = 450859586 khi tạo phòng & khi có GROUP_ANSWER
+    // 3. Bộ ghép H.264 theo từng SSRC (Map<number, SsrcVideoAssembler>) không làm đứt gãy FU-A khi nhiều thành viên bật camera đan xen
+    const prevPolyfillForHostCall = ctx.options.polyfill;
+    ctx.options.polyfill = (async (input: RequestInfo | URL, init?: RequestInit) => {
+        const u = new URL(String(input));
+        if (u.pathname === "/api/voicecall/group/request") {
+            capturedRequests.push({ url: String(input), method: init?.method ?? "GET" });
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                params: JSON.stringify({
+                    callId: 778899,
+                    hostCall: 450859586,
+                    groupId: "888999000",
+                }),
+            });
+        }
+        return prevPolyfillForHostCall!(input, init);
+    }) as typeof fetch;
+
+    const grpHostUidSession = api.call.createRtcSession({
+        autoAttachListener: false,
+        autoKeepaliveMedia: false,
+    });
+    const pingCountBeforeStart = capturedRequests.filter((r) => r.url.includes("/api/voicecall/group/ping")).length;
+    const broadcastCountBeforeStart = capturedRequests.filter((r) =>
+        r.url.includes("/api/voicecall/group/broadcast"),
+    ).length;
+    const grpHostUidParams = await grpHostUidSession.startGroupCall("888999000", ["5001", "5002"], {
+        callType: CallType.GroupVideo,
+        skipUdpHandshake: true,
+    });
+    await new Promise((r) => setTimeout(r, 15));
+    ctx.options.polyfill = prevPolyfillForHostCall;
+
+    assert.equal(
+        grpHostUidParams.fromId,
+        450859586,
+        "fromUid32 (fromId) phải được cập nhật bằng 32-bit hostCall (450859586) trả về từ sendRequestGroupCall",
+    );
+    assert.equal(grpHostUidSession.getMediaState().hostCall, "450859586");
+
+    const pingReqsAfterStart = capturedRequests.filter((r) => r.url.includes("/api/voicecall/group/ping"));
+    const broadcastReqsAfterStart = capturedRequests.filter((r) => r.url.includes("/api/voicecall/group/broadcast"));
+    assert.ok(
+        pingReqsAfterStart.length > pingCountBeforeStart,
+        "startGroupCall phải gửi ngay 1 gói pingGroupCall đầu tiên không cần đợi 10s",
+    );
+    assert.ok(
+        broadcastReqsAfterStart.length > broadcastCountBeforeStart,
+        "startGroupCall phải gửi ngay 1 gói broadcastGroupCallState đầu tiên",
+    );
+    const initialPingDecoded = decodeCapturedUrlParams(pingReqsAfterStart[pingReqsAfterStart.length - 1].url);
+    assert.equal(initialPingDecoded.hostCall, 450859586);
+    assert.equal(
+        initialPingDecoded.userId,
+        450859586,
+        "pingGroupCall phải gửi userId là số 32-bit hostCall (450859586) thay vì UID 19 chữ số",
+    );
+    const initialBroadcastDecoded = decodeCapturedUrlParams(
+        broadcastReqsAfterStart[broadcastReqsAfterStart.length - 1].url,
+    );
+    assert.equal(initialBroadcastDecoded.hostCall, 450859586);
+    assert.equal(initialBroadcastDecoded.userId, 450859586);
+    assert.equal(initialBroadcastDecoded.videostate, 1);
+
+    const broadcastCountBeforeAnswer = capturedRequests.filter((r) =>
+        r.url.includes("/api/voicecall/group/broadcast"),
+    ).length;
+    await grpHostUidSession.handleCallEvent({
+        type: CallEventType.GROUP_ANSWER,
+        act: "group_answer",
+        act_type: "voip",
+        data: {
+            id: 778899,
+            fromId: 1001,
+            status: 0,
+        },
+    });
+    await new Promise((r) => setTimeout(r, 15));
+    const broadcastCountAfterAnswer = capturedRequests.filter((r) =>
+        r.url.includes("/api/voicecall/group/broadcast"),
+    ).length;
+    assert.ok(
+        broadcastCountAfterAnswer > broadcastCountBeforeAnswer,
+        "Khi có thành viên trả lời (GROUP_ANSWER status=0), phải phát lại broadcastGroupCallState để đồng bộ Mic/Cam",
+    );
+
+    // Kiểm định ghép khung H.264 đan xen từ 2 SSRC khác nhau (ssrc=1001, ts=90000 và ssrc=1002, ts=180000)
+    const multiSsrcFrames: Array<{ ssrc: number; timestamp: number; isKeyframe: boolean; nalTypes?: number[] }> = [];
+    grpHostUidSession.on("video_annexb_frame", (frame) => {
+        multiSsrcFrames.push({
+            ssrc: frame.ssrc,
+            timestamp: frame.timestamp,
+            isKeyframe: frame.isKeyframe,
+            nalTypes: frame.nalTypes,
+        });
+    });
+    const handleVideoRtpInternal = (
+        grpHostUidSession as unknown as {
+            handleIncomingVideoRtpPayload: (pkt: {
+                payload: Buffer;
+                sequenceNumber: number;
+                timestamp: number;
+                ssrc: number;
+                payloadType: number;
+                marker: boolean;
+            }) => void;
+        }
+    ).handleIncomingVideoRtpPayload.bind(grpHostUidSession);
+
+    // Gói FU-A mảnh 1 của SSRC 1001 (ts=90000)
+    handleVideoRtpInternal({
+        payload: iosFrag1,
+        sequenceNumber: 10,
+        timestamp: 90000,
+        ssrc: 1001,
+        payloadType: 98,
+        marker: false,
+    });
+    // Gói FU-A mảnh 1 của SSRC 1002 (ts=180000) xen vào giữa trước khi SSRC 1001 kịp nhận mảnh 2!
+    handleVideoRtpInternal({
+        payload: iosFrag1,
+        sequenceNumber: 20,
+        timestamp: 180000,
+        ssrc: 1002,
+        payloadType: 98,
+        marker: false,
+    });
+    // Gói FU-A mảnh 2 (end, marker=true) của SSRC 1001 (ts=90000)
+    handleVideoRtpInternal({
+        payload: iosFrag2,
+        sequenceNumber: 11,
+        timestamp: 90000,
+        ssrc: 1001,
+        payloadType: 98,
+        marker: true,
+    });
+    // Gói FU-A mảnh 2 (end, marker=true) của SSRC 1002 (ts=180000)
+    handleVideoRtpInternal({
+        payload: iosFrag2,
+        sequenceNumber: 21,
+        timestamp: 180000,
+        ssrc: 1002,
+        payloadType: 98,
+        marker: true,
+    });
+
+    assert.equal(
+        multiSsrcFrames.length,
+        2,
+        "Cả 2 luồng Video H.264 FU-A đan xen từ 2 SSRC (1001 & 1002) đều phải ghép thành công không làm đứt mảnh của nhau",
+    );
+    assert.deepEqual(
+        multiSsrcFrames.map((f) => ({ ssrc: f.ssrc, nalTypes: f.nalTypes })),
+        [
+            { ssrc: 1001, nalTypes: [7, 8, 5] },
+            { ssrc: 1002, nalTypes: [7, 8, 5] },
+        ],
+    );
+    await grpHostUidSession.endCall("local_end");
+
     // Kiểm định Gọi lại liên tiếp (Sequential Re-call) trên cùng một instance ZaloRtcSession & Tái kết nối UDP (reconnectUdp)
     const recallSession = api.call.createRtcSession({
         autoAttachListener: false,
