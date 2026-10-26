@@ -58,7 +58,7 @@ async function copySampleCode() {
         <div class="zca-install-container">
             <div class="zca-pkg-tabs">
                 <button
-                    v-for="pkg in (['npm', 'bun', 'pnpm', 'yarn'] as const)"
+                    v-for="pkg in ['npm', 'bun', 'pnpm', 'yarn'] as const"
                     :key="pkg"
                     type="button"
                     class="zca-pkg-tab"
@@ -72,12 +72,26 @@ async function copySampleCode() {
             <div class="zca-install-box" @click="copyInstall">
                 <span class="zca-prompt-sign">$</span>
                 <code class="zca-install-cmd">{{ installCommands[activePkg] }}</code>
-                <button type="button" class="zca-install-copy-btn" :title="copiedInstall ? 'Đã sao chép!' : 'Sao chép lệnh cài đặt'">
+                <button
+                    type="button"
+                    class="zca-install-copy-btn"
+                    :title="copiedInstall ? 'Đã sao chép!' : 'Sao chép lệnh cài đặt'"
+                >
                     <span v-if="copiedInstall" class="zca-copy-check">✓ Đã sao chép</span>
                     <span v-else class="zca-copy-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <rect width="14" height="14" x="8" y="8" rx="2" ry="2"/>
-                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>
+                        <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="14"
+                            height="14"
+                            viewBox="0 0 24 24"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                        >
+                            <rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+                            <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
                         </svg>
                         Sao chép
                     </span>
@@ -94,8 +108,20 @@ async function copySampleCode() {
                     <span class="zca-dot green"></span>
                 </div>
                 <div class="zca-terminal-title">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/>
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="13"
+                        height="13"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                    >
+                        <path d="m18 16 4-4-4-4" />
+                        <path d="m6 8-4 4 4 4" />
+                        <path d="m14.5 4-5 16" />
                     </svg>
                     <span>quick-start.ts — Khởi tạo Bot mẫu</span>
                 </div>
@@ -108,7 +134,9 @@ async function copySampleCode() {
             </div>
 
             <div class="zca-terminal-body">
-                <pre class="zca-code-block"><code><span class="c-kw">import</span> { <span class="c-id">Zalo</span>, <span class="c-id">ThreadType</span> } <span class="c-kw">from</span> <span class="c-str">"@softtynet/zca-js"</span>;
+                <pre
+                    class="zca-code-block"
+                ><code><span class="c-kw">import</span> { <span class="c-id">Zalo</span>, <span class="c-id">ThreadType</span> } <span class="c-kw">from</span> <span class="c-str">"@softtynet/zca-js"</span>;
 
 <span class="c-cmt">// Khởi tạo SDK & Đăng nhập bằng mã QR hoặc Cookie/IMEI</span>
 <span class="c-kw">const</span> <span class="c-var">zalo</span> = <span class="c-kw">new</span> <span class="c-id">Zalo</span>({ <span class="c-prop">selfListen</span>: <span class="c-bool">true</span>, <span class="c-prop">logging</span>: <span class="c-bool">true</span> });
@@ -325,9 +353,15 @@ async function copySampleCode() {
     border-radius: 50%;
 }
 
-.zca-dot.red { background-color: #ff5f56; }
-.zca-dot.yellow { background-color: #ffbd2e; }
-.zca-dot.green { background-color: #27c93f; }
+.zca-dot.red {
+    background-color: #ff5f56;
+}
+.zca-dot.yellow {
+    background-color: #ffbd2e;
+}
+.zca-dot.green {
+    background-color: #27c93f;
+}
 
 .zca-terminal-title {
     display: inline-flex;
@@ -412,26 +446,70 @@ async function copySampleCode() {
 }
 
 /* Syntax Highlighting Tokens - Light Mode */
-.c-kw { color: #d73a49; font-weight: 600; }
-.c-id { color: #005cc5; font-weight: 600; }
-.c-var { color: #24292e; }
-.c-prop { color: #6f42c1; }
-.c-fn { color: #005cc5; }
-.c-param { color: #e36209; }
-.c-str { color: #22863a; }
-.c-bool { color: #005cc5; font-weight: 600; }
-.c-cmt { color: #6a737d; font-style: italic; }
+.c-kw {
+    color: #d73a49;
+    font-weight: 600;
+}
+.c-id {
+    color: #005cc5;
+    font-weight: 600;
+}
+.c-var {
+    color: #24292e;
+}
+.c-prop {
+    color: #6f42c1;
+}
+.c-fn {
+    color: #005cc5;
+}
+.c-param {
+    color: #e36209;
+}
+.c-str {
+    color: #22863a;
+}
+.c-bool {
+    color: #005cc5;
+    font-weight: 600;
+}
+.c-cmt {
+    color: #6a737d;
+    font-style: italic;
+}
 
 /* Syntax Highlighting Tokens - Dark Mode */
-.dark .c-kw { color: #f43f5e; font-weight: 600; }
-.dark .c-id { color: #38bdf8; font-weight: 600; }
-.dark .c-var { color: #f8fafc; }
-.dark .c-prop { color: #a5b4fc; }
-.dark .c-fn { color: #67e8f9; }
-.dark .c-param { color: #fdba74; }
-.dark .c-str { color: #34d399; }
-.dark .c-bool { color: #fb923c; font-weight: 600; }
-.dark .c-cmt { color: #64748b; font-style: italic; }
+.dark .c-kw {
+    color: #f43f5e;
+    font-weight: 600;
+}
+.dark .c-id {
+    color: #38bdf8;
+    font-weight: 600;
+}
+.dark .c-var {
+    color: #f8fafc;
+}
+.dark .c-prop {
+    color: #a5b4fc;
+}
+.dark .c-fn {
+    color: #67e8f9;
+}
+.dark .c-param {
+    color: #fdba74;
+}
+.dark .c-str {
+    color: #34d399;
+}
+.dark .c-bool {
+    color: #fb923c;
+    font-weight: 600;
+}
+.dark .c-cmt {
+    color: #64748b;
+    font-style: italic;
+}
 
 /* Metrics Grid */
 .zca-metrics-grid {

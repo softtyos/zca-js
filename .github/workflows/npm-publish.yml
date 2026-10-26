@@ -1,69 +1,69 @@
 name: Auto Publish to npm
 
 on:
-  push:
-    branches:
-      - main
+    push:
+        branches:
+            - main
 
 jobs:
-  publish:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write # Cho phép action push commit version lên Github
-      id-token: write # Thêm quyền để NPM xác thực Provenance (Tiêu chuẩn Publish Package mới)
+    publish:
+        runs-on: ubuntu-latest
+        permissions:
+            contents: write # Cho phép action push commit version lên Github
+            id-token: write # Thêm quyền để NPM xác thực Provenance (Tiêu chuẩn Publish Package mới)
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v6
+              with:
+                  fetch-depth: 0
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version: '20.x'
-          registry-url: 'https://registry.npmjs.org'
-          cache: 'npm'
+            - name: Setup Node.js
+              uses: actions/setup-node@v6
+              with:
+                  node-version: "20.x"
+                  registry-url: "https://registry.npmjs.org"
+                  cache: "npm"
 
-      - name: Install dependencies
-        run: npm ci
+            - name: Install dependencies
+              run: npm ci
 
-      - name: Build project
-        run: npm run build
+            - name: Build project
+              run: npm run build
 
-      - name: Lint Code
-        run: npm run lint
+            - name: Lint Code
+              run: npm run lint
 
-      - name: Run Automated Verification Suite (8 Suites)
-        run: npm run test:verify
+            - name: Run Automated Verification Suite (8 Suites)
+              run: npm run test:verify
 
-      - name: Get current version
-        run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
+            - name: Get current version
+              run: echo "VERSION=$(node -p "require('./package.json').version")" >> $GITHUB_ENV
 
-      - name: Publish to npm
-        run: npm publish --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+            - name: Publish to npm
+              run: npm publish --access public
+              env:
+                  NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Create GitHub Release
-        run: gh release create v${{ env.VERSION }} --title "Release v${{ env.VERSION }}" --generate-notes
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            - name: Create GitHub Release
+              run: gh release create v${{ env.VERSION }} --title "Release v${{ env.VERSION }}" --generate-notes
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Auto Generate & Deploy VitePress Docs
-        run: npm run docs:deploy
-        env:
-          DOCS_DEPLOY_TOKEN: ${{ secrets.DOCS_DEPLOY_TOKEN }}
+            - name: Auto Generate & Deploy VitePress Docs
+              run: npm run docs:deploy
+              env:
+                  DOCS_DEPLOY_TOKEN: ${{ secrets.DOCS_DEPLOY_TOKEN }}
 
-      - name: Send Telegram Notification
-        if: always()
-        uses: appleboy/telegram-action@v1.0.1
-        with:
-          to: ${{ secrets.TELEGRAM_TO }}
-          token: ${{ secrets.TELEGRAM_TOKEN }}
-          message: |
-            🚀 [ZCA-JS] Pipeline Status: ${{ job.status }}
-            🌿 Branch: ${{ github.ref_name }}
-            👤 Triggered by: ${{ github.actor }}
-            📦 Tag Version: v${{ env.VERSION || 'N/A' }}
-            🔗 Link: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            - name: Send Telegram Notification
+              if: always()
+              uses: appleboy/telegram-action@v1.0.1
+              with:
+                  to: ${{ secrets.TELEGRAM_TO }}
+                  token: ${{ secrets.TELEGRAM_TOKEN }}
+                  message: |
+                      🚀 [ZCA-JS] Pipeline Status: ${{ job.status }}
+                      🌿 Branch: ${{ github.ref_name }}
+                      👤 Triggered by: ${{ github.actor }}
+                      📦 Tag Version: v${{ env.VERSION || 'N/A' }}
+                      🔗 Link: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}

@@ -194,10 +194,7 @@ export class ZaloCallTransport extends EventEmitter<ZaloCallTransportEvents> {
 
     public isConnected(): boolean {
         return Boolean(
-            this.sendClient &&
-                !this.sendClient.destroyed &&
-                this.receiveClient &&
-                !this.receiveClient.destroyed,
+            this.sendClient && !this.sendClient.destroyed && this.receiveClient && !this.receiveClient.destroyed,
         );
     }
 

@@ -1,9 +1,10 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
+import { toVoipInt } from "./sendVoiceCall.js";
 
 export type JoinGroupCallOptions = {
-    userId?: string;
-    hostCall: string;
+    userId?: string | number;
+    hostCall: string | number;
     status?: number;
     srcJoinCall?: number;
     audioState?: number;
@@ -23,10 +24,7 @@ export const joinGroupCallFactory = apiFactory<JoinGroupCallResponse>()((api, ct
      * @param options Thông tin `hostCall`, `userId`, `status`, `srcJoinCall`, `audioState`, `videoState` và `data`
      * @throws {ZaloApiError}
      */
-    return async function joinGroupCall(
-        callId: number,
-        options: JoinGroupCallOptions,
-    ): Promise<JoinGroupCallResponse> {
+    return async function joinGroupCall(callId: number, options: JoinGroupCallOptions): Promise<JoinGroupCallResponse> {
         if (!callId) throw new ZaloApiError("Missing callId");
         if (!options?.hostCall) throw new ZaloApiError("Missing hostCall");
         if (!voiceCallService) throw new ZaloApiError("Missing voice_call service URL in zpwServiceMap");
@@ -41,13 +39,11 @@ export const joinGroupCallFactory = apiFactory<JoinGroupCallResponse>()((api, ct
         const audioState = options.audioState ?? 1;
         const videoState = options.videoState ?? 0;
         const params = {
-            userId: String(options.userId ?? ctx.uid),
+            userId: toVoipInt(options.userId ?? options.hostCall ?? ctx.uid),
             callId,
-            hostCall: String(options.hostCall),
+            hostCall: toVoipInt(options.hostCall),
             status: options.status ?? 0,
             srcJoinCall: options.srcJoinCall ?? 0,
-            audioState,
-            videoState,
             audiostate: audioState,
             videostate: videoState,
             data: dataStr,

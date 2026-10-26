@@ -73,9 +73,7 @@ function generateAPIsFile() {
 
     const domainTypeLines = sortedDomains.map((domain) => {
         const files = domainsMap.get(domain);
-        const typeFields = files
-            .map((f) => `    readonly ${f.name}: ReturnType<typeof ${f.factoryName}>;`)
-            .join("\n");
+        const typeFields = files.map((f) => `    readonly ${f.name}: ReturnType<typeof ${f.factoryName}>;`).join("\n");
         const pascalDomain = domain.charAt(0).toUpperCase() + domain.slice(1);
         return `export type ${pascalDomain}DomainAPI = {\n${typeFields}\n};`;
     });
@@ -91,9 +89,7 @@ function generateAPIsFile() {
     const domainNamespaceGetters = sortedDomains.map((domain) => {
         const files = domainsMap.get(domain);
         const pascalDomain = domain.charAt(0).toUpperCase() + domain.slice(1);
-        const getters = files
-            .map((f) => `                get ${f.name}() { return api.${f.name}; },`)
-            .join("\n");
+        const getters = files.map((f) => `                get ${f.name}() { return api.${f.name}; },`).join("\n");
         return (
             `    public get ${domain}(): ${pascalDomain}DomainAPI {\n` +
             `        if (!this._domains.${domain}) {\n` +
@@ -153,7 +149,9 @@ function generateAPIsFile() {
         "}\n";
 
     fs.writeFileSync(outputFile, content, "utf-8");
-    console.log(`\nAPIs file generated at ${outputFile} (${allApiFiles.length} APIs across ${sortedDomains.length} domains)\n`);
+    console.log(
+        `\nAPIs file generated at ${outputFile} (${allApiFiles.length} APIs across ${sortedDomains.length} domains)\n`,
+    );
 }
 
 syncSdkVersion();

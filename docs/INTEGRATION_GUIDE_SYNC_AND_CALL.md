@@ -38,31 +38,32 @@ flowchart TD
 
 ### 2.1. Các phương thức trên `api` (`API` instance)
 
-| Phương thức | Command ID | Endpoint Zalo | Công dụng |
-| :--- | :---: | :--- | :--- |
-| [`api.chat.preloadConversations`](./api/chat#preloadconversations) | `10053` | `/api/preloadconvers/get-last-msgs` | Lấy danh sách tin nhắn mới nhất của các hội thoại (`messages`, `msgs`, `groupMsgs`, `pageMessages`) và danh sách đã đọc (`unreadCleared`). |
-| [`api.sync.requestSyncFromPhone`](./api/sync#requestsyncfromphone) | `12000` | `/api/message/pull_mobile_msg` | Tự sinh cặp khoá RSA-2048 và gửi yêu cầu đồng bộ lịch sử tin nhắn về điện thoại. Trả về `{ privateKey, publicKeyBase64, pcName }`. |
-| [`api.sync.pullMobile`](./api/sync#pullmobile) | `12000` | `/api/message/pull_mobile_msg` | API mức thấp để gửi yêu cầu đồng bộ với `public_key` tự quản lý. |
-| [`api.sync.cancelPullMobile`](./api/sync#cancelpullmobile) | `12700` | `/api/message/cancel_pull_mobile_msg` | Thu hồi thông báo yêu cầu đồng bộ trên điện thoại (khi hết thời gian chờ hoặc người dùng bấm huỷ trên Web/PC). |
-| [`api.sync.getSyncData`](./api/sync#getsyncdata) | — | *(URL động từ `syncmsg_info`)* | Tải gói sao lưu `.db.crypt` do điện thoại tải lên về thư mục máy chủ (`savePath`). |
-| [`api.auth.getNoisedIds`](./api/auth#getnoisedids) | `12390` | `/api/znoise` *(fallback `zwid.api.zalo.me`)* | Chuyển đổi danh sách User ID (`fids`) và Group ID (`gids`) thật sang mã ẩn danh (Noised ID) dùng trong tên file SQLite của `ZDB4.0`. |
-| [`api.auth.decryptGids`](./api/auth#decryptgids) | `12054` | `/api/gid/decrypt` | Giải mã danh sách Global ID / Noised ID về ID gốc. |
-| [`api.call.sendVoiceCall`](./api/call#sendvoicecall) | `11300` + `11301` | `/api/voicecall/requestcall` + `/api/voicecall/request` | Khởi tạo cuộc gọi Thoại (`CallType.Audio = 1`) hoặc Video (`CallType.Video = 3`), làm đổ chuông thiết bị người nhận. |
-| [`api.call.cancelVoiceCall`](./api/call#cancelvoicecall) | `11305` | `/api/voicecall/cancel` | Huỷ cuộc gọi đang đổ chuông trước khi người nhận bắt máy. |
-| [`api.call.endVoiceCall`](./api/call#endvoicecall) | `11306` | `/api/voicecall/endcall` | Kết thúc cuộc gọi đang diễn ra. |
+| Phương thức                                                        |    Command ID     | Endpoint Zalo                                           | Công dụng                                                                                                                                  |
+| :----------------------------------------------------------------- | :---------------: | :------------------------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------- |
+| [`api.chat.preloadConversations`](./api/chat#preloadconversations) |      `10053`      | `/api/preloadconvers/get-last-msgs`                     | Lấy danh sách tin nhắn mới nhất của các hội thoại (`messages`, `msgs`, `groupMsgs`, `pageMessages`) và danh sách đã đọc (`unreadCleared`). |
+| [`api.sync.requestSyncFromPhone`](./api/sync#requestsyncfromphone) |      `12000`      | `/api/message/pull_mobile_msg`                          | Tự sinh cặp khoá RSA-2048 và gửi yêu cầu đồng bộ lịch sử tin nhắn về điện thoại. Trả về `{ privateKey, publicKeyBase64, pcName }`.         |
+| [`api.sync.pullMobile`](./api/sync#pullmobile)                     |      `12000`      | `/api/message/pull_mobile_msg`                          | API mức thấp để gửi yêu cầu đồng bộ với `public_key` tự quản lý.                                                                           |
+| [`api.sync.cancelPullMobile`](./api/sync#cancelpullmobile)         |      `12700`      | `/api/message/cancel_pull_mobile_msg`                   | Thu hồi thông báo yêu cầu đồng bộ trên điện thoại (khi hết thời gian chờ hoặc người dùng bấm huỷ trên Web/PC).                             |
+| [`api.sync.getSyncData`](./api/sync#getsyncdata)                   |         —         | _(URL động từ `syncmsg_info`)_                          | Tải gói sao lưu `.db.crypt` do điện thoại tải lên về thư mục máy chủ (`savePath`).                                                         |
+| [`api.auth.getNoisedIds`](./api/auth#getnoisedids)                 |      `12390`      | `/api/znoise` _(fallback `zwid.api.zalo.me`)_           | Chuyển đổi danh sách User ID (`fids`) và Group ID (`gids`) thật sang mã ẩn danh (Noised ID) dùng trong tên file SQLite của `ZDB4.0`.       |
+| [`api.auth.decryptGids`](./api/auth#decryptgids)                   |      `12054`      | `/api/gid/decrypt`                                      | Giải mã danh sách Global ID / Noised ID về ID gốc.                                                                                         |
+| [`api.call.sendVoiceCall`](./api/call#sendvoicecall)               | `11300` + `11301` | `/api/voicecall/requestcall` + `/api/voicecall/request` | Khởi tạo cuộc gọi Thoại (`CallType.Audio = 1`) hoặc Video (`CallType.Video = 3`), làm đổ chuông thiết bị người nhận.                       |
+| [`api.call.cancelVoiceCall`](./api/call#cancelvoicecall)           |      `11305`      | `/api/voicecall/cancel`                                 | Huỷ cuộc gọi đang đổ chuông trước khi người nhận bắt máy.                                                                                  |
+| [`api.call.endVoiceCall`](./api/call#endvoicecall)                 |      `11306`      | `/api/voicecall/endcall`                                | Kết thúc cuộc gọi đang diễn ra.                                                                                                            |
 
 ### 2.2. Các sự kiện WebSocket trên `api.listener`
 
-| Tên sự kiện | WebSocket `cmd` | Tham số Callback | Mô tả |
-| :--- | :---: | :--- | :--- |
-| `old_messages` | `510` (User) / `511` (Group) | `(messages: Message[], type: ThreadType, hasMore?: boolean)` | Phát ra khi nhận lô tin nhắn cũ từ hàng đợi offline của Zalo. Khi `hasMore === true`, còn tin nhắn tiếp theo cần kéo tiếp. |
-| `unread_cleared` | `504` / `524` | `(items: ClearUnread[])` | Phát ra khi người dùng đọc tin nhắn trên thiết bị khác (đồng bộ trạng thái đã đọc). |
-| `sync_event` | `601` (`syncmsgmb` / `transfer_msg`) | `(event: SyncEvent)` | Phát ra các trạng thái đồng bộ từ điện thoại: `user_confirm`, `syncmsg_info`, `transfer_after_login`, `transfer_error`. |
-| `call_event` | `601` (`voip`) | `(event: CallEvent)` | Phát ra tín hiệu cuộc gọi thời gian thực: `request`, `ringring`, `answer`, `cancel`, `endcall`, ... |
+| Tên sự kiện      |           WebSocket `cmd`            | Tham số Callback                                             | Mô tả                                                                                                                      |
+| :--------------- | :----------------------------------: | :----------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| `old_messages`   |     `510` (User) / `511` (Group)     | `(messages: Message[], type: ThreadType, hasMore?: boolean)` | Phát ra khi nhận lô tin nhắn cũ từ hàng đợi offline của Zalo. Khi `hasMore === true`, còn tin nhắn tiếp theo cần kéo tiếp. |
+| `unread_cleared` |            `504` / `524`             | `(items: ClearUnread[])`                                     | Phát ra khi người dùng đọc tin nhắn trên thiết bị khác (đồng bộ trạng thái đã đọc).                                        |
+| `sync_event`     | `601` (`syncmsgmb` / `transfer_msg`) | `(event: SyncEvent)`                                         | Phát ra các trạng thái đồng bộ từ điện thoại: `user_confirm`, `syncmsg_info`, `transfer_after_login`, `transfer_error`.    |
+| `call_event`     |            `601` (`voip`)            | `(event: CallEvent)`                                         | Phát ra tín hiệu cuộc gọi thời gian thực: `request`, `ringring`, `answer`, `cancel`, `endcall`, ...                        |
 
 ### 2.3. Các hàm tiện ích mật mã (`ZDB4.0` Crypto Helpers)
 
 Được export trực tiếp từ `@softtynet/zca-js`:
+
 - `generateRSAKeyPair()`: Sinh cặp khoá RSA-2048 (`publicKey`, `privateKey`, `publicKeyBase64`).
 - `decryptWithPrivateKey(privateKeyPem, encryptedBase64)`: Giải mã `encrypted_key` bằng RSA PKCS#1 v1.5 (tự động dự phòng bằng thuật toán BigInt CRT thuần JS trên Node.js 20/22/24+).
 - `deriveZdbAesKey(decryptedRsaBytes)`: Rút trích khoá AES-256 (32 bytes) từ payload RSA đã giải mã.
@@ -74,6 +75,7 @@ flowchart TD
 ## 3. Tích hợp Tầng 1: Đồng bộ bù tin nhắn khi Offline (Catch-up Sync)
 
 Khi ứng dụng của bạn vừa khởi động lại hoặc vừa khôi phục kết nối mạng, hãy kết hợp **2 bước**:
+
 1. Gọi `api.preloadConversations(threadIdLocalMsgId)` qua HTTP để lấy nhanh tin nhắn cuối cùng của các hội thoại và danh sách đã đọc (`unreadCleared`).
 2. Sau khi WebSocket phát sự kiện **`cipher_key`**, gọi `api.listener.requestOldMessages(...)` để kéo toàn bộ hàng đợi tin nhắn cá nhân (`cmd 510`) và nhóm (`cmd 511`). Nếu callback `old_messages` trả về `hasMore === true`, tiếp tục truyền `msgId` cuối cùng vào `requestOldMessages(type, lastMsgId)` để phân trang đến hết.
 
@@ -91,12 +93,16 @@ for (const msg of preload.messages) {
     console.log(`[Preload] thread=${msg.threadId} msgId=${msg.data.msgId}:`, msg.data.content);
 }
 for (const cleared of preload.unreadCleared) {
-    console.log(`[Preload UnreadCleared] thread=${cleared.idTo} lastMsgId=${cleared.lastMsgId} isGroup=${cleared.isGroup}`);
+    console.log(
+        `[Preload UnreadCleared] thread=${cleared.idTo} lastMsgId=${cleared.lastMsgId} isGroup=${cleared.isGroup}`,
+    );
 }
 
 // Bước 2: Lắng nghe hàng đợi tin nhắn cũ qua WebSocket (cmd 510 & 511)
 api.listener.on("old_messages", (messages, type, hasMore) => {
-    console.log(`[OldMessages] Nhận ${messages.length} tin nhắn (${type === ThreadType.Group ? "Nhóm" : "Cá nhân"}), hasMore=${hasMore}`);
+    console.log(
+        `[OldMessages] Nhận ${messages.length} tin nhắn (${type === ThreadType.Group ? "Nhóm" : "Cá nhân"}), hasMore=${hasMore}`,
+    );
 
     for (const msg of messages) {
         // Lưu tin nhắn vào Database của bạn (upsert theo msg.data.msgId)
@@ -118,7 +124,7 @@ api.listener.on("unread_cleared", (items) => {
 
 // QUAN TRỌNG: Chỉ gọi requestOldMessages sau khi nhận sự kiện "cipher_key"
 api.listener.on("cipher_key", () => {
-    api.listener.requestOldMessages(ThreadType.User);  // mặc định gửi lastId = "10000000000000000"
+    api.listener.requestOldMessages(ThreadType.User); // mặc định gửi lastId = "10000000000000000"
     api.listener.requestOldMessages(ThreadType.Group); // mặc định gửi lastId = "10000000000000000"
 });
 
@@ -132,8 +138,9 @@ api.listener.start({ retryOnClose: true });
 Tính năng này cho phép kéo toàn bộ lịch sử tin nhắn đang nằm trong máy điện thoại của người dùng lên Web/PC (giống hệt nút **"Đồng bộ tin nhắn"** trên Zalo PC/Web).
 
 Có **2 kịch bản kích hoạt** đều được hỗ trợ đầy đủ:
-- **Kịch bản A (Tự động sau khi quét QR)**: Nếu lúc quét mã QR trên điện thoại, người dùng tích chọn *"Đồng bộ tin nhắn"*, Zalo sẽ bắn sự kiện `SyncEventType.TRANSFER_AFTER_LOGIN` kèm `temp_key`. Bạn chỉ cần gọi `api.requestSyncFromPhone({ tempKey: event.data.temp_key })` — điện thoại sẽ tự đẩy dữ liệu lên mà không cần hỏi lại!
-- **Kịch bản B (Chủ động yêu cầu bất kỳ lúc nào)**: Gọi `api.requestSyncFromPhone({ pcName: "Web" })` để làm nổ thông báo *"Xác nhận đồng bộ tin nhắn"* trên điện thoại người dùng. Nếu sau 60 giây người dùng không bấm, gọi `api.cancelPullMobile(...)` để đóng thông báo trên điện thoại.
+
+- **Kịch bản A (Tự động sau khi quét QR)**: Nếu lúc quét mã QR trên điện thoại, người dùng tích chọn _"Đồng bộ tin nhắn"_, Zalo sẽ bắn sự kiện `SyncEventType.TRANSFER_AFTER_LOGIN` kèm `temp_key`. Bạn chỉ cần gọi `api.requestSyncFromPhone({ tempKey: event.data.temp_key })` — điện thoại sẽ tự đẩy dữ liệu lên mà không cần hỏi lại!
+- **Kịch bản B (Chủ động yêu cầu bất kỳ lúc nào)**: Gọi `api.requestSyncFromPhone({ pcName: "Web" })` để làm nổ thông báo _"Xác nhận đồng bộ tin nhắn"_ trên điện thoại người dùng. Nếu sau 60 giây người dùng không bấm, gọi `api.cancelPullMobile(...)` để đóng thông báo trên điện thoại.
 
 ```ts
 import fs from "node:fs";
@@ -237,6 +244,7 @@ async function triggerManualPhoneSync() {
 ## 5. Ánh xạ ID ẩn danh (`getNoisedIds` & `decryptGids`)
 
 Bên trong gói sao lưu `ZDB4.0`, Zalo đặt tên các file SQLite theo mẫu:
+
 - Tin nhắn cá nhân: `3_<myNoisedId>_<friendNoisedId>.db`
 - Tin nhắn nhóm: `4_<myNoisedId>_<groupNoisedId>.db`
 
@@ -275,6 +283,7 @@ console.log("Decrypted mapping:", decrypted.data ?? decrypted.gids);
 ## 6. Tích hợp Gọi Thoại (`CallType.Audio`) & Gọi Video (`CallType.Video`)
 
 Thư viện hỗ trợ khởi tạo cuộc gọi 2 bước chuẩn giao thức C++ `ZaloCall` của Zalo PC:
+
 - **`CallType.Audio = 1`**: Cuộc gọi thoại 1-1.
 - **`CallType.Video = 3`**: Cuộc gọi video 1-1 (tự động đính kèm cấu hình codec H.264 `payload: 97` trong `extendData`).
 
@@ -353,6 +362,7 @@ api.listener.on("call_event", (event) => {
 > [!NOTE]
 > **3. Kịch bản kiểm định nhanh trên máy của bạn**
 > Bất kỳ lúc nào muốn kiểm tra lại toàn bộ tính năng trên tài khoản thật, bạn có thể chạy:
+>
 > - Kiểm định tự động (Offline/Unit): `npm run test:verify`
 > - Kiểm định toàn diện trên Server thật (6 bước): `npm run test:live`
 > - Chỉ test nhanh Gọi Thoại + Video tới 1 UID: `npm run test:live -- --only-call --call <UID>`
@@ -439,31 +449,30 @@ await api.removeConversationMedia({
 
 ### 8.5. Nhóm, Hồ Sơ, Danh Bạ, Tin Nhắn & Nhãn Dán Mở Rộng
 
-| Phương thức `api.*` | Command ID | Endpoint | Công dụng |
-| :--- | :---: | :--- | :--- |
-| `api.encryptGids(uids)` | `12053` | `/api/gid/encrypt` | Mã hóa danh sách UID thật sang Global/Noise ID (chiều ngược của `decryptGids`) |
-| `api.getMiniProfile(friendIds)` | `12134` | `/api/social/friend/getminiprofiles` | Lấy hồ sơ rút gọn hàng loạt của danh sách UID |
-| `api.getPhonebookV2(version?)` | `12428` | `/api/social/friend/phonebook/v2` | Lấy danh bạ đồng bộ từ điện thoại (Phonebook V2) |
-| `api.getAliasListV2(options?)` | `12205` | `/api/alias/list/v2` | Lấy danh sách tên gợi nhớ (Alias V2) |
-| `api.getBlockFriends(options?)` | `11429` | `/api/friend/blocklistv2` | Lấy danh sách người dùng đang bị chặn (Blocklist V2) |
-| `api.getExtraGroupInfo(groupIds)` | `12607` | `/api/group/userctx/multiget` | Lấy ngữ cảnh mục đích & vai trò (`purpose`, `role`) của nhiều nhóm |
-| `api.getExtraFriendInfo(friendIds)` | `11442` | `/api/friend/context/multiget` | Lấy ngữ cảnh mục đích & vai trò (`purpose`, `role`) của nhiều bạn bè |
-| `api.getQuotaCommunity(groupId)` | `12181` | `/api/group/quota/community` | Kiểm tra hạn mức nâng cấp Nhóm lên Cộng đồng |
-| `api.getProfileRank(profileId?)` | `12012` | `/api/social/profile/getrank` | Lấy hạng tài khoản (`userRank`) |
-| `api.getProfileVerificationStatus()` | `12150` | `/api/social/profile/verification/status` | Kiểm tra trạng thái xác thực định danh tài khoản |
-| `api.getLastSeen({ groupIds, userIds })` | `12009` | `/api/preloadconvers/get-last-seen` | Lấy mốc tin nhắn đã xem cuối cùng của danh sách nhóm & cá nhân |
-| `api.getLastSeenReaction({ groupIds, userIds })` | `12450` | `/api/react/gLastSn` | Lấy mốc biểu cảm (reaction) đã xem cuối cùng |
-| `api.undoMultiMessage(items, type)` | `12115`/`12116` | `/api/message/multi_undo` | Thu hồi hàng loạt nhiều tin nhắn cá nhân hoặc nhóm cùng lúc |
-| `api.getLastReadContactTab()` | `12230` | `/api/friend/last-read-contact-tab` | Lấy dấu thời gian lần cuối đọc tab Danh bạ |
-| `api.readContactTab(ts?)` | `12231` | `/api/friend/read-contact-tab` | Đánh dấu đã đọc tab Danh bạ |
-| `api.clearUnreadFriendRequests(uids)` | `12232` | `/api/friend/recommendsv2/read-requests` | Đánh dấu đã xem danh sách lời mời kết bạn |
-| `api.getListPinTopics(groupId, ver?)` | `12001` | `/api/board/pin/list` | Lấy danh sách chủ đề / tin nhắn đã ghim trong nhóm |
-| `api.getGroupCloudMessageJump(groupId, globalMsgId, count?)` | `12508` | `/api/cm/rgetv2` | Nhảy tới vị trí một tin nhắn nhóm cụ thể trên Cloud và tải ngữ cảnh xung quanh |
-| `api.getStickerCategoriesV2()` | `12020` | `/api/message/sticker/category/list/v2` | Lấy danh mục các bộ Sticker V2 |
-| `api.getStickerCategoryData(cid)` | `11156` | `/api/message/sticker/category/detail` | Lấy thông tin chi tiết một bộ Sticker theo `cid` |
-| `api.getStickerSuggestKeywords()` | `11740` | `/api/message/sticker/suggest/keywords` | Lấy danh sách từ khóa gợi ý Sticker tự động |
-| `api.getStickerSuggestion(keyword)` | `11741` | `/api/message/sticker/suggest/stickers` | Gợi ý Sticker theo từ khóa đang gõ |
-| `api.getPersonalizedStickerList()` | `11745` | `/api/message/sticker/personalized/list` | Lấy danh sách Sticker cá nhân hóa |
-| `api.getStickerHello()` | `11751` | `/api/message/sticker/suggestion` | Lấy bộ Sticker chào hỏi gợi ý theo khung giờ |
-| `api.keepAlive()` | `11770` | `/keepalive` | Gửi tín hiệu duy trì phiên kết nối HTTP tới máy chủ Chat |
-
+| Phương thức `api.*`                                          |   Command ID    | Endpoint                                  | Công dụng                                                                      |
+| :----------------------------------------------------------- | :-------------: | :---------------------------------------- | :----------------------------------------------------------------------------- |
+| `api.encryptGids(uids)`                                      |     `12053`     | `/api/gid/encrypt`                        | Mã hóa danh sách UID thật sang Global/Noise ID (chiều ngược của `decryptGids`) |
+| `api.getMiniProfile(friendIds)`                              |     `12134`     | `/api/social/friend/getminiprofiles`      | Lấy hồ sơ rút gọn hàng loạt của danh sách UID                                  |
+| `api.getPhonebookV2(version?)`                               |     `12428`     | `/api/social/friend/phonebook/v2`         | Lấy danh bạ đồng bộ từ điện thoại (Phonebook V2)                               |
+| `api.getAliasListV2(options?)`                               |     `12205`     | `/api/alias/list/v2`                      | Lấy danh sách tên gợi nhớ (Alias V2)                                           |
+| `api.getBlockFriends(options?)`                              |     `11429`     | `/api/friend/blocklistv2`                 | Lấy danh sách người dùng đang bị chặn (Blocklist V2)                           |
+| `api.getExtraGroupInfo(groupIds)`                            |     `12607`     | `/api/group/userctx/multiget`             | Lấy ngữ cảnh mục đích & vai trò (`purpose`, `role`) của nhiều nhóm             |
+| `api.getExtraFriendInfo(friendIds)`                          |     `11442`     | `/api/friend/context/multiget`            | Lấy ngữ cảnh mục đích & vai trò (`purpose`, `role`) của nhiều bạn bè           |
+| `api.getQuotaCommunity(groupId)`                             |     `12181`     | `/api/group/quota/community`              | Kiểm tra hạn mức nâng cấp Nhóm lên Cộng đồng                                   |
+| `api.getProfileRank(profileId?)`                             |     `12012`     | `/api/social/profile/getrank`             | Lấy hạng tài khoản (`userRank`)                                                |
+| `api.getProfileVerificationStatus()`                         |     `12150`     | `/api/social/profile/verification/status` | Kiểm tra trạng thái xác thực định danh tài khoản                               |
+| `api.getLastSeen({ groupIds, userIds })`                     |     `12009`     | `/api/preloadconvers/get-last-seen`       | Lấy mốc tin nhắn đã xem cuối cùng của danh sách nhóm & cá nhân                 |
+| `api.getLastSeenReaction({ groupIds, userIds })`             |     `12450`     | `/api/react/gLastSn`                      | Lấy mốc biểu cảm (reaction) đã xem cuối cùng                                   |
+| `api.undoMultiMessage(items, type)`                          | `12115`/`12116` | `/api/message/multi_undo`                 | Thu hồi hàng loạt nhiều tin nhắn cá nhân hoặc nhóm cùng lúc                    |
+| `api.getLastReadContactTab()`                                |     `12230`     | `/api/friend/last-read-contact-tab`       | Lấy dấu thời gian lần cuối đọc tab Danh bạ                                     |
+| `api.readContactTab(ts?)`                                    |     `12231`     | `/api/friend/read-contact-tab`            | Đánh dấu đã đọc tab Danh bạ                                                    |
+| `api.clearUnreadFriendRequests(uids)`                        |     `12232`     | `/api/friend/recommendsv2/read-requests`  | Đánh dấu đã xem danh sách lời mời kết bạn                                      |
+| `api.getListPinTopics(groupId, ver?)`                        |     `12001`     | `/api/board/pin/list`                     | Lấy danh sách chủ đề / tin nhắn đã ghim trong nhóm                             |
+| `api.getGroupCloudMessageJump(groupId, globalMsgId, count?)` |     `12508`     | `/api/cm/rgetv2`                          | Nhảy tới vị trí một tin nhắn nhóm cụ thể trên Cloud và tải ngữ cảnh xung quanh |
+| `api.getStickerCategoriesV2()`                               |     `12020`     | `/api/message/sticker/category/list/v2`   | Lấy danh mục các bộ Sticker V2                                                 |
+| `api.getStickerCategoryData(cid)`                            |     `11156`     | `/api/message/sticker/category/detail`    | Lấy thông tin chi tiết một bộ Sticker theo `cid`                               |
+| `api.getStickerSuggestKeywords()`                            |     `11740`     | `/api/message/sticker/suggest/keywords`   | Lấy danh sách từ khóa gợi ý Sticker tự động                                    |
+| `api.getStickerSuggestion(keyword)`                          |     `11741`     | `/api/message/sticker/suggest/stickers`   | Gợi ý Sticker theo từ khóa đang gõ                                             |
+| `api.getPersonalizedStickerList()`                           |     `11745`     | `/api/message/sticker/personalized/list`  | Lấy danh sách Sticker cá nhân hóa                                              |
+| `api.getStickerHello()`                                      |     `11751`     | `/api/message/sticker/suggestion`         | Lấy bộ Sticker chào hỏi gợi ý theo khung giờ                                   |
+| `api.keepAlive()`                                            |     `11770`     | `/keepalive`                              | Gửi tín hiệu duy trì phiên kết nối HTTP tới máy chủ Chat                       |

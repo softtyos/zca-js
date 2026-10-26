@@ -369,7 +369,7 @@ export function buildInitCallResponse(options: ZRTPInitCallResponseOptions): Buf
     const toUid = options.toUid ?? 0;
     const flags = options.flags ?? 1;
     const errorCode = options.errorCode ?? 0;
-    const routingToken = (options.routingToken >>> 0) || 1;
+    const routingToken = options.routingToken >>> 0 || 1;
 
     const sessBytes = Buffer.from(options.sessId, "utf-8");
     const buf = Buffer.alloc(35 + sessBytes.length);
@@ -691,8 +691,7 @@ export function parseZRTPPacket(buf: Buffer): ParsedZRTPPacket {
     // 2a. Gói tin Relay Media nhận về từ máy chủ Zalo (1-byte header: type in {4, 14})
     // (`zrtc::ZRTPPacket::_parsePacketInternal` @ `0x100158a1c`, mask `0x4090`)
     if (
-        (firstByte === ZRTPLegacyMediaType.IncomingAudioRtp ||
-            firstByte === ZRTPLegacyMediaType.IncomingVideoRtp) &&
+        (firstByte === ZRTPLegacyMediaType.IncomingAudioRtp || firstByte === ZRTPLegacyMediaType.IncomingVideoRtp) &&
         buf.length >= 13
     ) {
         const mediaType = firstByte as ZRTPLegacyMediaType;
@@ -720,10 +719,8 @@ export function parseZRTPPacket(buf: Buffer): ParsedZRTPPacket {
         return {
             family: "legacy_media",
             mediaType,
-            isVideo:
-                mediaType === ZRTPLegacyMediaType.VideoRtp || mediaType === ZRTPLegacyMediaType.VideoRtcp,
-            isRtcp:
-                mediaType === ZRTPLegacyMediaType.AudioRtcp || mediaType === ZRTPLegacyMediaType.VideoRtcp,
+            isVideo: mediaType === ZRTPLegacyMediaType.VideoRtp || mediaType === ZRTPLegacyMediaType.VideoRtcp,
+            isRtcp: mediaType === ZRTPLegacyMediaType.AudioRtcp || mediaType === ZRTPLegacyMediaType.VideoRtcp,
             isFec: mediaType === ZRTPLegacyMediaType.AudioFec,
             routingId,
             rtpPayload: buf.subarray(5),
@@ -750,10 +747,8 @@ export function parseZRTPPacket(buf: Buffer): ParsedZRTPPacket {
                 role,
                 routingToken,
                 subCmd,
-                isVideo:
-                    subCmd === ZRTCMediaSubCommand.VideoRtp || subCmd === ZRTCMediaSubCommand.VideoRtcp,
-                isRtcp:
-                    subCmd === ZRTCMediaSubCommand.AudioRtcp || subCmd === ZRTCMediaSubCommand.VideoRtcp,
+                isVideo: subCmd === ZRTCMediaSubCommand.VideoRtp || subCmd === ZRTCMediaSubCommand.VideoRtcp,
+                isRtcp: subCmd === ZRTCMediaSubCommand.AudioRtcp || subCmd === ZRTCMediaSubCommand.VideoRtcp,
                 isFec: subCmd === ZRTCMediaSubCommand.AudioFec,
                 rtpPayload: buf.subarray(9),
             };

@@ -193,8 +193,12 @@ async function initZaloSession(): Promise<void> {
 
     api.listener.on("old_messages", (msgs, type, hasMore) => {
         if (type === ThreadType.User) {
-            const oaCount = msgs.filter((m) => m.type === ThreadType.User && (m.isOAMessage() || oaProfiles.has(m.threadId))).length;
-            console.log(`📥 [Zalo OA Studio - old_messages] Nhận ${msgs.length} tin nhắn (${oaCount} tin OA, hasMore=${Boolean(hasMore)})`);
+            const oaCount = msgs.filter(
+                (m) => m.type === ThreadType.User && (m.isOAMessage() || oaProfiles.has(m.threadId)),
+            ).length;
+            console.log(
+                `📥 [Zalo OA Studio - old_messages] Nhận ${msgs.length} tin nhắn (${oaCount} tin OA, hasMore=${Boolean(hasMore)})`,
+            );
             broadcastSse({
                 type: "log",
                 level: "ok",
@@ -383,9 +387,7 @@ async function startServer(): Promise<void> {
             const oaId = String(body.oaId ?? "").trim();
             const block = Boolean(body.block);
             try {
-                const apiRes = block
-                    ? await api!.business.blockOA(oaId)
-                    : await api!.business.unblockOA(oaId);
+                const apiRes = block ? await api!.business.blockOA(oaId) : await api!.business.unblockOA(oaId);
                 const prof = oaProfiles.get(oaId);
                 if (prof) {
                     prof.isBlocked = block;
@@ -449,7 +451,8 @@ async function startServer(): Promise<void> {
                             {
                                 type: "l.a.header.full",
                                 title: "Ra mắt nền tảng tự động hóa Softty.net AI",
-                                description: "Giải pháp quản lý bán hàng đa kênh và tích hợp Zalo Official Account tự động.",
+                                description:
+                                    "Giải pháp quản lý bán hàng đa kênh và tích hợp Zalo Official Account tự động.",
                                 thumb: oaProfiles.get(oaId)?.cover || oaProfiles.get(oaId)?.avatar || "",
                                 href: "https://www.softty.net",
                             },

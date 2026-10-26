@@ -299,9 +299,7 @@ export function isZaloBot(profileOrType: { type?: number } | number | null | und
 export function parseOADnrStatus(oaStatus: unknown, fallbackIsBlocked?: number | boolean): OADnrStatus {
     const parsed = safeJsonParse<Record<string, unknown>>(oaStatus);
     const isBlocked =
-        parsed && "blocked" in parsed
-            ? Boolean(Number(parsed.blocked))
-            : Boolean(Number(fallbackIsBlocked ?? 0));
+        parsed && "blocked" in parsed ? Boolean(Number(parsed.blocked)) : Boolean(Number(fallbackIsBlocked ?? 0));
     const enableDnr = parsed && "enable_dnr" in parsed ? Boolean(Number(parsed.enable_dnr)) : false;
     const dnrType = parsed && typeof parsed.dnr_type === "number" ? parsed.dnr_type : null;
 
@@ -361,9 +359,7 @@ export function normalizeOAProfile(
         (typeof prof.displayName === "string" && prof.displayName) ||
         (typeof prof.zaloName === "string" && prof.zaloName) ||
         oaId;
-    const zaloName =
-        (typeof prof.zaloName === "string" && prof.zaloName) ||
-        displayName;
+    const zaloName = (typeof prof.zaloName === "string" && prof.zaloName) || displayName;
 
     return {
         oaId: String(prof.userId ?? oaId),

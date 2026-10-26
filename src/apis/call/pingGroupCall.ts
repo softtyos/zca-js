@@ -1,9 +1,10 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
+import { toVoipInt } from "./sendVoiceCall.js";
 
 export type PingGroupCallOptions = {
-    hostCall: string;
-    userId?: string;
+    hostCall: string | number;
+    userId?: string | number;
     callState?: number;
     audioState?: number;
     videoState?: number;
@@ -22,36 +23,25 @@ export const pingGroupCallFactory = apiFactory<PingGroupCallResponse>()((api, ct
      * @param options Thông tin `hostCall`, `userId`, `callState`, `audioState`, `videoState` và `params`
      * @throws {ZaloApiError}
      */
-    return async function pingGroupCall(
-        callId: number,
-        options: PingGroupCallOptions,
-    ): Promise<PingGroupCallResponse> {
+    return async function pingGroupCall(callId: number, options: PingGroupCallOptions): Promise<PingGroupCallResponse> {
         if (!callId) throw new ZaloApiError("Missing callId");
         if (!options?.hostCall) throw new ZaloApiError("Missing hostCall");
         if (!voiceCallService) throw new ZaloApiError("Missing voice_call service URL in zpwServiceMap");
 
-        const paramsStr =
-            options.params === undefined
-                ? "{}"
-                : typeof options.params === "string"
-                  ? options.params
-                  : JSON.stringify(options.params);
-
         const callState = options.callState ?? 1;
         const audioState = options.audioState ?? 1;
         const videoState = options.videoState ?? 0;
-        const payload = {
+        const payload: Record<string, unknown> = {
             callId,
-            hostCall: String(options.hostCall),
-            userId: String(options.userId ?? ctx.uid),
-            callState,
-            audioState,
-            videoState,
+            hostCall: toVoipInt(options.hostCall),
+            userId: toVoipInt(options.userId ?? options.hostCall ?? ctx.uid),
             callstate: callState,
             audiostate: audioState,
             videostate: videoState,
-            params: paramsStr,
         };
+        if (options.params !== undefined) {
+            payload.params = typeof options.params === "string" ? options.params : JSON.stringify(options.params);
+        }
 
         const encryptedParams = utils.encodeAES(JSON.stringify(payload));
         if (!encryptedParams) throw new ZaloApiError("Failed to encrypt pingGroupCall params");
@@ -65,6 +55,27 @@ export const pingGroupCallFactory = apiFactory<PingGroupCallResponse>()((api, ct
             method: "GET",
         });
 
-        return utils.resolve(response);
+        const raw = await utils.resolve(response);
+        const resObj: Record<string, unknown> =
+            typeof raw === "string"
+                ? (JSON.parse(raw) as Record<string, unknown>)
+                : ((raw ?? {}) as Record<string, unknown>);
+
+        // Trong ZMessageDeserializer::_parseResponsePing (0x100023494),
+        // dữ liệu phản hồi thật (error, callId, hostCall, partnerInfo) nằm trong chuỗi JSON `data`.
+        if (typeof resObj.data === "string" && resObj.data.length > 0) {
+            try {
+                const innerData = JSON.parse(resObj.data) as Record<string, unknown>;
+                if (innerData && typeof innerData === "object") {
+                    return {
+                        ...innerData,
+                        ...resObj,
+                    };
+                }
+            } catch {
+                // Giữ nguyên nếu data không phải JSON
+            }
+        }
+        return resObj;
     };
 });

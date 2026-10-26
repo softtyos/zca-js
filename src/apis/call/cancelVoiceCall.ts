@@ -32,8 +32,7 @@ export const cancelVoiceCallFactory = apiFactory<CancelVoiceCallResponse>()((api
         const rawCallType = options.callType ?? CallType.Audio;
         // Khớp với ZMessageSerializer::sendCancelCall (0x100026acc): callType = (callType != 1 ? 1 : 0)
         // Cho phép truyền trực tiếp 0 (Audio) hoặc 1 (Video), hoặc CallType.Audio (1) -> 0, CallType.Video (3) -> 1
-        const normalizedCallType =
-            rawCallType === 0 || rawCallType === CallType.Audio ? 0 : 1;
+        const normalizedCallType = rawCallType === 0 || rawCallType === CallType.Audio ? 0 : 1;
 
         const params = {
             callerId: String(calleeId),

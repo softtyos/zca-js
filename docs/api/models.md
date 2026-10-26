@@ -28,6 +28,7 @@ import {
 ## ⚠️ Lớp Ngoại lệ & Xử lý lỗi (`Errors`)
 
 ### `ZaloApiError`
+
 ```ts
 export class ZaloApiError extends Error {
     public code: number | null;
@@ -42,6 +43,7 @@ export class ZaloApiError extends Error {
 ```
 
 ### `ZaloApiLoginQRAborted`
+
 ```ts
 import { ZaloApiError } from "./ZaloApiError.js";
 
@@ -54,6 +56,7 @@ export class ZaloApiLoginQRAborted extends ZaloApiError {
 ```
 
 ### `ZaloApiLoginQRDeclined`
+
 ```ts
 import { ZaloApiError } from "./ZaloApiError.js";
 
@@ -66,6 +69,7 @@ export class ZaloApiLoginQRDeclined extends ZaloApiError {
 ```
 
 ### `ZaloApiMissingImageMetadataGetter`
+
 ```ts
 import { ZaloApiError } from "./ZaloApiError.js";
 
@@ -82,6 +86,7 @@ export class ZaloApiMissingImageMetadataGetter extends ZaloApiError {
 ## 📐 Các Hằng số (`Enums`) & Mô hình Dữ liệu (`Models`)
 
 ### `Attachment`
+
 ```ts
 export type AttachmentSource =
     | string
@@ -97,6 +102,7 @@ export type AttachmentSource =
 ```
 
 ### `AutoReply`
+
 ```ts
 export type AutoReplyItem = {
     id: number;
@@ -117,11 +123,12 @@ export enum AutoReplyScope {
     Everyone = 0,
     Stranger = 1,
     SpecificFriends = 2,
-    FriendsExcept = 3
+    FriendsExcept = 3,
 }
 ```
 
 ### `Bank`
+
 ```ts
 export type BankInfo = {
     bin: number;
@@ -415,10 +422,11 @@ export enum BinBankCard {
      * NH TNHH MTV Woori Việt Nam
      */
     Woori_Bank = 970457,
-};
+}
 ```
 
 ### `Board`
+
 ```ts
 export enum BoardType {
     Note = 1,
@@ -487,6 +495,7 @@ export type PinnedMessageDetail = {
 ```
 
 ### `CallEvent`
+
 ```ts
 export enum CallEventType {
     REQUEST = "request",
@@ -659,6 +668,7 @@ export function initializeCallEvent(data: TCallEventData, act: string, act_type:
 ```
 
 ### `Catalog`
+
 ```ts
 export type CatalogItem = {
     id: string;
@@ -679,6 +689,7 @@ export type CatalogItem = {
 ```
 
 ### `ClearUnread`
+
 ```ts
 import { ThreadType } from "./Enum.js";
 
@@ -717,6 +728,7 @@ export class ClearUnread {
 ```
 
 ### `DeliveredMessage`
+
 ```ts
 import { ThreadType } from "./Enum.js";
 
@@ -765,6 +777,7 @@ export type DeliveredMessage = UserDeliveredMessage | GroupDeliveredMessage;
 ```
 
 ### `Enum`
+
 ```ts
 export enum ThreadType {
     User,
@@ -793,6 +806,7 @@ export enum AvatarSize {
 ```
 
 ### `FriendEvent`
+
 ```ts
 export enum FriendEventType {
     ADD,
@@ -1002,6 +1016,7 @@ export function initializeFriendEvent(uid: string, data: TFriendEvent, type: Fri
 ```
 
 ### `Group`
+
 ```ts
 export type GroupSetting = {
     blockName: number;
@@ -1152,6 +1167,7 @@ export type GroupInfo = {
 ```
 
 ### `GroupEvent`
+
 ```ts
 import type { GroupSetting, GroupTopic } from "./Group.js";
 import type { ReminderGroup } from "./Reminder.js";
@@ -1441,6 +1457,7 @@ export function initializeGroupEvent(uid: string, data: TGroupEvent, type: Group
 ```
 
 ### `Label`
+
 ```ts
 export type LabelData = {
     id: number;
@@ -1455,6 +1472,7 @@ export type LabelData = {
 ```
 
 ### `Message`
+
 ```ts
 import { ThreadType } from "./Enum.js";
 import { parseOAMessage, type ParsedOAMessage } from "./OAMessage.js";
@@ -1601,6 +1619,7 @@ export type Message = UserMessage | GroupMessage;
 ```
 
 ### `OAMessage`
+
 ```ts
 export type OAHighlightItem =
     | string
@@ -1903,9 +1922,7 @@ export function isZaloBot(profileOrType: { type?: number } | number | null | und
 export function parseOADnrStatus(oaStatus: unknown, fallbackIsBlocked?: number | boolean): OADnrStatus {
     const parsed = safeJsonParse<Record<string, unknown>>(oaStatus);
     const isBlocked =
-        parsed && "blocked" in parsed
-            ? Boolean(Number(parsed.blocked))
-            : Boolean(Number(fallbackIsBlocked ?? 0));
+        parsed && "blocked" in parsed ? Boolean(Number(parsed.blocked)) : Boolean(Number(fallbackIsBlocked ?? 0));
     const enableDnr = parsed && "enable_dnr" in parsed ? Boolean(Number(parsed.enable_dnr)) : false;
     const dnrType = parsed && typeof parsed.dnr_type === "number" ? parsed.dnr_type : null;
 
@@ -1965,9 +1982,7 @@ export function normalizeOAProfile(
         (typeof prof.displayName === "string" && prof.displayName) ||
         (typeof prof.zaloName === "string" && prof.zaloName) ||
         oaId;
-    const zaloName =
-        (typeof prof.zaloName === "string" && prof.zaloName) ||
-        displayName;
+    const zaloName = (typeof prof.zaloName === "string" && prof.zaloName) || displayName;
 
     return {
         oaId: String(prof.userId ?? oaId),
@@ -2167,6 +2182,7 @@ export function initializeOAEvent(data: TOAEventData, act: string): OAEvent {
 ```
 
 ### `ProductCatalog`
+
 ```ts
 export type ProductCatalogItem = {
     price: string;
@@ -2188,6 +2204,7 @@ export type ProductCatalogItem = {
 ```
 
 ### `QuickMessage`
+
 ```ts
 export type QuickMessage = {
     id: number;
@@ -2217,6 +2234,7 @@ export type QuickMessage = {
 ```
 
 ### `Reaction`
+
 ```ts
 export enum Reactions {
     HEART = "/-heart",
@@ -2313,6 +2331,7 @@ export class Reaction {
 ```
 
 ### `Reminder`
+
 ```ts
 export enum ReminderRepeatMode {
     None = 0,
@@ -2370,6 +2389,7 @@ export type ReminderGroup = {
 ```
 
 ### `SeenMessage`
+
 ```ts
 import { ThreadType } from "./Enum.js";
 
@@ -2417,6 +2437,7 @@ export type SeenMessage = UserSeenMessage | GroupSeenMessage;
 ```
 
 ### `Sticker`
+
 ```ts
 export type StickerDetail = {
     id: number;
@@ -2449,6 +2470,7 @@ export type StickerBasic = {
 ```
 
 ### `SyncData`
+
 ```ts
 export type SyncData = {
     file_path: string;
@@ -2490,6 +2512,7 @@ export type SyncDataResponse = {
 ```
 
 ### `SyncEvent`
+
 ```ts
 export enum SyncEventType {
     USER_CONFIRM = "user_confirm",
@@ -2631,6 +2654,7 @@ export function initializeSyncEvent(data: TSyncEvent, act: string, act_type: str
 ```
 
 ### `Typing`
+
 ```ts
 import { ThreadType } from "./Enum.js";
 
@@ -2676,6 +2700,7 @@ export type Typing = UserTyping | GroupTyping;
 ```
 
 ### `Undo`
+
 ```ts
 export type TUndoContent = {
     globalMsgId: number;
@@ -2725,6 +2750,7 @@ export class Undo {
 ```
 
 ### `User`
+
 ```ts
 import type { Gender } from "./Enum.js";
 import type { ZBusinessPackage } from "./ZBusiness.js";
@@ -2803,6 +2829,7 @@ export type UnchangedProfileInfo = {
 ```
 
 ### `ZBusiness`
+
 ```ts
 export type ZBusinessPackage = {
     label?: Record<string, string> | null;

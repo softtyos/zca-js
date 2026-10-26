@@ -11,24 +11,24 @@ Quản lý Tin ghim (Pin Topics), Ghi chú nhóm (Notes), Bình chọn (Polls) v
 
 ## Danh sách nhanh
 
-| Phương thức | HTTP | Endpoint Zalo | Mô tả |
-| :--- | :---: | :--- | :--- |
-| [`addPollOptions`](#addpolloptions) | `GET` | `/api/poll/option/add` | Thêm phương án lựa chọn mới vào một cuộc Bình chọn (Poll) đang mở trong nhóm. |
-| [`createNote`](#createnote) | `POST` | `/api/board/topic/createv2` | Tạo một Ghi chú (Note) mới trên Bảng tin nhóm và tùy chọn ghim lên đầu. |
-| [`createPoll`](#createpoll) | `POST` | `/api/poll/create` | Tạo một cuộc Bình chọn (Poll) mới trong nhóm với nhiều phương án và cấu hình ẩn danh/đa lựa chọn. |
-| [`createReminder`](#createreminder) | `POST` | `/api/board/oneone/create`<br/>`/api/board/topic/createv2` | Tạo một Lịch hẹn (Reminder) mới trong hội thoại cá nhân hoặc nhóm. |
-| [`editNote`](#editnote) | `POST` | `/api/board/topic/updatev2` | Chỉnh sửa nội dung ghi chú đã tạo trên Bảng tin nhóm. |
-| [`editReminder`](#editreminder) | `POST` | `/api/board/oneone/update`<br/>`/api/board/topic/updatev2` | Chỉnh sửa nội dung và thời gian của một Lịch hẹn (Reminder). |
-| [`getListBoard`](#getlistboard) | `GET` | `/api/board/list` | Lấy danh sách các mục trên Bảng tin nhóm (bao gồm Ghi chú, Bình chọn và Tin nhắn ghim) qua /api/board/list. |
-| [`getListPinTopics`](#getlistpintopics) | `GET` | `/api/board/pin/list` | Lấy danh sách chủ đề / tin nhắn đã ghim trong bảng tin nhóm (command 12001) |
-| [`getListReminder`](#getlistreminder) | `GET` | `/api/board/oneone/list`<br/>`/api/board/listReminder` | Lấy danh sách các Lịch hẹn (Reminders) trong hội thoại cá nhân hoặc nhóm. |
-| [`getPollDetail`](#getpolldetail) | `POST` | `/api/poll/detail` | Lấy thông tin chi tiết và toàn bộ danh sách UID thành viên đã bỏ phiếu (voters) trong cuộc Bình chọn qua /api/poll/detail. |
-| [`getReminder`](#getreminder) | `GET` | `/api/board/topic/getReminder` | Lấy thông tin chi tiết của một Lịch hẹn (Reminder) trong nhóm. |
-| [`getReminderResponses`](#getreminderresponses) | `GET` | `/api/board/topic/listResponseEvent` | Lấy danh sách UID các thành viên đã bấm Tham gia (acceptMember) hoặc Từ chối (rejectMember) một Lịch hẹn. |
-| [`lockPoll`](#lockpoll) | `POST` | `/api/poll/end` | Khóa (Kết thúc) một cuộc Bình chọn trong nhóm. |
-| [`removeReminder`](#removereminder) | `POST` | `/api/board/oneone/remove`<br/>`/api/board/topic/remove` | Xóa một Lịch hẹn trong hội thoại cá nhân hoặc nhóm. |
-| [`sharePoll`](#sharepoll) | `POST` | `/api/poll/share` | Chia sẻ lại cuộc Bình chọn vào luồng tin nhắn nhóm. |
-| [`votePoll`](#votepoll) | `GET` | `/api/poll/vote` | Bỏ phiếu bình chọn cho một hoặc nhiều phương án trong cuộc Bình chọn nhóm. |
+| Phương thức                                     |  HTTP  | Endpoint Zalo                                              | Mô tả                                                                                                                      |
+| :---------------------------------------------- | :----: | :--------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------- |
+| [`addPollOptions`](#addpolloptions)             | `GET`  | `/api/poll/option/add`                                     | Thêm phương án lựa chọn mới vào một cuộc Bình chọn (Poll) đang mở trong nhóm.                                              |
+| [`createNote`](#createnote)                     | `POST` | `/api/board/topic/createv2`                                | Tạo một Ghi chú (Note) mới trên Bảng tin nhóm và tùy chọn ghim lên đầu.                                                    |
+| [`createPoll`](#createpoll)                     | `POST` | `/api/poll/create`                                         | Tạo một cuộc Bình chọn (Poll) mới trong nhóm với nhiều phương án và cấu hình ẩn danh/đa lựa chọn.                          |
+| [`createReminder`](#createreminder)             | `POST` | `/api/board/oneone/create`<br/>`/api/board/topic/createv2` | Tạo một Lịch hẹn (Reminder) mới trong hội thoại cá nhân hoặc nhóm.                                                         |
+| [`editNote`](#editnote)                         | `POST` | `/api/board/topic/updatev2`                                | Chỉnh sửa nội dung ghi chú đã tạo trên Bảng tin nhóm.                                                                      |
+| [`editReminder`](#editreminder)                 | `POST` | `/api/board/oneone/update`<br/>`/api/board/topic/updatev2` | Chỉnh sửa nội dung và thời gian của một Lịch hẹn (Reminder).                                                               |
+| [`getListBoard`](#getlistboard)                 | `GET`  | `/api/board/list`                                          | Lấy danh sách các mục trên Bảng tin nhóm (bao gồm Ghi chú, Bình chọn và Tin nhắn ghim) qua /api/board/list.                |
+| [`getListPinTopics`](#getlistpintopics)         | `GET`  | `/api/board/pin/list`                                      | Lấy danh sách chủ đề / tin nhắn đã ghim trong bảng tin nhóm (command 12001)                                                |
+| [`getListReminder`](#getlistreminder)           | `GET`  | `/api/board/oneone/list`<br/>`/api/board/listReminder`     | Lấy danh sách các Lịch hẹn (Reminders) trong hội thoại cá nhân hoặc nhóm.                                                  |
+| [`getPollDetail`](#getpolldetail)               | `POST` | `/api/poll/detail`                                         | Lấy thông tin chi tiết và toàn bộ danh sách UID thành viên đã bỏ phiếu (voters) trong cuộc Bình chọn qua /api/poll/detail. |
+| [`getReminder`](#getreminder)                   | `GET`  | `/api/board/topic/getReminder`                             | Lấy thông tin chi tiết của một Lịch hẹn (Reminder) trong nhóm.                                                             |
+| [`getReminderResponses`](#getreminderresponses) | `GET`  | `/api/board/topic/listResponseEvent`                       | Lấy danh sách UID các thành viên đã bấm Tham gia (acceptMember) hoặc Từ chối (rejectMember) một Lịch hẹn.                  |
+| [`lockPoll`](#lockpoll)                         | `POST` | `/api/poll/end`                                            | Khóa (Kết thúc) một cuộc Bình chọn trong nhóm.                                                                             |
+| [`removeReminder`](#removereminder)             | `POST` | `/api/board/oneone/remove`<br/>`/api/board/topic/remove`   | Xóa một Lịch hẹn trong hội thoại cá nhân hoặc nhóm.                                                                        |
+| [`sharePoll`](#sharepoll)                       | `POST` | `/api/poll/share`                                          | Chia sẻ lại cuộc Bình chọn vào luồng tin nhắn nhóm.                                                                        |
+| [`votePoll`](#votepoll)                         | `GET`  | `/api/poll/vote`                                           | Bỏ phiếu bình chọn cho một hoặc nhiều phương án trong cuộc Bình chọn nhóm.                                                 |
 
 ---
 

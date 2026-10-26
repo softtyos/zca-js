@@ -11,28 +11,28 @@ Quản lý thiết bị đăng nhập, xuất/nhập phiên (exportSession), mã
 
 ## Danh sách nhanh
 
-| Phương thức | HTTP | Endpoint Zalo | Mô tả |
-| :--- | :---: | :--- | :--- |
-| [`decryptGids`](#decryptgids) | `GET` | `/api/gid/decrypt` | Giải mã danh sách Global ID (g_...) ẩn danh thành User ID thật (tương ứng hàm `getUidFromGlobalNoiseId` / command `12054` trên Zalo PC) |
-| [`encryptGids`](#encryptgids) | `GET` | `/api/gid/encrypt` | Mã hóa danh sách UID thật sang định danh ẩn danh Global Noise ID (`OTDAKO...`) (command 12053) |
-| [`exportSession`](#exportsession) | `GET` | `Internal` | Xuất toàn bộ thông tin phiên đăng nhập hiện tại (`uid`, `imei`, `userAgent`, `language`, `cookie`) dưới định dạng chuẩn `Credentials` để lưu trữ (JSON/Database) và truyền trực tiếp vào `zalo.login(session)`. |
-| [`getContext`](#getcontext) | `GET` | `Internal` | API `getContext` thuộc phân hệ `auth`. |
-| [`getCookie`](#getcookie) | `GET` | `Internal` | Get the current cookie string |
-| [`getListDevice`](#getlistdevice) | `GET` | `/api/devices/linked` | Lấy danh sách các thiết bị đang đăng nhập tài khoản Zalo hiện tại. |
-| [`getNoisedIds`](#getnoisedids) | `GET` | `/api/znoise` | Chuyển đổi danh sách UID cá nhân (`fids`) và GID nhóm (`gids`) dạng số thuần (từ SQLite ZDB4.0 mobile) sang định dạng Noised ID 19 chữ số dùng trên Zalo Web/PC (`getNoisedUids`, command `12390`). Tự động fallback sang `https://zwid.api.zalo.me/api/znoise` nếu profile domain trả về lỗi. |
-| [`getOwnId`](#getownid) | `GET` | `Internal` | API `getOwnId` thuộc phân hệ `auth`. |
-| [`getQR`](#getqr) | `POST` | `/api/friend/mget-qr` | Lấy mã QR của danh sách người dùng theo UID. |
-| [`keepAlive`](#keepalive) | `GET` | `Internal` | Gửi tín hiệu duy trì phiên kết nối HTTP tới máy chủ Chat (KeepAlive - command 11770) |
-| [`lostFocus`](#lostfocus) | `POST` | `/api/social/profile/changefgtobg` | Gửi tín hiệu thông báo ứng dụng chuyển sang chế độ chạy nền (Background). |
-| [`scanURL`](#scanurl) | `POST` | `/api/message/scanurl` | Quét và kiểm tra độ an toàn của đường dẫn URL thông qua bộ lọc bảo mật Zalo. |
-| [`updateActiveStatus`](#updateactivestatus) | `GET` | `/api/social/profile/ping`<br/>`/api/social/profile/deactive` | Cập nhật trạng thái hoạt động (Online / Offline / Ping) của tài khoản. |
-| [`updateLang`](#updatelang) | `GET` | `/api/social/profile/updatelang` | Cập nhật ngôn ngữ hiển thị của phiên tài khoản Zalo. |
+| Phương thức                                 |  HTTP  | Endpoint Zalo                                                 | Mô tả                                                                                                                                                                                                                                                                                          |
+| :------------------------------------------ | :----: | :------------------------------------------------------------ | :--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`decryptGids`](#decryptgids)               | `GET`  | `/api/gid/decrypt`                                            | Giải mã danh sách Global ID (g\_...) ẩn danh thành User ID thật (tương ứng hàm `getUidFromGlobalNoiseId` / command `12054` trên Zalo PC)                                                                                                                                                       |
+| [`encryptGids`](#encryptgids)               | `GET`  | `/api/gid/encrypt`                                            | Mã hóa danh sách UID thật sang định danh ẩn danh Global Noise ID (`OTDAKO...`) (command 12053)                                                                                                                                                                                                 |
+| [`exportSession`](#exportsession)           | `GET`  | `Internal`                                                    | Xuất toàn bộ thông tin phiên đăng nhập hiện tại (`uid`, `imei`, `userAgent`, `language`, `cookie`) dưới định dạng chuẩn `Credentials` để lưu trữ (JSON/Database) và truyền trực tiếp vào `zalo.login(session)`.                                                                                |
+| [`getContext`](#getcontext)                 | `GET`  | `Internal`                                                    | API `getContext` thuộc phân hệ `auth`.                                                                                                                                                                                                                                                         |
+| [`getCookie`](#getcookie)                   | `GET`  | `Internal`                                                    | Get the current cookie string                                                                                                                                                                                                                                                                  |
+| [`getListDevice`](#getlistdevice)           | `GET`  | `/api/devices/linked`                                         | Lấy danh sách các thiết bị đang đăng nhập tài khoản Zalo hiện tại.                                                                                                                                                                                                                             |
+| [`getNoisedIds`](#getnoisedids)             | `GET`  | `/api/znoise`                                                 | Chuyển đổi danh sách UID cá nhân (`fids`) và GID nhóm (`gids`) dạng số thuần (từ SQLite ZDB4.0 mobile) sang định dạng Noised ID 19 chữ số dùng trên Zalo Web/PC (`getNoisedUids`, command `12390`). Tự động fallback sang `https://zwid.api.zalo.me/api/znoise` nếu profile domain trả về lỗi. |
+| [`getOwnId`](#getownid)                     | `GET`  | `Internal`                                                    | API `getOwnId` thuộc phân hệ `auth`.                                                                                                                                                                                                                                                           |
+| [`getQR`](#getqr)                           | `POST` | `/api/friend/mget-qr`                                         | Lấy mã QR của danh sách người dùng theo UID.                                                                                                                                                                                                                                                   |
+| [`keepAlive`](#keepalive)                   | `GET`  | `Internal`                                                    | Gửi tín hiệu duy trì phiên kết nối HTTP tới máy chủ Chat (KeepAlive - command 11770)                                                                                                                                                                                                           |
+| [`lostFocus`](#lostfocus)                   | `POST` | `/api/social/profile/changefgtobg`                            | Gửi tín hiệu thông báo ứng dụng chuyển sang chế độ chạy nền (Background).                                                                                                                                                                                                                      |
+| [`scanURL`](#scanurl)                       | `POST` | `/api/message/scanurl`                                        | Quét và kiểm tra độ an toàn của đường dẫn URL thông qua bộ lọc bảo mật Zalo.                                                                                                                                                                                                                   |
+| [`updateActiveStatus`](#updateactivestatus) | `GET`  | `/api/social/profile/ping`<br/>`/api/social/profile/deactive` | Cập nhật trạng thái hoạt động (Online / Offline / Ping) của tài khoản.                                                                                                                                                                                                                         |
+| [`updateLang`](#updatelang)                 | `GET`  | `/api/social/profile/updatelang`                              | Cập nhật ngôn ngữ hiển thị của phiên tài khoản Zalo.                                                                                                                                                                                                                                           |
 
 ---
 
 ## `decryptGids`
 
-Giải mã danh sách Global ID (g_...) ẩn danh thành User ID thật (tương ứng hàm `getUidFromGlobalNoiseId` / command `12054` trên Zalo PC)
+Giải mã danh sách Global ID (g\_...) ẩn danh thành User ID thật (tương ứng hàm `getUidFromGlobalNoiseId` / command `12054` trên Zalo PC)
 
 <div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">/api/gid/decrypt</span></div>
 
@@ -94,9 +94,9 @@ Xuất toàn bộ thông tin phiên đăng nhập hiện tại (`uid`, `imei`, `
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.auth.exportSession()
+await api.auth.exportSession();
 // Hoặc gọi phẳng (Flat Alias):
-await api.exportSession()
+await api.exportSession();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -118,9 +118,9 @@ API `getContext` thuộc phân hệ `auth`.
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.auth.getContext()
+await api.auth.getContext();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getContext()
+await api.getContext();
 ```
 
 ---
@@ -133,9 +133,9 @@ Get the current cookie string
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.auth.getCookie()
+await api.auth.getCookie();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getCookie()
+await api.getCookie();
 ```
 
 ---
@@ -148,9 +148,9 @@ Lấy danh sách các thiết bị đang đăng nhập tài khoản Zalo hiện 
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.auth.getListDevice()
+await api.auth.getListDevice();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getListDevice()
+await api.getListDevice();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -210,9 +210,9 @@ API `getOwnId` thuộc phân hệ `auth`.
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.auth.getOwnId()
+await api.auth.getOwnId();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getOwnId()
+await api.getOwnId();
 ```
 
 ---
@@ -252,9 +252,9 @@ Gửi tín hiệu duy trì phiên kết nối HTTP tới máy chủ Chat (KeepAl
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.auth.keepAlive()
+await api.auth.keepAlive();
 // Hoặc gọi phẳng (Flat Alias):
-await api.keepAlive()
+await api.keepAlive();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -276,9 +276,9 @@ Gửi tín hiệu thông báo ứng dụng chuyển sang chế độ chạy nề
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.auth.lostFocus()
+await api.auth.lostFocus();
 // Hoặc gọi phẳng (Flat Alias):
-await api.lostFocus()
+await api.lostFocus();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)

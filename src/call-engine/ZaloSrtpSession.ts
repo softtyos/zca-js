@@ -197,14 +197,10 @@ export class ZaloSrtpSession {
 
     constructor(masterKeyInput: string | Buffer, suite: SrtpCryptoSuite = "AES_CM_128_HMAC_SHA1_80") {
         const raw =
-            typeof masterKeyInput === "string"
-                ? Buffer.from(masterKeyInput, "base64")
-                : Buffer.from(masterKeyInput);
+            typeof masterKeyInput === "string" ? Buffer.from(masterKeyInput, "base64") : Buffer.from(masterKeyInput);
 
         if (raw.length < 30) {
-            throw new ZaloApiError(
-                `SRTP master key + salt must be at least 30 bytes (got ${raw.length} bytes)`,
-            );
+            throw new ZaloApiError(`SRTP master key + salt must be at least 30 bytes (got ${raw.length} bytes)`);
         }
 
         this.masterKey = raw.subarray(0, 16);
@@ -230,7 +226,11 @@ export class ZaloSrtpSession {
         let roc = explicitRoc ?? this.sendRoc;
 
         if (explicitRoc === undefined) {
-            if (this.lastSendSeq !== -1 && parsed.sequenceNumber < this.lastSendSeq && this.lastSendSeq - parsed.sequenceNumber > 0x8000) {
+            if (
+                this.lastSendSeq !== -1 &&
+                parsed.sequenceNumber < this.lastSendSeq &&
+                this.lastSendSeq - parsed.sequenceNumber > 0x8000
+            ) {
                 this.sendRoc = (this.sendRoc + 1) >>> 0;
                 roc = this.sendRoc;
             }

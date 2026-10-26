@@ -29,7 +29,9 @@ export async function exampleCase1_CatchUpMissedMessages() {
 
     // Bước 1: Gọi preloadConversations để lấy danh sách tin nhắn mới nhất & trạng thái đã đọc
     const preload = await api.preloadConversations();
-    console.log(`📦 Preload: ${preload.messages.length} tin nhắn mới nhất, ${preload.unreadCleared.length} hội thoại đã đọc.`);
+    console.log(
+        `📦 Preload: ${preload.messages.length} tin nhắn mới nhất, ${preload.unreadCleared.length} hội thoại đã đọc.`,
+    );
 
     // Bước 2: Lắng nghe tin nhắn hàng đợi (cmd 510 / 511) từ WebSocket
     api.listener.on("old_messages", (messages, type, hasMore) => {

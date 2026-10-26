@@ -11,16 +11,16 @@ Truy vấn Kho Lưu Trữ Ảnh/Video, File, Link của nhóm và Cloud của t�
 
 ## Danh sách nhanh
 
-| Phương thức | HTTP | Endpoint Zalo | Mô tả |
-| :--- | :---: | :--- | :--- |
-| [`getConversationMedia`](#getconversationmedia) | `GET` | `/api/mediastore/list` | Lấy danh sách Kho Lưu Trữ (Ảnh/Video `"media"`, File `"file"`, hoặc Link `"link"`) trong hội thoại nhóm (command 11841) |
-| [`getMediaStorePreview`](#getmediastorepreview) | `POST` | `/api/mediastore/preview` | Lấy danh sách xem trước nhanh Kho Lưu Trữ (Ảnh/Video, File, Link) của nhóm (command 11843) |
-| [`getPersonalMedia`](#getpersonalmedia) | `GET` | `/api/media/oneone/list` | Lấy danh sách Kho Lưu Trữ Ảnh/Video (`"media"`), File (`"file"`), hoặc Link (`"link"`) trong Cloud của tôi (Send2Me) (command 12220) |
-| [`getPersonalMediaPreview`](#getpersonalmediapreview) | `POST` | `/api/media/oneone/preview` | Lấy danh sách xem trước nhanh Kho Lưu Trữ trong Cloud của tôi (Send2Me) (command 12221) |
-| [`removeConversationMedia`](#removeconversationmedia) | `POST` | `/api/mediastore/remove` | Xóa mục Ảnh/Video, File hoặc Link khỏi Kho Lưu Trữ của nhóm (command 11842) |
-| [`removePersonalMedia`](#removepersonalmedia) | `POST` | `/api/media/oneone/remove` | Xóa mục lưu trữ trong Kho Lưu Trữ Cloud của tôi (Send2Me) (command 12222) |
-| [`uploadAttachment`](#uploadattachment) | `POST` | `Internal` | Tải tệp đính kèm (Ảnh, Video, File) lên máy chủ Zalo để lấy thông tin fileUrl / fileId trước khi gửi. |
-| [`voiceToText`](#voicetotext) | `POST` | `/api/aifeatures/voice2text` | Gửi yêu cầu chuyển đổi tin nhắn thoại sang văn bản bằng Zalo AI (command 13394). Kết quả văn bản sau khi xử lý xong sẽ được đẩy về qua sự kiện `api.listener.on("voice2text_event", ...)` khớp với `req_id`. |
+| Phương thức                                           |  HTTP  | Endpoint Zalo                | Mô tả                                                                                                                                                                                                        |
+| :---------------------------------------------------- | :----: | :--------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`getConversationMedia`](#getconversationmedia)       | `GET`  | `/api/mediastore/list`       | Lấy danh sách Kho Lưu Trữ (Ảnh/Video `"media"`, File `"file"`, hoặc Link `"link"`) trong hội thoại nhóm (command 11841)                                                                                      |
+| [`getMediaStorePreview`](#getmediastorepreview)       | `POST` | `/api/mediastore/preview`    | Lấy danh sách xem trước nhanh Kho Lưu Trữ (Ảnh/Video, File, Link) của nhóm (command 11843)                                                                                                                   |
+| [`getPersonalMedia`](#getpersonalmedia)               | `GET`  | `/api/media/oneone/list`     | Lấy danh sách Kho Lưu Trữ Ảnh/Video (`"media"`), File (`"file"`), hoặc Link (`"link"`) trong Cloud của tôi (Send2Me) (command 12220)                                                                         |
+| [`getPersonalMediaPreview`](#getpersonalmediapreview) | `POST` | `/api/media/oneone/preview`  | Lấy danh sách xem trước nhanh Kho Lưu Trữ trong Cloud của tôi (Send2Me) (command 12221)                                                                                                                      |
+| [`removeConversationMedia`](#removeconversationmedia) | `POST` | `/api/mediastore/remove`     | Xóa mục Ảnh/Video, File hoặc Link khỏi Kho Lưu Trữ của nhóm (command 11842)                                                                                                                                  |
+| [`removePersonalMedia`](#removepersonalmedia)         | `POST` | `/api/media/oneone/remove`   | Xóa mục lưu trữ trong Kho Lưu Trữ Cloud của tôi (Send2Me) (command 12222)                                                                                                                                    |
+| [`uploadAttachment`](#uploadattachment)               | `POST` | `Internal`                   | Tải tệp đính kèm (Ảnh, Video, File) lên máy chủ Zalo để lấy thông tin fileUrl / fileId trước khi gửi.                                                                                                        |
+| [`voiceToText`](#voicetotext)                         | `POST` | `/api/aifeatures/voice2text` | Gửi yêu cầu chuyển đổi tin nhắn thoại sang văn bản bằng Zalo AI (command 13394). Kết quả văn bản sau khi xử lý xong sẽ được đẩy về qua sự kiện `api.listener.on("voice2text_event", ...)` khớp với `req_id`. |
 
 ---
 
@@ -306,7 +306,10 @@ export type FileData = {
     totalSize: number;
 };
 
-export type UploadAttachmentType = UploadAttachmentImageResponse | UploadAttachmentVideoResponse | UploadAttachmentFileResponse;
+export type UploadAttachmentType =
+    | UploadAttachmentImageResponse
+    | UploadAttachmentVideoResponse
+    | UploadAttachmentFileResponse;
 
 export type UploadAttachmentResponse = UploadAttachmentType[];
 

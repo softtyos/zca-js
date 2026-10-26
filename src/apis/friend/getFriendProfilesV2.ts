@@ -38,10 +38,7 @@ export const getFriendProfilesV2Factory = apiFactory<GetFriendProfilesV2Response
      * @param options Tùy chọn truy vấn
      * @throws {ZaloApiError}
      */
-    return async function getFriendProfilesV2(
-        friendIds: string | string[],
-        options: GetFriendProfilesV2Options = {},
-    ) {
+    return async function getFriendProfilesV2(friendIds: string | string[], options: GetFriendProfilesV2Options = {}) {
         const rawIds = Array.isArray(friendIds) ? friendIds : [friendIds];
         if (rawIds.length === 0) {
             throw new ZaloApiError("Missing friendIds");

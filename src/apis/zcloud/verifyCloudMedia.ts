@@ -1,10 +1,4 @@
-import {
-    apiFactory,
-    getServiceEndpoint,
-    requestZCloudDecrypted,
-    ZALO_DOMAINS,
-    ZALO_ENDPOINTS,
-} from "../../utils.js";
+import { apiFactory, getServiceEndpoint, requestZCloudDecrypted, ZALO_DOMAINS, ZALO_ENDPOINTS } from "../../utils.js";
 import type { GetCloudViewerKeyResponse } from "./getCloudViewerKey.js";
 
 export type VerifyCloudMediaOptions = {

@@ -109,13 +109,9 @@ async function encryptWsPayloadAesGcm(cipherKeyB64: string, dataObj: unknown): P
     const compressed = Buffer.from(pako.deflate(Buffer.from(JSON.stringify(dataObj), "utf-8")));
     const iv = crypto.randomBytes(16);
     const aad = crypto.randomBytes(16);
-    const key = await crypto.subtle.importKey(
-        "raw",
-        Buffer.from(cipherKeyB64, "base64"),
-        { name: "AES-GCM" },
-        false,
-        ["encrypt"],
-    );
+    const key = await crypto.subtle.importKey("raw", Buffer.from(cipherKeyB64, "base64"), { name: "AES-GCM" }, false, [
+        "encrypt",
+    ]);
     const encrypted = Buffer.from(
         await crypto.subtle.encrypt({ name: "AES-GCM", iv, tagLength: 128, additionalData: aad }, key, compressed),
     );
@@ -211,8 +207,7 @@ async function runVerificationSuite() {
 
         const u = new URL(urlStr);
         const encryptedParams =
-            u.searchParams.get("params") ??
-            (init?.body instanceof URLSearchParams ? init.body.get("params") : null);
+            u.searchParams.get("params") ?? (init?.body instanceof URLSearchParams ? init.body.get("params") : null);
         const decodedParams = encryptedParams ? JSON.parse(decodeAES(TEST_SECRET_KEY, encryptedParams)!) : null;
 
         if (u.pathname === "/api/preloadconvers/get-last-msgs") {
@@ -469,10 +464,10 @@ async function runVerificationSuite() {
             const rawInnerJson =
                 '{"error_code":0,"error_message":"Successful.","data":[{"id":1,"type":"media","owner_id":4829384719283746192,"group_id":888999000,"global_msg_id":999111222}]}';
             const encrypted = encodeAES(TEST_SECRET_KEY, rawInnerJson);
-            return new Response(
-                JSON.stringify({ error_code: 0, error_message: "Successful.", data: encrypted }),
-                { status: 200, headers: { "content-type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ error_code: 0, error_message: "Successful.", data: encrypted }), {
+                status: 200,
+                headers: { "content-type": "application/json" },
+            });
         }
 
         if (u.pathname === "/api/mediastore/list") {
@@ -485,10 +480,10 @@ async function runVerificationSuite() {
                       : "4829384719283746195";
             const rawInnerJson = `{"error_code":0,"error_message":"Successful.","data":{"items":[{"id":10,"type":"${mediaType}","owner_id":${ownerNum},"group_id":888999000}],"isLimitPermission":false,"last_id":10,"has_more":0}}`;
             const encrypted = encodeAES(TEST_SECRET_KEY, rawInnerJson);
-            return new Response(
-                JSON.stringify({ error_code: 0, error_message: "Successful.", data: encrypted }),
-                { status: 200, headers: { "content-type": "application/json" } },
-            );
+            return new Response(JSON.stringify({ error_code: 0, error_message: "Successful.", data: encrypted }), {
+                status: 200,
+                headers: { "content-type": "application/json" },
+            });
         }
 
         if (u.pathname === "/api/cm/getrecentv2") {
@@ -803,9 +798,7 @@ async function runVerificationSuite() {
         }
 
         if (u.pathname === "/api/media/oneone/preview") {
-            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, [
-                { id: 102, type: "media", owner_id: TEST_UID },
-            ]);
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, [{ id: 102, type: "media", owner_id: TEST_UID }]);
         }
 
         if (u.pathname === "/api/media/oneone/remove") {
@@ -864,7 +857,9 @@ async function runVerificationSuite() {
     assert.equal(preloadRes.unreadCleared.length, 1);
     assert.ok(preloadRes.unreadCleared[0] instanceof ClearUnread);
     assert.equal(preloadRes.unreadCleared[0].idTo, "999888777");
-    console.log("✅ [1/11] preloadConversations: Chính xác tham số threadIdLocalMsgId & parse messages/pageMessages/unreadCleared.");
+    console.log(
+        "✅ [1/11] preloadConversations: Chính xác tham số threadIdLocalMsgId & parse messages/pageMessages/unreadCleared.",
+    );
 
     // -------------------------------------------------------------------------
     // TEST 2: requestSyncFromPhone, pullMobile (12000), cancelPullMobile (12700)
@@ -876,7 +871,9 @@ async function runVerificationSuite() {
     assert.ok(syncSession.privateKey.includes("BEGIN PRIVATE KEY"));
 
     await api.cancelPullMobile({ public_key: syncSession.publicKeyBase64, pc_name: "Zalo-Test-Mac" });
-    console.log("✅ [2/6] requestSyncFromPhone / pullMobile / cancelPullMobile: Vượt qua kiểm tra data rỗng (error_code=0).");
+    console.log(
+        "✅ [2/6] requestSyncFromPhone / pullMobile / cancelPullMobile: Vượt qua kiểm tra data rỗng (error_code=0).",
+    );
 
     // -------------------------------------------------------------------------
     // TEST 3: getNoisedIds (12390) + Fallback zwid.api.zalo.me & decryptGids (12054)
@@ -892,7 +889,9 @@ async function runVerificationSuite() {
 
     const decryptedGids = await api.decryptGids(["g_abc"]);
     assert.equal(decryptedGids.gids?.g_abc, "1112223334445556667");
-    console.log("✅ [3/6] getNoisedIds (primary + fallback zwid.api.zalo.me) & decryptGids (globalUids): Hoạt động chính xác.");
+    console.log(
+        "✅ [3/6] getNoisedIds (primary + fallback zwid.api.zalo.me) & decryptGids (globalUids): Hoạt động chính xác.",
+    );
 
     // -------------------------------------------------------------------------
     // TEST 4: getSyncData + RSA PKCS#1 v1.5 (Native & Manual CRT) + ZDB4.0 Decrypt
@@ -926,7 +925,9 @@ async function runVerificationSuite() {
     } finally {
         fs.rmSync(tmpDir, { recursive: true, force: true });
     }
-    console.log("✅ [4/6] getSyncData + RSA-2048 (Native & BigInt CRT) + ZDB4.0 64KB multi-chunk AES-256-CBC: Hoạt động chính xác.");
+    console.log(
+        "✅ [4/6] getSyncData + RSA-2048 (Native & BigInt CRT) + ZDB4.0 64KB multi-chunk AES-256-CBC: Hoạt động chính xác.",
+    );
 
     // -------------------------------------------------------------------------
     // TEST 5: Voice Call & Video Call Signaling (sendVoiceCall 11300+11301, cancelVoiceCall 11305, endVoiceCall 11306)
@@ -945,7 +946,9 @@ async function runVerificationSuite() {
     assert.equal(videoCallRes.sessId, "5249661060655759359_777888_401");
     await api.cancelVoiceCall("5249661060655759359", 777888, { callType: CallType.Video });
     await api.endVoiceCall("5249661060655759359", 777888);
-    console.log("✅ [5/6] sendVoiceCall (Audio & Video 2-step 11300->11301) / cancelVoiceCall (11305) / endVoiceCall (11306): Hoạt động chính xác.");
+    console.log(
+        "✅ [5/6] sendVoiceCall (Audio & Video 2-step 11300->11301) / cancelVoiceCall (11305) / endVoiceCall (11306): Hoạt động chính xác.",
+    );
 
     // -------------------------------------------------------------------------
     // TEST 6: Listener WebSocket Events (510/511, 504/524, 601 sync_event & call_event)
@@ -986,7 +989,8 @@ async function runVerificationSuite() {
     const receivedUnreadCleared: ClearUnread[][] = [];
     const receivedSyncEvents: unknown[] = [];
     const receivedCallEvents: unknown[] = [];
-    const receivedVoice2TextEvents: Array<{ act: string; act_type: string; data: { req_id: string; text?: string } }> = [];
+    const receivedVoice2TextEvents: Array<{ act: string; act_type: string; data: { req_id: string; text?: string } }> =
+        [];
 
     api.listener.on("old_messages", (msgs, type, hasMore) => {
         if (type === ThreadType.User) receivedOldUserMsgs.push(msgs as UserMessage[]);
@@ -1153,6 +1157,28 @@ async function runVerificationSuite() {
                 });
                 serverWs.send(buildWsFrame(1, 601, 0, frame601));
 
+                // 6. Gửi cmd=604, subCmd=0 (gói push realtime group_request với ts 10 chữ số Unix seconds và act_type="group")
+                const frame604 = await encryptWsPayloadAesGcm(wsCipherKey, {
+                    data: {
+                        controls: [
+                            {
+                                content: {
+                                    act_type: "group",
+                                    act: "group_request",
+                                    data: JSON.stringify({
+                                        id: 778899,
+                                        hostCall: 450859586,
+                                        groupId: 715904095,
+                                        callType: 0,
+                                        ts: Math.floor(Date.now() / 1000),
+                                    }),
+                                },
+                            },
+                        ],
+                    },
+                });
+                serverWs.send(buildWsFrame(1, 604, 0, frame604));
+
                 setTimeout(() => {
                     clearTimeout(timeout);
                     resolve();
@@ -1179,13 +1205,20 @@ async function runVerificationSuite() {
     assert.equal(receivedSyncEvents.length, 2, "Phải nhận đủ 2 sync_event (user_confirm + transfer_after_login)");
     assert.equal((receivedSyncEvents[0] as { type: string }).type, SyncEventType.USER_CONFIRM);
     assert.equal((receivedSyncEvents[1] as { type: string }).type, SyncEventType.TRANSFER_AFTER_LOGIN);
-    assert.equal(receivedCallEvents.length, 1, "Phải nhận được sự kiện call_event (voip answer)");
+    assert.equal(
+        receivedCallEvents.length,
+        2,
+        "Phải nhận được cả 2 sự kiện call_event (601 voip answer + 604 group_request)",
+    );
     assert.equal((receivedCallEvents[0] as { type: string }).type, CallEventType.ANSWER);
+    assert.equal((receivedCallEvents[1] as { type: string }).type, CallEventType.GROUP_REQUEST);
     assert.equal(receivedVoice2TextEvents.length, 1, "Phải nhận được sự kiện voice2text_event");
     assert.equal(receivedVoice2TextEvents[0].data.req_id, "v2t-req-123");
     assert.equal(receivedVoice2TextEvents[0].data.text, "Xin chào Zalo AI");
 
-    console.log("✅ [6/7] Listener WebSocket (510/511 subCmd 0&1, undo, 504 unread_cleared, 601 sync_event, call_event & voice2text_event): Hoạt động chính xác.");
+    console.log(
+        "✅ [6/7] Listener WebSocket (510/511 subCmd 0&1, undo, 504 unread_cleared, 601 sync_event, call_event & voice2text_event): Hoạt động chính xác.",
+    );
 
     // ========================================================================
     // 7. KIỂM TRA MÃ HÓA ZCLOUD (98yS AES-256-CBC RANDOM IV) & 38 API MỚI (26.7.10)
@@ -1194,7 +1227,11 @@ async function runVerificationSuite() {
     const sampleZCloudPayload = JSON.stringify({ usage: 1024, quota: 524288000, plan: -1 });
     const encryptedZCloud1 = encryptZCloudAES(sampleZCloudPayload, sampleZCloudKey);
     const encryptedZCloud2 = encryptZCloudAES(sampleZCloudPayload, sampleZCloudKey);
-    assert.notEqual(encryptedZCloud1, encryptedZCloud2, "encryptZCloudAES phải tạo 16-byte random IV khác nhau mỗi lần");
+    assert.notEqual(
+        encryptedZCloud1,
+        encryptedZCloud2,
+        "encryptZCloudAES phải tạo 16-byte random IV khác nhau mỗi lần",
+    );
     assert.equal(decryptZCloudAES(encryptedZCloud1, sampleZCloudKey), sampleZCloudPayload);
     assert.equal(decryptZCloudAES(encryptedZCloud2, sampleZCloudKey), sampleZCloudPayload);
 
@@ -1247,7 +1284,9 @@ async function runVerificationSuite() {
         assert.equal(typeof api[methodName], "function", `API method api.${methodName} phải tồn tại trên class API`);
     }
 
-    console.log(`✅ [7/8] ZCloud AES-256-CBC (98yS) & ${newApiMethods.length} API mới từ Zalo PC 26.7.10: Đã gắn kết và kiểm định 100%.`);
+    console.log(
+        `✅ [7/8] ZCloud AES-256-CBC (98yS) & ${newApiMethods.length} API mới từ Zalo PC 26.7.10: Đã gắn kết và kiểm định 100%.`,
+    );
 
     // -------------------------------------------------------------------------
     // TEST 8: Domain-Driven SDK Architecture (12 Domains, Lazy Getters, ViewerKey Cache)
@@ -1274,7 +1313,9 @@ async function runVerificationSuite() {
     const cachedKey = await api.zcloud.getCloudViewerKey();
     assert.equal(cachedKey.viewer_key, "vk-cloud-test-123");
 
-    console.log("✅ [8/9] Kiến trúc Domain-Driven (12 Domains, Lazy Memoized Getters, ViewerKey Cache & Single Source Constants): Hoạt động chính xác.");
+    console.log(
+        "✅ [8/9] Kiến trúc Domain-Driven (12 Domains, Lazy Memoized Getters, ViewerKey Cache & Single Source Constants): Hoạt động chính xác.",
+    );
 
     // -------------------------------------------------------------------------
     // TEST 9: preParseJsonIds 64-bit & Các API Group nguyên bản mới (getGroupMessageStatus, getGroupInfoV2, getGroupListV3, getGroupHistoryLegacy, getGroupChatHistory)
@@ -1286,12 +1327,23 @@ async function runVerificationSuite() {
 
     // 9.1 Kiểm tra preParseJsonIds giữ nguyên độ chính xác 64-bit integer (19 chữ số) của owner_id và group_id
     const mediaPreviewRes = await api.media.getMediaStorePreview("888999000", 50);
-    assert.equal(mediaPreviewRes[0].owner_id, "4829384719283746192", "owner_id 19 chữ số không được mất độ chính xác IEEE-754");
+    assert.equal(
+        mediaPreviewRes[0].owner_id,
+        "4829384719283746192",
+        "owner_id 19 chữ số không được mất độ chính xác IEEE-754",
+    );
     const mediaListRes = await api.media.getConversationMedia({ groupId: "888999000", mediaType: "media" });
-    assert.equal(mediaListRes.items[0].owner_id, "4829384719283746193", "owner_id 19 chữ số trong /api/mediastore/list phải giữ chính xác");
+    assert.equal(
+        mediaListRes.items[0].owner_id,
+        "4829384719283746193",
+        "owner_id 19 chữ số trong /api/mediastore/list phải giữ chính xác",
+    );
 
     // 9.2 Kiểm tra getGroupMessageStatus (cmd 12017) - cả request payload và response
-    const msgStatusRes = await api.group.getGroupMessageStatus("g888999000", ["8000000000000000001", "8000000000000000002"]);
+    const msgStatusRes = await api.group.getGroupMessageStatus("g888999000", [
+        "8000000000000000001",
+        "8000000000000000002",
+    ]);
     const statusReq = capturedRequests.find((r) => r.url.includes("/api/group/getStatusMsg"));
     assert.ok(statusReq, "Phải gửi request tới /api/group/getStatusMsg");
     assert.equal(statusReq.method, "POST");
@@ -1303,23 +1355,35 @@ async function runVerificationSuite() {
 
     // 9.3 Kiểm tra getGroupInfoV2 (cmd 11162) & getGroupListV3 (cmd 11161) & getGroupHistoryLegacy (cmd 11240)
     const groupInfoV2Res = await api.group.getGroupInfoV2("g888999000", { mpage: 1, mcount: 100 });
-    assert.ok(capturedRequests.some((r) => r.url.includes("/api/group/getgi/v2")), "Phải gọi đúng /api/group/getgi/v2");
+    assert.ok(
+        capturedRequests.some((r) => r.url.includes("/api/group/getgi/v2")),
+        "Phải gọi đúng /api/group/getgi/v2",
+    );
     assert.equal(groupInfoV2Res.groupId, "888999000");
     assert.equal(groupInfoV2Res.setting?.lockViewMember, 1);
 
     const groupListV3Res = await api.group.getGroupListV3({ page: 1, count: 100 });
-    assert.ok(capturedRequests.some((r) => r.url.includes("/api/group/getlg/v3")), "Phải gọi đúng /api/group/getlg/v3");
+    assert.ok(
+        capturedRequests.some((r) => r.url.includes("/api/group/getlg/v3")),
+        "Phải gọi đúng /api/group/getlg/v3",
+    );
     assert.equal(groupListV3Res.total, 1);
     assert.equal(groupListV3Res.groups?.[0]?.groupId, "888999000");
 
     const legacyHistoryRes = await api.group.getGroupHistoryLegacy("g888999000", 20);
-    assert.ok(capturedRequests.some((r) => r.url.includes("/api/group/history")), "Phải gọi đúng /api/group/history");
+    assert.ok(
+        capturedRequests.some((r) => r.url.includes("/api/group/history")),
+        "Phải gọi đúng /api/group/history",
+    );
     assert.equal(legacyHistoryRes.groupMsgs?.length, 1);
     assert.equal(legacyHistoryRes.groupMsgs?.[0]?.data.uidFrom, "3000000000000000005");
 
     // 9.4 Kiểm tra getGroupChatHistory phân trang với cursor và useOldEndpoint (/api/cm/getoldv2)
     const recentChatRes = await api.group.getGroupChatHistory("g888999000", { count: 50, cursor: 0 });
-    assert.ok(capturedRequests.some((r) => r.url.includes("/api/cm/getrecentv2")), "Phải gọi đúng /api/cm/getrecentv2");
+    assert.ok(
+        capturedRequests.some((r) => r.url.includes("/api/cm/getrecentv2")),
+        "Phải gọi đúng /api/cm/getrecentv2",
+    );
     assert.equal(recentChatRes.groupMsgs.length, 1);
     assert.equal(recentChatRes.groupMsgs[0].data.uidFrom, "3000000000000000001");
     assert.equal(recentChatRes.nextCursor, "5001");
@@ -1329,7 +1393,10 @@ async function runVerificationSuite() {
         cursor: recentChatRes.nextCursor,
         useOldEndpoint: true,
     });
-    assert.ok(capturedRequests.some((r) => r.url.includes("/api/cm/getoldv2")), "Phải gọi đúng /api/cm/getoldv2");
+    assert.ok(
+        capturedRequests.some((r) => r.url.includes("/api/cm/getoldv2")),
+        "Phải gọi đúng /api/cm/getoldv2",
+    );
     assert.equal(oldChatRes.groupMsgs.length, 1);
     assert.equal(oldChatRes.groupMsgs[0].data.uidFrom, "3000000000000000004");
 
@@ -1426,7 +1493,11 @@ async function runVerificationSuite() {
     const fakeUndiciDispatcher = { dispatch: () => {} } as unknown as NonNullable<typeof ctx.options.agent>;
     ctx.options.agent = fakeUndiciDispatcher;
     await api.group.getE2eeGroupList();
-    assert.equal(lastFetchInit?.dispatcher, fakeUndiciDispatcher, "Khi truyền Undici Dispatcher phải gán vào init.dispatcher");
+    assert.equal(
+        lastFetchInit?.dispatcher,
+        fakeUndiciDispatcher,
+        "Khi truyền Undici Dispatcher phải gán vào init.dispatcher",
+    );
     assert.equal(lastFetchInit?.agent, undefined, "Không được gán Undici Dispatcher vào init.agent");
 
     ctx.options.agent = undefined;
@@ -1651,12 +1722,7 @@ async function runVerificationSuite() {
     const protectedSrtp = srtpSender.protectRtp(rawRtp);
     assert.equal(protectedSrtp.length, rawRtp.length + 10, "SRTP HMAC-SHA1-80 phải thêm đúng 10-byte auth tag");
 
-    const zrtcFramed = wrapZrtcMediaPacket(
-        ZRTCMediaSubCommand.AudioRtp,
-        0x11223344,
-        protectedSrtp,
-        ZRTCRole.Caller,
-    );
+    const zrtcFramed = wrapZrtcMediaPacket(ZRTCMediaSubCommand.AudioRtp, 0x11223344, protectedSrtp, ZRTCRole.Caller);
     const parsedZrtcMedia = parseZRTPPacket(zrtcFramed);
     assert.equal(parsedZrtcMedia.family, "zrtc_media");
     assert.equal(parsedZrtcMedia.routingToken, 0x11223344);
@@ -1688,8 +1754,7 @@ async function runVerificationSuite() {
         if (
             pkt.family === "control" &&
             !pkt.isResponse &&
-            (pkt.cmd === ZRTPControlCommand.InitCallCaller ||
-                pkt.cmd === ZRTPControlCommand.InitCallCallee)
+            (pkt.cmd === ZRTPControlCommand.InitCallCaller || pkt.cmd === ZRTPControlCommand.InitCallCallee)
         ) {
             relayReceivedInitCall = true;
             const resp = buildInitCallResponse({
@@ -2056,7 +2121,40 @@ async function runVerificationSuite() {
     assert.equal(lastGrpSendInner.hostCall, TEST_UID);
     assert.equal(lastGrpSendInner.noiseId, JSON.stringify(["5001", "5002"]));
     assert.equal(lastGrpSendInner.groupName, "Nhóm Kiểm Định Outgoing");
+    await grpOutgoingSession.setMicMuted(true);
+    const lastGrpBroadcastReq = capturedRequests.filter((r) => r.url.includes("/api/voicecall/group/broadcast")).pop();
+    assert.ok(lastGrpBroadcastReq, "setMicMuted trong gọi nhóm phải gọi /api/voicecall/group/broadcast");
+    const lastGrpBroadcastDecoded = decodeCapturedUrlParams(lastGrpBroadcastReq!.url);
+    assert.equal(
+        lastGrpBroadcastDecoded.hostCall,
+        TEST_UID,
+        "broadcastGroupCallState phải gửi hostCall khớp với hostCall lúc mở cuộc gọi nhóm",
+    );
+    assert.equal(lastGrpBroadcastDecoded.audiostate, 0);
+    assert.equal("audioState" in lastGrpBroadcastDecoded, false, "Không gửi trùng lặp key camelCase audioState");
+
     await grpOutgoingSession.endCall("local_end");
+    const lastGrpCancelReq = capturedRequests.filter((r) => r.url.includes("/api/voicecall/group/cancel")).pop();
+    assert.ok(lastGrpCancelReq, "endCall khi người gọi huỷ cuộc gọi nhóm phải gọi /api/voicecall/group/cancel");
+    const lastGrpCancelDecoded = decodeCapturedUrlParams(lastGrpCancelReq!.url);
+    assert.equal(lastGrpCancelDecoded.hostCall, TEST_UID, "cancelGroupCall phải gửi đúng hostCall");
+    assert.equal(lastGrpCancelDecoded.session, "888999000_778899_501");
+    assert.equal(lastGrpCancelDecoded.status, 0);
+    const lastGrpCancelData = JSON.parse(String(lastGrpCancelDecoded.data));
+    assert.equal(lastGrpCancelData.callId, 778899);
+    assert.equal(lastGrpCancelData.session, "888999000_778899_501");
+    assert.equal(lastGrpCancelData.status, 0);
+
+    const lastGrpEndReq = capturedRequests.filter((r) => r.url.includes("/api/voicecall/group/endcall")).pop();
+    assert.ok(lastGrpEndReq, "endCall cuộc gọi nhóm phải gọi /api/voicecall/group/endcall");
+    const lastGrpEndDecoded = decodeCapturedUrlParams(lastGrpEndReq!.url);
+    assert.equal(lastGrpEndDecoded.hostCall, TEST_UID, "endGroupCall phải gửi đúng hostCall");
+    assert.equal(lastGrpEndDecoded.session, "888999000_778899_501");
+    assert.equal(lastGrpEndDecoded.status, 0);
+    const lastGrpEndData = JSON.parse(String(lastGrpEndDecoded.data));
+    assert.equal(lastGrpEndData.callId, 778899);
+    assert.equal(lastGrpEndData.session, "888999000_778899_501");
+    assert.equal(lastGrpEndData.status, 0);
 
     const incomingGroupEvent = {
         act: "group_request",
@@ -2117,12 +2215,115 @@ async function runVerificationSuite() {
     assert.ok(lastGrpAnsReq, "acceptIncomingGroupCall phải gọi /api/voicecall/group/answer (12436)");
     const lastGrpAnsDecoded = decodeCapturedUrlParams(lastGrpAnsReq!.url);
     assert.equal(lastGrpAnsDecoded.callType, 1, "answerGroupCall phải gửi callType = 1 (không gửi 6)");
+    assert.equal(
+        typeof lastGrpAnsDecoded.hostCall,
+        "number",
+        "answerGroupCall phải tự động ép kiểu hostCall 32-bit sang số nguyên (Json::Value(int)) theo chuẩn C++ ZaloCall",
+    );
+    assert.equal(lastGrpAnsDecoded.hostCall, 888999000);
     const lastGrpAnsData = JSON.parse(String(lastGrpAnsDecoded.data));
     assert.equal(lastGrpAnsData.callType, 1);
     assert.equal(lastGrpAnsData.session, "888999000_667788_501");
     assert.equal(lastGrpAnsData.status, 0);
 
     await grpAcceptSession.endCall("local_end");
+
+    // Kiểm định rejectIncomingCall cho Group Call (phải gửi cả answerGroupCall status=3 lẫn endGroupCall status=3 theo chuẩn ZCallGroupInfo::_rejectCurrentCall)
+    const grpRejectSession = api.call.createRtcSession({
+        autoAttachListener: false,
+        autoKeepaliveMedia: false,
+    });
+    await grpRejectSession.rejectIncomingCall(incomingGroupEvent);
+    assert.equal(grpRejectSession.getState(), "ended");
+    const lastGrpRejectAnsReq = capturedRequests.filter((r) => r.url.includes("/api/voicecall/group/answer")).pop();
+    const lastGrpRejectAnsDecoded = decodeCapturedUrlParams(lastGrpRejectAnsReq!.url);
+    assert.equal(lastGrpRejectAnsDecoded.status, 3, "rejectIncomingCall nhóm phải gửi answerGroupCall với status = 3");
+    const lastGrpRejectAnsInner = JSON.parse(String(lastGrpRejectAnsDecoded.data));
+    assert.equal(lastGrpRejectAnsInner.status, 3);
+    assert.equal(JSON.parse(String(lastGrpRejectAnsInner.extraData)).status, 3);
+
+    // Kiểm định handleCallEvent với group_answer mang extraData={"status":3} (Từ chối) phát ra media_state_change "group_reject" và tự động kết thúc khi toàn bộ thành viên từ chối (_receiveReject @ 0x10012997c)
+    const grpSingleMemberSession = api.call.createRtcSession({
+        autoAttachListener: false,
+        autoKeepaliveMedia: false,
+    });
+    let observedGroupRejectReason = 0;
+    grpSingleMemberSession.on("media_state_change", (ev) => {
+        if (ev.rawAct === "group_reject") {
+            observedGroupRejectReason = ev.reason ?? 0;
+        }
+    });
+    await grpSingleMemberSession.startGroupCall("888999000", ["5001"], {
+        callType: CallType.GroupAudio,
+        skipUdpHandshake: true,
+    });
+    await grpSingleMemberSession.handleCallEvent({
+        type: CallEventType.GROUP_ANSWER,
+        act: "group_answer",
+        act_type: "voip",
+        data: {
+            id: 778899,
+            fromId: "5001",
+            extraData: JSON.stringify({ status: 3 }),
+        },
+    });
+    assert.equal(
+        observedGroupRejectReason,
+        3,
+        "Khi thành viên trong cuộc gọi nhóm từ chối (group_answer extraData.status=3), phải phát sự kiện group_reject (reason=3)",
+    );
+    assert.equal(
+        grpSingleMemberSession.getState(),
+        "ended",
+        "Khi tất cả thành viên được mời đều từ chối (remaining=0), cuộc gọi nhóm phải tự động kết thúc",
+    );
+
+    // Kiểm định group_end_call nhiều thành viên (ZCallGroupInfo::receiveEndcall @ 0x10012a31c & _removePartner @ 0x10011ed20):
+    // Thành viên 1 rời đi -> phát group_leave nhưng phòng vẫn active; Thành viên cuối cùng rời đi -> phòng chuyển sang ended
+    const grpMultiLeaveSession = api.call.createRtcSession({
+        autoAttachListener: false,
+        autoKeepaliveMedia: false,
+    });
+    const observedLeaves: string[] = [];
+    grpMultiLeaveSession.on("media_state_change", (ev) => {
+        if (ev.rawAct === "group_leave" && ev.partnerId) {
+            observedLeaves.push(ev.partnerId);
+        }
+    });
+    await grpMultiLeaveSession.acceptIncomingGroupCall(incomingGroupEvent, {
+        skipUdpHandshake: true,
+    });
+    assert.equal(grpMultiLeaveSession.getState(), "active");
+    await grpMultiLeaveSession.handleCallEvent({
+        type: CallEventType.GROUP_END,
+        act: "group_end_call",
+        act_type: "voip",
+        data: {
+            id: 667788,
+            fromId: 1001,
+        },
+    });
+    assert.deepEqual(observedLeaves, ["1001"]);
+    assert.equal(
+        grpMultiLeaveSession.getState(),
+        "active",
+        "Khi 1/2 thành viên rời cuộc gọi nhóm, phiên gọi phải giữ trạng thái active cho thành viên còn lại",
+    );
+    await grpMultiLeaveSession.handleCallEvent({
+        type: CallEventType.GROUP_END,
+        act: "group_end_call",
+        act_type: "voip",
+        data: {
+            id: 667788,
+            fromId: 1002,
+        },
+    });
+    assert.deepEqual(observedLeaves, ["1001", "1002"]);
+    assert.equal(
+        grpMultiLeaveSession.getState(),
+        "ended",
+        "Khi thành viên cuối cùng rời cuộc gọi nhóm (remaining=0), phiên gọi phải tự động kết thúc",
+    );
 
     // Kiểm định Gọi lại liên tiếp (Sequential Re-call) trên cùng một instance ZaloRtcSession & Tái kết nối UDP (reconnectUdp)
     const recallSession = api.call.createRtcSession({
@@ -2498,7 +2699,11 @@ async function runVerificationSuite() {
     api.listener.stop();
     await new Promise<void>((r) => oaWss.close(() => r()));
 
-    assert.equal(serverReceivedCmd570Batches.length, 2, "cmd=533 với 25 IDs phải tự động chia thành 2 batch cmd=570 (20 + 5)");
+    assert.equal(
+        serverReceivedCmd570Batches.length,
+        2,
+        "cmd=533 với 25 IDs phải tự động chia thành 2 batch cmd=570 (20 + 5)",
+    );
     assert.equal(serverReceivedCmd570Batches[0].ids.length, 20);
     assert.equal(serverReceivedCmd570Batches[1].ids.length, 5);
     assert.equal(receivedOAMessages.length, 2, "Phải nhận đủ 2 tin nhắn OA từ cmd=570 và cmd=534");

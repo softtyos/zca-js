@@ -136,10 +136,7 @@ export class Listener extends EventEmitter<ListenerEvents> {
             const lastTime = times[times.length - 1] || 1000;
             const multiplier = Math.min(Math.pow(1.5, count - times.length), 10);
             const jitter = Math.floor(Math.random() * 1000);
-            retryTime = Math.min(
-                Math.floor(lastTime * multiplier) + jitter,
-                ZALO_DEFAULTS.SOCKET.MAX_RETRY_BACKOFF_MS,
-            );
+            retryTime = Math.min(Math.floor(lastTime * multiplier) + jitter, ZALO_DEFAULTS.SOCKET.MAX_RETRY_BACKOFF_MS);
         }
 
         logger(this.ctx).verbose(`Retry for code ${code} in ${retryTime}ms (${count}/${max})`);
@@ -223,8 +220,7 @@ export class Listener extends EventEmitter<ListenerEvents> {
 
         const cookie = this.ctx.cookie.getCookieStringSync(ZALO_DOMAINS.CHAT_WEB);
         const wsAgent =
-            this.ctx.options.agent &&
-            typeof (this.ctx.options.agent as { dispatch?: unknown }).dispatch !== "function"
+            this.ctx.options.agent && typeof (this.ctx.options.agent as { dispatch?: unknown }).dispatch !== "function"
                 ? this.ctx.options.agent
                 : undefined;
 
@@ -357,24 +353,9 @@ export class Listener extends EventEmitter<ListenerEvents> {
                     this.cipherKey,
                 );
 
-                await handleRealtimeReactionPacket(
-                    this,
-                    this.ctx,
-                    this.selfListen,
-                    cmd,
-                    parsed,
-                    this.cipherKey,
-                );
+                await handleRealtimeReactionPacket(this, this.ctx, this.selfListen, cmd, parsed, this.cipherKey);
 
-                await handleRealtimeStatusPacket(
-                    this,
-                    this.ctx,
-                    this.selfListen,
-                    cmd,
-                    subCmd,
-                    parsed,
-                    this.cipherKey,
-                );
+                await handleRealtimeStatusPacket(this, this.ctx, this.selfListen, cmd, subCmd, parsed, this.cipherKey);
 
                 if (version == 1 && cmd == 3000 && subCmd == 0) {
                     logger(this.ctx).error();
@@ -504,12 +485,27 @@ export class Listener extends EventEmitter<ListenerEvents> {
      * Kích hoạt và kéo hàng đợi sự kiện điều khiển / VoIP (`cmd 603` CTRL_PULL_CTRL).
      * Giúp nhận ngay các cuộc gọi đến đang đổ chuông và sự kiện điều khiển ngay cả khi vừa mở kết nối WebSocket.
      */
-    public requestOfflineVoipControls() {
+    public requestOfflineVoipControls(lastId: string = "1", subCmd?: number) {
+        if (subCmd !== undefined) {
+            this.sendWs({
+                version: 1,
+                cmd: 603,
+                subCmd,
+                data: { first: lastId === "1", lastId, preIds: [] },
+            });
+            return;
+        }
         this.sendWs({
             version: 1,
             cmd: 603,
             subCmd: 0,
-            data: { first: true, lastId: "1", preIds: [] },
+            data: { first: lastId === "1", lastId, preIds: [] },
+        });
+        this.sendWs({
+            version: 1,
+            cmd: 603,
+            subCmd: 1,
+            data: { first: lastId === "1", lastId, preIds: [] },
         });
     }
 

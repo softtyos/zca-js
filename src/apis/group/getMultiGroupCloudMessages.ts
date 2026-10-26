@@ -6,7 +6,11 @@ export type GetMultiGroupCloudMessagesResponse = {
     [key: string]: unknown;
 };
 
-export const getMultiGroupCloudMessagesFactory = apiFactory<GetMultiGroupCloudMessagesResponse>()((api, _ctx, utils) => {
+export const getMultiGroupCloudMessagesFactory = apiFactory<GetMultiGroupCloudMessagesResponse>()((
+    api,
+    _ctx,
+    utils,
+) => {
     const serviceURL = utils.makeURL(`${api.zpwServiceMap.group_cloud_message[0]}/api/cm/mget`);
 
     /**

@@ -36,7 +36,7 @@ export class ParamsEncryptor {
                 { even: a, odd: s } = ParamsEncryptor.processStr(t);
             if (!n || !a || !s) return !1;
             const i = n.slice(0, 8).join("") + a.slice(0, 12).join("") + s.reverse().slice(0, 12).join("");
-            return (this.encryptKey = i), !0;
+            return ((this.encryptKey = i), !0);
         };
         if (!this.zcid || !this.zcid_ext) throw new ZaloApiError("createEncryptKey: zcid or zcid_ext is null");
         try {

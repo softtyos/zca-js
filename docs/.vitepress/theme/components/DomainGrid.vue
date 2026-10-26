@@ -11,7 +11,8 @@ const domains = apiData.domains;
             <span class="zca-domain-tagline">✨ KIẾN TRÚC MODULAR TIÊN TIẾN</span>
             <h2 class="zca-domain-title">12 Phân Hệ Chuyên Biệt ({{ apiData.totalApis }} APIs)</h2>
             <p class="zca-domain-subtitle">
-                Được thiết kế theo mô hình Domain-Driven Design với Lazy Memoized Getters. Tối ưu bộ nhớ, khởi động tức thì và hỗ trợ đầy đủ TypeScript IntelliSense.
+                Được thiết kế theo mô hình Domain-Driven Design với Lazy Memoized Getters. Tối ưu bộ nhớ, khởi động tức
+                thì và hỗ trợ đầy đủ TypeScript IntelliSense.
             </p>
         </div>
 

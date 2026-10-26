@@ -181,9 +181,7 @@ export function parseZdbHeader(zdbPlaintext: Buffer): { entries: ZdbTocEntry[]; 
         if (nameLen > 4096 || offset + 4 + nameLen + 4 > zdbPlaintext.length) {
             throw new ZaloApiError("Truncated or invalid ZDB4.0 header while reading entry metadata");
         }
-        const rawName = zdbPlaintext
-            .toString("utf8", offset + 4, offset + 4 + nameLen)
-            .replace(/\0+$/, "");
+        const rawName = zdbPlaintext.toString("utf8", offset + 4, offset + 4 + nameLen).replace(/\0+$/, "");
         const name = rawName.split(/[\\/]/).pop() || rawName;
         if (name === ".." || name === "." || name.includes("..")) {
             throw new ZaloApiError(`Unsafe entry name in ZDB4.0 header: ${rawName}`);

@@ -11,38 +11,38 @@ Quản lý Zalo Official Account (getOAProfile, blockOA, unblockOA, convertOAIds
 
 ## Danh sách nhanh
 
-| Phương thức | HTTP | Endpoint Zalo | Mô tả |
-| :--- | :---: | :--- | :--- |
-| [`addQuickMessage`](#addquickmessage) | `GET` | `/api/quickmessage/create` | Thêm mẫu Tin nhắn nhanh (Quick Message) mới cho tài khoản Zalo Business. |
-| [`blockOA`](#blockoa) | `POST` | `/api/social/oa/block` | Chặn nhận tin nhắn / thông báo từ một Zalo Official Account (OA) qua /api/social/oa/block (cmd 12681). |
-| [`convertOAIds`](#convertoaids) | `GET` | `/api/social/oa/convertid` | Chuyển đổi danh sách OA ID sang Zalo UID nội bộ (hoặc ngược lại) qua /api/social/oa/convertid (cmd 11863). |
-| [`createAutoReply`](#createautoreply) | `POST` | `/api/autoreply/create` | Tạo kịch bản Trả lời tự động (Auto Reply) theo khung giờ cho Zalo Business. |
-| [`createBankAccount`](#createbankaccount) | `POST` | `/api/transfer/create` | Thêm thông tin tài khoản ngân hàng mới vào danh bạ ngân hàng. |
-| [`createCatalog`](#createcatalog) | `POST` | `/api/prodcatalog/catalog/create` | Tạo Danh mục sản phẩm (Catalog) mới cho Zalo Business. |
-| [`createProductCatalog`](#createproductcatalog) | `POST` | `/api/prodcatalog/product/create` | Thêm sản phẩm mới vào Danh mục sản phẩm (Product Catalog). |
-| [`deleteAutoReply`](#deleteautoreply) | `POST` | `/api/autoreply/delete` | Xóa một kịch bản Trả lời tự động. |
-| [`deleteBankAccount`](#deletebankaccount) | `POST` | `/api/transfer/delete` | Xóa một tài khoản ngân hàng đã lưu. |
-| [`deleteCatalog`](#deletecatalog) | `POST` | `/api/prodcatalog/catalog/delete` | Xóa một Danh mục sản phẩm (Catalog). |
-| [`deleteProductCatalog`](#deleteproductcatalog) | `POST` | `/api/prodcatalog/product/mdelete` | Xóa một hoặc nhiều sản phẩm khỏi Danh mục sản phẩm. |
-| [`getAutoReplyList`](#getautoreplylist) | `GET` | `/api/autoreply/list` | Lấy danh sách các kịch bản Trả lời tự động của tài khoản. |
-| [`getBizAccount`](#getbizaccount) | `POST` | `/api/social/friend/get-bizacc` | Lấy thông tin cấu hình tài khoản Zalo Business (ZBusiness). |
-| [`getCatalogList`](#getcataloglist) | `POST` | `/api/prodcatalog/catalog/list` | Lấy danh sách các Danh mục sản phẩm (Catalogs) của tài khoản. |
-| [`getLabels`](#getlabels) | `GET` | `/api/convlabel/get` | Lấy toàn bộ danh sách Nhãn phân loại hội thoại (Conversation Labels) và các hội thoại được gắn nhãn. |
-| [`getListBank`](#getlistbank) | `GET` | `/api/transfer/conf` | Lấy danh sách mã ngân hàng (BIN / NAPAS) được Zalo hỗ trợ. |
-| [`getListBankAccount`](#getlistbankaccount) | `GET` | `/api/transfer/list` | Lấy danh sách các tài khoản ngân hàng đã lưu của người dùng. |
-| [`getOAProfile`](#getoaprofile) | `POST` | `/api/social/friend/get-bizacc`<br/>`/api/social/friend/getprofiles/v2` | Lấy hồ sơ chuẩn hóa đầy đủ của một Zalo Official Account (OA) theo oaId (bao gồm tích vàng isVerified, isZaloBot, dnrStatus, hotline, website, giờ mở cửa, địa chỉ, danh mục...). |
-| [`getProductCatalogList`](#getproductcataloglist) | `POST` | `/api/prodcatalog/product/list` | Lấy danh sách các sản phẩm nằm trong một Danh mục sản phẩm (Catalog). |
-| [`getQuickMessageList`](#getquickmessagelist) | `GET` | `/api/quickmessage/list` | Lấy danh sách các mẫu Tin nhắn nhanh (Quick Messages) đã tạo. |
-| [`registerCatalog`](#registercatalog) | `POST` | `/api/prodcatalog/catalog/register` | Đăng ký kích hoạt tính năng Danh mục sản phẩm (Catalog) cho tài khoản. |
-| [`removeQuickMessage`](#removequickmessage) | `GET` | `/api/quickmessage/delete` | Xóa một hoặc nhiều mẫu Tin nhắn nhanh. |
-| [`unblockOA`](#unblockoa) | `POST` | `/api/social/oa/unblock` | Bỏ chặn một Zalo Official Account (OA) để tiếp tục nhận tin nhắn qua /api/social/oa/unblock (cmd 12682). |
-| [`updateAutoReply`](#updateautoreply) | `POST` | `/api/autoreply/update` | Cập nhật nội dung và thời gian hoạt động của kịch bản Trả lời tự động. |
-| [`updateBankAccount`](#updatebankaccount) | `POST` | `/api/transfer/update` | Cập nhật thông tin tài khoản ngân hàng đã lưu. |
-| [`updateCatalog`](#updatecatalog) | `POST` | `/api/prodcatalog/catalog/update` | Cập nhật tên hoặc ảnh của Danh mục sản phẩm. |
-| [`updateLabels`](#updatelabels) | `POST` | `/api/convlabel/update` | Cập nhật danh sách Nhãn phân loại (Labels) và gán nhãn cho các cuộc trò chuyện. |
-| [`updateProductCatalog`](#updateproductcatalog) | `POST` | `/api/prodcatalog/product/update` | Cập nhật thông tin chi tiết, giá bán và hình ảnh của sản phẩm trong Danh mục. |
-| [`updateQuickMessage`](#updatequickmessage) | `GET` | `/api/quickmessage/update` | Chỉnh sửa phím tắt và nội dung của mẫu Tin nhắn nhanh. |
-| [`uploadProductPhoto`](#uploadproductphoto) | `POST` | `/api/product/upload/photo` | Tải ảnh sản phẩm lên máy chủ Zalo phục vụ cho Product Catalog hoặc Quick Message. |
+| Phương thức                                       |  HTTP  | Endpoint Zalo                                                           | Mô tả                                                                                                                                                                             |
+| :------------------------------------------------ | :----: | :---------------------------------------------------------------------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`addQuickMessage`](#addquickmessage)             | `GET`  | `/api/quickmessage/create`                                              | Thêm mẫu Tin nhắn nhanh (Quick Message) mới cho tài khoản Zalo Business.                                                                                                          |
+| [`blockOA`](#blockoa)                             | `POST` | `/api/social/oa/block`                                                  | Chặn nhận tin nhắn / thông báo từ một Zalo Official Account (OA) qua /api/social/oa/block (cmd 12681).                                                                            |
+| [`convertOAIds`](#convertoaids)                   | `GET`  | `/api/social/oa/convertid`                                              | Chuyển đổi danh sách OA ID sang Zalo UID nội bộ (hoặc ngược lại) qua /api/social/oa/convertid (cmd 11863).                                                                        |
+| [`createAutoReply`](#createautoreply)             | `POST` | `/api/autoreply/create`                                                 | Tạo kịch bản Trả lời tự động (Auto Reply) theo khung giờ cho Zalo Business.                                                                                                       |
+| [`createBankAccount`](#createbankaccount)         | `POST` | `/api/transfer/create`                                                  | Thêm thông tin tài khoản ngân hàng mới vào danh bạ ngân hàng.                                                                                                                     |
+| [`createCatalog`](#createcatalog)                 | `POST` | `/api/prodcatalog/catalog/create`                                       | Tạo Danh mục sản phẩm (Catalog) mới cho Zalo Business.                                                                                                                            |
+| [`createProductCatalog`](#createproductcatalog)   | `POST` | `/api/prodcatalog/product/create`                                       | Thêm sản phẩm mới vào Danh mục sản phẩm (Product Catalog).                                                                                                                        |
+| [`deleteAutoReply`](#deleteautoreply)             | `POST` | `/api/autoreply/delete`                                                 | Xóa một kịch bản Trả lời tự động.                                                                                                                                                 |
+| [`deleteBankAccount`](#deletebankaccount)         | `POST` | `/api/transfer/delete`                                                  | Xóa một tài khoản ngân hàng đã lưu.                                                                                                                                               |
+| [`deleteCatalog`](#deletecatalog)                 | `POST` | `/api/prodcatalog/catalog/delete`                                       | Xóa một Danh mục sản phẩm (Catalog).                                                                                                                                              |
+| [`deleteProductCatalog`](#deleteproductcatalog)   | `POST` | `/api/prodcatalog/product/mdelete`                                      | Xóa một hoặc nhiều sản phẩm khỏi Danh mục sản phẩm.                                                                                                                               |
+| [`getAutoReplyList`](#getautoreplylist)           | `GET`  | `/api/autoreply/list`                                                   | Lấy danh sách các kịch bản Trả lời tự động của tài khoản.                                                                                                                         |
+| [`getBizAccount`](#getbizaccount)                 | `POST` | `/api/social/friend/get-bizacc`                                         | Lấy thông tin cấu hình tài khoản Zalo Business (ZBusiness).                                                                                                                       |
+| [`getCatalogList`](#getcataloglist)               | `POST` | `/api/prodcatalog/catalog/list`                                         | Lấy danh sách các Danh mục sản phẩm (Catalogs) của tài khoản.                                                                                                                     |
+| [`getLabels`](#getlabels)                         | `GET`  | `/api/convlabel/get`                                                    | Lấy toàn bộ danh sách Nhãn phân loại hội thoại (Conversation Labels) và các hội thoại được gắn nhãn.                                                                              |
+| [`getListBank`](#getlistbank)                     | `GET`  | `/api/transfer/conf`                                                    | Lấy danh sách mã ngân hàng (BIN / NAPAS) được Zalo hỗ trợ.                                                                                                                        |
+| [`getListBankAccount`](#getlistbankaccount)       | `GET`  | `/api/transfer/list`                                                    | Lấy danh sách các tài khoản ngân hàng đã lưu của người dùng.                                                                                                                      |
+| [`getOAProfile`](#getoaprofile)                   | `POST` | `/api/social/friend/get-bizacc`<br/>`/api/social/friend/getprofiles/v2` | Lấy hồ sơ chuẩn hóa đầy đủ của một Zalo Official Account (OA) theo oaId (bao gồm tích vàng isVerified, isZaloBot, dnrStatus, hotline, website, giờ mở cửa, địa chỉ, danh mục...). |
+| [`getProductCatalogList`](#getproductcataloglist) | `POST` | `/api/prodcatalog/product/list`                                         | Lấy danh sách các sản phẩm nằm trong một Danh mục sản phẩm (Catalog).                                                                                                             |
+| [`getQuickMessageList`](#getquickmessagelist)     | `GET`  | `/api/quickmessage/list`                                                | Lấy danh sách các mẫu Tin nhắn nhanh (Quick Messages) đã tạo.                                                                                                                     |
+| [`registerCatalog`](#registercatalog)             | `POST` | `/api/prodcatalog/catalog/register`                                     | Đăng ký kích hoạt tính năng Danh mục sản phẩm (Catalog) cho tài khoản.                                                                                                            |
+| [`removeQuickMessage`](#removequickmessage)       | `GET`  | `/api/quickmessage/delete`                                              | Xóa một hoặc nhiều mẫu Tin nhắn nhanh.                                                                                                                                            |
+| [`unblockOA`](#unblockoa)                         | `POST` | `/api/social/oa/unblock`                                                | Bỏ chặn một Zalo Official Account (OA) để tiếp tục nhận tin nhắn qua /api/social/oa/unblock (cmd 12682).                                                                          |
+| [`updateAutoReply`](#updateautoreply)             | `POST` | `/api/autoreply/update`                                                 | Cập nhật nội dung và thời gian hoạt động của kịch bản Trả lời tự động.                                                                                                            |
+| [`updateBankAccount`](#updatebankaccount)         | `POST` | `/api/transfer/update`                                                  | Cập nhật thông tin tài khoản ngân hàng đã lưu.                                                                                                                                    |
+| [`updateCatalog`](#updatecatalog)                 | `POST` | `/api/prodcatalog/catalog/update`                                       | Cập nhật tên hoặc ảnh của Danh mục sản phẩm.                                                                                                                                      |
+| [`updateLabels`](#updatelabels)                   | `POST` | `/api/convlabel/update`                                                 | Cập nhật danh sách Nhãn phân loại (Labels) và gán nhãn cho các cuộc trò chuyện.                                                                                                   |
+| [`updateProductCatalog`](#updateproductcatalog)   | `POST` | `/api/prodcatalog/product/update`                                       | Cập nhật thông tin chi tiết, giá bán và hình ảnh của sản phẩm trong Danh mục.                                                                                                     |
+| [`updateQuickMessage`](#updatequickmessage)       | `GET`  | `/api/quickmessage/update`                                              | Chỉnh sửa phím tắt và nội dung của mẫu Tin nhắn nhanh.                                                                                                                            |
+| [`uploadProductPhoto`](#uploadproductphoto)       | `POST` | `/api/product/upload/photo`                                             | Tải ảnh sản phẩm lên máy chủ Zalo phục vụ cho Product Catalog hoặc Quick Message.                                                                                                 |
 
 ---
 
@@ -406,9 +406,9 @@ Lấy danh sách các kịch bản Trả lời tự động của tài khoản.
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.business.getAutoReplyList()
+await api.business.getAutoReplyList();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getAutoReplyList()
+await api.getAutoReplyList();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -517,9 +517,9 @@ Lấy toàn bộ danh sách Nhãn phân loại hội thoại (Conversation Label
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.business.getLabels()
+await api.business.getLabels();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getLabels()
+await api.getLabels();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -546,9 +546,9 @@ Lấy danh sách mã ngân hàng (BIN / NAPAS) được Zalo hỗ trợ.
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.business.getListBank()
+await api.business.getListBank();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getListBank()
+await api.getListBank();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)
@@ -679,9 +679,9 @@ Lấy danh sách các mẫu Tin nhắn nhanh (Quick Messages) đã tạo.
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.business.getQuickMessageList()
+await api.business.getQuickMessageList();
 // Hoặc gọi phẳng (Flat Alias):
-await api.getQuickMessageList()
+await api.getQuickMessageList();
 ```
 
 ### Kiểu dữ liệu (TypeScript Types)

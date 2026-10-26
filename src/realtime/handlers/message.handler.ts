@@ -70,7 +70,8 @@ export async function handleRealtimeMessagePacket(
         const msgs = (Array.isArray(parsedData?.msgs) ? parsedData.msgs : []) as TMessage[];
         const pageMsgs = (Array.isArray(parsedData?.pageMsgs) ? parsedData.pageMsgs : []) as TMessage[];
         if (msgs.length > 0) processIncomingUserMessages(listener, ctx, selfListen, onMessageCallback, msgs, false);
-        if (pageMsgs.length > 0) processIncomingUserMessages(listener, ctx, selfListen, onMessageCallback, pageMsgs, true);
+        if (pageMsgs.length > 0)
+            processIncomingUserMessages(listener, ctx, selfListen, onMessageCallback, pageMsgs, true);
         return true;
     }
 

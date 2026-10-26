@@ -21,6 +21,28 @@ export function normalizeGroupCallType(callType?: CallType | number): 0 | 1 {
     return 0;
 }
 
+/**
+ * Chuẩn hoá ID 32-bit của máy chủ VoIP Zalo (`hostCall`, `userId`, `groupId` nội bộ trong `data` của Group Call):
+ * - Nếu là chuỗi số hoặc số nằm trong dải 32-bit integer (`<= 4294967295`) ➔ chuyển thành `number` khớp với `Json::Value(int)` trong `ZMessageSerializer`.
+ * - Nếu là chuỗi 64-bit Zalo ID (18–19 chữ số) ➔ giữ nguyên `string` để không mất độ chính xác.
+ */
+export function toVoipInt(val: string | number | undefined): string | number {
+    if (typeof val === "number" && Number.isFinite(val)) {
+        return val;
+    }
+    if (typeof val === "string") {
+        const trimmed = val.trim();
+        if (/^-?\d+$/.test(trimmed)) {
+            const n = Number(trimmed);
+            if (Number.isSafeInteger(n) && Math.abs(n) <= 4294967295) {
+                return n;
+            }
+        }
+        return trimmed;
+    }
+    return "";
+}
+
 export type SendVoiceCallOptions = {
     callType?: CallType;
     callId?: number;
@@ -127,16 +149,14 @@ export const sendVoiceCallFactory = apiFactory<SendVoiceCallResponse>()((api, ct
             return typeof raw === "string" ? (JSON.parse(raw) as RequestCallServerInfo) : raw;
         });
 
-        const resolvedRtpServer =
-            serverInfo?.rtpServer ?? serverInfo?.rtpIP ?? serverInfo?.servers?.[0]?.rtpaddr ?? "";
+        const resolvedRtpServer = serverInfo?.rtpServer ?? serverInfo?.rtpIP ?? serverInfo?.servers?.[0]?.rtpaddr ?? "";
         const resolvedRtcpServer =
             serverInfo?.rtcpServer ?? serverInfo?.rtcpIP ?? serverInfo?.servers?.[0]?.rtcpaddr ?? "";
 
         const rtp = parseServerEndpoint(resolvedRtpServer);
         const rtcp = parseServerEndpoint(resolvedRtcpServer);
         const sessId = serverInfo?.sessId ?? `${normalizedCalleeId}_${callId}_401`;
-        const resolvedCodec =
-            serverInfo?.codec && serverInfo.codec !== "[]" ? serverInfo.codec : codec;
+        const resolvedCodec = serverInfo?.codec && serverInfo.codec !== "[]" ? serverInfo.codec : codec;
 
         // Step 2: Send ringing signaling request (/api/voicecall/request, command 11301)
         const isVideo = callType === CallType.Video;

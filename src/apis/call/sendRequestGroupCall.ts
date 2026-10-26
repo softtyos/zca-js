@@ -1,7 +1,7 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
-import type { CallType} from "./sendVoiceCall.js";
-import { normalizeGroupCallType } from "./sendVoiceCall.js";
+import type { CallType } from "./sendVoiceCall.js";
+import { normalizeGroupCallType, toVoipInt } from "./sendVoiceCall.js";
 
 export type SendRequestGroupCallOptions = {
     calleeId?: string;
@@ -44,7 +44,7 @@ export const sendRequestGroupCallFactory = apiFactory<SendRequestGroupCallRespon
         const partnersList = (options.partners ?? []).map(String);
         const noiseIdJson = JSON.stringify(partnersList);
         const callType = normalizeGroupCallType(options.callType);
-        const hostCallVal = String(options.hostCall ?? groupId);
+        const hostCallVal = options.hostCall !== undefined ? toVoipInt(options.hostCall) : String(groupId);
         const innerGroupData = {
             noiseId: noiseIdJson,
             hostCall: hostCallVal,
@@ -131,6 +131,25 @@ export const sendRequestGroupCallFactory = apiFactory<SendRequestGroupCallRespon
             method: "GET",
         });
 
-        return utils.resolve(response);
+        const resolved = await utils.resolve(response);
+        if (resolved && typeof resolved === "object" && !Array.isArray(resolved)) {
+            const resObj = resolved as Record<string, unknown>;
+            if (typeof resObj.params === "string") {
+                try {
+                    const parsedParams = JSON.parse(resObj.params);
+                    if (parsedParams && typeof parsedParams === "object" && !Array.isArray(parsedParams)) {
+                        const paramsRecord = parsedParams as Record<string, unknown>;
+                        return {
+                            ...paramsRecord,
+                            ...resObj,
+                            params: paramsRecord,
+                        };
+                    }
+                } catch {
+                    // Keep original resolved object if params is not JSON
+                }
+            }
+        }
+        return resolved;
     };
 });

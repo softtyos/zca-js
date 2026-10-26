@@ -1,6 +1,6 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
-import { CallType, normalizeGroupCallType } from "./sendVoiceCall.js";
+import { CallType, normalizeGroupCallType, toVoipInt } from "./sendVoiceCall.js";
 
 export type GetGroupCallStateResponse = Record<string, unknown>;
 
@@ -17,7 +17,7 @@ export const getGroupCallStateFactory = apiFactory<GetGroupCallStateResponse>()(
      */
     return async function getGroupCallState(
         callId: number,
-        hostCall: string,
+        hostCall: string | number,
         callType: CallType | number = CallType.GroupAudio,
     ): Promise<GetGroupCallStateResponse> {
         if (!callId) throw new ZaloApiError("Missing callId");
@@ -26,7 +26,7 @@ export const getGroupCallStateFactory = apiFactory<GetGroupCallStateResponse>()(
 
         const params = {
             callId,
-            hostCall: String(hostCall),
+            hostCall: toVoipInt(hostCall),
             callType: normalizeGroupCallType(callType),
         };
 

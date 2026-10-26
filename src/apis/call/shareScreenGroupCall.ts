@@ -1,9 +1,10 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
+import { toVoipInt } from "./sendVoiceCall.js";
 
 export type ShareScreenGroupCallOptions = {
-    userId?: string;
-    hostCall: string;
+    userId?: string | number;
+    hostCall: string | number;
     status?: number;
     audioState?: number;
     videoState?: number;
@@ -40,12 +41,10 @@ export const shareScreenGroupCallFactory = apiFactory<ShareScreenGroupCallRespon
         const audioState = options.audioState ?? 1;
         const videoState = options.videoState ?? 1;
         const params = {
-            userId: String(options.userId ?? ctx.uid),
+            userId: toVoipInt(options.userId ?? options.hostCall ?? ctx.uid),
             callId,
-            hostCall: String(options.hostCall),
+            hostCall: toVoipInt(options.hostCall),
             status: options.status ?? 1,
-            audioState,
-            videoState,
             audiostate: audioState,
             videostate: videoState,
             data: dataStr,

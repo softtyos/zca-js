@@ -1,12 +1,13 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
-import type { CallType} from "./sendVoiceCall.js";
-import { normalizeGroupCallType } from "./sendVoiceCall.js";
+import type { CallType } from "./sendVoiceCall.js";
+import { normalizeGroupCallType, toVoipInt } from "./sendVoiceCall.js";
 
 export type AnswerGroupCallOptions = {
     calleeId?: string;
     callType?: CallType | number;
-    hostCall: string;
+    hostCall: string | number;
+    groupId?: string | number;
     session?: string;
     status?: number;
     data?: string | Record<string, unknown>;
@@ -36,14 +37,17 @@ export const answerGroupCallFactory = apiFactory<AnswerGroupCallResponse>()((api
         const callType = normalizeGroupCallType(options.callType);
         const status = options.status ?? 0;
         const session = options.session ?? `${options.hostCall}_${callId}_501`;
+        const hostCallVal = toVoipInt(options.hostCall);
+        const groupIdVal = toVoipInt(options.groupId ?? options.hostCall);
         const defaultDataObj: Record<string, unknown> = {
             callId,
             callType,
-            groupId: String(options.hostCall),
+            groupId: groupIdVal,
             session,
             status,
             codec: "[]",
             extendData: "",
+            extraData: status !== 0 ? JSON.stringify({ status }) : "",
         };
 
         let dataStr: string;
@@ -53,11 +57,15 @@ export const answerGroupCallFactory = apiFactory<AnswerGroupCallResponse>()((api
             try {
                 const parsed = JSON.parse(options.data);
                 if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+                    const parsedObj = parsed as Record<string, unknown>;
                     dataStr = JSON.stringify({
                         ...defaultDataObj,
-                        ...(parsed as Record<string, unknown>),
+                        ...parsedObj,
+                        ...(parsedObj.groupId !== undefined
+                            ? { groupId: toVoipInt(parsedObj.groupId as string | number) }
+                            : {}),
                         callType: normalizeGroupCallType(
-                            (parsed as Record<string, unknown>).callType as number | undefined ?? options.callType,
+                            (parsedObj.callType as number | undefined) ?? options.callType,
                         ),
                     });
                 } else {
@@ -70,9 +78,10 @@ export const answerGroupCallFactory = apiFactory<AnswerGroupCallResponse>()((api
             dataStr = JSON.stringify({
                 ...defaultDataObj,
                 ...options.data,
-                callType: normalizeGroupCallType(
-                    (options.data.callType as number | undefined) ?? options.callType,
-                ),
+                ...(options.data.groupId !== undefined
+                    ? { groupId: toVoipInt(options.data.groupId as string | number) }
+                    : {}),
+                callType: normalizeGroupCallType((options.data.callType as number | undefined) ?? options.callType),
             });
         }
 
@@ -80,7 +89,7 @@ export const answerGroupCallFactory = apiFactory<AnswerGroupCallResponse>()((api
             calleeId: String(options.calleeId ?? ctx.uid),
             callId,
             callType,
-            hostCall: String(options.hostCall),
+            hostCall: hostCallVal,
             session,
             status,
             data: dataStr,
@@ -99,6 +108,27 @@ export const answerGroupCallFactory = apiFactory<AnswerGroupCallResponse>()((api
             method: "GET",
         });
 
-        return utils.resolve(response);
+        const raw = await utils.resolve(response);
+        const resObj: Record<string, unknown> =
+            typeof raw === "string"
+                ? (JSON.parse(raw) as Record<string, unknown>)
+                : ((raw ?? {}) as Record<string, unknown>);
+
+        // Trong ZMessageDeserializer::_parseAnswerCallResponseGroup (0x100022f2c),
+        // dữ liệu phản hồi thật (status, callId, hostCall, partnerInfo) nằm trong chuỗi JSON `params`.
+        if (typeof resObj.params === "string" && resObj.params.length > 0) {
+            try {
+                const innerParams = JSON.parse(resObj.params) as Record<string, unknown>;
+                if (innerParams && typeof innerParams === "object") {
+                    return {
+                        ...innerParams,
+                        ...resObj,
+                    };
+                }
+            } catch {
+                // Giữ nguyên nếu params không phải JSON
+            }
+        }
+        return resObj;
     };
 });

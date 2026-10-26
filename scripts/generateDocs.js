@@ -16,55 +16,64 @@ const DOMAIN_META = {
         icon: "🔐",
         title: "Xác thực & Phiên (Auth)",
         badge: "api.auth",
-        description: "Quản lý thiết bị đăng nhập, xuất/nhập phiên (exportSession), mã QR, Keep-Alive, giải mã GID (Global ID) và Noised ID.",
+        description:
+            "Quản lý thiết bị đăng nhập, xuất/nhập phiên (exportSession), mã QR, Keep-Alive, giải mã GID (Global ID) và Noised ID.",
     },
     chat: {
         icon: "💬",
         title: "Tin nhắn & Hội thoại (Chat)",
         badge: "api.chat",
-        description: "Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nhắn, ghim/ẩn/lưu trữ hội thoại và trạng thái Đã nhận/Đã xem.",
+        description:
+            "Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nhắn, ghim/ẩn/lưu trữ hội thoại và trạng thái Đã nhận/Đã xem.",
     },
     group: {
         icon: "👥",
         title: "Nhóm & Cộng đồng (Group)",
         badge: "api.group",
-        description: "Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch sử tin nhắn Cloud, trạng thái tin nhắn thành viên và phân quyền.",
+        description:
+            "Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch sử tin nhắn Cloud, trạng thái tin nhắn thành viên và phân quyền.",
     },
     friend: {
         icon: "🤝",
         title: "Bạn bè & Danh bạ (Friend)",
         badge: "api.friend",
-        description: "Quản lý danh sách bạn bè, lời mời kết bạn, gợi ý kết bạn, biệt danh (alias), chặn và kiểm tra trạng thái hoạt động PC/Web.",
+        description:
+            "Quản lý danh sách bạn bè, lời mời kết bạn, gợi ý kết bạn, biệt danh (alias), chặn và kiểm tra trạng thái hoạt động PC/Web.",
     },
     profile: {
         icon: "🪪",
         title: "Hồ sơ cá nhân (Profile)",
         badge: "api.profile",
-        description: "Thông tin tài khoản, đổi ảnh đại diện, cài đặt quyền riêng tư, trạng thái cảm xúc (Emoji Status) và xác thực EKYC.",
+        description:
+            "Thông tin tài khoản, đổi ảnh đại diện, cài đặt quyền riêng tư, trạng thái cảm xúc (Emoji Status) và xác thực EKYC.",
     },
     sync: {
         icon: "🔄",
         title: "Đồng bộ Mobile ZDB 4.0 (Sync)",
         badge: "api.sync",
-        description: "Đồng bộ toàn bộ lịch sử tin nhắn từ điện thoại sang PC qua giao thức RSA-2048 & ZDB 4.0 AES-256-CBC multi-chunk.",
+        description:
+            "Đồng bộ toàn bộ lịch sử tin nhắn từ điện thoại sang PC qua giao thức RSA-2048 & ZDB 4.0 AES-256-CBC multi-chunk.",
     },
     zcloud: {
         icon: "☁️",
         title: "Đám mây ZCloud & ZFamily (ZCloud)",
         badge: "api.zcloud",
-        description: "Truy vấn dung lượng My Cloud / ZCloud, ZFamily, khóa giải mã ViewerKey (98yS AES-256-CBC) và xác thực Media.",
+        description:
+            "Truy vấn dung lượng My Cloud / ZCloud, ZFamily, khóa giải mã ViewerKey (98yS AES-256-CBC) và xác thực Media.",
     },
     call: {
         icon: "📞",
         title: "Gọi thoại, Video & Gọi nhóm (Call)",
         badge: "api.call",
-        description: "Điều khiển trọn vẹn 30 API cuộc gọi thoại, video 1-1, gọi nhóm và bộ máy Call Engine (ZaloRtcSession UDP/SRTP 2 chiều & ZaloCallController).",
+        description:
+            "Điều khiển trọn vẹn 30 API cuộc gọi thoại, video 1-1, gọi nhóm và bộ máy Call Engine (ZaloRtcSession UDP/SRTP 2 chiều & ZaloCallController).",
     },
     media: {
         icon: "🖼️",
         title: "Kho lưu trữ & Chuyển giọng nói (Media)",
         badge: "api.media",
-        description: "Truy vấn Kho Lưu Trữ Ảnh/Video, File, Link của nhóm và Cloud của tôi (Send2Me), cùng chuyển đổi Voice-to-Text AI.",
+        description:
+            "Truy vấn Kho Lưu Trữ Ảnh/Video, File, Link của nhóm và Cloud của tôi (Send2Me), cùng chuyển đổi Voice-to-Text AI.",
     },
     sticker: {
         icon: "✨",
@@ -82,7 +91,8 @@ const DOMAIN_META = {
         icon: "💼",
         title: "Zalo Business, OA, Nhãn & Danh mục (Business)",
         badge: "api.business",
-        description: "Quản lý Zalo Official Account (getOAProfile, blockOA, unblockOA, convertOAIds), nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng.",
+        description:
+            "Quản lý Zalo Official Account (getOAProfile, blockOA, unblockOA, convertOAIds), nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng.",
     },
 };
 
@@ -105,14 +115,16 @@ const VI_DESCRIPTIONS = {
     getPinConversations: "Lấy danh sách các cuộc trò chuyện đang được ghim trên đầu danh sách chat.",
     getUnreadMark: "Lấy danh sách các cuộc trò chuyện đang được đánh dấu là chưa đọc.",
     parseLink: "Phân tích siêu dữ liệu (Title, Description, Thumbnail) của một đường dẫn URL trước khi gửi.",
-    preloadConversations: "Tải trước tin nhắn cuối cùng và trạng thái đã đọc của các hội thoại đang hoạt động (command 10053).",
+    preloadConversations:
+        "Tải trước tin nhắn cuối cùng và trạng thái đã đọc của các hội thoại đang hoạt động (command 10053).",
     removeUnreadMark: "Gỡ bỏ đánh dấu chưa đọc trên cuộc trò chuyện.",
     resetHiddenConversPin: "Đặt lại (Reset) mã PIN bảo vệ trò chuyện ẩn.",
     sendBankCard: "Gửi danh thiếp thông tin tài khoản ngân hàng (Bank Card) vào cuộc trò chuyện.",
     sendCard: "Gửi danh thiếp liên hệ Zalo (Contact Card / QR) vào hội thoại cá nhân hoặc nhóm.",
     sendDeliveredEvent: "Gửi tín hiệu xác nhận Đã nhận (Delivered) cho một hoặc nhiều tin nhắn.",
     sendLink: "Gửi tin nhắn kèm bản xem trước liên kết (Link Preview) vào hội thoại.",
-    sendMessage: "Gửi tin nhắn văn bản, trích dẫn (Quote), nhắc tên (@Mention) hoặc tệp đính kèm (Ảnh/File/GIF) tới cá nhân hoặc nhóm.",
+    sendMessage:
+        "Gửi tin nhắn văn bản, trích dẫn (Quote), nhắc tên (@Mention) hoặc tệp đính kèm (Ảnh/File/GIF) tới cá nhân hoặc nhóm.",
     sendReport: "Gửi báo cáo vi phạm (Report Abuse) đối với người dùng hoặc cuộc trò chuyện.",
     sendSeenEvent: "Gửi tín hiệu xác nhận Đã xem (Seen) cho các tin nhắn trong hội thoại.",
     sendSticker: "Gửi nhãn dán (Sticker) vào cuộc trò chuyện cá nhân hoặc nhóm.",
@@ -124,7 +136,8 @@ const VI_DESCRIPTIONS = {
     setPinnedConversations: "Ghim hoặc bỏ ghim cuộc trò chuyện lên đầu danh sách.",
     undo: "Thu hồi (Undo) một tin nhắn đã gửi với tất cả mọi người trong cuộc trò chuyện.",
     updateArchivedChatList: "Đưa cuộc trò chuyện vào mục Lưu trữ (Archive) hoặc khôi phục ra ngoài.",
-    updateAutoDeleteChat: "Cấu hình thời gian tự động xóa tin nhắn cho cuộc trò chuyện (1 ngày, 7 ngày, 30 ngày hoặc tắt).",
+    updateAutoDeleteChat:
+        "Cấu hình thời gian tự động xóa tin nhắn cho cuộc trò chuyện (1 ngày, 7 ngày, 30 ngày hoặc tắt).",
     updateHiddenConversPin: "Đặt mới hoặc thay đổi mã PIN bảo mật cho tính năng Trò chuyện ẩn.",
     addGroupBlockedMember: "Chặn một hoặc nhiều thành viên khỏi nhóm (không cho tham gia lại).",
     addGroupDeputy: "Bổ nhiệm thành viên làm Phó nhóm (Quản trị viên).",
@@ -138,14 +151,18 @@ const VI_DESCRIPTIONS = {
     disperseGroup: "Giải tán nhóm chat vĩnh viễn (yêu cầu quyền Trưởng nhóm).",
     enableGroupLink: "Kích hoạt hoặc tạo mới đường dẫn liên kết mời tham gia nhóm.",
     getGroupBlockedMember: "Lấy danh sách các tài khoản đang bị chặn khỏi nhóm.",
-    getGroupInfo: "Lấy thông tin chi tiết của một hoặc nhiều nhóm (tên nhóm, cài đặt lockViewMember, creatorId, adminIds, memVerList) qua /api/group/getmg-v2.",
+    getGroupInfo:
+        "Lấy thông tin chi tiết của một hoặc nhiều nhóm (tên nhóm, cài đặt lockViewMember, creatorId, adminIds, memVerList) qua /api/group/getmg-v2.",
     getGroupInviteBoxInfo: "Lấy thông tin chi tiết của một lời mời vào nhóm cụ thể.",
     getGroupInviteBoxList: "Lấy danh sách tất cả lời mời tham gia nhóm đang chờ trong hộp thư.",
     getGroupLinkDetail: "Lấy chi tiết đường dẫn mời tham gia nhóm (Link邀請) của một nhóm mà bạn đang tham gia.",
-    getGroupLinkInfo: "Tra cứu thông tin nhóm và danh sách thành viên theo trang từ đường dẫn nhóm công khai (https://zalo.me/g/...).",
-    getGroupMembersInfo: "Giải mã hàng loạt thông tin hồ sơ thành viên (displayName, zaloName, avatar, globalId) từ danh sách UID qua /api/social/group/members.",
+    getGroupLinkInfo:
+        "Tra cứu thông tin nhóm và danh sách thành viên theo trang từ đường dẫn nhóm công khai (https://zalo.me/g/...).",
+    getGroupMembersInfo:
+        "Giải mã hàng loạt thông tin hồ sơ thành viên (displayName, zaloName, avatar, globalId) từ danh sách UID qua /api/social/group/members.",
     getPendingGroupMembers: "Lấy danh sách các yêu cầu xin vào nhóm đang chờ Quản trị viên phê duyệt.",
-    getRelatedFriendGroup: "Kiểm tra danh sách các nhóm chung giữa tài khoản hiện tại và danh sách UID truyền vào qua /api/friend/group/related.",
+    getRelatedFriendGroup:
+        "Kiểm tra danh sách các nhóm chung giữa tài khoản hiện tại và danh sách UID truyền vào qua /api/friend/group/related.",
     inviteUserToGroups: "Gửi lời mời tham gia một hoặc nhiều nhóm tới người dùng.",
     joinGroupInviteBox: "Chấp nhận lời mời tham gia nhóm từ hộp thư lời mời.",
     joinGroupLink: "Tham gia vào nhóm thông qua đường dẫn liên kết mời (Group Link).",
@@ -154,7 +171,8 @@ const VI_DESCRIPTIONS = {
     removeGroupDeputy: "Cách chức Phó nhóm (thu hồi quyền Quản trị viên) của thành viên.",
     removeUserFromGroup: "Mời ra khỏi nhóm (Kick) một hoặc nhiều thành viên.",
     reviewPendingMemberRequest: "Phê duyệt (Chấp nhận hoặc Từ chối) yêu cầu xin tham gia nhóm của thành viên mới.",
-    updateGroupSettings: "Cập nhật các thiết lập quyền hạn của nhóm (ẩn thành viên lockViewMember, duyệt thành viên joinAppr, khóa nhắn tin lockSendMsg...).",
+    updateGroupSettings:
+        "Cập nhật các thiết lập quyền hạn của nhóm (ẩn thành viên lockViewMember, duyệt thành viên joinAppr, khóa nhắn tin lockSendMsg...).",
     upgradeGroupToCommunity: "Nâng cấp nhóm thường lên Cộng đồng (Community - tối đa 1000 thành viên).",
     acceptFriendRequest: "Đồng ý lời mời kết bạn từ một người dùng.",
     blockUser: "Chặn tin nhắn từ một người dùng theo UID.",
@@ -184,12 +202,15 @@ const VI_DESCRIPTIONS = {
     getAvatarUrlProfile: "Lấy đường dẫn ảnh đại diện của danh sách hồ sơ người dùng.",
     getFullAvatar: "Lấy ảnh đại diện kích thước gốc (Full HD) của một người dùng theo UID.",
     getSettings: "Lấy toàn bộ cấu hình quyền riêng tư và cài đặt của tài khoản hiện tại.",
-    getUserInfo: "Lấy thông tin hồ sơ chi tiết (Tên, Ảnh bìa, Ngày sinh, Giới tính, Bio, Zalo Business) của một hoặc nhiều UID.",
+    getUserInfo:
+        "Lấy thông tin hồ sơ chi tiết (Tên, Ảnh bìa, Ngày sinh, Giới tính, Bio, Zalo Business) của một hoặc nhiều UID.",
     reuseAvatar: "Sử dụng lại một ảnh đại diện cũ từ kho lịch sử ảnh đại diện.",
     updateProfile: "Cập nhật thông tin cá nhân (Tên hiển thị, Ngày sinh, Giới tính) và thông tin Zalo Business.",
     updateProfileBio: "Cập nhật dòng tiểu sử (Status / Bio) trên trang cá nhân.",
-    updateSettings: "Cập nhật cài đặt quyền riêng tư (Hiển thị ngày sinh, Trạng thái Online, Đã xem, Nguồn nhận tin nhắn/cuộc gọi, Nguồn kết bạn).",
-    uploadAttachment: "Tải tệp đính kèm (Ảnh, Video, File) lên máy chủ Zalo để lấy thông tin fileUrl / fileId trước khi gửi.",
+    updateSettings:
+        "Cập nhật cài đặt quyền riêng tư (Hiển thị ngày sinh, Trạng thái Online, Đã xem, Nguồn nhận tin nhắn/cuộc gọi, Nguồn kết bạn).",
+    uploadAttachment:
+        "Tải tệp đính kèm (Ảnh, Video, File) lên máy chủ Zalo để lấy thông tin fileUrl / fileId trước khi gửi.",
     getStickerCategoryDetail: "Lấy danh sách toàn bộ nhãn dán nằm trong một bộ nhãn dán (Category/Pack ID).",
     getStickers: "Tìm kiếm danh sách ID nhãn dán theo từ khóa tiếng Việt/tiếng Anh.",
     getStickersDetail: "Lấy thông tin chi tiết (URL ảnh động, loại sticker, cateId) của một hoặc nhiều Sticker ID.",
@@ -200,11 +221,14 @@ const VI_DESCRIPTIONS = {
     createReminder: "Tạo một Lịch hẹn (Reminder) mới trong hội thoại cá nhân hoặc nhóm.",
     editNote: "Chỉnh sửa nội dung ghi chú đã tạo trên Bảng tin nhóm.",
     editReminder: "Chỉnh sửa nội dung và thời gian của một Lịch hẹn (Reminder).",
-    getListBoard: "Lấy danh sách các mục trên Bảng tin nhóm (bao gồm Ghi chú, Bình chọn và Tin nhắn ghim) qua /api/board/list.",
+    getListBoard:
+        "Lấy danh sách các mục trên Bảng tin nhóm (bao gồm Ghi chú, Bình chọn và Tin nhắn ghim) qua /api/board/list.",
     getListReminder: "Lấy danh sách các Lịch hẹn (Reminders) trong hội thoại cá nhân hoặc nhóm.",
-    getPollDetail: "Lấy thông tin chi tiết và toàn bộ danh sách UID thành viên đã bỏ phiếu (voters) trong cuộc Bình chọn qua /api/poll/detail.",
+    getPollDetail:
+        "Lấy thông tin chi tiết và toàn bộ danh sách UID thành viên đã bỏ phiếu (voters) trong cuộc Bình chọn qua /api/poll/detail.",
     getReminder: "Lấy thông tin chi tiết của một Lịch hẹn (Reminder) trong nhóm.",
-    getReminderResponses: "Lấy danh sách UID các thành viên đã bấm Tham gia (acceptMember) hoặc Từ chối (rejectMember) một Lịch hẹn.",
+    getReminderResponses:
+        "Lấy danh sách UID các thành viên đã bấm Tham gia (acceptMember) hoặc Từ chối (rejectMember) một Lịch hẹn.",
     lockPoll: "Khóa (Kết thúc) một cuộc Bình chọn trong nhóm.",
     removeReminder: "Xóa một Lịch hẹn trong hội thoại cá nhân hoặc nhóm.",
     sharePoll: "Chia sẻ lại cuộc Bình chọn vào luồng tin nhắn nhóm.",
@@ -235,40 +259,71 @@ const VI_DESCRIPTIONS = {
     updateProductCatalog: "Cập nhật thông tin chi tiết, giá bán và hình ảnh của sản phẩm trong Danh mục.",
     updateQuickMessage: "Chỉnh sửa phím tắt và nội dung của mẫu Tin nhắn nhanh.",
     uploadProductPhoto: "Tải ảnh sản phẩm lên máy chủ Zalo phục vụ cho Product Catalog hoặc Quick Message.",
-    getOAProfile: "Lấy hồ sơ chuẩn hóa đầy đủ của một Zalo Official Account (OA) theo oaId (bao gồm tích vàng isVerified, isZaloBot, dnrStatus, hotline, website, giờ mở cửa, địa chỉ, danh mục...).",
+    getOAProfile:
+        "Lấy hồ sơ chuẩn hóa đầy đủ của một Zalo Official Account (OA) theo oaId (bao gồm tích vàng isVerified, isZaloBot, dnrStatus, hotline, website, giờ mở cửa, địa chỉ, danh mục...).",
     blockOA: "Chặn nhận tin nhắn / thông báo từ một Zalo Official Account (OA) qua /api/social/oa/block (cmd 12681).",
-    unblockOA: "Bỏ chặn một Zalo Official Account (OA) để tiếp tục nhận tin nhắn qua /api/social/oa/unblock (cmd 12682).",
-    convertOAIds: "Chuyển đổi danh sách OA ID sang Zalo UID nội bộ (hoặc ngược lại) qua /api/social/oa/convertid (cmd 11863).",
-    sendVoiceCall: "Khởi tạo cuộc gọi Thoại hoặc Video 1-1 trọn gói (tự động thực hiện 2 bước 11300 + 11301 làm đổ chuông máy người nhận).",
-    requestVoiceCall: "Bước 1 gọi 1-1 (cmd 11300 - /api/voicecall/requestcall, signal 401): Xin cấp phát phòng gọi 1-1 (callId, sessId, rtpServer, rtcpServer, zrtpKey, codec).",
-    sendRequestVoiceCall: "Bước 2 gọi 1-1 (cmd 11301 - /api/voicecall/request, signal 416): Gửi gói mời gọi (Invite) kèm extendData ZRTC để kích hoạt đổ chuông trên thiết bị người nhận.",
-    ringRingVoiceCall: "Báo hiệu thiết bị đang đổ chuông cho cuộc gọi 1-1 đến (cmd 11302 - /api/voicecall/ringring, signal 407).",
-    answerVoiceCall: "Chấp nhận (Bắt máy) cuộc gọi Thoại/Video 1-1 đến (cmd 11303 - /api/voicecall/answer, signal 402).",
-    answerAckVoiceCall: "Gửi xác nhận hoàn tất bắt tay nhận cuộc gọi 1-1 (cmd 11304 - /api/voicecall/answerack, signal 408).",
-    cancelVoiceCall: "Hủy cuộc gọi 1-1 đang đổ chuông trước khi người nhận bắt máy (cmd 11305 - /api/voicecall/cancel, signal 405).",
-    endVoiceCall: "Kết thúc cuộc gọi 1-1 đang diễn ra hoặc từ chối cuộc gọi đến (cmd 11306 - /api/voicecall/endcall, signal 404).",
-    holdVoiceCall: "Tạm giữ (Hold) cuộc gọi 1-1 đang diễn ra hoặc phản hồi yêu cầu tạm giữ (cmd 11307 holdreq / cmd 11308 holdresp, signal 411/412).",
-    unholdVoiceCall: "Khôi phục (Unhold) cuộc gọi 1-1 đang tạm giữ hoặc phản hồi yêu cầu khôi phục (cmd 11309 unholdreq / cmd 11310 unholdresp, signal 413/414).",
-    logEndVoiceCall: "Gửi thống kê chất lượng cuộc gọi (QoS/Billing stats) sau khi kết thúc cuộc gọi 1-1 (cmd 11311 - /api/voicecall/logendcall, signal 406).",
-    updateCallMediaState: "Đồng bộ trạng thái bật/tắt Mic và Camera trong cuộc gọi 1-1 (cmd 12006 - /api/voicecall/conf).",
-    requestAudioToVideoCall: "Yêu cầu nâng cấp từ cuộc gọi Thoại sang cuộc gọi Video hoặc phản hồi yêu cầu (cmd 12056 - /api/voicecall/requestaudio2video).",
-    requestShareScreenCall: "Yêu cầu bắt đầu hoặc kết thúc chia sẻ màn hình (Screen Share) trong cuộc gọi 1-1 (cmd 12064 - /api/voicecall/requestsharescreen).",
-    requestGroupCall: "Bước 1 gọi nhóm (cmd 12433 - /api/voicecall/group/requestcall): Xin cấp phát phòng gọi nhóm (Group Call Room & RTP/ZRTC servers).",
-    sendRequestGroupCall: "Bước 2 gọi nhóm (cmd 12434 - /api/voicecall/group/request): Phát tín hiệu mời gọi nhóm tới danh sách thành viên.",
-    addUserGroupCall: "Mời thêm thành viên mới vào cuộc gọi nhóm đang diễn ra (cmd 12435 - /api/voicecall/group/adduser).",
-    answerGroupCall: "Chấp nhận tham gia cuộc gọi nhóm khi nhận được lời mời (cmd 12436 - /api/voicecall/group/answer).",
+    unblockOA:
+        "Bỏ chặn một Zalo Official Account (OA) để tiếp tục nhận tin nhắn qua /api/social/oa/unblock (cmd 12682).",
+    convertOAIds:
+        "Chuyển đổi danh sách OA ID sang Zalo UID nội bộ (hoặc ngược lại) qua /api/social/oa/convertid (cmd 11863).",
+    sendVoiceCall:
+        "Khởi tạo cuộc gọi Thoại hoặc Video 1-1 trọn gói (tự động thực hiện 2 bước 11300 + 11301 làm đổ chuông máy người nhận).",
+    requestVoiceCall:
+        "Bước 1 gọi 1-1 (cmd 11300 - /api/voicecall/requestcall, signal 401): Xin cấp phát phòng gọi 1-1 (callId, sessId, rtpServer, rtcpServer, zrtpKey, codec).",
+    sendRequestVoiceCall:
+        "Bước 2 gọi 1-1 (cmd 11301 - /api/voicecall/request, signal 416): Gửi gói mời gọi (Invite) kèm extendData ZRTC để kích hoạt đổ chuông trên thiết bị người nhận.",
+    ringRingVoiceCall:
+        "Báo hiệu thiết bị đang đổ chuông cho cuộc gọi 1-1 đến (cmd 11302 - /api/voicecall/ringring, signal 407).",
+    answerVoiceCall:
+        "Chấp nhận (Bắt máy) cuộc gọi Thoại/Video 1-1 đến (cmd 11303 - /api/voicecall/answer, signal 402).",
+    answerAckVoiceCall:
+        "Gửi xác nhận hoàn tất bắt tay nhận cuộc gọi 1-1 (cmd 11304 - /api/voicecall/answerack, signal 408).",
+    cancelVoiceCall:
+        "Hủy cuộc gọi 1-1 đang đổ chuông trước khi người nhận bắt máy (cmd 11305 - /api/voicecall/cancel, signal 405).",
+    endVoiceCall:
+        "Kết thúc cuộc gọi 1-1 đang diễn ra hoặc từ chối cuộc gọi đến (cmd 11306 - /api/voicecall/endcall, signal 404).",
+    holdVoiceCall:
+        "Tạm giữ (Hold) cuộc gọi 1-1 đang diễn ra hoặc phản hồi yêu cầu tạm giữ (cmd 11307 holdreq / cmd 11308 holdresp, signal 411/412).",
+    unholdVoiceCall:
+        "Khôi phục (Unhold) cuộc gọi 1-1 đang tạm giữ hoặc phản hồi yêu cầu khôi phục (cmd 11309 unholdreq / cmd 11310 unholdresp, signal 413/414).",
+    logEndVoiceCall:
+        "Gửi thống kê chất lượng cuộc gọi (QoS/Billing stats) sau khi kết thúc cuộc gọi 1-1 (cmd 11311 - /api/voicecall/logendcall, signal 406).",
+    updateCallMediaState:
+        "Đồng bộ trạng thái bật/tắt Mic và Camera trong cuộc gọi 1-1 (cmd 12006 - /api/voicecall/conf).",
+    requestAudioToVideoCall:
+        "Yêu cầu nâng cấp từ cuộc gọi Thoại sang cuộc gọi Video hoặc phản hồi yêu cầu (cmd 12056 - /api/voicecall/requestaudio2video).",
+    requestShareScreenCall:
+        "Yêu cầu bắt đầu hoặc kết thúc chia sẻ màn hình (Screen Share) trong cuộc gọi 1-1 (cmd 12064 - /api/voicecall/requestsharescreen).",
+    requestGroupCall:
+        "Bước 1 gọi nhóm (cmd 12433 - /api/voicecall/group/requestcall): Xin cấp phát phòng gọi nhóm (Group Call Room & RTP/ZRTC servers).",
+    sendRequestGroupCall:
+        "Bước 2 gọi nhóm (cmd 12434 - /api/voicecall/group/request): Phát tín hiệu mời gọi nhóm tới danh sách thành viên.",
+    addUserGroupCall:
+        "Mời thêm thành viên mới vào cuộc gọi nhóm đang diễn ra (cmd 12435 - /api/voicecall/group/adduser).",
+    answerGroupCall:
+        "Chấp nhận tham gia cuộc gọi nhóm khi nhận được lời mời (cmd 12436 - /api/voicecall/group/answer).",
     cancelGroupCall: "Hủy lời mời cuộc gọi nhóm (cmd 12437 - /api/voicecall/group/cancel).",
     endGroupCall: "Rời khỏi cuộc gọi nhóm hoặc từ chối lời mời gọi nhóm (cmd 12438 - /api/voicecall/group/endcall).",
-    ringRingGroupCall: "Báo hiệu thiết bị đang đổ chuông cho lời mời gọi nhóm (cmd 12439 - /api/voicecall/group/ringring).",
-    getGroupCallState: "Truy vấn trạng thái hiện tại và danh sách thành viên trong phòng gọi nhóm (cmd 12445 - /api/voicecall/group/state).",
-    finishGroupCall: "Kết thúc hoàn toàn phòng gọi nhóm cho tất cả thành viên (cmd 12446 - /api/voicecall/group/finish).",
-    notifyGroupCall: "Gửi thông báo sự kiện cuộc gọi nhóm vào luồng chat nhóm (cmd 12447 - /api/voicecall/group/notify).",
-    pingGroupCall: "Gửi nhịp tim (Heartbeat Ping) duy trì kết nối của thành viên trong phòng gọi nhóm (cmd 12097 - /api/voicecall/group/ping).",
-    broadcastGroupCallState: "Phát quảng bá trạng thái thiết bị (Mic, Camera, Screen Share) tới các thành viên trong cuộc gọi nhóm (cmd 12098 - /api/voicecall/group/broadcast).",
-    joinGroupCall: "Chủ động tham gia vào một cuộc gọi nhóm đang diễn ra từ banner nhóm (cmd 12043 - /api/voicecall/group/join).",
-    shareScreenGroupCall: "Bắt đầu hoặc dừng chia sẻ màn hình trong cuộc gọi nhóm (cmd 12044 - /api/voicecall/group/sharescreen).",
-    createRtcSession: "Khởi tạo phiên gọi thoại / video 2 chiều thuần TypeScript (ZaloRtcSession — UDP ZRTPPacket + SRTP + H.264 Annex-B + Mobile Direct UDP Handoff).",
-    createController: "Khởi tạo bộ điều phối cuộc gọi ZaloCallController quản lý vòng đời gọi đi, nhận cuộc gọi đến và kênh IPC cục bộ.",
+    ringRingGroupCall:
+        "Báo hiệu thiết bị đang đổ chuông cho lời mời gọi nhóm (cmd 12439 - /api/voicecall/group/ringring).",
+    getGroupCallState:
+        "Truy vấn trạng thái hiện tại và danh sách thành viên trong phòng gọi nhóm (cmd 12445 - /api/voicecall/group/state).",
+    finishGroupCall:
+        "Kết thúc hoàn toàn phòng gọi nhóm cho tất cả thành viên (cmd 12446 - /api/voicecall/group/finish).",
+    notifyGroupCall:
+        "Gửi thông báo sự kiện cuộc gọi nhóm vào luồng chat nhóm (cmd 12447 - /api/voicecall/group/notify).",
+    pingGroupCall:
+        "Gửi nhịp tim (Heartbeat Ping) duy trì kết nối của thành viên trong phòng gọi nhóm (cmd 12097 - /api/voicecall/group/ping).",
+    broadcastGroupCallState:
+        "Phát quảng bá trạng thái thiết bị (Mic, Camera, Screen Share) tới các thành viên trong cuộc gọi nhóm (cmd 12098 - /api/voicecall/group/broadcast).",
+    joinGroupCall:
+        "Chủ động tham gia vào một cuộc gọi nhóm đang diễn ra từ banner nhóm (cmd 12043 - /api/voicecall/group/join).",
+    shareScreenGroupCall:
+        "Bắt đầu hoặc dừng chia sẻ màn hình trong cuộc gọi nhóm (cmd 12044 - /api/voicecall/group/sharescreen).",
+    createRtcSession:
+        "Khởi tạo phiên gọi thoại / video 2 chiều thuần TypeScript (ZaloRtcSession — UDP ZRTPPacket + SRTP + H.264 Annex-B + Mobile Direct UDP Handoff).",
+    createController:
+        "Khởi tạo bộ điều phối cuộc gọi ZaloCallController quản lý vòng đời gọi đi, nhận cuộc gọi đến và kênh IPC cục bộ.",
 };
 
 function escapeMarkdownHtml(str) {
@@ -287,9 +342,7 @@ function parseApiFile(filePath, domain, name) {
     const paramsDoc = [];
 
     if (jsdocMatch) {
-        const rawLines = jsdocMatch[1]
-            .split("\n")
-            .map((l) => l.replace(/^\s*\*\s?/, "").trim());
+        const rawLines = jsdocMatch[1].split("\n").map((l) => l.replace(/^\s*\*\s?/, "").trim());
         const summaryLines = [];
         for (const line of rawLines) {
             if (line.startsWith("@param")) {
@@ -310,7 +363,9 @@ function parseApiFile(filePath, domain, name) {
         summary = escapeMarkdownHtml(VI_DESCRIPTIONS[name]);
     }
 
-    const fnMatch = content.match(/return\s+(?:async\s+)?function\s+[a-zA-Z0-9_]*\s*\(([\s\S]*?)\)\s*(?::\s*[^{]+)?\s*\{/);
+    const fnMatch = content.match(
+        /return\s+(?:async\s+)?function\s+[a-zA-Z0-9_]*\s*\(([\s\S]*?)\)\s*(?::\s*[^{]+)?\s*\{/,
+    );
     let signatureParams = "";
     if (fnMatch) {
         signatureParams = fnMatch[1]
@@ -325,7 +380,8 @@ function parseApiFile(filePath, domain, name) {
     const httpMethod = methodMatch ? methodMatch[1] : "GET";
 
     const typeBlocks = [];
-    const typeRegex = /export\s+(?:type|interface|enum)\s+[A-Za-z0-9_]+[\s\S]*?(?=\nexport\s+|\nfunction\s+|\nconst\s+|$)/g;
+    const typeRegex =
+        /export\s+(?:type|interface|enum)\s+[A-Za-z0-9_]+[\s\S]*?(?=\nexport\s+|\nfunction\s+|\nconst\s+|$)/g;
     let m;
     while ((m = typeRegex.exec(content)) !== null) {
         typeBlocks.push(m[0].trim());
@@ -555,7 +611,7 @@ function generateModelsAndCookbookDocs() {
         "});",
         "",
         'api.listener.on("disconnected", (code, reason) => {',
-        '    console.warn(`🟡 WebSocket tạm ngắt (code=${code}): ${reason}`);',
+        "    console.warn(`🟡 WebSocket tạm ngắt (code=${code}): ${reason}`);",
         "});",
         "",
         'api.listener.on("error", (err) => {',
@@ -576,10 +632,10 @@ function generateModelsAndCookbookDocs() {
         'import { ZaloApiError } from "@softtynet/zca-js";',
         "",
         "try {",
-        "    await api.friend.sendFriendRequest(\"Xin chào bạn!\", targetUid);",
+        '    await api.friend.sendFriendRequest("Xin chào bạn!", targetUid);',
         "} catch (err) {",
         "    if (err instanceof ZaloApiError) {",
-        '        console.error(`Mã lỗi Zalo [${err.code}]: ${err.message}`);',
+        "        console.error(`Mã lỗi Zalo [${err.code}]: ${err.message}`);",
         "        // Ví dụ: code 215 (bị chặn), code 222 (đối phương đã gửi lời mời trước đó)",
         "    }",
         "}",
@@ -651,7 +707,7 @@ function generateModelsAndCookbookDocs() {
         'api.listener.on("oa_message", async (msg) => {',
         "    console.log(`[OA Realtime - ${msg.oaData?.kind}] ${msg.data.dName}: ${msg.oaData?.text}`);",
         "    if (msg.oaData?.footer?.footerList.length) {",
-        "        console.log(\"Nút bấm chân trang (footerv2):\", msg.oaData.footer.footerList);",
+        '        console.log("Nút bấm chân trang (footerv2):", msg.oaData.footer.footerList);',
         "    }",
         "    if (!msg.isSelf) {",
         '        await api.chat.sendMessage({ msg: "Cảm ơn OA, tôi đã nhận được thông tin!" }, msg.threadId, ThreadType.User);',
@@ -660,7 +716,7 @@ function generateModelsAndCookbookDocs() {
         "",
         "// 4. Lắng nghe sự kiện chặn / bỏ chặn OA và quản lý trạng thái OA",
         'api.listener.on("oa_event", (ev) => {',
-        "    console.log(`Sự kiện OA: act=${ev.act}, isBlocked=${ev.isBlocked}, oaIds=${ev.oaIds.join(\",\")}`);",
+        '    console.log(`Sự kiện OA: act=${ev.act}, isBlocked=${ev.isBlocked}, oaIds=${ev.oaIds.join(",")}`);',
         "});",
         'await api.business.blockOA("2359864726282056346");',
         'await api.business.unblockOA("2359864726282056346");',
@@ -755,7 +811,9 @@ Sitemap: ${SITE_URL}/sitemap.xml
     for (const d of domains) {
         const meta = DOMAIN_META[d];
         const count = (domainApis[d] || []).length;
-        llmsLines.push(`   - \`${meta.badge}\` (${count} APIs): [${meta.title}](${SITE_URL}/api/${d}.html) — ${meta.description}`);
+        llmsLines.push(
+            `   - \`${meta.badge}\` (${count} APIs): [${meta.title}](${SITE_URL}/api/${d}.html) — ${meta.description}`,
+        );
     }
 
     llmsLines.push(
@@ -1194,7 +1252,9 @@ export default defineConfig({
 `;
 
     fs.writeFileSync(path.join(docsDir, ".vitepress", "config.mts"), configContent, "utf-8");
-    console.log(`✅ Generated VitePress documentation, Models Reference, Cookbook, Brand Assets & AI SEO for ${totalApis} APIs.`);
+    console.log(
+        `✅ Generated VitePress documentation, Models Reference, Cookbook, Brand Assets & AI SEO for ${totalApis} APIs.`,
+    );
 }
 
 generateAllDocs();

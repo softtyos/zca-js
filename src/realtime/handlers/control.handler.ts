@@ -8,6 +8,21 @@ import { decodeEventData, getFriendEventType, getGroupEventType } from "../../ut
 import type { Listener } from "../listener.js";
 import type { Voice2TextEventData } from "../types.js";
 
+const GROUP_VOIP_ACTIONS = new Set([
+    "group_request",
+    "group_ring_ring",
+    "group_ringring",
+    "group_answer",
+    "group_end_call",
+    "group_end",
+    "group_cancel",
+    "group_add_user",
+    "group_join_call",
+    "group_broadcast",
+    "group_broadcast_config",
+    "group_sharescreen",
+]);
+
 export async function handleRealtimeControlPacket(
     listener: Listener,
     ctx: ContextSession,
@@ -18,14 +33,17 @@ export async function handleRealtimeControlPacket(
     parsed: Record<string, unknown>,
     cipherKey?: string,
 ) {
-    if (version == 1 && (cmd == 601 || cmd == 602 || cmd == 603 || cmd == 604) && (subCmd == 0 || subCmd == 1)) {
+    if (version == 1 && (cmd == 601 || cmd == 602 || cmd == 603 || cmd == 604)) {
         const decoded = await decodeEventData(parsed, cipherKey);
         const parsedData = decoded?.data;
         const controls = parsedData?.controls;
         if (!Array.isArray(controls)) return false;
         for (const control of controls) {
             if (!control?.content) continue;
-            if (control.content.act_type == "file_done") {
+            const actType = String(control.content.act_type ?? "");
+            const act = String(control.content.act ?? "");
+
+            if (actType == "file_done") {
                 const data = {
                     fileUrl: control.content.data.url,
                     fileId: control.content.fileId,
@@ -36,29 +54,37 @@ export async function handleRealtimeControlPacket(
                 ctx.uploadCallbacks.delete(String(control.content.fileId));
 
                 listener.emit("upload_attachment", data);
-            } else if (control.content.act_type == "group") {
-                if (control.content.act == "join_reject") continue;
+            } else if (actType == "voip" || (actType == "group" && GROUP_VOIP_ACTIONS.has(act))) {
+                const callEventData: TCallEventData =
+                    typeof control.content.data == "string" ? JSON.parse(control.content.data) : control.content.data;
+                // Chỉ bỏ qua các gói mời gọi cũ (> 60s) nằm trong hàng đợi offline (cmd 603),
+                // tuyệt đối KHÔNG lọc các gói push realtime (cmd 601, 602, 604).
+                // Đồng thời chuẩn hoá timestamp (10 chữ số giây -> 13 chữ số mili-giây).
+                if (cmd == 603 && (act == "request" || act == "group_request") && callEventData?.ts) {
+                    const rawTs = Number.parseInt(String(callEventData.ts), 10);
+                    if (Number.isFinite(rawTs) && rawTs > 0) {
+                        const eventTsMs = rawTs < 1e12 ? rawTs * 1000 : rawTs;
+                        if (Date.now() - eventTsMs > 60_000) {
+                            continue;
+                        }
+                    }
+                }
+                const callEvent = initializeCallEvent(callEventData, act, actType);
+                listener.emit("call_event", callEvent);
+            } else if (actType == "group") {
+                if (act == "join_reject") continue;
 
                 const groupEventData: TGroupEvent =
-                    typeof control.content.data == "string"
-                        ? JSON.parse(control.content.data)
-                        : control.content.data;
+                    typeof control.content.data == "string" ? JSON.parse(control.content.data) : control.content.data;
 
-                const groupEvent = initializeGroupEvent(
-                    ctx.uid,
-                    groupEventData,
-                    getGroupEventType(control.content.act),
-                    control.content.act,
-                );
+                const groupEvent = initializeGroupEvent(ctx.uid, groupEventData, getGroupEventType(act), act);
                 if (groupEvent.isSelf && !selfListen) continue;
                 listener.emit("group_event", groupEvent);
-            } else if (control.content.act_type == "fr") {
-                if (control.content.act == "req") continue;
+            } else if (actType == "fr") {
+                if (act == "req") continue;
 
                 const friendEventData: TFriendEvent =
-                    typeof control.content.data == "string"
-                        ? JSON.parse(control.content.data)
-                        : control.content.data;
+                    typeof control.content.data == "string" ? JSON.parse(control.content.data) : control.content.data;
 
                 if (
                     typeof friendEventData == "object" &&
@@ -72,62 +98,35 @@ export async function handleRealtimeControlPacket(
                 const friendEvent = initializeFriendEvent(
                     ctx.uid,
                     typeof friendEventData == "number" ? control.content.data : friendEventData,
-                    getFriendEventType(control.content.act),
+                    getFriendEventType(act),
                 );
                 if (friendEvent.isSelf && !selfListen) continue;
                 listener.emit("friend_event", friendEvent);
-            } else if (control.content.act_type == "syncmsgmb" || control.content.act_type == "transfer_msg") {
+            } else if (actType == "syncmsgmb" || actType == "transfer_msg") {
                 const syncEventData: TSyncEvent =
-                    typeof control.content.data == "string"
-                        ? JSON.parse(control.content.data)
-                        : control.content.data;
-                const syncEvent = initializeSyncEvent(
-                    syncEventData,
-                    control.content.act,
-                    control.content.act_type,
-                );
+                    typeof control.content.data == "string" ? JSON.parse(control.content.data) : control.content.data;
+                const syncEvent = initializeSyncEvent(syncEventData, act, actType);
                 listener.emit("sync_event", syncEvent);
-            } else if (control.content.act_type == "voip") {
-                const callEventData: TCallEventData =
-                    typeof control.content.data == "string"
-                        ? JSON.parse(control.content.data)
-                        : control.content.data;
-                // Bỏ qua các gói mời gọi cũ (> 60s) nằm trong hàng đợi offline (cmd 603 / 604)
-                if (
-                    (cmd == 603 || cmd == 604) &&
-                    (control.content.act == "request" || control.content.act == "group_request") &&
-                    callEventData?.ts
-                ) {
-                    const eventTs = Number.parseInt(String(callEventData.ts), 10);
-                    if (Number.isFinite(eventTs) && Date.now() - eventTs > 60_000) {
-                        continue;
-                    }
-                }
-                const callEvent = initializeCallEvent(
-                    callEventData,
-                    control.content.act,
-                    control.content.act_type,
-                );
-                listener.emit("call_event", callEvent);
-            } else if (control.content.act_type == "voice2text") {
+            } else if (actType == "voice2text") {
                 const v2tData: Voice2TextEventData =
-                    typeof control.content.data == "string"
-                        ? JSON.parse(control.content.data)
-                        : control.content.data;
+                    typeof control.content.data == "string" ? JSON.parse(control.content.data) : control.content.data;
                 listener.emit("voice2text_event", {
-                    act: control.content.act,
+                    act,
                     act_type: "voice2text",
                     data: v2tData,
                 });
-            } else if (control.content.act_type == "oa") {
+            } else if (actType == "oa") {
                 const oaData: TOAEventData =
-                    typeof control.content.data == "string"
-                        ? JSON.parse(control.content.data)
-                        : control.content.data;
-                const oaEvent = initializeOAEvent(oaData, control.content.act);
+                    typeof control.content.data == "string" ? JSON.parse(control.content.data) : control.content.data;
+                const oaEvent = initializeOAEvent(oaData, act);
                 listener.emit("oa_event", oaEvent);
             }
         }
+
+        if (cmd == 603 && parsedData?.more == 1 && parsedData?.lastActionId) {
+            listener.requestOfflineVoipControls(String(parsedData.lastActionId), subCmd);
+        }
+
         return true;
     }
 
