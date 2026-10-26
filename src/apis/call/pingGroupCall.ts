@@ -37,13 +37,19 @@ export const pingGroupCallFactory = apiFactory<PingGroupCallResponse>()((api, ct
                   ? options.params
                   : JSON.stringify(options.params);
 
+        const callState = options.callState ?? 1;
+        const audioState = options.audioState ?? 1;
+        const videoState = options.videoState ?? 0;
         const payload = {
             callId,
             hostCall: String(options.hostCall),
             userId: String(options.userId ?? ctx.uid),
-            callstate: options.callState ?? 1,
-            audiostate: options.audioState ?? 1,
-            videostate: options.videoState ?? 0,
+            callState,
+            audioState,
+            videoState,
+            callstate: callState,
+            audiostate: audioState,
+            videostate: videoState,
             params: paramsStr,
         };
 

@@ -1491,19 +1491,43 @@ async function runVerificationSuite() {
     assert.equal((logEndRes as { endpoint: string }).endpoint, "/api/voicecall/logendcall");
 
     // Kiểm tra 14 API Group Call
-    const grpReqCall = await api.call.requestGroupCall("888999000", {
+    const grpReqCall = (await api.call.requestGroupCall("888999000", {
         callId: 654321,
         typeRequest: CallType.GroupVideo,
         partners: [callCalleeId],
-    });
-    assert.equal((grpReqCall as { endpoint: string }).endpoint, "/api/voicecall/group/requestcall");
+    })) as { endpoint: string; params: Record<string, unknown> };
+    assert.equal(grpReqCall.endpoint, "/api/voicecall/group/requestcall");
+    assert.equal(
+        grpReqCall.params.typeRequest,
+        1,
+        "requestGroupCall phải chuẩn hoá CallType.GroupVideo (6) -> typeRequest = 1",
+    );
+    const grpReqData = JSON.parse(String(grpReqCall.params.data));
+    assert.equal(
+        grpReqData.noiseId,
+        JSON.stringify([callCalleeId]),
+        "requestGroupCall phải đính kèm noiseId: JSON.stringify(partners) trong data",
+    );
 
-    const grpSendReq = await api.call.sendRequestGroupCall("888999000", {
+    const grpSendReq = (await api.call.sendRequestGroupCall("888999000", {
         callId: 654321,
         session: "grp_sess_1",
+        callType: CallType.GroupVideo,
         partners: [callCalleeId],
-    });
-    assert.equal((grpSendReq as { endpoint: string }).endpoint, "/api/voicecall/group/request");
+    })) as { endpoint: string; params: Record<string, unknown> };
+    assert.equal(grpSendReq.endpoint, "/api/voicecall/group/request");
+    assert.equal(
+        grpSendReq.params.callType,
+        1,
+        "sendRequestGroupCall phải chuẩn hoá CallType.GroupVideo (6) -> callType = 1",
+    );
+    const grpSendOuterData = JSON.parse(String(grpSendReq.params.data));
+    assert.equal(grpSendOuterData.hostCall, "888999000");
+    assert.equal(grpSendOuterData.noiseId, JSON.stringify([callCalleeId]));
+    assert.equal(typeof grpSendOuterData.data, "string", "sendRequestGroupCall phải có cấu trúc JSON 2 lớp trong data");
+    const grpSendInnerData = JSON.parse(String(grpSendOuterData.data));
+    assert.equal(grpSendInnerData.hostCall, "888999000");
+    assert.equal(grpSendInnerData.noiseId, JSON.stringify([callCalleeId]));
 
     const grpAddUser = await api.call.addUserGroupCall(654321, {
         hostCall: TEST_UID,
@@ -1512,11 +1536,29 @@ async function runVerificationSuite() {
     });
     assert.equal((grpAddUser as { endpoint: string }).endpoint, "/api/voicecall/group/adduser");
 
-    const grpAns = await api.call.answerGroupCall(654321, { hostCall: TEST_UID });
-    assert.equal((grpAns as { endpoint: string }).endpoint, "/api/voicecall/group/answer");
+    const grpAns = (await api.call.answerGroupCall(654321, {
+        hostCall: TEST_UID,
+        session: "grp_sess_1",
+        callType: CallType.GroupVideo,
+    })) as { endpoint: string; params: Record<string, unknown> };
+    assert.equal(grpAns.endpoint, "/api/voicecall/group/answer");
+    assert.equal(grpAns.params.callType, 1, "answerGroupCall phải chuẩn hoá callType = 0 | 1");
+    const grpAnsData = JSON.parse(String(grpAns.params.data));
+    assert.equal(grpAnsData.callType, 1);
+    assert.equal(grpAnsData.session, "grp_sess_1");
+    assert.equal(grpAnsData.status, 0);
 
-    const grpRing = await api.call.ringRingGroupCall(654321, { hostCall: TEST_UID });
-    assert.equal((grpRing as { endpoint: string }).endpoint, "/api/voicecall/group/ringring");
+    const grpRing = (await api.call.ringRingGroupCall(654321, {
+        hostCall: TEST_UID,
+        session: "grp_sess_1",
+        callType: CallType.GroupAudio,
+    })) as { endpoint: string; params: Record<string, unknown> };
+    assert.equal(grpRing.endpoint, "/api/voicecall/group/ringring");
+    assert.equal(grpRing.params.callType, 0, "ringRingGroupCall phải chuẩn hoá callType = 0 | 1");
+    const grpRingData = JSON.parse(String(grpRing.params.data));
+    assert.equal(grpRingData.callType, 0);
+    assert.equal(grpRingData.session, "grp_sess_1");
+    assert.equal(grpRingData.status, 0);
 
     const grpState = await api.call.getGroupCallState(654321, TEST_UID);
     assert.equal((grpState as { endpoint: string }).endpoint, "/api/voicecall/group/state");
@@ -1686,6 +1728,21 @@ async function runVerificationSuite() {
                 servers: [{ rtpaddr: `127.0.0.1:${relayPort}`, rtcpaddr: `127.0.0.1:${relayPort}` }],
                 zrtpKey: masterKeyB64,
                 expiredTime: 60,
+            });
+        }
+        if (u.pathname === "/api/voicecall/group/requestcall") {
+            // Mô phỏng chính xác phản hồi của Zalo Server (_parseRequestCallResponseGroup @ 0x10001f3cc):
+            // Dữ liệu cuộc gọi nằm trong trường `params` (chuỗi JSON chứa callId do Zalo cấp và callSetting.session)
+            return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
+                params: JSON.stringify({
+                    callId: 778899,
+                    groupId: "888999000",
+                    maxUsers: 8,
+                    callSetting: {
+                        session: "888999000_778899_501",
+                    },
+                    servers: [{ rtpaddr: `127.0.0.1:${relayPort}`, rtcpaddr: `127.0.0.1:${relayPort}` }],
+                }),
             });
         }
         return prevPolyfill!(input, init);
@@ -1950,39 +2007,121 @@ async function runVerificationSuite() {
     }
     await workerSignalingOnlySession.endCall("local_end");
 
-    // Kiểm định rejectIncomingCall (1-1 với params.id) và acceptIncomingGroupCall (với data.id & callSetting.session)
+    // Kiểm định rejectIncomingCall (1-1 với params.id), startGroupCall, ringIncomingCall & acceptIncomingGroupCall (với data.id & callSetting.session & partnerInfo)
     const rejectSession = api.call.createRtcSession({ autoAttachListener: false });
     await rejectSession.rejectIncomingCall(realZaloIncoming1v1Event);
     assert.equal(rejectSession.getState(), "ended");
+
+    // Kiểm định Gọi nhóm đi (startGroupCall):
+    // 1. typeRequest/callType phải chuẩn hoá về 0 (Audio) | 1 (Video) thay vì 5 | 6
+    // 2. requestGroupCall (12433) có noiseId: JSON.stringify(partners) và sendRequestGroupCall (12434) có JSON 2 lớp (hostCall, noiseId, rtpAddress, data)
+    // 3. Đọc callId (778899) và callSetting.session ("888999000_778899_501") từ reqRes.params
+    const grpOutgoingSession = api.call.createRtcSession({
+        autoAttachListener: false,
+        autoKeepaliveMedia: false,
+    });
+    const grpOutgoingParams = await grpOutgoingSession.startGroupCall("888999000", ["5001", "5002"], {
+        callType: CallType.GroupVideo,
+        groupName: "Nhóm Kiểm Định Outgoing",
+        groupAvatar: "https://ava.zalo.me/group.jpg",
+    });
+    assert.equal(
+        grpOutgoingParams.callId,
+        778899,
+        "startGroupCall phải trích xuất đúng callId thật từ reqRes.params do Zalo cấp phát",
+    );
+    assert.equal(
+        grpOutgoingParams.sessId,
+        "888999000_778899_501",
+        "startGroupCall phải trích xuất đúng callSetting.session từ reqRes.params",
+    );
+    assert.equal(grpOutgoingParams.udpHandshakeVerified, true);
+    const decodeCapturedUrlParams = (urlStr: string): Record<string, unknown> => {
+        const enc = new URL(urlStr).searchParams.get("params");
+        assert.ok(enc, `URL ${urlStr} phải có query param params`);
+        return JSON.parse(decodeAES(TEST_SECRET_KEY, enc!)!);
+    };
+    const lastGrpSendReq = capturedRequests
+        .filter((r) => r.url.includes("/api/voicecall/group/request") && !r.url.includes("requestcall"))
+        .pop();
+    assert.ok(lastGrpSendReq, "startGroupCall phải gọi /api/voicecall/group/request (12434)");
+    const lastGrpSendDecoded = decodeCapturedUrlParams(lastGrpSendReq!.url);
+    assert.equal(lastGrpSendDecoded.callId, 778899);
+    assert.equal(lastGrpSendDecoded.callType, 1, "sendRequestGroupCall phải gửi callType = 1 cho GroupVideo");
+    const lastGrpSendOuter = JSON.parse(String(lastGrpSendDecoded.data));
+    assert.equal(lastGrpSendOuter.hostCall, TEST_UID);
+    assert.equal(lastGrpSendOuter.noiseId, JSON.stringify(["5001", "5002"]));
+    assert.equal(lastGrpSendOuter.rtpAddress, `127.0.0.1:${relayPort}`);
+    const lastGrpSendInner = JSON.parse(String(lastGrpSendOuter.data));
+    assert.equal(lastGrpSendInner.hostCall, TEST_UID);
+    assert.equal(lastGrpSendInner.noiseId, JSON.stringify(["5001", "5002"]));
+    assert.equal(lastGrpSendInner.groupName, "Nhóm Kiểm Định Outgoing");
+    await grpOutgoingSession.endCall("local_end");
+
+    const incomingGroupEvent = {
+        act: "group_request",
+        data: {
+            id: 667788,
+            fromId: 1412345678,
+            receiverId: 1987654321,
+            hostCall: "888999000",
+            groupNoiseId: "888999000",
+            groupName: "Nhóm Kiểm Định ZRTC",
+            callType: 1,
+            callSetting: {
+                session: "888999000_667788_501",
+            },
+            partnerInfo: [
+                { userId: 1001, id: "5001", name: "Nguyễn Văn A", avatar: "https://ava.zalo.me/a.jpg" },
+                { userId: 1002, id: "5002", name: "Trần Thị B", avatar: "https://ava.zalo.me/b.jpg" },
+            ],
+            rtpAddress: `127.0.0.1:${relayPort}`,
+            rtcpAddress: `127.0.0.1:${relayPort}`,
+        },
+    };
+
+    // Kiểm định parseIncomingCallEvent giữ nguyên partnerInfo (id, userId, name, avatar) đồng thời giữ partners: string[]
+    const parsedIncomingGrp = parseIncomingCallEvent(incomingGroupEvent);
+    assert.deepEqual(parsedIncomingGrp.partners, ["5001", "5002"]);
+    assert.equal(parsedIncomingGrp.partnerInfo.length, 2);
+    assert.equal(parsedIncomingGrp.partnerInfo[0].id, "5001");
+    assert.equal(parsedIncomingGrp.partnerInfo[0].userId, 1001);
+    assert.equal(parsedIncomingGrp.partnerInfo[0].name, "Nguyễn Văn A");
+    assert.equal(parsedIncomingGrp.partnerInfo[0].avatar, "https://ava.zalo.me/a.jpg");
+    assert.equal(parsedIncomingGrp.partnerInfo[1].name, "Trần Thị B");
 
     const grpAcceptSession = api.call.createRtcSession({
         autoAttachListener: false,
         autoKeepaliveMedia: false,
     });
-    const grpAcceptParams = await grpAcceptSession.acceptIncomingGroupCall(
-        {
-            act: "group_request",
-            data: {
-                id: 667788,
-                fromId: 1412345678,
-                receiverId: 1987654321,
-                hostCall: "888999000",
-                groupNoiseId: "888999000",
-                groupName: "Nhóm Kiểm Định ZRTC",
-                callType: 1,
-                callSetting: {
-                    session: "888999000_667788_501",
-                },
-                partnerInfo: [{ id: "5001" }, { id: "5002" }],
-                rtpAddress: `127.0.0.1:${relayPort}`,
-                rtcpAddress: `127.0.0.1:${relayPort}`,
-            },
-        },
-        { skipUdpHandshake: true },
-    );
+    const grpAcceptParams = await grpAcceptSession.acceptIncomingGroupCall(incomingGroupEvent, {
+        skipUdpHandshake: true,
+    });
     assert.equal(grpAcceptParams.callId, 667788);
     assert.equal(grpAcceptParams.sessId, "888999000_667788_501");
     assert.equal(grpAcceptSession.getState(), "active");
+    assert.equal(grpAcceptSession.getGroupPartnerInfo().length, 2);
+    assert.equal(grpAcceptSession.getGroupPartnerInfo()[0].name, "Nguyễn Văn A");
+    assert.equal(grpAcceptSession.getGroupPartnerInfo()[0].avatar, "https://ava.zalo.me/a.jpg");
+
+    const lastGrpRingReq = capturedRequests.filter((r) => r.url.includes("/api/voicecall/group/ringring")).pop();
+    assert.ok(lastGrpRingReq, "acceptIncomingGroupCall phải gọi /api/voicecall/group/ringring (12439)");
+    const lastGrpRingDecoded = decodeCapturedUrlParams(lastGrpRingReq!.url);
+    assert.equal(lastGrpRingDecoded.callType, 1, "ringRingGroupCall phải gửi callType = 1 (không gửi 6)");
+    const lastGrpRingData = JSON.parse(String(lastGrpRingDecoded.data));
+    assert.equal(lastGrpRingData.callType, 1);
+    assert.equal(lastGrpRingData.session, "888999000_667788_501");
+    assert.equal(lastGrpRingData.status, 0);
+
+    const lastGrpAnsReq = capturedRequests.filter((r) => r.url.includes("/api/voicecall/group/answer")).pop();
+    assert.ok(lastGrpAnsReq, "acceptIncomingGroupCall phải gọi /api/voicecall/group/answer (12436)");
+    const lastGrpAnsDecoded = decodeCapturedUrlParams(lastGrpAnsReq!.url);
+    assert.equal(lastGrpAnsDecoded.callType, 1, "answerGroupCall phải gửi callType = 1 (không gửi 6)");
+    const lastGrpAnsData = JSON.parse(String(lastGrpAnsDecoded.data));
+    assert.equal(lastGrpAnsData.callType, 1);
+    assert.equal(lastGrpAnsData.session, "888999000_667788_501");
+    assert.equal(lastGrpAnsData.status, 0);
+
     await grpAcceptSession.endCall("local_end");
 
     // Kiểm định Gọi lại liên tiếp (Sequential Re-call) trên cùng một instance ZaloRtcSession & Tái kết nối UDP (reconnectUdp)

@@ -37,13 +37,17 @@ export const shareScreenGroupCallFactory = apiFactory<ShareScreenGroupCallRespon
                   ? options.data
                   : JSON.stringify(options.data);
 
+        const audioState = options.audioState ?? 1;
+        const videoState = options.videoState ?? 1;
         const params = {
             userId: String(options.userId ?? ctx.uid),
             callId,
             hostCall: String(options.hostCall),
             status: options.status ?? 1,
-            audiostate: options.audioState ?? 1,
-            videostate: options.videoState ?? 1,
+            audioState,
+            videoState,
+            audiostate: audioState,
+            videostate: videoState,
             data: dataStr,
         };
 

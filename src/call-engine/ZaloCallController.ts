@@ -644,7 +644,11 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
                         {
                             callId: callId || undefined,
                             typeRequest:
-                                (Number(paramsObj.typeRequest) as CallType) || CallType.GroupAudio,
+                                paramsObj.typeRequest !== undefined
+                                    ? (Number(paramsObj.typeRequest) as CallType)
+                                    : paramsObj.callType !== undefined
+                                      ? (Number(paramsObj.callType) as CallType)
+                                      : CallType.GroupAudio,
                             data: paramsObj.data as string | Record<string, unknown> | undefined,
                             partners: (paramsObj.partners as string[] | undefined) ?? [],
                         },
@@ -654,43 +658,76 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
                     result = await this.api.call.addUserGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
                         session,
+                        callType:
+                            paramsObj.callType !== undefined
+                                ? (Number(paramsObj.callType) as CallType)
+                                : undefined,
                         partners: (paramsObj.partners as string[] | undefined) ?? [],
+                        data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 503:
                     result = await this.api.call.answerGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        session: session || undefined,
+                        callType:
+                            paramsObj.callType !== undefined
+                                ? (Number(paramsObj.callType) as CallType)
+                                : undefined,
                         data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 504:
                     result = await this.api.call.cancelGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        session: session || undefined,
+                        callType:
+                            paramsObj.callType !== undefined
+                                ? (Number(paramsObj.callType) as CallType)
+                                : undefined,
                         data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 505:
                     result = await this.api.call.endGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        session: session || undefined,
+                        callType:
+                            paramsObj.callType !== undefined
+                                ? (Number(paramsObj.callType) as CallType)
+                                : undefined,
                         data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 506:
                     result = await this.api.call.ringRingGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        session: session || undefined,
+                        callType:
+                            paramsObj.callType !== undefined
+                                ? (Number(paramsObj.callType) as CallType)
+                                : undefined,
                         data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 507:
                     result = await this.api.call.finishGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        callType:
+                            paramsObj.callType !== undefined
+                                ? (Number(paramsObj.callType) as CallType)
+                                : undefined,
                         duration: Number(paramsObj.duration ?? 0),
+                        data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 case 508:
                     result = await this.api.call.getGroupCallState(
                         callId,
                         String(paramsObj.hostCall ?? ""),
+                        paramsObj.callType !== undefined
+                            ? (Number(paramsObj.callType) as CallType)
+                            : undefined,
                     );
                     break;
                 case 509:
@@ -719,13 +756,23 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
                         {
                             callId,
                             session,
+                            callType:
+                                paramsObj.callType !== undefined
+                                    ? (Number(paramsObj.callType) as CallType)
+                                    : undefined,
                             partners: (paramsObj.partners as string[] | undefined) ?? [],
+                            data: paramsObj.data as string | Record<string, unknown> | undefined,
                         },
                     );
                     break;
                 case 514:
                     result = await this.api.call.notifyGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
+                        callType:
+                            paramsObj.callType !== undefined
+                                ? (Number(paramsObj.callType) as CallType)
+                                : undefined,
+                        data: paramsObj.data as string | Record<string, unknown> | undefined,
                     });
                     break;
                 default:

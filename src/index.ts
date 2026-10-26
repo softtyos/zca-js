@@ -301,7 +301,7 @@ export { MuteAction, MuteDuration } from "./apis/chat/setMute.js";
 export { ChatTTL } from "./apis/chat/updateAutoDeleteChat.js";
 export { UpdateLangAvailableLanguages } from "./apis/auth/updateLang.js";
 export { UpdateSettingsType } from "./apis/profile/updateSettings.js";
-export { CallType } from "./apis/call/sendVoiceCall.js";
+export { CallType, normalizeGroupCallType } from "./apis/call/sendVoiceCall.js";
 export {
     DEFAULT_ZALOCALL_IPC_KEY_BASE64,
     DEFAULT_ZALO_AUDIO_CODEC,
@@ -335,6 +335,7 @@ export {
     wrapZrtcMediaPacket,
     type AcceptIncomingCallOptions,
     type BuildRtpPacketOptions,
+    type GroupCallPartnerInfo,
     type IncomingAudioFrameEvent,
     type IncomingRtcpEvent,
     type IncomingRtpEvent,

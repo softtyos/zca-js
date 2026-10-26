@@ -5,7 +5,7 @@ description: "Công cụ tìm kiếm và lọc trực tiếp toàn bộ 256 API 
 
 # ⚡ Tra cứu & Lọc trực tiếp API Reference
 
-Thư viện **`@softtynet/zca-js` (v2.3.6)** cung cấp tổng cộng **256 API nguyên bản** được tổ chức khoa học thành **12 Domains** theo đúng kiến trúc Zalo PC `26.7.10`.
+Thư viện **`@softtynet/zca-js` (v2.3.7)** cung cấp tổng cộng **256 API nguyên bản** được tổ chức khoa học thành **12 Domains** theo đúng kiến trúc Zalo PC `26.7.10`.
 
 > 🤖 **Dành cho AI Agents (Cursor, Antigravity, Claude, ChatGPT)**: Bạn có thể nạp trực tiếp ngữ cảnh toàn bộ 256 API qua chuẩn AI SEO tại [`/llms.txt`](https://softtyos.github.io/zca-js-docs/llms.txt) hoặc bản đầy đủ [`/llms-full.txt`](https://softtyos.github.io/zca-js-docs/llms-full.txt).
 

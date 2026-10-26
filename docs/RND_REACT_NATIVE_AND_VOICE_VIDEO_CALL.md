@@ -4,13 +4,6 @@
 
 ---
 
-## Mục Lục
-1. [Chuyên đề 1: Kiến trúc Gọi Thoại & Video (`VoiceCall Signaling` vs `ZRTC Media Engine`)](#1-chuyên-đề-1-kiến-trúc-gọi-thoại--video-voicecall-signaling-vs-zrtc-media-engine)
-2. [Chuyên đề 2: Phân tích Chạy Trực Tiếp trên React Native vs Đặt trên Server Gateway](#2-chuyên-đề-2-phân-tích-chạy-trực-tiếp-trên-react-native-vs-đặt-trên-server-gateway)
-3. [Chuyên đề 3: Kiến trúc Phân quyền Danh sách Thành viên Nhóm & Cộng đồng (`lockViewMember`)](#3-chuyên-đề-3-kiến-trúc-phân-quyền-danh-sách-thành-viên-nhóm--cộng-đồng-lockviewmember)
-
----
-
 ## 1. Chuyên đề 1: Kiến trúc Gọi Thoại & Video (`VoiceCall Signaling` vs `ZRTC Media Engine`)
 
 ### 1.1. Tách biệt 2 tầng trong một cuộc gọi Zalo
@@ -18,7 +11,7 @@ Một cuộc gọi Thoại (`CallType.Audio = 1`) hoặc Video (`CallType.Video 
 
 ```mermaid
 flowchart TD
-    subgraph Tầng 1: Luồng Báo Hiệu (Signaling Plane - Đã hoàn thiện 100% trong SDK)
+    subgraph T1["Tầng 1: Luồng Báo Hiệu (Signaling Plane - 30 API trong api.call)"]
         S1["api.call.sendVoiceCall(calleeId, { callType })"] --> S2["Bước 1: GET /api/voicecall/requestcall (cmd 11300, zpw_type=24)"]
         S2 --> S3["Nhận thông tin phòng gọi: sessId, rtpServer, rtcpServer, zrtpKey, codec"]
         S3 --> S4["Bước 2: GET /api/voicecall/request (cmd 11301, subCommand=3, extendData)"]
@@ -27,10 +20,10 @@ flowchart TD
         S6 --> S7["Điều khiển kết thúc: cancelVoiceCall (cmd 11305) / endVoiceCall (cmd 11306)"]
     end
 
-    subgraph Tầng 2: Luồng Truyền Tải Âm Thanh/Hình Ảnh (Media Plane - Native ZRTC)
-        M1["Nhận { rtpServer, rtcpServer, sessId, zrtpKey } từ Tầng 1"] --> M2["Engine C++ Native (ZRTC / newZrtc: 1)"]
+    subgraph T2["Tầng 2: Luồng Truyền Tải Âm Thanh/Hình Ảnh (Media Plane - ZaloRtcSession / Native ZRTC)"]
+        M1["Nhận { rtpServer, rtcpServer, sessId, zrtpKey } từ Tầng 1"] --> M2["ZaloRtcSession (Pure TS UDP) hoặc ZaloCallController (Native IPC)"]
         M2 --> M3["Mở kết nối UDP trực tiếp tới rtpServer (IP:Port) & rtcpServer (IP:Port)"]
-        M3 --> M4["Mã hóa gói tin bằng zrtpKey + nén Audio (Opus/PCM) & Video (H.264 payload 97)"]
+        M3 --> M4["Mã hóa gói tin bằng zrtpKey + đóng gói Audio (PCM/Opus) & Video (H.264 payload 97)"]
         M4 --> M5["Đàm thoại 2 chiều thời gian thực (Full-Duplex Media)"]
     end
 
@@ -43,7 +36,7 @@ flowchart TD
     - `sendVoiceCall` (trọn gói `11300` + `11301`), `requestVoiceCall` (`11300` — signal `401`), `sendRequestVoiceCall` (`11301` — signal `416`), `ringRingVoiceCall` (`11302` — signal `407`), `answerVoiceCall` (`11303` — signal `402`), `answerAckVoiceCall` (`11304` — signal `408`), `cancelVoiceCall` (`11305` — signal `405`), `endVoiceCall` (`11306` — signal `404`), `holdVoiceCall` (`11307`/`11308` — signal `411`/`412`), `unholdVoiceCall` (`11309`/`11310` — signal `413`/`414`), `logEndVoiceCall` (`11311` — signal `406`), `updateCallMediaState` (`12006` — `/api/voicecall/conf`), `requestAudioToVideoCall` (`12056`), `requestShareScreenCall` (`12064`).
   - **14 API Gọi Nhóm (`Group Call Commands 12433 → 12447, 12043, 12044, 12097, 12098`, `zpw_type = 24`)**:
     - `requestGroupCall` (`12433`), `sendRequestGroupCall` (`12434`), `addUserGroupCall` (`12435`), `answerGroupCall` (`12436`), `cancelGroupCall` (`12437`), `endGroupCall` (`12438`), `ringRingGroupCall` (`12439`), `getGroupCallState` (`12445`), `finishGroupCall` (`12446`), `notifyGroupCall` (`12447`), `pingGroupCall` (`12097`), `broadcastGroupCallState` (`12098`), `joinGroupCall` (`12043`), `shareScreenGroupCall` (`12044`).
-  - [`src/realtime/handlers/control.handler.ts`](../src/realtime/handlers/control.handler.ts) & [`src/models/CallEvent.ts`](../src/models/CallEvent.ts): Bắt toàn bộ sự kiện `call_event` thời gian thực qua WebSocket (`request`, `ringring`, `answer`, `cancel`, `endcall`, `busy`, `hold`, `unhold`, `conf`).
+  - `src/realtime/handlers/control.handler.ts` & [`CallEvent`](./api/models#callevent): Bắt toàn bộ sự kiện `call_event` thời gian thực qua WebSocket (`request`, `ringring`, `answer`, `cancel`, `endcall`, `busy`, `hold`, `unhold`, `conf`).
 
 - **Kết quả Thực nghiệm Dịch ngược Tầng 2 (`ZRTC Media Engine`) trên Zalo PC `26.7.10`**:
   - Module cũ `native/nativelibs/zcall/zcall_mac.node` là binary `x86_64` cũ không còn dùng trên Apple Silicon (`arm64`).
@@ -63,7 +56,7 @@ flowchart TD
      - Hiển thị cảnh báo cuộc gọi đến theo thời gian thực trên màn hình CRM/App của nhân viên.
      - Hoặc tự động từ chối cuộc gọi (`endVoiceCall` / `cancelVoiceCall`) kèm gửi ngay một tin nhắn văn bản hoặc tin nhắn thoại (`api.chat.sendVoice`) hướng dẫn khách hàng để lại lời nhắn.
 3. **Giao tiếp giọng nói 2 chiều qua Tin nhắn thoại (`sendVoice` + `voiceToText`)**:
-   - Nhân viên thu âm trên App/Web và gửi qua [`src/apis/chat/sendVoice.ts`](../src/apis/chat/sendVoice.ts), đồng thời dùng [`src/apis/media/voiceToText.ts`](../src/apis/media/voiceToText.ts) để tự động chuyển tin nhắn thoại của khách thành văn bản.
+   - Nhân viên thu âm trên App/Web và gửi qua [`api.chat.sendVoice`](./api/chat#sendvoice), đồng thời dùng [`api.media.voiceToText`](./api/media#voicetotext) để tự động chuyển tin nhắn thoại của khách thành văn bản.
 
 ### 1.4. Hướng nghiên cứu tiếp theo (R&D Roadmap cho Đàm thoại 2 chiều)
 Khi cần nghiên cứu sâu hơn để giải bài toán truyền âm thanh 2 chiều trong tương lai, các bước R&D cần thực hiện gồm:
@@ -87,11 +80,11 @@ Khi cần nghiên cứu sâu hơn để giải bài toán truyền âm thanh 2 c
 
 | STT | Module / Thư viện | Vị trí trong Codebase | Vấn đề trên React Native | Hướng xử lý (Khi cần làm bản Universal) |
 | :-: | :--- | :--- | :--- | :--- |
-| 1 | `node:fs`, `node:path` | [`src/utils.ts`](../src/utils.ts), [`src/zalo.ts`](../src/zalo.ts), [`src/apis/auth/getQR.ts`](../src/apis/auth/getQR.ts) | Metro Bundler không có sẵn module `node:fs` và `node:path`. | Chuyển sang nạp động (`await import("node:fs")`) chỉ khi truyền đường dẫn file trên Node, còn trên Mobile truyền trực tiếp `Uint8Array` / `ArrayBuffer`. |
-| 2 | `ws` (Node WebSocket) | [`src/realtime/listener.ts`](../src/realtime/listener.ts) | Gói `ws` phụ thuộc `node:net`, `node:tls`, `node:http`. | Kiểm tra nếu môi trường có `globalThis.WebSocket` (React Native hỗ trợ truyền `{ headers }` ở tham số thứ 3: `new WebSocket(url, undefined, { headers })`) thì dùng trực tiếp thay cho `ws`. |
-| 3 | `node:crypto` & `Buffer` | [`src/crypto/ws-cipher.ts`](../src/crypto/ws-cipher.ts), [`src/crypto/zdb-cipher.ts`](../src/crypto/zdb-cipher.ts), [`src/crypto/zcloud-cipher.ts`](../src/crypto/zcloud-cipher.ts) | Giải mã WebSocket (`AES-GCM`), ZCloud (`AES-256-CBC`) và ZDB (`RSA-2048`) đang gọi `node:crypto` và `Buffer`. | Chuyển `zcloud-cipher` sang dùng `crypto-js` / `Uint8Array`, và hỗ trợ polyfill `react-native-quick-crypto` + `buffer` (hoặc WebCrypto API). |
-| 4 | `form-data` (Node Stream) | [`src/apis/media/uploadAttachment.ts`](../src/apis/media/uploadAttachment.ts), [`src/apis/profile/changeAccountAvatar.ts`](../src/apis/profile/changeAccountAvatar.ts) | Dùng Node `stream` không chạy trên Hermes. | Sử dụng chuẩn `FormData` / `Blob` / `Uint8Array` đa nền tảng. |
-| 5 | Quản lý Cookie của `fetch` | [`src/utils.ts`](../src/utils.ts) (`request()`) | `fetch` trên iOS (`NSHTTPCookieStorage`) và Android (`OkHttp`) tự động can thiệp vào header `Cookie`. | Bổ sung `credentials: "omit"` vào `fetch` options để `tough-cookie` kiểm soát hoàn toàn header `cookie` trên mọi nền tảng. |
+| 1 | `node:fs`, `node:path` | `src/utils.ts`, `src/zalo.ts`, [`api.auth.getQR`](./api/auth#getqr) | Metro Bundler không có sẵn module `node:fs` và `node:path`. | Chuyển sang nạp động (`await import("node:fs")`) chỉ khi truyền đường dẫn file trên Node, còn trên Mobile truyền trực tiếp `Uint8Array` / `ArrayBuffer`. |
+| 2 | `ws` (Node WebSocket) | `src/realtime/listener.ts` | Gói `ws` phụ thuộc `node:net`, `node:tls`, `node:http`. | Kiểm tra nếu môi trường có `globalThis.WebSocket` (React Native hỗ trợ truyền `{ headers }` ở tham số thứ 3: `new WebSocket(url, undefined, { headers })`) thì dùng trực tiếp thay cho `ws`. |
+| 3 | `node:crypto` & `Buffer` | `src/crypto/ws-cipher.ts`, `src/crypto/zdb-cipher.ts`, `src/crypto/zcloud-cipher.ts` | Giải mã WebSocket (`AES-GCM`), ZCloud (`AES-256-CBC`) và ZDB (`RSA-2048`) đang gọi `node:crypto` và `Buffer`. | Chuyển `zcloud-cipher` sang dùng `crypto-js` / `Uint8Array`, và hỗ trợ polyfill `react-native-quick-crypto` + `buffer` (hoặc WebCrypto API). |
+| 4 | `form-data` (Node Stream) | [`api.media.uploadAttachment`](./api/media#uploadattachment), [`api.profile.changeAccountAvatar`](./api/profile#changeaccountavatar) | Dùng Node `stream` không chạy trên Hermes. | Sử dụng chuẩn `FormData` / `Blob` / `Uint8Array` đa nền tảng. |
+| 5 | Quản lý Cookie của `fetch` | `src/utils.ts` (`request()`) | `fetch` trên iOS (`NSHTTPCookieStorage`) và Android (`OkHttp`) tự động can thiệp vào header `Cookie`. | Bổ sung `credentials: "omit"` vào `fetch` options để `tough-cookie` kiểm soát hoàn toàn header `cookie` trên mọi nền tảng. |
 
 ### 2.2. So sánh Kiến trúc: Đặt trên Server Gateway vs Chạy trực tiếp trên App React Native
 
@@ -113,15 +106,15 @@ Khi cần nghiên cứu sâu hơn để giải bài toán truyền âm thanh 2 c
 
 ### 3.1. Các Endpoint Thông tin Nhóm trong Zalo PC (`26.7.10`)
 Trong mã nguồn Zalo PC hiện có 4 endpoint truy vấn thông tin và thành viên nhóm:
-1. [`getGroupInfo`](../src/apis/group/getGroupInfo.ts) (`/api/group/getmg-v2` — `cmd 12028`):
+1. [`getGroupInfo`](./api/group#getgroupinfo) (`/api/group/getmg-v2` — `cmd 12028`):
    - Nhận `gridVerMap: { [groupId]: 0 }`.
    - Trả về `gridInfoMap[groupId]` chứa `memVerList` (`["<uid>_<ver>", ...]`), `adminIds`, `creatorId`, `totalMember`, `setting`.
-2. [`getGroupLinkInfo`](../src/apis/group/getGroupLinkInfo.ts) (`/api/group/link/ginfo` — `cmd 11824`):
+2. [`getGroupLinkInfo`](./api/group#getgrouplinkinfo) (`/api/group/link/ginfo` — `cmd 11824`):
    - Nhận `{ link, avatar_size: 120, member_avatar_size: 120, mpage }`.
    - Trả về `currentMems` (phân trang theo `mpage`), `hasMoreMember`, `adminIds`, `creatorId`, `totalMember`, `setting`.
 3. `getGroupInfos` (`/api/group/getmg` — `cmd 12604`):
    - Nhận `{ grids, avatar_size: 120, member_avatar_size: 120, mpage, mcount }`.
-4. `getGroupInfoV2` (`/api/group/getgi/v2` & `/api/group/getgi` — `cmd 11162`):
+4. [`getGroupInfoV2`](./api/group#getgroupinfov2) (`/api/group/getgi/v2` & `/api/group/getgi` — `cmd 11162`):
    - Nhận `{ grid, avatar_size: 120, member_avatar_size: 120, mpage, mcount: 100 }`.
 
 ### 3.2. Cơ chế kiểm soát `setting.lockViewMember` tại Backend Zalo
@@ -135,10 +128,10 @@ Trong mã nguồn Zalo PC hiện có 4 endpoint truy vấn thông tin và thành
 
 ### 3.3. Cấu trúc các API dữ liệu hoạt động trong nhóm có sẵn trong SDK
 Các dữ liệu tương tác phát sinh bên trong nhóm được quản lý qua các phân hệ độc lập trong SDK:
-- **Lịch sử tin nhắn & Sự kiện nhóm**: [`api.group.getGroupChatHistory`](../src/apis/group/getGroupChatHistory.ts) (`/api/cm/getrecentv2`) và [`api.group.getGroupCloudMessageJump`](../src/apis/group/getGroupCloudMessageJump.ts) (`/api/cm/getjumpv2` — `cmd 12508`).
-- **Kho lưu trữ Media / File / Link của nhóm**: [`api.media.getConversationMedia`](../src/apis/media/getConversationMedia.ts) (`/api/mediastore/list` — `cmd 11841`, hỗ trợ `mediaType: "media" | "file" | "link"`).
+- **Lịch sử tin nhắn & Sự kiện nhóm**: [`api.group.getGroupChatHistory`](./api/group#getgroupchathistory) (`/api/cm/getrecentv2`) và [`api.group.getGroupCloudMessageJump`](./api/group#getgroupcloudmessagejump) (`/api/cm/getjumpv2` — `cmd 12508`).
+- **Kho lưu trữ Media / File / Link của nhóm**: [`api.media.getConversationMedia`](./api/media#getconversationmedia) (`/api/mediastore/list` — `cmd 11841`, hỗ trợ `mediaType: "media" | "file" | "link"`).
 - **Bảng tin nhóm (Ghi chú, Bình chọn, Nhắc hẹn)**:
-  - [`api.board.getListBoard`](../src/apis/board/getListBoard.ts) (`/api/board/list` — `cmd 12140`)
-  - [`api.board.getPollDetail`](../src/apis/board/getPollDetail.ts) (`/api/poll/detail` — `cmd 12081`)
-  - [`api.board.getReminderResponses`](../src/apis/board/getReminderResponses.ts) (`/api/board/topic/listResponseEvent`)
-- **Tra cứu hồ sơ thành viên theo danh sách UID**: [`api.group.getGroupMembersInfo`](../src/apis/group/getGroupMembersInfo.ts) (`/api/social/group/members`).
+  - [`api.board.getListBoard`](./api/board#getlistboard) (`/api/board/list` — `cmd 12140`)
+  - [`api.board.getPollDetail`](./api/board#getpolldetail) (`/api/poll/detail` — `cmd 12081`)
+  - [`api.board.getReminderResponses`](./api/board#getreminderresponses) (`/api/board/topic/listResponseEvent`)
+- **Tra cứu hồ sơ thành viên theo danh sách UID**: [`api.group.getGroupMembersInfo`](./api/group#getgroupmembersinfo) (`/api/social/group/members`).

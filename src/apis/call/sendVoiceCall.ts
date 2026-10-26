@@ -9,6 +9,18 @@ export enum CallType {
     GroupVideo = 6,
 }
 
+/**
+ * Chuẩn hoá mã loại cuộc gọi nhóm khi gửi lên máy chủ Zalo (`ZJBuilderInternal::fromZCallStateToGroupState` @ `0x100029620`):
+ * - `CallType.GroupAudio` (`5`) hoặc `0` ➔ `0` (Thoại nhóm)
+ * - `CallType.GroupVideo` (`6`), `CallType.Video` (`3`) hoặc `1` ➔ `1` (Video nhóm)
+ */
+export function normalizeGroupCallType(callType?: CallType | number): 0 | 1 {
+    if (callType === CallType.GroupVideo || callType === CallType.Video || callType === 1) {
+        return 1;
+    }
+    return 0;
+}
+
 export type SendVoiceCallOptions = {
     callType?: CallType;
     callId?: number;

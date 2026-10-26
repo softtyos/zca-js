@@ -2,7 +2,11 @@ import dgram from "node:dgram";
 import EventEmitter from "node:events";
 import { Buffer } from "node:buffer";
 import type { API } from "../apis.js";
-import { CallType, type RequestCallServerInfo } from "../apis/call/sendVoiceCall.js";
+import {
+    CallType,
+    normalizeGroupCallType,
+    type RequestCallServerInfo,
+} from "../apis/call/sendVoiceCall.js";
 import { ZaloApiError } from "../Errors/ZaloApiError.js";
 import { CallEventType, type CallEvent } from "../models/CallEvent.js";
 import {
@@ -101,6 +105,14 @@ export type ZaloMobileDirectHandoffBundle = {
     videoRtcpPrefixHex: string;
 };
 
+export type GroupCallPartnerInfo = {
+    id: string;
+    userId?: number;
+    name: string;
+    avatar: string;
+    [key: string]: unknown;
+};
+
 export type ParsedIncomingCallInfo = {
     callId: number;
     callerId: string;
@@ -117,6 +129,7 @@ export type ParsedIncomingCallInfo = {
     groupAvatar: string;
     hostCall: string;
     partners: string[];
+    partnerInfo: GroupCallPartnerInfo[];
     rtpAddress: string;
     rtpHost: string;
     rtpPort: number;
@@ -255,6 +268,9 @@ export type StartGroupCallOptions = {
     callType?: CallType;
     callId?: number;
     codec?: string;
+    groupName?: string;
+    groupAvatar?: string;
+    maxUsers?: number;
     skipUdpHandshake?: boolean;
     signalingOnly?: boolean;
     offCameraAtStart?: boolean;
@@ -650,23 +666,79 @@ export function parseIncomingCallEvent(
                 : `${callerId}_${callId}_401`),
     );
 
-    const rawPartners = Array.isArray(rawData.partners)
-        ? rawData.partners
-        : Array.isArray(rawData.partnerInfo)
-          ? rawData.partnerInfo
-          : Array.isArray(parsedParams.partners)
-            ? parsedParams.partners
-            : [];
-    const partners = rawPartners
-        .map((p: unknown) => {
-            if (typeof p === "string" || typeof p === "number") return String(p);
-            if (p && typeof p === "object") {
-                const obj = p as Record<string, unknown>;
-                return String(obj.id ?? obj.uid ?? obj.userId ?? "");
+    const mapNoiseId = safeJsonParseRecord(rawData.mapNoiseId ?? parsedParams.mapNoiseId);
+    const reverseNoiseIdMap = new Map<number, string>();
+    for (const [key, val] of Object.entries(mapNoiseId)) {
+        const numVal = Number(val);
+        if (!Number.isNaN(numVal) && numVal > 0 && typeof key === "string") {
+            reverseNoiseIdMap.set(numVal, key);
+        } else {
+            const numKey = Number(key);
+            if (!Number.isNaN(numKey) && numKey > 0 && typeof val === "string") {
+                reverseNoiseIdMap.set(numKey, val);
             }
-            return "";
-        })
-        .filter(Boolean);
+        }
+    }
+
+    const rawPartnersSource =
+        rawData.partnerInfo ??
+        parsedParams.partnerInfo ??
+        rawData.partners ??
+        parsedParams.partners ??
+        extendRaw.noiseId;
+    let rawPartners: unknown[] = [];
+    if (Array.isArray(rawPartnersSource)) {
+        rawPartners = rawPartnersSource;
+    } else if (typeof rawPartnersSource === "string" && rawPartnersSource.trim().startsWith("[")) {
+        try {
+            const parsedArr = JSON.parse(rawPartnersSource);
+            if (Array.isArray(parsedArr)) {
+                rawPartners = parsedArr;
+            }
+        } catch {
+            // Ignore invalid JSON array
+        }
+    }
+
+    const partnerInfo: GroupCallPartnerInfo[] = [];
+    for (const p of rawPartners) {
+        if (typeof p === "string" || typeof p === "number") {
+            const id = String(p).trim();
+            if (id) {
+                partnerInfo.push({
+                    id,
+                    name: "",
+                    avatar: "",
+                });
+            }
+        } else if (p && typeof p === "object") {
+            const obj = p as Record<string, unknown>;
+            const rawUserId =
+                obj.userId !== undefined
+                    ? Number(obj.userId)
+                    : typeof obj.id === "number"
+                      ? obj.id
+                      : undefined;
+            const mappedNoiseId =
+                rawUserId !== undefined && !Number.isNaN(rawUserId)
+                    ? reverseNoiseIdMap.get(rawUserId)
+                    : undefined;
+            const id = String(obj.id ?? obj.uid ?? mappedNoiseId ?? obj.userId ?? "").trim();
+            if (!id) continue;
+            const name = String(
+                obj.name ?? obj.dName ?? obj.Dname ?? obj.displayName ?? "",
+            );
+            const avatar = String(obj.avatar ?? obj.zpw_avatar ?? "");
+            partnerInfo.push({
+                ...obj,
+                id,
+                ...(rawUserId !== undefined && !Number.isNaN(rawUserId) ? { userId: rawUserId } : {}),
+                name,
+                avatar,
+            });
+        }
+    }
+    const partners = partnerInfo.map((p) => p.id);
 
     const codec =
         typeof parsedParams.codec === "string" && parsedParams.codec !== "[]"
@@ -691,6 +763,7 @@ export function parseIncomingCallEvent(
         groupAvatar,
         hostCall,
         partners,
+        partnerInfo,
         rtpAddress: rtpEp.address,
         rtpHost: rtpEp.host,
         rtpPort: rtpEp.port,
@@ -752,6 +825,7 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
     private partnerId = "";
     private groupId = "";
     private groupPartners: string[] = [];
+    private groupPartnerInfo: GroupCallPartnerInfo[] = [];
     private fromUid32 = 0;
     private toUid32 = 0;
     private callType: CallType = CallType.Audio;
@@ -878,6 +952,7 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             durationSeconds: this.getCallDurationSeconds(),
             groupId: this.groupId,
             groupPartners: this.groupPartners,
+            groupPartnerInfo: this.groupPartnerInfo,
         };
     }
 
@@ -1090,6 +1165,7 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
         }
 
         if (!isContinuingSameRingingCall) {
+            this.groupPartnerInfo = [];
             this.state = "idle";
         }
     }
@@ -1361,6 +1437,7 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
         this.partnerId = info.isGroupCall ? info.hostCall || info.callerId : info.callerId;
         this.groupId = info.groupId;
         this.groupPartners = info.partners;
+        this.groupPartnerInfo = info.partnerInfo;
         this.fromUid32 = info.fromUid32;
         this.toUid32 = info.toUid32;
         this.sessId = info.sessId;
@@ -1384,10 +1461,21 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
         }
 
         if (info.isGroupCall) {
+            const groupCallType = normalizeGroupCallType(this.callType);
             await this.api.call.ringRingGroupCall(this.callId, {
                 hostCall: this.partnerId,
-                callType: this.callType,
+                callType: groupCallType,
+                session: this.sessId,
+                status: 0,
                 partners: this.groupPartners,
+                data: {
+                    callId: this.callId,
+                    callType: groupCallType,
+                    groupId: this.groupId || this.partnerId,
+                    session: this.sessId,
+                    status: 0,
+                    extraData: "",
+                },
             });
         } else {
             await this.api.call.ringRingVoiceCall(this.partnerId, this.callId);
@@ -1565,18 +1653,22 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
 
         if (info.isGroupCall) {
             const hostCall = info.hostCall || info.groupId || callerId;
+            const groupCallType = normalizeGroupCallType(info.callType);
             this.groupId = hostCall;
             await this.api.call
                 .cancelGroupCall(callId, {
                     hostCall,
-                    callType: info.callType,
+                    callType: groupCallType,
+                    session: info.sessId,
                     partners: info.partners,
                 })
                 .catch(() => {});
             await this.api.call
                 .endGroupCall(callId, {
                     hostCall,
-                    callType: info.callType,
+                    callType: groupCallType,
+                    session: info.sessId,
+                    status: options.status ?? 0,
                     partners: info.partners,
                 })
                 .catch(() => {});
@@ -1623,6 +1715,7 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
         this.groupId = info.groupId || hostCall;
         this.partnerId = hostCall;
         this.groupPartners = info.partners;
+        this.groupPartnerInfo = info.partnerInfo;
         this.fromUid32 = info.fromUid32;
         this.toUid32 = info.toUid32;
         this.sessId = info.sessId;
@@ -1655,11 +1748,24 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             this.attachCallEventListener();
         }
 
+        const isVideo = this.callType === CallType.GroupVideo;
+        const groupCallType = normalizeGroupCallType(this.callType);
+
         if (!options.skipRingRing) {
             await this.api.call.ringRingGroupCall(this.callId, {
                 hostCall: this.partnerId,
-                callType: this.callType,
+                callType: groupCallType,
+                session: this.sessId,
+                status: 0,
                 partners: this.groupPartners,
+                data: {
+                    callId: this.callId,
+                    callType: groupCallType,
+                    groupId: this.groupId || this.partnerId,
+                    session: this.sessId,
+                    status: 0,
+                    extraData: "",
+                },
             });
         }
 
@@ -1675,8 +1781,7 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             this.routingToken = this.callId >>> 0;
         }
 
-        const isVideo = this.callType === CallType.GroupVideo;
-        this.extendData = buildZrtcExtendData({
+        const zrtcExtendPayload = buildZrtcExtendData({
             rtpAddress: this.rtpEndpoint.address,
             rtcpAddress: this.rtcpEndpoint.address,
             isVideo: isVideo || (options.allowVideoUpgrade ?? true),
@@ -1684,14 +1789,33 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             srtpMode: this.srtpSession ? 1 : 0,
             srtpKey: this.srtpSession?.masterKeyBase64,
         });
+        this.extendData = {
+            ...zrtcExtendPayload,
+            callId: this.callId,
+            callType: groupCallType,
+            groupId: this.groupId || this.partnerId,
+            session: this.sessId,
+            status: 0,
+            codec: this.codec,
+            extendData: JSON.stringify(zrtcExtendPayload),
+        };
 
         if (!options.skipAnswerSignal) {
-            await this.api.call.answerGroupCall(this.callId, {
+            const answerRes = await this.api.call.answerGroupCall(this.callId, {
                 hostCall: this.partnerId,
-                callType: this.callType,
+                callType: groupCallType,
+                session: this.sessId,
+                status: 0,
                 partners: this.groupPartners,
                 data: this.extendData,
             });
+            const ansServerInfo = this.extractGroupResponseServerInfo(answerRes);
+            if (ansServerInfo.sessId) {
+                this.sessId = ansServerInfo.sessId;
+            }
+            if (ansServerInfo.rtpServer || ansServerInfo.rtpIP || ansServerInfo.servers?.length) {
+                this.applyServerInfo(ansServerInfo);
+            }
         }
 
         if (!isSignalingOnly) {
@@ -1709,16 +1833,21 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
 
     /**
      * Khởi tạo cuộc gọi nhóm (Group Audio `CallType.GroupAudio = 5` hoặc Group Video `CallType.GroupVideo = 6`):
-     * 1. Gọi `/api/voicecall/group/requestcall` (501) xin cấp phát máy chủ Relay UDP
-     * 2. Mở socket UDP và bắt tay `0x01 0x7e` (`cmd=11`) (bỏ qua nếu `signalingOnly: true`)
-     * 3. Gọi `/api/voicecall/group/request` (513) mời danh sách `partners` tham gia
-     * 4. Duy trì nhịp tim UDP + `/api/voicecall/group/ping` (509) và luồng RTP/RTCP
+     * 1. Gọi `/api/voicecall/group/requestcall` (501) xin cấp phát máy chủ Relay UDP (gửi `typeRequest: 0 | 1` và `noiseId: JSON.stringify(partners)`)
+     * 2. Đọc `reqRes.params` (hoặc `reqRes.data`) để lấy `callId` thật do Zalo cấp phát và `callSetting.session`
+     * 3. Mở socket UDP và bắt tay `0x01 0x7e` (`cmd=11`) (bỏ qua nếu `signalingOnly: true`)
+     * 4. Gọi `/api/voicecall/group/request` (513) với cấu trúc JSON 2 lớp chứa `hostCall`, `noiseId`, `rtpAddress`
+     * 5. Duy trì nhịp tim UDP + `/api/voicecall/group/ping` (509) và luồng RTP/RTCP
      */
     public async startGroupCall(
         groupId: string,
-        options: StartGroupCallOptions,
+        optionsOrPartners: StartGroupCallOptions | string[],
+        maybeOptions?: Omit<StartGroupCallOptions, "partners"> & { partners?: string[] },
     ): Promise<ZaloCallConnectionParams> {
         if (!groupId) throw new ZaloApiError("Missing groupId");
+        const options: StartGroupCallOptions = Array.isArray(optionsOrPartners)
+            ? { ...(maybeOptions ?? {}), partners: optionsOrPartners }
+            : optionsOrPartners;
         if (!options?.partners || options.partners.length === 0) {
             throw new ZaloApiError("Missing group call partners");
         }
@@ -1730,10 +1859,13 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
         this.groupId = String(groupId);
         this.partnerId = String(groupId);
         this.groupPartners = options.partners.map(String);
-        this.callType = options.callType ?? CallType.GroupAudio;
-        this.isCameraOn =
-            (this.callType === CallType.GroupVideo || this.callType === CallType.Video) &&
-            !options.offCameraAtStart;
+        this.groupPartnerInfo = this.groupPartners.map((id) => ({ id, name: "", avatar: "" }));
+        const isVideo =
+            options.callType === CallType.GroupVideo ||
+            options.callType === CallType.Video ||
+            (options.callType as number | undefined) === 1;
+        this.callType = isVideo ? CallType.GroupVideo : CallType.GroupAudio;
+        this.isCameraOn = isVideo && !options.offCameraAtStart;
         this.isMicMuted = false;
         this.isHold = false;
         this.isScreenSharing = false;
@@ -1749,19 +1881,34 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             this.attachCallEventListener();
         }
 
-        const isVideo = this.callType === CallType.GroupVideo || this.callType === CallType.Video;
+        const groupCallType: 0 | 1 = isVideo ? 1 : 0;
+        const maxUsers = options.maxUsers ?? 8;
+        const groupName = options.groupName ?? "";
+        const groupAvatar = options.groupAvatar ?? "";
+
         const reqRes = await this.api.call.requestGroupCall(this.groupId, {
             callId: this.callId,
-            typeRequest: this.callType,
+            typeRequest: groupCallType,
             partners: this.groupPartners,
-            data: { codec: this.codec, isVideo: isVideo ? 1 : 0 },
+            groupName,
+            groupAvatar,
+            maxUsers,
+            data: {
+                groupId: this.groupId,
+                groupName,
+                groupAvatar,
+                maxUsers,
+                noiseId: JSON.stringify(this.groupPartners),
+                extraData: "",
+                codec: this.codec,
+                isVideo: groupCallType,
+            },
         });
 
-        const serverInfo = (
-            typeof reqRes?.data === "string"
-                ? JSON.parse(reqRes.data)
-                : (reqRes?.data ?? reqRes)
-        ) as RequestCallServerInfo;
+        const serverInfo = this.extractGroupResponseServerInfo(reqRes);
+        if (serverInfo.callId && Number(serverInfo.callId) > 0) {
+            this.callId = Number(serverInfo.callId);
+        }
         this.applyServerInfo(serverInfo);
 
         if (!isSignalingOnly) {
@@ -1776,7 +1923,21 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             this.routingToken = this.callId >>> 0;
         }
 
-        this.extendData = {
+        const hostCallVal = String(
+            serverInfo.hostCall ??
+                this.api.getContext().uid ??
+                this.groupId,
+        );
+        const noiseIdJson = JSON.stringify(this.groupPartners);
+        const innerGroupRequestData = {
+            noiseId: noiseIdJson,
+            hostCall: hostCallVal,
+            groupId: this.groupId,
+            groupName,
+            groupAvatar,
+            maxUsers: Number(serverInfo.maxUsers ?? maxUsers) || maxUsers,
+        };
+        const zrtcExtendPayload = {
             ...buildZrtcExtendData({
                 rtpAddress: this.rtpEndpoint.address,
                 rtcpAddress: this.rtcpEndpoint.address,
@@ -1790,12 +1951,28 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             rtp: [{ ip: this.rtpEndpoint.host, port: this.rtpEndpoint.port }],
             status: 0,
         };
+        this.extendData = {
+            ...zrtcExtendPayload,
+            codec: this.codec,
+            extendData: JSON.stringify(zrtcExtendPayload),
+            rtpAddress: this.rtpEndpoint.address,
+            rtcpAddress: this.rtcpEndpoint.address,
+            rtpAddressIPv6: "",
+            rtcpAddressIPv6: "",
+            hostCall: innerGroupRequestData.hostCall,
+            noiseId: noiseIdJson,
+            data: JSON.stringify(innerGroupRequestData),
+        };
 
         await this.api.call.sendRequestGroupCall(this.groupId, {
             callId: this.callId,
-            callType: this.callType,
+            callType: groupCallType,
             session: this.sessId,
             partners: this.groupPartners,
+            hostCall: innerGroupRequestData.hostCall,
+            rtpAddress: this.rtpEndpoint.address,
+            rtcpAddress: this.rtcpEndpoint.address,
+            codec: this.codec,
             data: this.extendData,
         });
 
@@ -1850,11 +2027,7 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             data: { codec: this.codec },
         });
 
-        const serverInfo = (
-            typeof joinRes?.data === "string"
-                ? JSON.parse(joinRes.data)
-                : (joinRes?.data ?? joinRes)
-        ) as RequestCallServerInfo;
+        const serverInfo = this.extractGroupResponseServerInfo(joinRes);
         if (options.rtpAddress) {
             this.rtpEndpoint = parseEndpoint(options.rtpAddress);
             this.rtcpEndpoint = parseEndpoint(options.rtcpAddress || options.rtpAddress);
@@ -1892,15 +2065,29 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
         if (!this.callId) throw new ZaloApiError("No active group call");
         const cleanPartners = partners.map(String).filter(Boolean);
         for (const p of cleanPartners) {
-            if (!this.groupPartners.includes(p)) this.groupPartners.push(p);
+            if (!this.groupPartners.includes(p)) {
+                this.groupPartners.push(p);
+                this.groupPartnerInfo.push({ id: p, name: "", avatar: "" });
+            }
         }
         return this.api.call.addUserGroupCall(this.callId, {
-            hostCall: this.groupId || this.partnerId,
+            hostCall: this.partnerId || this.groupId,
+            groupId: this.groupId || this.partnerId,
             session: this.sessId,
-            callType: this.callType,
+            callType: normalizeGroupCallType(this.callType),
             partners: cleanPartners,
+            rtpAddress: this.rtpEndpoint.address,
+            rtcpAddress: this.rtcpEndpoint.address,
+            codec: this.codec,
             data: this.extendData,
         });
+    }
+
+    /**
+     * Lấy danh sách thông tin thành viên (`id`, `name`, `avatar`) của cuộc gọi nhóm hiện tại.
+     */
+    public getGroupPartnerInfo(): GroupCallPartnerInfo[] {
+        return [...this.groupPartnerInfo];
     }
 
     /**
@@ -2482,11 +2669,13 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
                     this.callType === CallType.GroupAudio ||
                     this.callType === CallType.GroupVideo
                 ) {
+                    const groupCallType = normalizeGroupCallType(this.callType);
                     if (prevState === "ringing" && !this.hasReceivedPartnerMedia && this.isCaller) {
                         await this.api.call
                             .cancelGroupCall(this.callId, {
                                 hostCall: this.groupId || this.partnerId,
-                                callType: this.callType,
+                                callType: groupCallType,
+                                session: this.sessId,
                                 partners: this.groupPartners,
                             })
                             .catch(() => {});
@@ -2494,7 +2683,9 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
                     await this.api.call
                         .endGroupCall(this.callId, {
                             hostCall: this.groupId || this.partnerId,
-                            callType: this.callType,
+                            callType: groupCallType,
+                            session: this.sessId,
+                            status: 0,
                             partners: this.groupPartners,
                         })
                         .catch(() => {});
@@ -2589,11 +2780,17 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
             this.srtpSession = null;
         }
 
-        if (event.type === CallEventType.RINGRING) {
+        if (
+            event.type === CallEventType.RINGRING ||
+            event.type === CallEventType.GROUP_RINGRING
+        ) {
             if (this.state === "handshaking_udp" || this.state === "allocating") {
                 this.setState("ringing");
             }
-        } else if (event.type === CallEventType.ANSWER) {
+        } else if (
+            event.type === CallEventType.ANSWER ||
+            event.type === CallEventType.GROUP_ANSWER
+        ) {
             this.hasReceivedPartnerMedia = true;
             if (this.isCaller && this.partnerId && this.callId > 0 && !this.groupId && !this.hasSentAnswerAck) {
                 this.hasSentAnswerAck = true;
@@ -2622,13 +2819,80 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
                 }
                 void this.sendRtcpPli().catch(() => {});
             }
+            if (event.type === CallEventType.GROUP_ANSWER) {
+                const audioStateVal = rawParams.audioState ?? event.data.audioState;
+                const videoStateVal = rawParams.videoState ?? event.data.videoState;
+                if (audioStateVal !== undefined || videoStateVal !== undefined) {
+                    this.emit("media_state_change", {
+                        isLocal: false,
+                        isCameraOn:
+                            videoStateVal !== undefined ? Boolean(Number(videoStateVal)) : undefined,
+                        isMicMuted:
+                            audioStateVal !== undefined ? !Boolean(Number(audioStateVal)) : undefined,
+                        rawAct: event.act,
+                    });
+                }
+            }
             const params = this.getConnectionParams();
             this.emit("connection_params", params);
             this.emit("active", params);
-        } else if (event.type === CallEventType.CANCEL || event.type === CallEventType.END) {
+        } else if (
+            event.type === CallEventType.CANCEL ||
+            event.type === CallEventType.END ||
+            event.type === CallEventType.GROUP_CANCEL ||
+            event.type === CallEventType.GROUP_END
+        ) {
             this.setState("ended");
             this.cleanupResources();
             this.emit("ended", event.act);
+        } else if (event.type === CallEventType.GROUP_ADD_USER || event.act === "group_add_user") {
+            const parsedAdd = parseIncomingCallEvent(event, this.api.getContext().uid);
+            for (const p of parsedAdd.partners) {
+                if (!this.groupPartners.includes(p)) {
+                    this.groupPartners.push(p);
+                }
+            }
+            for (const infoItem of parsedAdd.partnerInfo) {
+                const existingIdx = this.groupPartnerInfo.findIndex(
+                    (existing) =>
+                        existing.id === infoItem.id ||
+                        (infoItem.userId !== undefined && existing.userId === infoItem.userId),
+                );
+                if (existingIdx >= 0) {
+                    this.groupPartnerInfo[existingIdx] = {
+                        ...this.groupPartnerInfo[existingIdx],
+                        ...infoItem,
+                        name: infoItem.name || this.groupPartnerInfo[existingIdx].name,
+                        avatar: infoItem.avatar || this.groupPartnerInfo[existingIdx].avatar,
+                    };
+                } else {
+                    this.groupPartnerInfo.push(infoItem);
+                }
+            }
+        } else if (
+            event.type === CallEventType.GROUP_BROADCAST ||
+            event.type === CallEventType.GROUP_BROADCAST_CONFIG ||
+            event.act === "group_broadcast" ||
+            event.act === "group_broadcast_config"
+        ) {
+            const audioStateVal =
+                rawParams.audioState ??
+                rawParams.audiostate ??
+                event.data.audioState ??
+                event.data.audiostate;
+            const videoStateVal =
+                rawParams.videoState ??
+                rawParams.videostate ??
+                event.data.videoState ??
+                event.data.videostate;
+            this.emit("media_state_change", {
+                isLocal: false,
+                isCameraOn:
+                    videoStateVal !== undefined ? Boolean(Number(videoStateVal)) : undefined,
+                isMicMuted:
+                    audioStateVal !== undefined ? !Boolean(Number(audioStateVal)) : undefined,
+                rawAct: event.act,
+            });
         } else if (event.act === "onoff_camera") {
             const camType = Number(rawParams.type ?? 0);
             const reason = Number(rawParams.reason ?? 0);
@@ -2750,19 +3014,70 @@ export class ZaloRtcSession extends EventEmitter<ZaloRtcSessionEvents> {
         }
     }
 
+    private extractGroupResponseServerInfo(rawRes: unknown): RequestCallServerInfo {
+        const topObj = safeJsonParseRecord(rawRes);
+        const dataObj = topObj.data !== undefined ? safeJsonParseRecord(topObj.data) : topObj;
+        const paramsObj =
+            topObj.params !== undefined
+                ? safeJsonParseRecord(topObj.params)
+                : dataObj.params !== undefined
+                  ? safeJsonParseRecord(dataObj.params)
+                  : dataObj;
+        const callSettingObj = safeJsonParseRecord(
+            paramsObj.callSetting ?? dataObj.callSetting ?? topObj.callSetting,
+        );
+        const resolvedCallId =
+            Number(paramsObj.callId ?? paramsObj.id ?? dataObj.callId ?? topObj.callId ?? this.callId) ||
+            this.callId;
+        const resolvedSession =
+            callSettingObj.session ??
+            paramsObj.session ??
+            paramsObj.sessId ??
+            dataObj.session ??
+            dataObj.sessId ??
+            topObj.session ??
+            topObj.sessId ??
+            (this.sessId || `${this.partnerId}_${resolvedCallId}_501`);
+
+        return {
+            ...topObj,
+            ...dataObj,
+            ...paramsObj,
+            callId: resolvedCallId,
+            sessId: String(resolvedSession),
+        } as RequestCallServerInfo;
+    }
+
     private applyServerInfo(serverInfo: RequestCallServerInfo): void {
         this.serverInfo = serverInfo;
         const rtpServer =
-            serverInfo?.rtpServer ?? serverInfo?.rtpIP ?? serverInfo?.servers?.[0]?.rtpaddr ?? "";
+            serverInfo?.rtpServer ??
+            serverInfo?.rtpIP ??
+            (serverInfo?.rtpAddress as string | undefined) ??
+            serverInfo?.servers?.[0]?.rtpaddr ??
+            "";
         const rtcpServer =
             serverInfo?.rtcpServer ??
             serverInfo?.rtcpIP ??
+            (serverInfo?.rtcpAddress as string | undefined) ??
             serverInfo?.servers?.[0]?.rtcpaddr ??
             rtpServer;
 
         this.rtpEndpoint = parseEndpoint(rtpServer);
         this.rtcpEndpoint = parseEndpoint(rtcpServer || rtpServer);
-        this.sessId = serverInfo?.sessId ?? `${this.partnerId}_${this.callId}_401`;
+        const callSettingObj = safeJsonParseRecord(serverInfo?.callSetting);
+        const fallbackSuffix =
+            this.groupId ||
+            this.callType === CallType.GroupAudio ||
+            this.callType === CallType.GroupVideo
+                ? "501"
+                : "401";
+        this.sessId = String(
+            callSettingObj.session ??
+                serverInfo?.sessId ??
+                (serverInfo?.session as string | undefined) ??
+                `${this.partnerId}_${this.callId}_${fallbackSuffix}`,
+        );
         this.zrtpKey = serverInfo?.zrtpKey;
         this.fromUid32 = Number(serverInfo?.fromId) || uidToUint32(this.api.getContext().uid);
         this.toUid32 = Number(serverInfo?.toId) || uidToUint32(this.partnerId);

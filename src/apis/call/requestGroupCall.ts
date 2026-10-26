@@ -1,12 +1,17 @@
 import { ZaloApiError } from "../../Errors/ZaloApiError.js";
 import { apiFactory } from "../../utils.js";
-import { CallType } from "./sendVoiceCall.js";
+import type { CallType} from "./sendVoiceCall.js";
+import { normalizeGroupCallType } from "./sendVoiceCall.js";
 
 export type RequestGroupCallOptions = {
     callId?: number;
     typeRequest?: CallType | number;
     data?: string | Record<string, unknown>;
     partners: string[];
+    groupName?: string;
+    groupAvatar?: string;
+    maxUsers?: number;
+    extraData?: string;
 };
 
 export type RequestGroupCallResponse = Record<string, unknown>;
@@ -18,7 +23,7 @@ export const requestGroupCallFactory = apiFactory<RequestGroupCallResponse>()((a
      * Xin cấp phát phiên gọi nhóm (Group Call) và máy chủ relay (`/api/voicecall/group/requestcall`, command `12433`).
      *
      * @param groupId ID của nhóm
-     * @param options Danh sách `partners`, `callId`, `typeRequest` (`CallType.GroupAudio = 5` hoặc `CallType.GroupVideo = 6`) và `data`
+     * @param options Danh sách `partners`, `callId`, `typeRequest` (`0` / `CallType.GroupAudio = 5` hoặc `1` / `CallType.GroupVideo = 6`) và `data`
      * @throws {ZaloApiError}
      */
     return async function requestGroupCall(
@@ -32,19 +37,50 @@ export const requestGroupCallFactory = apiFactory<RequestGroupCallResponse>()((a
         if (!voiceCallService) throw new ZaloApiError("Missing voice_call service URL in zpwServiceMap");
 
         const callId = options.callId ?? Math.floor(Math.random() * 2_000_000_000);
-        const dataStr =
-            options.data === undefined
-                ? "{}"
-                : typeof options.data === "string"
-                  ? options.data
-                  : JSON.stringify(options.data);
+        const partnersList = options.partners.map(String);
+        const typeRequest = normalizeGroupCallType(options.typeRequest);
+
+        const defaultDataObj: Record<string, unknown> = {
+            groupId: String(groupId),
+            groupName: options.groupName ?? "",
+            groupAvatar: options.groupAvatar ?? "",
+            maxUsers: options.maxUsers ?? 8,
+            noiseId: JSON.stringify(partnersList),
+            extraData: options.extraData ?? "",
+        };
+
+        let dataStr: string;
+        if (options.data === undefined) {
+            dataStr = JSON.stringify(defaultDataObj);
+        } else if (typeof options.data === "string") {
+            try {
+                const parsed = JSON.parse(options.data);
+                if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+                    const merged = { ...defaultDataObj, ...(parsed as Record<string, unknown>) };
+                    if (typeof merged.noiseId !== "string") {
+                        merged.noiseId = JSON.stringify(merged.noiseId ?? partnersList);
+                    }
+                    dataStr = JSON.stringify(merged);
+                } else {
+                    dataStr = options.data;
+                }
+            } catch {
+                dataStr = options.data;
+            }
+        } else {
+            const merged: Record<string, unknown> = { ...defaultDataObj, ...options.data };
+            if (typeof merged.noiseId !== "string") {
+                merged.noiseId = JSON.stringify(merged.noiseId ?? partnersList);
+            }
+            dataStr = JSON.stringify(merged);
+        }
 
         const params = {
             groupId: String(groupId),
             callId,
-            typeRequest: options.typeRequest ?? CallType.GroupAudio,
+            typeRequest,
             data: dataStr,
-            partners: options.partners.map(String),
+            partners: partnersList,
         };
 
         const encryptedParams = utils.encodeAES(JSON.stringify(params));

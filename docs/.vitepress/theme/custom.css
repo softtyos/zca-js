@@ -342,30 +342,110 @@
 
 /* Tables inside Documentation */
 .vp-doc table {
+    display: block;
     width: 100%;
-    display: table;
+    overflow-x: auto;
+    border-collapse: separate;
+    border-spacing: 0;
     border-radius: 12px;
-    overflow: hidden;
     border: 1px solid var(--vp-c-divider);
-    font-size: 0.9rem;
+    font-size: 0.88rem;
 }
 
 .vp-doc th {
     background-color: var(--vp-c-bg-soft);
     color: var(--vp-c-text-1);
     font-weight: 700;
-    font-size: 0.85rem;
+    font-size: 0.84rem;
     letter-spacing: 0.02em;
     padding: 10px 14px;
+    white-space: nowrap;
 }
 
 .vp-doc td {
     color: var(--vp-c-text-2);
     padding: 10px 14px;
+    vertical-align: top;
+    line-height: 1.55;
+}
+
+.vp-doc td:last-child {
+    min-width: 240px;
+    width: 100%;
 }
 
 .vp-doc tr:hover td {
     background-color: var(--vp-c-brand-soft);
+}
+
+/* Architecture Visual Flow Diagrams */
+.zca-flow-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin: 20px 0 28px;
+}
+
+.zca-flow-card {
+    display: flex;
+    flex-direction: column;
+    padding: 18px;
+    border-radius: 14px;
+    background-color: var(--vp-c-bg-soft);
+    border: 1px solid var(--vp-c-divider);
+    box-shadow: 0 4px 16px -4px rgba(0, 0, 0, 0.05);
+}
+
+.dark .zca-flow-card {
+    background-color: #0d1322;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.zca-flow-title {
+    font-size: 0.92rem;
+    font-weight: 800;
+    color: var(--vp-c-brand-1);
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed var(--vp-c-divider);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.zca-flow-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.zca-flow-step {
+    padding: 9px 12px;
+    border-radius: 9px;
+    background-color: var(--vp-c-bg-elv);
+    border: 1px solid var(--vp-c-divider);
+    font-size: 0.82rem;
+    line-height: 1.45;
+    color: var(--vp-c-text-1);
+}
+
+.dark .zca-flow-step {
+    background-color: #090d16;
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+.zca-flow-step code {
+    font-size: 0.76rem;
+    font-weight: 600;
+}
+
+.zca-flow-arrow {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--vp-c-brand-1);
+    font-weight: 700;
+    line-height: 1;
+    user-select: none;
 }
 
 /* Sidebar Styling */
@@ -387,4 +467,35 @@
 
 .dark .vp-doc div[class*="language-"] {
     border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+/* Rendered Mermaid Flowchart Diagrams */
+.vp-doc div.language-mermaid.zca-mermaid-rendered {
+    background-color: var(--vp-c-bg-soft) !important;
+    padding: 24px 18px !important;
+    margin: 20px 0 28px !important;
+    overflow-x: auto;
+}
+
+.dark .vp-doc div.language-mermaid.zca-mermaid-rendered {
+    background-color: #0d1322 !important;
+}
+
+.vp-doc div.language-mermaid.zca-mermaid-rendered > pre,
+.vp-doc div.language-mermaid.zca-mermaid-rendered > button.copy,
+.vp-doc div.language-mermaid.zca-mermaid-rendered > span.lang {
+    display: none !important;
+}
+
+.zca-mermaid-diagram {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.zca-mermaid-diagram svg {
+    max-width: 100%;
+    height: auto;
 }
