@@ -1,13 +1,13 @@
 ---
-title: "Nhóm & Cộng đồng (Group) (api.group) - 44 APIs"
-description: "Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch sử tin nhắn Cloud, trạng thái tin nhắn thành viên và phân quyền. Tra cứu chi tiết 44 phương thức thuộc phân hệ api.group trong bộ SDK @softtynet/zca-js."
+title: "Nhóm & Cộng đồng (Group) (api.group) - 46 APIs"
+description: "Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch sử tin nhắn Cloud, trạng thái tin nhắn thành viên, chủ đề (Topic) và phân quyền. Tra cứu chi tiết 46 phương thức thuộc phân hệ api.group trong bộ SDK @softtynet/zca-js."
 ---
 
 # 👥 Nhóm & Cộng đồng (Group)
 
-> Namespace: `api.group` (hoặc gọi trực tiếp `api.<methodName>`) — **44 API nguyên bản**
+> Namespace: `api.group` (hoặc gọi trực tiếp `api.<methodName>`) — **46 API nguyên bản**
 
-Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch sử tin nhắn Cloud, trạng thái tin nhắn thành viên và phân quyền.
+Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch sử tin nhắn Cloud, trạng thái tin nhắn thành viên, chủ đề (Topic) và phân quyền.
 
 ## Danh sách nhanh
 
@@ -53,7 +53,9 @@ Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch 
 | [`leaveGroup`](#leavegroup)                                 | `POST` | `/api/group/leave`                           | Rời khỏi một hoặc nhiều nhóm chat (hỗ trợ rời nhóm im lặng silent).                                                                                      |
 | [`removeGroupBlockedMember`](#removegroupblockedmember)     | `GET`  | `/api/group/blockedmems/remove`              | Gỡ chặn (Unblock) cho người dùng khỏi danh sách chặn của nhóm.                                                                                           |
 | [`removeGroupDeputy`](#removegroupdeputy)                   | `GET`  | `/api/group/admins/remove`                   | Cách chức Phó nhóm (thu hồi quyền Quản trị viên) của thành viên.                                                                                         |
+| [`removeGroupTopic`](#removegrouptopic)                     | `POST` | `/api/group/topic/remove`                    | Xóa chủ đề đang ghim trên đầu nhóm (command 11829)                                                                                                       |
 | [`removeUserFromGroup`](#removeuserfromgroup)               | `POST` | `/api/group/kickout`                         | Mời ra khỏi nhóm (Kick) một hoặc nhiều thành viên.                                                                                                       |
+| [`removeUserFromGroups`](#removeuserfromgroups)             | `GET`  | `/api/group/kickout/multi`                   | Xóa một thành viên khỏi nhiều nhóm cùng lúc (command 12606)                                                                                              |
 | [`reviewPendingMemberRequest`](#reviewpendingmemberrequest) | `GET`  | `/api/group/pending-mems/review`             | Phê duyệt (Chấp nhận hoặc Từ chối) yêu cầu xin tham gia nhóm của thành viên mới.                                                                         |
 | [`updateGroupSettings`](#updategroupsettings)               | `GET`  | `/api/group/setting/update`                  | Cập nhật các thiết lập quyền hạn của nhóm (ẩn thành viên lockViewMember, duyệt thành viên joinAppr, khóa nhắn tin lockSendMsg...).                       |
 | [`upgradeGroupToCommunity`](#upgradegrouptocommunity)       | `GET`  | `/api/group/upgrade/community`               | Nâng cấp nhóm thường lên Cộng đồng (Community - tối đa 1000 thành viên).                                                                                 |
@@ -795,9 +797,9 @@ Lấy thông tin nhóm và danh sách thành viên theo trang qua `/api/group/ge
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.group.getGroupInfoV2(groupId: string, pageOrOptions: number | GetGroupInfoV2Options = 1,)
+await api.group.getGroupInfoV2(groupId: string, pageOrOptions: number | GetGroupInfoV2Options = 1)
 // Hoặc gọi phẳng (Flat Alias):
-await api.getGroupInfoV2(groupId: string, pageOrOptions: number | GetGroupInfoV2Options = 1,)
+await api.getGroupInfoV2(groupId: string, pageOrOptions: number | GetGroupInfoV2Options = 1)
 ```
 
 ### Tham số
@@ -1470,6 +1472,31 @@ export type RemoveGroupDeputyResponse = "";
 
 ---
 
+## `removeGroupTopic`
+
+Xóa chủ đề đang ghim trên đầu nhóm (command 11829)
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/topic/remove</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.removeGroupTopic(groupId: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.removeGroupTopic(groupId: string)
+```
+
+### Tham số
+
+- `groupId`: ID nhóm
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type RemoveGroupTopicResponse = Record<string, unknown>;
+```
+
+---
+
 ## `removeUserFromGroup`
 
 Mời ra khỏi nhóm (Kick) một hoặc nhiều thành viên.
@@ -1494,6 +1521,33 @@ await api.removeUserFromGroup(memberId: string | string[], groupId: string)
 export type RemoveUserFromGroupResponse = {
     errorMembers: string[];
 };
+```
+
+---
+
+## `removeUserFromGroups`
+
+Xóa một thành viên khỏi nhiều nhóm cùng lúc (command 12606)
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.group</span><span class="zca-endpoint-pill">/api/group/kickout/multi</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.group.removeUserFromGroups(groupIds: string | string[], memberId: string, srcInteraction: number = 2,)
+// Hoặc gọi phẳng (Flat Alias):
+await api.removeUserFromGroups(groupIds: string | string[], memberId: string, srcInteraction: number = 2,)
+```
+
+### Tham số
+
+- `groupIds`: Danh sách ID nhóm
+- `memberId`: ID thành viên cần xóa khỏi các nhóm
+- `srcInteraction`: Nguồn tương tác (mặc định `2`)
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type RemoveUserFromGroupsResponse = Record<string, unknown>;
 ```
 
 ---

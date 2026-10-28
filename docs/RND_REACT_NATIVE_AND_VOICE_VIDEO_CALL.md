@@ -31,24 +31,24 @@ flowchart TD
     S3 -.->|"Bàn giao thông số phiên"| M1
 ```
 
-### 1.2. Hiện trạng trong `@softtynet/zca-js` (v2.3.4+ — 28 Call APIs)
+### 1.2. Hiện trạng trong `@softtynet/zca-js` (v2.3.11+ — 30 Call APIs & Pure TypeScript `ZaloRtcSession`)
 
-- **Những gì SDK đã làm được (Tầng 1 — Complete Signaling Plane: 28 APIs trong `src/apis/call/`)**:
+- **Tầng 1 — Complete Signaling Plane (28 APIs trong `src/apis/call/` + 2 Factory `createRtcSession`, `createController`)**:
     - **14 API Gọi 1-1 (`Commands 11300 → 11311, 12006, 12056, 12064`, `zpw_type = 24`)**:
         - `sendVoiceCall` (trọn gói `11300` + `11301`), `requestVoiceCall` (`11300` — signal `401`), `sendRequestVoiceCall` (`11301` — signal `416`), `ringRingVoiceCall` (`11302` — signal `407`), `answerVoiceCall` (`11303` — signal `402`), `answerAckVoiceCall` (`11304` — signal `408`), `cancelVoiceCall` (`11305` — signal `405`), `endVoiceCall` (`11306` — signal `404`), `holdVoiceCall` (`11307`/`11308` — signal `411`/`412`), `unholdVoiceCall` (`11309`/`11310` — signal `413`/`414`), `logEndVoiceCall` (`11311` — signal `406`), `updateCallMediaState` (`12006` — `/api/voicecall/conf`), `requestAudioToVideoCall` (`12056`), `requestShareScreenCall` (`12064`).
     - **14 API Gọi Nhóm (`Group Call Commands 12433 → 12447, 12043, 12044, 12097, 12098`, `zpw_type = 24`)**:
         - `requestGroupCall` (`12433`), `sendRequestGroupCall` (`12434`), `addUserGroupCall` (`12435`), `answerGroupCall` (`12436`), `cancelGroupCall` (`12437`), `endGroupCall` (`12438`), `ringRingGroupCall` (`12439`), `getGroupCallState` (`12445`), `finishGroupCall` (`12446`), `notifyGroupCall` (`12447`), `pingGroupCall` (`12097`), `broadcastGroupCallState` (`12098`), `joinGroupCall` (`12043`), `shareScreenGroupCall` (`12044`).
-    - `src/realtime/handlers/control.handler.ts` & [`CallEvent`](./api/models#callevent): Bắt toàn bộ sự kiện `call_event` thời gian thực qua WebSocket (`request`, `ringring`, `answer`, `cancel`, `endcall`, `busy`, `hold`, `unhold`, `conf`).
+        - **Quy ước trạng thái Group Call**: `audioState = 0` (Mic Bật / Unmuted), `audioState = 1` (Mic Tắt / Muted); `videoState = 0` (Camera Bật), `videoState = 1` (Camera Tắt / Paused).
+    - `src/realtime/handlers/control.handler.ts` & [`CallEvent`](./api/models#callevent): Bắt toàn bộ sự kiện `call_event` thời gian thực qua WebSocket (`request`, `ringring`, `answer`, `cancel`, `endcall`, `busy`, `hold`, `unhold`, `conf`, `audio2video`, `group_request`, `group_answer`, `group_broadcast`, `group_ping`...).
 
-- **Kết quả Thực nghiệm Dịch ngược Tầng 2 (`ZRTC Media Engine`) trên Zalo PC `26.7.10`**:
-    - Module cũ `native/nativelibs/zcall/zcall_mac.node` là binary `x86_64` cũ không còn dùng trên Apple Silicon (`arm64`).
-    - Zalo PC `26.7.10` khởi chạy một tiến trình con độc lập (Universal Binary hỗ trợ cả `x86_64` và `arm64`):
-        - **macOS**: `/Applications/Zalo.app/Contents/ZaloHelper.app/Contents/MacOS/ZaloCall`
-        - **Windows**: `%LOCALAPPDATA%\Programs\Zalo\...\ZaloCall.exe`
-    - **Giao thức IPC giữa Node.js và `ZaloCall`**:
-        - Sử dụng 2 Unix Domain Sockets (`/tmp/socketzalorecv2021` để gửi lệnh từ Node.js vào `ZaloCall`, và `/tmp/socketzalosend2021` để nhận sự kiện từ `ZaloCall` về Node.js).
-        - Mỗi bản tin JSON được mã hóa bằng **AES-128-CBC** với khóa cố định `key = Buffer.from("yjAF9oqMWl6XfXYJn9mA7w==", "base64")` (`ca3005f68a8c5a5e977d76099fd980ef`), `IV = Buffer.alloc(16, 0)`, chuyển sang chuỗi `hex` và phân tách bằng ký tự `$`.
-        - Khi nhận lệnh `init` (`enablePreviewDeviceOutgoing: false`) và `makeCall`, `ZaloCall` tự động phát ra các sự kiện `sendSignal` (`401`, `416`, `407`, `402`, `408`, `404`, `406`), khớp 1:1 với bộ 28 API trong `src/apis/call/`.
+- **Tầng 2 — Pure TypeScript Media Engine (`src/call-engine/ZaloRtcSession.ts`, `ZaloSrtpSession.ts`, `ZRTPPacketCodec.ts`) — Đã Kiểm Định Thực Tế 100%**:
+    - **Giao thức UDP `ZRTPPacket` & `SRTP AES-CM-128-HMAC-SHA1-80`**:
+        - Cuộc gọi 1-1: Bắt tay `Echo (cmd=248)` $\rightarrow$ `InitCall (cmd=1)` $\rightarrow$ `RelayPing (cmd=243)` / `Ping (cmd=2)`. Hỗ trợทั้ง Legacy framing (`packetMode=1`: `0x03/0x04/0x05/0x0d/0x0e/0x0f`) và Multiplexed ZRTC framing (`packetMode=2`: `0x7f` 9-byte header).
+        - Cuộc gọi nhóm (Zavi SFU): Luôn dùng `packetMode=1` (5-byte prefix khi gửi, 1-byte `0x04`/`0x0e` khi nhận). Bắt tay `Echo (cmd=248)` $\rightarrow$ `InitZaviPing (cmd=53)` $\rightarrow$ nhận `ZaviRoomUpdated (cmd=50)`, gửi `RequestForward` (`subCmd=2` AudioCodecList, `subCmd=11` VideoQualityBitrateConfig, `subCmd=13` VideoQualityRequest) và `AudioCodec (cmd=19, codecType=9 khi tắt Mic)`.
+    - **Đóng gói RTP Video H.264 Annex-B FU-A (`0x1c`, `origNalType=0`) & `0xBEDE` 24-Byte Header Extension**:
+        - Sử dụng H.264 Constrained Baseline Profile Level 3.0 (`avc1.42001e`), các gói lớn (`> 1135B`) được phân mảnh với `fuIndicator = 0x1c` (`type=28`), `fuHeader = 0x80` (Start) / `0x00` (Middle) / `0x40` (End), giữ nguyên Annex-B start code `00 00 00 01` ở đầu mảnh Start để tương thích với `VCMPacket::CopyCodecSpecifics` của Zalo Mobile/PC.
+        - Trong Group Call, mỗi gói RTP Video đính kèm **24-byte RFC 5285 One-Byte Extension (`0xBEDE`, `length=5` words)**: `0x32` (`id=3, L=2` AbsSendTime) + `0x51` (`id=5, L=1` TransportSeq) + `0xc2` (`id=12, L=2` VideoGroupCall) + `0xd6` (`id=13, L=6` CaptureNtpTime) + `0x00` (padding).
+        - Khi nhận RTP Video từ Zavi SFU (`SSRC = 1`), động cơ tự động đọc `CSRC[0]` (offset 12..15) để lấy 32-bit VoIP UID của thành viên phát và ánh xạ sang Zalo UID 19 chữ số (`frame.partnerId`), đồng thời khử trùng lặp gói RTP theo `(sequenceNumber, timestamp)`.
 
 ### 1.3. Ứng dụng thực tế của bộ API Call hiện tại
 

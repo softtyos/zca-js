@@ -1,4 +1,4 @@
-# Tài Liệu Kiến Trúc & Cẩm Nang Toàn Tập 250 API (`@softtynet/zca-js` v2.3.4+)
+# Tài Liệu Kiến Trúc & Cẩm Nang Toàn Tập 256 API (`@softtynet/zca-js` v2.3.11+)
 
 > **Tài liệu lưu hành nội bộ (Internal Enterprise Documentation)**: Thư mục `docs/` đã được cấu hình loại trừ khỏi gói phát hành NPM (`.npmignore` & `package.json#files`), chỉ lưu trữ trên kho Git Private `softtyos/zca-js`.
 
@@ -73,7 +73,15 @@ src/
 │   │   └── status.handler.ts  # Xử lý cmd 502, 522, 504, 524, 602 (Seen, Delivered, Typing, ClearUnread)
 │   └── index.ts
 │
-└── apis/                      # [Tầng 5] 250 API phân nhóm vào 12 Phân hệ Nghiệp vụ (12 Domains)
+├── call-engine/               # [Tầng 4B] Động cơ Gọi Thoại/Video 2 Chiều Thuần TypeScript (1-1 & Group Zavi SFU)
+│   ├── ZRTPPacketCodec.ts     # Đóng gói / Giải mã gói điều khiển UDP ZRTP (Echo 248, InitCall 1, InitZaviPing 53, RequestForward 52...)
+│   ├── ZaloSrtpSession.ts     # Mã hóa SRTP/SRTCP AES-CM-128-HMAC-SHA1-80, RTP Codec & 0xBEDE 24-Byte Header Extension
+│   ├── ZaloRtcSession.ts      # Phiên gọi 2 chiều 1-1 & Group Call (Opus 16kHz + H.264 Annex-B FU-A 0x1c + CSRC[0] demuxing)
+│   ├── ZaloCallTransport.ts   # Cầu nối IPC AES-128-CBC với tiến trình ZaloCall Desktop (tùy chọn)
+│   ├── ZaloCallController.ts  # Bộ điều phối cuộc gọi hợp nhất
+│   └── index.ts
+│
+└── apis/                      # [Tầng 5] 256 API phân nhóm vào 12 Phân hệ Nghiệp vụ (12 Domains)
     ├── auth/                  # (14 API) Phiên đăng nhập, exportSession, Thiết bị, Bảo mật, ZNoise/GID
     ├── chat/                  # (41 API) Tin nhắn, Hội thoại, Đa thu hồi, Tìm kiếm gần đây
     ├── group/                 # (44 API) Quản trị nhóm, Cộng đồng, Duyệt thành viên, Lịch sử nhóm V1-V4
@@ -81,11 +89,11 @@ src/
     ├── profile/               # (16 API) Hồ sơ cá nhân, MiniProfile, Xác thực tài khoản, Emoji Status
     ├── sync/                  # (5 API)  Đồng bộ tin nhắn từ điện thoại (RSA-2048 & ZDB4.0 .db.crypt)
     ├── zcloud/                # (9 API)  Hệ sinh thái ZCloud, MyCloud & ZFamily
-    ├── call/                  # (28 API) Báo hiệu Gọi Thoại, Video 1-1 & Gọi Nhóm (VoIP Signaling zpw_type=24)
+    ├── call/                  # (30 API) Gọi Thoại, Video 1-1 & Gọi Nhóm 2 Chiều (28 API Signaling + createRtcSession + createController)
     ├── media/                 # (8 API)  Tải tệp đính kèm, Kho lưu trữ Media/File/Link, AI Voice-to-Text
     ├── sticker/               # (10 API) Kho nhãn dán V2, Gợi ý nhãn dán theo ngữ cảnh, Sticker Hello
     ├── board/                 # (16 API) Bình chọn (Poll), Ghi chú (Note), Nhắc hẹn (Reminder), Ghim đầu nhóm
-    └── business/              # (26 API) Zalo Business, Danh mục sản phẩm, Tin nhắn nhanh, Ngân hàng, Nhãn
+    └── business/              # (30 API) Zalo Business, Official Account (OA), Danh mục sản phẩm, Tin nhắn nhanh, Ngân hàng, Nhãn
 ```
 
 ---
@@ -301,18 +309,21 @@ Mọi thay đổi trong dự án được bảo vệ bởi 3 tầng kiểm thử
     ```bash
     npm run build && npm run lint
     ```
-2. **Kiểm thử tự động 8 hạng mục cốt lõi (Offline Mock Suite — chạy tự động trong CI/CD trước khi publish)**:
+2. **Kiểm thử tự động 11 hạng mục cốt lõi (Offline Mock Suite — chạy tự động trong CI/CD trước khi publish)**:
     ```bash
     npm run test:verify
     ```
-3. **Kiểm thử thực chiến trên máy chủ Zalo thật**:
+3. **Kiểm thử thực chiến trên máy chủ Zalo thật & Bộ Studio Trực quan**:
     ```bash
     npm run test:live
+    npm run test:call-studio
+    npm run test:oa-studio
     ```
 
 ---
 
 ## 6. Tài Liệu Nghiên Cứu Mở Rộng (R&D)
 
+- [Hướng dẫn Toàn diện Gọi Thoại, Video 1-1 & Gọi Nhóm 2 Chiều (`ZaloRtcSession`)](./guide/call-engine.md)
 - [Tài liệu R&D: Gọi Thoại/Video 2 Chiều (`ZRTC`), Tương thích React Native & Cơ chế Dữ liệu Nhóm](./RND_REACT_NATIVE_AND_VOICE_VIDEO_CALL.md)
 - [Hướng dẫn Tích hợp: Đồng bộ Tin nhắn Đa Thiết bị (`ZDB4.0`) & Gọi Thoại / Video](./INTEGRATION_GUIDE_SYNC_AND_CALL.md)

@@ -13,15 +13,51 @@ const GROUP_VOIP_ACTIONS = new Set([
     "group_ring_ring",
     "group_ringring",
     "group_answer",
+    "group_answer_ack",
+    "group_answerack",
     "group_end_call",
+    "group_endcall",
     "group_end",
     "group_cancel",
     "group_add_user",
     "group_join_call",
+    "group_join",
+    "group_notify",
     "group_broadcast",
     "group_broadcast_config",
     "group_sharescreen",
 ]);
+
+const CONTROL_SYNC_ACT_TYPES = new Set([
+    "pinned_convers",
+    "label_convers",
+    "mute",
+    "hidden_chat",
+    "archived_chat",
+    "mark_unread",
+    "conv_settings",
+    "quick_message",
+    "auto_reply",
+    "prod_catalog",
+    "user_devices",
+    "contact_tab",
+    "media_send2me",
+    "oneone",
+    "sticker",
+    "alias",
+    "profile",
+    "subtab",
+    "block_sharing",
+]);
+
+function safeParseControlData(raw: unknown): unknown {
+    if (typeof raw !== "string") return raw;
+    try {
+        return JSON.parse(raw);
+    } catch {
+        return raw;
+    }
+}
 
 export async function handleRealtimeControlPacket(
     listener: Listener,
@@ -33,6 +69,17 @@ export async function handleRealtimeControlPacket(
     parsed: Record<string, unknown>,
     cipherKey?: string,
 ) {
+    if (version == 1 && (cmd == 620 || cmd == 621 || cmd == 623)) {
+        const decoded = await decodeEventData(parsed, cipherKey);
+        const parsedData = safeParseControlData(decoded?.data ?? decoded);
+        listener.emit("zcloud_event", {
+            cmd,
+            type: cmd === 620 ? "push" : cmd === 621 ? "need_verify" : "done_migrate",
+            data: parsedData,
+        });
+        return true;
+    }
+
     if (version == 1 && (cmd == 601 || cmd == 602 || cmd == 603 || cmd == 604)) {
         const decoded = await decodeEventData(parsed, cipherKey);
         const parsedData = decoded?.data;
@@ -43,15 +90,17 @@ export async function handleRealtimeControlPacket(
             const actType = String(control.content.act_type ?? "");
             const act = String(control.content.act ?? "");
 
-            if (actType == "file_done") {
+            if (actType == "file_done" || actType == "video_done" || actType == "voice_aac_success") {
+                const contentData = safeParseControlData(control.content.data) as Record<string, unknown> | undefined;
+                const fileId = String(control.content.fileId ?? contentData?.fileId ?? "");
                 const data = {
-                    fileUrl: control.content.data.url,
-                    fileId: control.content.fileId,
+                    fileUrl: String(contentData?.url ?? contentData?.hd ?? contentData?.aac ?? ""),
+                    fileId,
                 };
 
-                const uploadCallback = ctx.uploadCallbacks.get(String(control.content.fileId));
+                const uploadCallback = ctx.uploadCallbacks.get(fileId);
                 if (uploadCallback) uploadCallback(data);
-                ctx.uploadCallbacks.delete(String(control.content.fileId));
+                ctx.uploadCallbacks.delete(fileId);
 
                 listener.emit("upload_attachment", data);
             } else if (actType == "voip" || (actType == "group" && GROUP_VOIP_ACTIONS.has(act))) {
@@ -120,6 +169,36 @@ export async function handleRealtimeControlPacket(
                     typeof control.content.data == "string" ? JSON.parse(control.content.data) : control.content.data;
                 const oaEvent = initializeOAEvent(oaData, act);
                 listener.emit("oa_event", oaEvent);
+            } else if (actType == "personal_board" || actType == "act_todo") {
+                listener.emit("todo_event", {
+                    act,
+                    act_type: "personal_board",
+                    data: safeParseControlData(control.content.data),
+                });
+            } else if (actType == "poll" || actType == "act_poll") {
+                listener.emit("poll_event", {
+                    act,
+                    act_type: "poll",
+                    data: safeParseControlData(control.content.data),
+                });
+            } else if (actType == "emoji_status") {
+                listener.emit("emoji_status_event", {
+                    act,
+                    act_type: "emoji_status",
+                    data: safeParseControlData(control.content.data),
+                });
+            } else if (actType == "translate") {
+                listener.emit("translate_event", {
+                    act,
+                    act_type: "translate",
+                    data: safeParseControlData(control.content.data),
+                });
+            } else if (CONTROL_SYNC_ACT_TYPES.has(actType)) {
+                listener.emit("control_sync_event", {
+                    act,
+                    act_type: actType,
+                    data: safeParseControlData(control.content.data),
+                });
             }
         }
 

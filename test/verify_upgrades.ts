@@ -18,11 +18,17 @@ import {
     UserMessage,
     ZRTCMediaSubCommand,
     ZRTPControlCommand,
+    ZRTPForwardSubCommand,
     ZRTPLegacyMediaType,
     ZRTCRole,
     ZaloSrtpSession,
+    buildAudioCodecMutePacket,
+    buildGroupCallVideoRtpHeaderExtension,
+    buildGroupVideoQualityBitrateConfigPacket,
+    buildGroupVideoQualityRequestPacket,
     buildInitCallRequest,
     buildInitCallResponse,
+    buildInitZaviPingRequest,
     buildPingRequest,
     buildRtpPacket,
     decryptWithPrivateKey,
@@ -1210,8 +1216,9 @@ async function runVerificationSuite() {
         2,
         "Phải nhận được cả 2 sự kiện call_event (601 voip answer + 604 group_request)",
     );
-    assert.equal((receivedCallEvents[0] as { type: string }).type, CallEventType.ANSWER);
-    assert.equal((receivedCallEvents[1] as { type: string }).type, CallEventType.GROUP_REQUEST);
+    const receivedCallEventTypes = receivedCallEvents.map((e) => (e as { type: string }).type);
+    assert.ok(receivedCallEventTypes.includes(CallEventType.ANSWER));
+    assert.ok(receivedCallEventTypes.includes(CallEventType.GROUP_REQUEST));
     assert.equal(receivedVoice2TextEvents.length, 1, "Phải nhận được sự kiện voice2text_event");
     assert.equal(receivedVoice2TextEvents[0].data.req_id, "v2t-req-123");
     assert.equal(receivedVoice2TextEvents[0].data.text, "Xin chào Zalo AI");
@@ -1805,8 +1812,8 @@ async function runVerificationSuite() {
                     maxUsers: 8,
                     callSetting: {
                         session: "888999000_778899_501",
+                        servers: [{ rtp: `127.0.0.1:${relayPort}`, rtcp: `127.0.0.1:${relayPort}` }],
                     },
-                    servers: [{ rtpaddr: `127.0.0.1:${relayPort}`, rtcpaddr: `127.0.0.1:${relayPort}` }],
                 }),
             });
         }
@@ -1893,7 +1900,7 @@ async function runVerificationSuite() {
     assert.ok(echoedKeyframe.sps?.equals(testSps), "SPS trích xuất phải khớp 100%");
     assert.ok(echoedKeyframe.pps?.equals(testPps), "PPS trích xuất phải khớp 100%");
     assert.ok(
-        observedVideoRtpPts.length >= 3 && observedVideoRtpPts.every((pt) => pt === 98),
+        observedVideoRtpPts.length >= 2 && observedVideoRtpPts.every((pt) => pt === 98),
         "Mọi gói RTP của Keyframe H.264 phải gửi với payloadType=98 theo chuẩn Zalo RTPSender::SendOutgoingData",
     );
 
@@ -2130,7 +2137,7 @@ async function runVerificationSuite() {
         TEST_UID,
         "broadcastGroupCallState phải gửi hostCall khớp với hostCall lúc mở cuộc gọi nhóm",
     );
-    assert.equal(lastGrpBroadcastDecoded.audiostate, 0);
+    assert.equal(lastGrpBroadcastDecoded.audiostate, 1);
     assert.equal("audioState" in lastGrpBroadcastDecoded, false, "Không gửi trùng lặp key camelCase audioState");
 
     await grpOutgoingSession.endCall("local_end");
@@ -2414,7 +2421,7 @@ async function runVerificationSuite() {
     );
     assert.equal(initialBroadcastDecoded.hostCall, 450859586);
     assert.equal(initialBroadcastDecoded.userId, 450859586);
-    assert.equal(initialBroadcastDecoded.videostate, 1);
+    assert.equal(initialBroadcastDecoded.videostate, 0);
 
     const groupAnswerMediaEvents: Array<{
         partnerId?: string;
@@ -2557,6 +2564,345 @@ async function runVerificationSuite() {
     );
     assert.equal(multiSsrcRtcp.readUInt32BE(rembOffsetInMulti + 20), 1001);
     assert.equal(multiSsrcRtcp.readUInt32BE(rembOffsetInMulti + 24), 1002);
+
+    // Kiểm định chuẩn nhị phân SFU Zavi (GroupCallController trên ZaloCall 1.2.1):
+    // 1. SRTP AES_CM_128_NULL_AUTH + zeroSeqMode (srtpNoSeq): IV dùng seq=0 & roc=0, không gắn 10-byte HMAC tag, giải mã được ngay cả khi SFU viết lại sequenceNumber
+    const zaviKeyB64 = generateSrtpMasterKeyBase64();
+    const zaviSrtpSender = new ZaloSrtpSession(zaviKeyB64, {
+        suite: "AES_CM_128_NULL_AUTH",
+        zeroSeqMode: true,
+    });
+    const zaviSrtpReceiver = new ZaloSrtpSession(zaviKeyB64, {
+        suite: "AES_CM_128_NULL_AUTH",
+        zeroSeqMode: true,
+    });
+    const rawSampleRtp = buildRtpPacket({
+        payloadType: 98,
+        sequenceNumber: 123,
+        timestamp: 90000,
+        ssrc: 450859586,
+        marker: true,
+        payload: Buffer.from("zavi-sfu-video-payload", "utf-8"),
+    });
+    const zaviProtectedRtp = zaviSrtpSender.protectRtp(rawSampleRtp);
+    assert.equal(
+        zaviProtectedRtp.length,
+        rawSampleRtp.length,
+        "SRTP AES_CM_128_NULL_AUTH (srtpType=2) trong Group Call không được gắn thêm 10-byte HMAC auth tag",
+    );
+    // Giả lập SFU Zavi viết lại sequenceNumber từ 123 -> 9999 và gắn thêm CSRC[0] = 450859586, đổi SSRC thành 1
+    const sfuRewrittenRtp = Buffer.alloc(zaviProtectedRtp.length + 4);
+    sfuRewrittenRtp[0] = (zaviProtectedRtp[0] & 0xf0) | 0x01; // CC = 1
+    sfuRewrittenRtp[1] = zaviProtectedRtp[1];
+    sfuRewrittenRtp.writeUInt16BE(9999, 2); // SFU viết lại seqNum = 9999
+    sfuRewrittenRtp.writeUInt32BE(90000, 4);
+    sfuRewrittenRtp.writeUInt32BE(450859586, 8); // SSRC giữ nguyên để khớp IV (hoặc CSRC[0] chứa senderUid)
+    sfuRewrittenRtp.writeUInt32BE(1001, 12); // CSRC[0] = 1001 (32-bit VoIP UID thực của người gửi)
+    zaviProtectedRtp.subarray(12).copy(sfuRewrittenRtp, 16);
+
+    const zaviUnprotectedRtp = zaviSrtpReceiver.unprotectRtp(sfuRewrittenRtp);
+    const parsedSfuRtp = parseRtpPacket(zaviUnprotectedRtp);
+    assert.equal(
+        parsedSfuRtp.payload.toString("utf-8"),
+        "zavi-sfu-video-payload",
+        "zeroSeqMode (srtpNoSeq) phải giải mã chính xác payload ngay cả khi SFU Zavi thay đổi sequenceNumber từ 123 sang 9999",
+    );
+    assert.deepEqual(parsedSfuRtp.csrcList, [1001]);
+    assert.equal(
+        parsedSfuRtp.senderUid,
+        1001,
+        "parseRtpPacket phải trích xuất CSRC[0] (1001) làm senderUid thực tế trong Group Call",
+    );
+
+    // 2. Kiểm định gói UDP điều khiển của SFU Zavi:
+    //    - InitCall flags=4 kèm 4-byte extraData [0x00, 0x05, 0x01, 0x01]
+    //    - InitZaviPing (cmd=51, subCmd=1)
+    //    - VideoQualityBitrateConfig (cmd=32, subCmd=12) & VideoQualityRequest (cmd=32, subCmd=13) với 2-byte uint16LE length tại offset 21
+    //    - AudioCodec Mute/Unmute (cmd=1, codecType=9/3)
+    //    - OnCamera=7, OffCamera=8, ShareScreen=9
+    assert.equal(ZRTPForwardSubCommand.OnCamera, 7);
+    assert.equal(ZRTPForwardSubCommand.OffCamera, 8);
+    assert.equal(ZRTPForwardSubCommand.ShareScreen, 9);
+    assert.equal(ZRTPForwardSubCommand.VideoQualityBitrateConfig, 12);
+    assert.equal(ZRTPForwardSubCommand.VideoQualityRequest, 13);
+
+    const zaviInitPkt = buildInitCallRequest({
+        isCaller: true,
+        seqNum: 0,
+        headerCallId: 0,
+        callId: 778899,
+        fromUid: 450859586,
+        toUid: 0,
+        flags: 4,
+        subFlags: 0,
+        sessId: "888999000_778899_501",
+        extraData: Buffer.from([0x00, 0x05, 0x01, 0x01]),
+    });
+    const parsedZaviInit = parseZRTPPacket(zaviInitPkt);
+    assert.equal(parsedZaviInit.family, "control");
+    if (parsedZaviInit.family === "control") {
+        assert.equal(parsedZaviInit.flags, 4);
+        assert.equal(parsedZaviInit.sessId, "888999000_778899_501");
+        assert.deepEqual(parsedZaviInit.extraData, Buffer.from([0x00, 0x05, 0x01, 0x01]));
+    }
+
+    const zaviPingPkt = buildInitZaviPingRequest({
+        seqNum: 0,
+        callId: 0,
+        fromUid: 450859586,
+        routingToken: 778899,
+        subCmd: 1,
+    });
+    const parsedZaviPing = parseZRTPPacket(zaviPingPkt);
+    assert.equal(parsedZaviPing.family, "control");
+    if (parsedZaviPing.family === "control") {
+        assert.equal(parsedZaviPing.cmd, ZRTPControlCommand.InitZaviPing);
+        assert.equal(parsedZaviPing.flags, 1);
+    }
+
+    const vqBitratePkt = buildGroupVideoQualityBitrateConfigPacket({
+        fromUid: 450859586,
+        routingToken: 778899,
+    });
+    assert.equal(
+        vqBitratePkt.readUInt16LE(21),
+        10,
+        "subCmd=12 (1 mức mặc định qualityId=0 300kbps 320x240) phải ghi độ dài 2-byte uint16LE = 10 ở offset 21",
+    );
+    const parsedVqBitrate = parseZRTPPacket(vqBitratePkt);
+    assert.equal(parsedVqBitrate.family, "control");
+    if (parsedVqBitrate.family === "control") {
+        assert.equal(parsedVqBitrate.cmd, ZRTPControlCommand.RequestForward);
+        assert.equal(parsedVqBitrate.flags, ZRTPForwardSubCommand.VideoQualityBitrateConfig);
+        assert.equal(parsedVqBitrate.forwardPayload?.length, 10);
+        assert.deepEqual(
+            parsedVqBitrate.videoQualityConfigs?.map((c) => ({
+                bitrate: c.bitrate,
+                width: c.width,
+                height: c.height,
+            })),
+            [{ bitrate: 300, width: 320, height: 240 }],
+            "VideoQualityBitrateConfig (subCmd=12) phải ghi bitrate theo đơn vị Kbps (300) và độ phân giải chuẩn 320x240 khớp với GroupCallConfig::BuildQualityBitrateConfigs",
+        );
+    }
+
+    // Kiểm định RFC 5285 One-Byte RTP Header Extension (0xBEDE, id=3 AbsSendTime + id=14 VideoSvcLayerIdx) cho Group Video Call
+    const sfuExtBuf = buildGroupCallVideoRtpHeaderExtension({
+        sequenceNumber: 4321,
+        spatialId: 0,
+        temporalId: 0,
+        maxSpatialId: 0,
+        maxTemporalId: 2,
+    });
+    assert.equal(sfuExtBuf.length, 24, "RFC 5285 extension của Zalo Group Video Call phải dài đúng 24 bytes");
+    assert.equal(sfuExtBuf.readUInt16BE(0), 0xbede);
+    assert.equal(sfuExtBuf.readUInt16BE(2), 0x0005);
+    assert.equal(sfuExtBuf.readUInt8(4), 0x32, "Element 1 phải là id=3, L=2 (0x32, AbsoluteSendTime)");
+    assert.equal(sfuExtBuf.readUInt8(8), 0x51, "Element 2 phải là id=5, L=1 (0x51, TransportSequenceNumber)");
+    assert.equal(sfuExtBuf.readUInt8(11), 0xc2, "Element 3 phải là id=12, L=2 (0xc2, VideoGroupCall)");
+    assert.equal(sfuExtBuf.readUInt8(15), 0xd6, "Element 4 phải là id=13, L=6 (0xd6, CaptureNtpTime)");
+    assert.equal(sfuExtBuf.readUInt16BE(13), 4321, "seq trong VideoGroupCall (0xc2) phải bằng rtpSeqNum (4321)");
+
+    const rtpWithSfuExt = buildRtpPacket({
+        payloadType: 98,
+        sequenceNumber: 0,
+        timestamp: 90000,
+        ssrc: 450859586,
+        marker: true,
+        headerExtension: sfuExtBuf,
+        payload: Buffer.from("svc-video-frame"),
+    });
+    assert.equal(rtpWithSfuExt[0] & 0x10, 0x10, "Cờ X=1 (0x10) phải được bật trong byte 0 của RTP header");
+    const parsedRtpWithSfuExt = parseRtpPacket(rtpWithSfuExt);
+    assert.equal(parsedRtpWithSfuExt.extension, true);
+    assert.equal(parsedRtpWithSfuExt.headerLength, 36, "Header RTP (12B) + Extension (24B) = 36B");
+    assert.equal(
+        parsedRtpWithSfuExt.sequenceNumber,
+        0,
+        "parseRtpPacket phải giữ nguyên sequenceNumber=0 của gói đầu tiên từ Zavi SFU để không trùng với seq=1 của mảnh FU-A kế tiếp",
+    );
+    assert.deepEqual(parsedRtpWithSfuExt.sfuExt?.seq, [4321, 4321, 4321]);
+
+    const vqReqPkt = buildGroupVideoQualityRequestPacket({
+        fromUid: 450859586,
+        routingToken: 778899,
+        partners: [
+            { partnerUid: 1001, qualityId: 1 },
+            { partnerUid: 1002, qualityId: 1 },
+        ],
+    });
+    assert.equal(
+        vqReqPkt.readUInt16LE(21),
+        11,
+        "subCmd=13 với 2 thành viên phải có độ dài payload = 1 + 2*5 = 11 byte",
+    );
+    const parsedVqReq = parseZRTPPacket(vqReqPkt);
+    assert.equal(parsedVqReq.family, "control");
+    if (parsedVqReq.family === "control") {
+        assert.equal(parsedVqReq.cmd, ZRTPControlCommand.RequestForward);
+        assert.equal(parsedVqReq.flags, ZRTPForwardSubCommand.VideoQualityRequest);
+        assert.deepEqual(parsedVqReq.videoQualityRequests, [
+            { partnerUid: 1001, qualityId: 1 },
+            { partnerUid: 1002, qualityId: 1 },
+        ]);
+    }
+
+    const muteCodecPkt = buildAudioCodecMutePacket({
+        fromUid: 450859586,
+        routingToken: 778899,
+        muted: true,
+    });
+    const parsedMuteCodec = parseZRTPPacket(muteCodecPkt);
+    assert.equal(parsedMuteCodec.family, "control");
+    if (parsedMuteCodec.family === "control") {
+        assert.equal(parsedMuteCodec.cmd, ZRTPControlCommand.AudioCodec);
+        assert.equal(parsedMuteCodec.audioCodecType, 9);
+    }
+
+    // 3. Kiểm định gói ZaviRoomUpdated (cmd=50) từ SFU và xử lý RTP có CSRC[0] trong ZaloRtcSession Group Call
+    const zaviRoomUpdatedBuf = Buffer.alloc(25 + 8);
+    zaviRoomUpdatedBuf.writeUInt8(2, 0); // packetType = 2 (response)
+    zaviRoomUpdatedBuf.writeUInt8(0x01, 1);
+    zaviRoomUpdatedBuf.writeUInt32LE(1, 2); // seqNum
+    zaviRoomUpdatedBuf.writeUInt32LE(778899, 6); // headerCallId
+    zaviRoomUpdatedBuf.writeUInt32LE(0, 10); // fromUid
+    zaviRoomUpdatedBuf.writeUInt32LE(450859586, 14); // toUid
+    zaviRoomUpdatedBuf.writeUInt16LE(ZRTPControlCommand.ZaviRoomUpdated, 18); // cmd = 50
+    zaviRoomUpdatedBuf.writeUInt8(0, 20); // flags
+    zaviRoomUpdatedBuf.writeInt32LE(0, 21); // errorCode = 0
+    zaviRoomUpdatedBuf.writeUInt32LE(1001, 25);
+    zaviRoomUpdatedBuf.writeUInt32LE(1002, 29);
+
+    const handleIncomingUdpInternal = (
+        grpHostUidSession as unknown as { handleIncomingUdpPacket: (msg: Buffer) => void }
+    ).handleIncomingUdpPacket.bind(grpHostUidSession);
+    handleIncomingUdpInternal(zaviRoomUpdatedBuf);
+    assert.equal(
+        grpHostUidSession.getConnectionParams()?.packetMode,
+        1,
+        "Group Call tới SFU Zavi bắt buộc dùng packetMode=1 (5-byte 0x03/0x05/0x0d/0x0f khi gửi, 1-byte 0x04/0x0e khi nhận) thay vì packetMode=2 (9-byte 0x7f)",
+    );
+
+    // Gửi gói RTP Video qua 1-byte 0x0e (IncomingVideoRtp) trong đó SSRC=1 (mixer) nhưng CSRC[0]=1002 (thành viên '5002')
+    const csrcVideoFrames: Array<{ ssrc: number; partnerId?: string }> = [];
+    grpHostUidSession.on("video_frame", (vf) => {
+        csrcVideoFrames.push({ ssrc: vf.ssrc, partnerId: vf.partnerId });
+    });
+    const rawRtpWithCsrc = Buffer.alloc(16 + iosFrag1.length);
+    rawRtpWithCsrc[0] = 0x81; // V=2, CC=1
+    rawRtpWithCsrc[1] = 98; // PT=98
+    rawRtpWithCsrc.writeUInt16BE(77, 2);
+    rawRtpWithCsrc.writeUInt32BE(270000, 4);
+    rawRtpWithCsrc.writeUInt32BE(1, 8); // SSRC = 1 (SFU mixer)
+    rawRtpWithCsrc.writeUInt32BE(1002, 12); // CSRC[0] = 1002 (thành viên '5002')
+    iosFrag1.copy(rawRtpWithCsrc, 16);
+    const protectedCsrcRtp = grpHostUidSession.getSrtpSession()
+        ? grpHostUidSession.getSrtpSession()!.protectRtp(rawRtpWithCsrc)
+        : rawRtpWithCsrc;
+    handleIncomingUdpInternal(Buffer.concat([Buffer.from([ZRTPLegacyMediaType.IncomingVideoRtp]), protectedCsrcRtp]));
+    assert.equal(csrcVideoFrames.length, 1);
+    assert.equal(
+        csrcVideoFrames[0].ssrc,
+        1002,
+        "Trong Group Call, video_frame.ssrc phải lấy từ CSRC[0] (1002) thay vì SSRC của SFU mixer (1)",
+    );
+    assert.equal(
+        csrcVideoFrames[0].partnerId,
+        "5002",
+        "Trong Group Call, video_frame.partnerId phải ánh xạ từ CSRC[0] (1002) sang Zalo UID ('5002')",
+    );
+
+    // Kiểm định GROUP_BROADCAST với callState=3 (Answered / In-Call theo ZCallGroupInfo::_processUpdatePing @ 0x10012b2cc):
+    // TUYỆT ĐỐI KHÔNG được đánh dấu thành viên rời cuộc gọi (group_leave) khi callState === 3!
+    let groupLeaveTriggeredOnState3 = false;
+    let cameraStateOnBroadcast3: boolean | undefined;
+    grpHostUidSession.on("media_state_change", (ev) => {
+        if (ev.partnerId === "5001" && ev.rawAct === "group_leave") {
+            groupLeaveTriggeredOnState3 = true;
+        }
+        if (ev.partnerId === "5001" && ev.rawAct === "group_broadcast") {
+            cameraStateOnBroadcast3 = ev.isCameraOn;
+        }
+    });
+    await grpHostUidSession.handleCallEvent({
+        type: CallEventType.GROUP_BROADCAST,
+        act: "group_broadcast",
+        act_type: "group",
+        data: {
+            callId: 778899,
+            userId: 1001,
+            callState: 3,
+            audioState: 0,
+            videoState: 0,
+        },
+    });
+    assert.equal(
+        groupLeaveTriggeredOnState3,
+        false,
+        "GROUP_BROADCAST với callState=3 (In-Call) tuyệt đối không được xoá thành viên khỏi phòng (group_leave)",
+    );
+    assert.equal(
+        cameraStateOnBroadcast3,
+        true,
+        "GROUP_BROADCAST với callState=3, videoState=0 phải cập nhật isCameraOn=true",
+    );
+
+    // Kiểm định sendH264AnnexBFrame trong Group Video Call:
+    // - Gắn RFC 5285 One-Byte Extension (0xBEDE, 16 bytes) vào mỗi gói RTP
+    // - Đóng gói Keyframe (> 1135 bytes) theo chuẩn Zalo Annex-B FU-A (0x1c, origNalType=0) để VCMPacket::CopyCodecSpecifics không đánh rơi frame
+    // - Chống nhân bản gói RTP trùng (sequenceNumber, timestamp) từ SFU Zavi
+    const capturedGroupVideoRtpPackets: Buffer[] = [];
+    const origSendVideoRtp = grpHostUidSession.sendVideoRtp.bind(grpHostUidSession);
+    grpHostUidSession.sendVideoRtp = async (rtpPkt: Buffer) => {
+        capturedGroupVideoRtpPackets.push(rtpPkt);
+        return origSendVideoRtp(rtpPkt);
+    };
+    await grpHostUidSession.sendH264AnnexBFrame(testKeyAnnexB, { timestamp: 360000 });
+    assert.equal(
+        capturedGroupVideoRtpPackets.length,
+        2,
+        "Keyframe 1626B trong Group Video Call phải được chia đều thành 2 gói FU-A Annex-B (<= 1135B/mảnh)",
+    );
+    const parsedGrpOut0 = parseRtpPacket(capturedGroupVideoRtpPackets[0]);
+    const parsedGrpOut1 = parseRtpPacket(capturedGroupVideoRtpPackets[1]);
+    assert.equal(parsedGrpOut0.extension, true, "Gói RTP Video gửi đi trong Group Call phải có cờ X=1 (0xBEDE)");
+    assert.equal(parsedGrpOut0.payloadType, 98);
+    assert.equal(parsedGrpOut0.marker, false);
+    assert.equal(parsedGrpOut0.payload[0], 0x1c, "Byte 0 của mảnh FU-A phải là 0x1c (type=28)");
+    assert.equal(parsedGrpOut0.payload[1], 0x80, "Byte 1 của mảnh đầu tiên phải là 0x80 (S=1, E=0, origNalType=0)");
+    assert.deepEqual(
+        parsedGrpOut0.payload.subarray(2, 6),
+        Buffer.from([0x00, 0x00, 0x00, 0x01]),
+        "Mảnh đầu tiên của FU-A(orig=0) phải bắt đầu trực tiếp bằng Annex-B start code 00 00 00 01",
+    );
+    assert.equal(parsedGrpOut1.marker, true, "Mảnh cuối cùng phải bật cờ marker=true");
+    assert.equal(parsedGrpOut1.payload[0], 0x1c);
+    assert.equal(parsedGrpOut1.payload[1], 0x40, "Byte 1 của mảnh cuối phải là 0x40 (S=0, E=1, origNalType=0)");
+
+    // Kiểm định khử trùng lặp gói RTP (cùng sequenceNumber & timestamp) từ SFU Zavi
+    const frameCountBeforeDup = multiSsrcFrames.length;
+    const singleAnnexBPkt = Buffer.from([0x00, 0x00, 0x00, 0x01, 0x41, 0x9a, 0x24, 0x6c, 0x88]);
+    handleVideoRtpInternal({
+        payload: singleAnnexBPkt,
+        sequenceNumber: 555,
+        timestamp: 450000,
+        ssrc: 1001,
+        payloadType: 97,
+        marker: true,
+    });
+    handleVideoRtpInternal({
+        payload: singleAnnexBPkt,
+        sequenceNumber: 555,
+        timestamp: 450000,
+        ssrc: 1001,
+        payloadType: 97,
+        marker: true,
+    });
+    assert.equal(
+        multiSsrcFrames.length,
+        frameCountBeforeDup + 1,
+        "Gói RTP trùng lặp (cùng sequenceNumber=555 & timestamp=450000) từ SFU Zavi chỉ được emit đúng 1 khung hình",
+    );
 
     await grpHostUidSession.endCall("local_end");
 

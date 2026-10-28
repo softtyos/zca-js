@@ -1,6 +1,6 @@
 {
     "name": "@softtynet/zca-js",
-    "version": "2.3.11",
+    "version": "2.3.12",
     "description": "Zalo API client library for Node.js and Bun, maintained by Softtynet.",
     "main": "dist/cjs/index.cjs",
     "module": "dist/index.js",
@@ -27,6 +27,9 @@
         "build:cjs": "rollup -c rollup.config.js",
         "build": "npm run build:clean && npm run build:esm && npm run build:cjs",
         "typecheck": "tsc --noEmit && tsc -p test/tsconfig.json --noEmit && tsc -p examples/tsconfig.json --noEmit && tsc -p docs/tsconfig.json --noEmit",
+        "test": "npm run test:unit && npm run test:verify",
+        "test:unit": "npx --yes tsx --test test/unit/*.test.ts",
+        "test:coverage": "npx --yes tsx --test --experimental-test-coverage test/unit/*.test.ts",
         "test:verify": "npm run typecheck && npx --yes tsx test/verify_upgrades.ts",
         "test:live": "npx --yes tsx test/verify_live.ts",
         "test:call-studio": "npm run build && npx --yes tsx test/call_studio_server.ts",

@@ -10,11 +10,17 @@ import {
     ZaloRtcSession,
     parseIncomingCallEvent,
     type AcceptIncomingCallOptions,
+    type GroupCallPartnerInfo,
     type ParsedIncomingCallInfo,
     type RejectIncomingCallOptions,
     type ZaloCallConnectionParams,
     type ZaloMobileDirectHandoffBundle,
+    type ZaloRtcAudioFrameEvent,
+    type ZaloRtcMediaStateChangeEvent,
     type ZaloRtcSessionOptions,
+    type ZaloRtcSessionState,
+    type ZaloRtcVideoAnnexBFrameEvent,
+    type ZaloRtcVideoFrameEvent,
 } from "./ZaloRtcSession.js";
 
 export type ZaloCallControllerOptions = ZaloCallTransportOptions &
@@ -54,9 +60,13 @@ export type MakeDesktopGroupCallOptions = {
     groupName?: string;
     groupAvatar?: string;
     isVideoCall?: boolean;
-    members: Array<{
+    callType?: CallType;
+    enableCamera?: boolean;
+    offCameraAtStart?: boolean;
+    partners?: Array<string | number>;
+    members?: Array<{
         id: number | string;
-        name: string;
+        name?: string;
         avatar?: string;
     }>;
 };
@@ -76,6 +86,14 @@ export interface ZaloCallControllerEvents {
     signal_response: [signalType: number, seqId: number, response: unknown];
     connection_params: [params: ZaloCallConnectionParams];
     incoming_call: [info: ParsedIncomingCallInfo];
+    active: [params: ZaloCallConnectionParams];
+    state: [state: ZaloRtcSessionState];
+    audio_frame: [frame: ZaloRtcAudioFrameEvent];
+    video_frame: [frame: ZaloRtcVideoFrameEvent];
+    video_annexb_frame: [frame: ZaloRtcVideoAnnexBFrameEvent];
+    media_state_change: [event: ZaloRtcMediaStateChangeEvent];
+    group_partner_sync: [partners: GroupCallPartnerInfo[]];
+    pli_request: [event: { timestamp: number }];
     call_ended: [data: unknown];
     call_stats: [data: unknown];
     error: [error: unknown];
@@ -143,6 +161,44 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
         this.emit("ready");
     }
 
+    private createAndBindSession(): ZaloRtcSession {
+        const session = new ZaloRtcSession(this.api, this.options);
+        this.activeSession = session;
+
+        session.on("ended", (reason) => {
+            this.emit("call_ended", { reason });
+        });
+        session.on("error", (err) => {
+            this.emit("error", err);
+        });
+        session.on("active", (params) => {
+            this.emit("active", params);
+        });
+        session.on("state", (state) => {
+            this.emit("state", state);
+        });
+        session.on("audio_frame", (frame) => {
+            this.emit("audio_frame", frame);
+        });
+        session.on("video_frame", (frame) => {
+            this.emit("video_frame", frame);
+        });
+        session.on("video_annexb_frame", (frame) => {
+            this.emit("video_annexb_frame", frame);
+        });
+        session.on("media_state_change", (ev) => {
+            this.emit("media_state_change", ev);
+        });
+        session.on("group_partner_sync", (partners) => {
+            this.emit("group_partner_sync", partners);
+        });
+        session.on("pli_request", (ev) => {
+            this.emit("pli_request", ev as { timestamp: number });
+        });
+
+        return session;
+    }
+
     /**
      * Thực hiện cuộc gọi 1-1 (Thoại hoặc Video) bằng thuật toán thuần TypeScript (`ZaloRtcSession`).
      */
@@ -153,15 +209,7 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
             await this.activeSession.endCall("new_call").catch(() => {});
         }
 
-        const session = new ZaloRtcSession(this.api, this.options);
-        this.activeSession = session;
-
-        session.on("ended", (reason) => {
-            this.emit("call_ended", { reason });
-        });
-        session.on("error", (err) => {
-            this.emit("error", err);
-        });
+        const session = this.createAndBindSession();
 
         const params = await session.startOutgoingCall(String(options.calleeId), {
             callType: isVideo ? CallType.Video : CallType.Audio,
@@ -187,16 +235,9 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
             this.activeSession = null;
         }
         if (!this.activeSession || this.activeSession.getState() === "ended") {
-            const session = new ZaloRtcSession(this.api, this.options);
-            this.activeSession = session;
-            session.on("ended", (reason) => {
-                this.emit("call_ended", { reason });
-            });
-            session.on("error", (err) => {
-                this.emit("error", err);
-            });
+            this.createAndBindSession();
         }
-        return this.activeSession.ringIncomingCall(callEvent);
+        return this.activeSession!.ringIncomingCall(callEvent);
     }
 
     /**
@@ -217,16 +258,9 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
             this.activeSession = null;
         }
         if (!this.activeSession || this.activeSession.getState() === "ended") {
-            const session = new ZaloRtcSession(this.api, this.options);
-            this.activeSession = session;
-            session.on("ended", (reason) => {
-                this.emit("call_ended", { reason });
-            });
-            session.on("error", (err) => {
-                this.emit("error", err);
-            });
+            this.createAndBindSession();
         }
-        const params = await this.activeSession.acceptIncomingCall(callEvent, options);
+        const params = await this.activeSession!.acceptIncomingCall(callEvent, options);
         this.emit("connection_params", params);
         return params;
     }
@@ -265,17 +299,28 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
      * Khởi tạo cuộc gọi Nhóm (Group Audio / Video Call) qua kênh IPC và `ZaloRtcSession`.
      */
     public makeGroupCall(options: MakeDesktopGroupCallOptions): void {
-        const isVideo = Boolean(options.isVideoCall);
+        const isVideo =
+            options.callType !== undefined
+                ? options.callType === CallType.GroupVideo || options.callType === CallType.Video
+                : Boolean(options.isVideoCall);
+        const memberList =
+            Array.isArray(options.members) && options.members.length > 0
+                ? options.members.map((m) => ({
+                      id: String(m.id),
+                      name: m.name ?? "",
+                      avatar: m.avatar ?? "",
+                  }))
+                : (options.partners ?? []).map((id) => ({
+                      id: String(id),
+                      name: "",
+                      avatar: "",
+                  }));
 
         this.transport.send({
             type: "request",
             command: "makeCall",
             data: {
-                partner: options.members.map((m) => ({
-                    id: String(m.id),
-                    name: m.name,
-                    avatar: m.avatar ?? "",
-                })),
+                partner: memberList,
                 type: isVideo ? CallType.GroupVideo : CallType.GroupAudio,
                 groupInfo: {
                     id: String(options.groupId),
@@ -290,30 +335,36 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
      * Thực hiện cuộc gọi Nhóm (Thoại hoặc Video) trực tiếp bằng `ZaloRtcSession` thuần TypeScript.
      */
     public async makeGroupCallRtc(options: MakeDesktopGroupCallOptions): Promise<ZaloCallConnectionParams> {
-        const isVideo = Boolean(options.isVideoCall);
+        const isVideo =
+            options.callType !== undefined
+                ? options.callType === CallType.GroupVideo || options.callType === CallType.Video
+                : Boolean(options.isVideoCall);
 
         if (this.activeSession) {
             await this.activeSession.endCall("new_group_call").catch(() => {});
         }
 
-        const session = new ZaloRtcSession(this.api, this.options);
-        this.activeSession = session;
-
-        session.on("ended", (reason) => {
-            this.emit("call_ended", { reason });
-        });
-        session.on("error", (err) => {
-            this.emit("error", err);
-        });
+        const session = this.createAndBindSession();
+        const memberList =
+            Array.isArray(options.members) && options.members.length > 0
+                ? options.members.map((m) => ({
+                      id: String(m.id),
+                      name: m.name ?? "",
+                      avatar: m.avatar ?? "",
+                  }))
+                : (options.partners ?? []).map((id) => ({
+                      id: String(id),
+                      name: "",
+                      avatar: "",
+                  }));
 
         const params = await session.startGroupCall(String(options.groupId), {
             callType: isVideo ? CallType.GroupVideo : CallType.GroupAudio,
-            partners: options.members.map((m) => String(m.id)),
-            partnerInfo: options.members.map((m) => ({
-                id: String(m.id),
-                name: m.name,
-                avatar: m.avatar ?? "",
-            })),
+            groupName: options.groupName,
+            groupAvatar: options.groupAvatar,
+            offCameraAtStart: options.offCameraAtStart ?? (isVideo && options.enableCamera === false),
+            partners: memberList.map((m) => m.id),
+            partnerInfo: memberList,
         });
 
         this.emit("connection_params", params);
@@ -739,7 +790,7 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
                     );
                     break;
                 case 509:
-                case 12098:
+                case 12097:
                     result = await this.api.call.pingGroupCall(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
                         userId: paramsObj.userId ? String(paramsObj.userId) : undefined,
@@ -765,7 +816,7 @@ export class ZaloCallController extends EventEmitter<ZaloCallControllerEvents> {
                     });
                     break;
                 case 510:
-                case 12097:
+                case 12098:
                     result = await this.api.call.broadcastGroupCallState(callId, {
                         hostCall: String(paramsObj.hostCall ?? ""),
                         userId: paramsObj.userId ? String(paramsObj.userId) : undefined,

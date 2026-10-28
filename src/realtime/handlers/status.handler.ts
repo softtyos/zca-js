@@ -29,6 +29,7 @@ export async function handleRealtimeStatusPacket(
     if (cmd == 602 && subCmd == 0) {
         const parsedData = (await decodeEventData(parsed, cipherKey)).data;
         const { actions } = parsedData;
+        if (!Array.isArray(actions)) return false;
 
         for (const action of actions) {
             if (action.act_type == "typing") {
@@ -40,6 +41,38 @@ export async function handleRealtimeStatusPacket(
                     const typingObject = new GroupTyping(data);
                     listener.emit("typing", typingObject);
                 }
+            } else if (action.act_type == "translate") {
+                let data: unknown = action.data;
+                if (typeof action.data === "string") {
+                    try {
+                        data = JSON.parse(action.data);
+                    } catch {
+                        try {
+                            data = JSON.parse(`{${action.data}}`);
+                        } catch {
+                            data = action.data;
+                        }
+                    }
+                }
+                listener.emit("translate_event", {
+                    act: String(action.act ?? ""),
+                    act_type: "translate",
+                    data,
+                });
+            } else if (action.act == "online_status" && action.act_type == "profile") {
+                let data: unknown = action.data;
+                if (typeof action.data === "string") {
+                    try {
+                        data = JSON.parse(action.data);
+                    } catch {
+                        data = action.data;
+                    }
+                }
+                listener.emit("online_status_event", {
+                    act: "online_status",
+                    act_type: "profile",
+                    data,
+                });
             }
         }
         return true;

@@ -1,11 +1,11 @@
 ---
-title: "Cookbook & Best Practices - 6 Kịch bản Thực chiến Production"
-description: "Hướng dẫn thực chiến: Lưu & khôi phục phiên đăng nhập (exportSession), gắn Proxy HTTP/SOCKS5 cho đa tài khoản, phân trang chống Rate-Limit, WebSocket 24/7, xử lý lỗi ZaloApiError và điều khiển 28 API Gọi thoại/Video 1-1 & Nhóm."
+title: "Cookbook & Best Practices - 10 Kịch bản Thực chiến Production"
+description: "Hướng dẫn thực chiến: Lưu & khôi phục phiên đăng nhập (exportSession), gắn Proxy HTTP/SOCKS5 cho đa tài khoản, phân trang chống Rate-Limit, WebSocket 24/7, xử lý lỗi ZaloApiError, Gọi thoại/Video 2 chiều 1-1 & Nhóm (ZaloRtcSession), quản lý Zalo Official Account (OA), Dịch AI đa ngôn ngữ, Zalo To-Do & Nhắc hẹn 1-1, GIF Giphy/Guggy & Nhãn CRM."
 ---
 
 # 🛠️ Kịch bản Thực chiến (Cookbook & Production Best Practices)
 
-Tài liệu này tổng hợp **6 mẫu thiết kế chuẩn Production** khi vận hành hệ thống Bot / Worker Zalo thực tế với `@softtynet/zca-js`.
+Tài liệu này tổng hợp **10 mẫu thiết kế chuẩn Production** khi vận hành hệ thống Bot / Worker Zalo thực tế với `@softtynet/zca-js`.
 
 ---
 
@@ -129,11 +129,16 @@ async function fetchGroupMediaOwners(api: any, groupId: string) {
 
 ---
 
-## 4. Duy trì Kết nối WebSocket Bền bỉ 24/7 (`Listener` + `KeepAlive`)
+## 4. Duy trì Kết nối WebSocket Bền bỉ 24/7 (`Listener` + `KeepAlive` + 4 Outbound WS Requests)
 
 ```ts
 api.listener.on("connected", () => {
     console.log("🟢 WebSocket Zalo đã kết nối");
+    // Chủ động đồng bộ trạng thái Online, Đã nhận/Đã xem và cảm xúc ngay khi kết nối
+    api.listener.sendPingActive();
+    api.listener.requestLastDeliverSeen();
+    api.listener.requestLastSeenSubChatTab();
+    api.listener.requestLastSeenReaction();
 });
 
 api.listener.on("disconnected", (code, reason) => {
@@ -169,45 +174,49 @@ try {
 
 ---
 
-## 6. Điều khiển Vòng đời Cuộc gọi Thoại / Video 1-1 & Gọi Nhóm (`api.call` — 28 APIs)
+## 6. Gọi Thoại, Video 1-1 & Gọi Nhóm 2 Chiều (`ZaloRtcSession` & 30 APIs trong `api.call`)
 
-Phân hệ `api.call` cung cấp trọn bộ **28 API Báo hiệu (`zpw_type = 24`)** từ cuộc gọi 1-1 (`11300` → `11311`, `12006`, `12056`, `12064`) đến cuộc gọi nhóm (`12433` → `12447`, `12043`, `12044`, `12097`, `12098`):
+Phân hệ `api.call` cung cấp trọn bộ **30 API** gồm 28 API Báo hiệu (`zpw_type = 24`) và 2 bộ máy truyền tải **2 chiều thuần TypeScript (`createRtcSession` & `createController`)**:
 
 ```ts
 import { CallType } from "@softtynet/zca-js";
 
-// A. Khởi tạo cuộc gọi 1-1 nhanh (gộp tự động 11300 + 11301)
-const callRes = await api.call.sendVoiceCall(targetUid, {
-    callType: CallType.Audio, // Hoặc CallType.Video
-});
-console.log("Đã đổ chuông! Call ID:", callRes.callId, "RTP Server:", callRes.rtpServer);
+const session = api.call.createRtcSession({ autoAttachListener: true });
 
-// B. Hoặc điều khiển từng bước (Step-by-step Signaling cho ZRTC Media Engine)
-const step1 = await api.call.requestVoiceCall(targetUid, { callType: CallType.Video });
-const step2 = await api.call.sendRequestVoiceCall(targetUid, {
-    callId: step1.callId,
-    sessId: step1.sessId,
-    callType: CallType.Video,
-    rtpServer: step1.rtpServer,
-    rtcpServer: step1.rtcpServer,
-    zrtpKey: step1.zrtpKey,
+// A. Gọi Video 1-1 hai chiều (Opus 16kHz + H.264 Annex-B FU-A)
+const callParams = await session.startOutgoingCall(targetUid, {
+    callType: CallType.Video, // Hoặc CallType.Audio
+});
+console.log("Đã kết nối RTP Server:", callParams.rtpAddress);
+
+// B. Nhận khung âm thanh Opus & hình ảnh H.264 Annex-B từ đối phương / thành viên nhóm
+session.on("audio_frame", (frame) => {
+    // frame.payload: Buffer (Opus 16kHz Mono), frame.ssrc: number
+});
+session.on("video_annexb_frame", (frame) => {
+    // frame.annexB: Buffer (00 00 00 01 + SPS/PPS/IDR/P-Slice)
+    // frame.partnerId?: string (Zalo UID 19 chữ số của người phát trong Group Call)
+    // frame.isKeyframe: boolean
 });
 
-// C. Xử lý khi có cuộc gọi đến qua WebSocket (ringring -> answer -> conf -> endcall)
-api.listener.on("call_event", async (evt) => {
-    if (evt.action === "request") {
-        // 1. Báo máy đang đổ chuông (cmd 11302)
-        await api.call.ringRingVoiceCall(evt.fromUid, evt.callId);
-        // 2. Bắt máy (cmd 11303) hoặc từ chối (cmd 11306)
-        await api.call.answerVoiceCall(evt.fromUid, evt.callId);
-        // 3. Đồng bộ trạng thái bật/tắt Mic & Camera (cmd 12006)
-        await api.call.updateCallMediaState(evt.fromUid, evt.callId, { isMuteAudio: false, isOffVideo: true });
+// C. Tự động bắt máy khi có cuộc gọi 1-1 hoặc Gọi Nhóm đến qua WebSocket
+api.listener.on("call_event", async (ev) => {
+    if (ev.act === "request") {
+        await session.ringIncomingCall(ev);
+        await session.acceptIncomingCall(ev, { skipRingRing: true });
+    } else if (ev.act === "group_request") {
+        await session.ringIncomingCall(ev);
+        await session.acceptIncomingGroupCall(ev, { skipRingRing: true });
     }
 });
 
-// D. Khởi tạo và quản lý Cuộc gọi Nhóm (Group Call)
-const grpRoom = await api.call.requestGroupCall(groupId, memberUids, { callType: CallType.GroupAudio });
-await api.call.sendRequestGroupCall(groupId, grpRoom.callId, memberUids);
+// D. Khởi tạo hoặc tham gia Cuộc gọi Nhóm Video 2 chiều qua Zavi SFU
+// Lưu ý quy ước trạng thái Group Call: audioState = 0 (Mic Bật) / 1 (Mic Tắt), videoState = 0 (Cam Bật) / 1 (Cam Tắt)
+const grpParams = await session.startGroupCall(groupId, memberUids, {
+    callType: CallType.GroupVideo,
+});
+// Hoặc tham gia phòng gọi nhóm đang mở trên Banner:
+// await session.joinActiveGroupCall(groupId, { callType: CallType.GroupVideo });
 ```
 
 ---
@@ -246,4 +255,91 @@ api.listener.on("oa_event", (ev) => {
 });
 await api.business.blockOA("2359864726282056346");
 await api.business.unblockOA("2359864726282056346");
+```
+
+---
+
+## 8. Dịch Tin Nhắn Đa Ngôn Ngữ Tự Động Bằng Zalo AI (`api.chat` & `translate_event`)
+
+Sử dụng bộ 5 API Dịch AI nguyên bản của Zalo PC (`zpw_type = 30`) để dịch tức thì tin nhắn thủ công, dịch tự động theo hội thoại hoặc lấy gợi ý bản dịch:
+
+```ts
+// 1. Dịch thủ công một đoạn văn bản sang tiếng Việt hoặc tiếng Anh
+const manualRes = await api.chat.translateMessageManual({
+    content: "Bonjour, comment allez-vous aujourd'hui ?",
+    targetLanguage: "vi",
+});
+console.log("Bản dịch AI:", manualRes);
+
+// 2. Dịch tự động tin nhắn trong luồng hội thoại
+const autoRes = await api.chat.translateMessageAuto({
+    content: "Let's schedule our deployment at 10 AM tomorrow.",
+    targetLanguage: "vi",
+});
+
+// 3. Lấy gợi ý bản dịch nhanh khi đang soạn thảo
+const suggestRes = await api.chat.getTranslateSuggestion({
+    content: "Cảm ơn bạn đã hợp tác cùng chúng tôi!",
+    targetLanguage: "en",
+});
+
+// 4. Kiểm tra và cập nhật cấu hình tự động dịch cho hội thoại
+const translateSetting = await api.chat.getTranslateSetting();
+api.listener.on("translate_event", (ev) => {
+    console.log("[WebSocket AI Translate Update]", ev.data);
+});
+```
+
+---
+
+## 9. Quản Lý Công Việc Zalo To-Do, Nhắc Hẹn 1-1 & Bảng Tin Nhóm (`api.board`)
+
+Tự động hóa giao việc (Zalo To-Do), quản lý lịch hẹn 1-1 (`getListOneOneBoard`) và lắng nghe sự kiện công việc / bình chọn thời gian thực:
+
+```ts
+// 1. Kiểm tra trạng thái kích hoạt Zalo To-Do và lấy danh sách công việc
+const todoVerify = await api.board.verifyTodo();
+const todoList = await api.board.getTodoList({ page: 1, count: 20 });
+
+// 2. Tạo công việc mới (Zalo To-Do) giao cho thành viên kèm hạn hoàn thành
+const newTodo = await api.board.createTodo({
+    title: "Hoàn thành kiểm thử tích hợp ZCA-JS v1.4",
+    content: "Kiểm tra toàn bộ 333 API và 18 sự kiện WebSocket Realtime",
+    assignees: [targetUid],
+    dueDate: Date.now() + 24 * 3600 * 1000,
+    watchers: [],
+});
+
+// 3. Lấy danh sách nhắc hẹn 1-1 và bảng tin chung với một người bạn
+const oneOneReminders = await api.board.getListOneOneBoard(targetUid);
+const friendBoards = await api.board.getFriendBoardList(targetUid);
+
+// 4. Lắng nghe sự kiện Zalo To-Do & Bình chọn nhóm qua WebSocket
+api.listener.on("todo_event", (ev) => {
+    console.log(`[To-Do Realtime] subCmd=${ev.subCmd}:`, ev.data);
+});
+api.listener.on("poll_event", (ev) => {
+    console.log(`[Poll Realtime] pollId=${ev.pollId}:`, ev.data);
+});
+```
+
+---
+
+## 10. Kho Ảnh Động GIF Giphy/Guggy, Hiệu Ứng Tin Nhắn & Quản Lý Nhãn CRM (`api.sticker` & `api.business`)
+
+Tích hợp tìm kiếm ảnh động GIF từ Giphy / Guggy / Tenor, hiệu ứng tin nhắn nền và quản lý Nhãn phân loại khách hàng CRM:
+
+```ts
+// 1. Lấy danh sách GIF thịnh hành & tìm kiếm GIF theo từ khóa (Giphy & Guggy)
+const trendingGifs = await api.sticker.getTrendingGiphyGifs({ limit: 10 });
+const happyGifs = await api.sticker.searchGiphyGifs("chúc mừng", { limit: 10 });
+const textGifs = await api.sticker.searchGuggyGifs("Xin chào");
+
+// 2. Lấy danh sách hiệu ứng tin nhắn (Message Effects & Visual Keyword Rules)
+const effects = await api.sticker.getMessageEffects();
+const keywordRules = await api.sticker.getVisualKeywordRule();
+
+// 3. Quản lý Nhãn phân loại hội thoại CRM (Conversation Labels)
+const crmLabels = await api.business.getConversationLabels();
+console.log("Danh sách nhãn CRM hiện tại:", crmLabels.labelData, "Phiên bản:", crmLabels.version);
 ```

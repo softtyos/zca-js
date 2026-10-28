@@ -4,15 +4,15 @@
 
 ```mermaid
 flowchart TD
-    subgraph L5["Tầng 5: 12 Phân hệ Nghiệp vụ (256 Primitive APIs)"]
-        D1["api.auth • api.chat • api.group • api.friend"]
-        D2["api.profile • api.sync • api.zcloud • api.call"]
-        D3["api.media • api.sticker • api.board • api.business"]
+    subgraph L5["Tầng 5: 12 Phân hệ Nghiệp vụ (333 Primitive APIs)"]
+        D1["api.auth (14) • api.chat (52) • api.group (47) • api.friend (37)"]
+        D2["api.profile (22) • api.sync (11) • api.zcloud (17) • api.call (27)"]
+        D3["api.media (8) • api.sticker (24) • api.board (38) • api.business (36)"]
     end
 
-    subgraph L4["Tầng 4: Động cơ WebSocket Thời gian thực (src/realtime/)"]
-        R1["Listener (Watchdog 50s, Ping/Pong, Endpoint Rotation)"]
-        R2["4 Handlers: message • control (Group/Sync/VoIP/OA) • reaction • status"]
+    subgraph L4["Tầng 4: Động cơ WebSocket Thời gian thực (src/apis/listen.ts)"]
+        R1["Listener (Watchdog 50s, Ping/Pong, Endpoint Rotation, 4 Outbound WS Requests)"]
+        R2["18 Events: message • reaction • undo • group • call • oa • todo • poll • translate • emoji_status • online_status • zcloud..."]
         R1 --> R2
     end
 
@@ -37,22 +37,22 @@ flowchart TD
     L2 --> L1
 ```
 
-## 2. Kiến trúc 12 Domains (Lazy Memoized Getters)
+## 2. Kiến trúc 12 Domains (333 APIs — Lazy Memoized Getters)
 
-`@softtynet/zca-js` tự động ánh xạ toàn bộ các API nguyên bản vào 12 phân hệ trên đối tượng `api`:
+`@softtynet/zca-js` tự động ánh xạ toàn bộ **333 API nguyên bản** vào **12 phân hệ** trên đối tượng `api` (đồng thời vẫn giữ nguyên alias gọi phẳng `api.<methodName>()` để tương thích ngược 100%):
 
-- `api.auth`: Xác thực, QR, phiên đăng nhập (`exportSession`), giải mã `globalId` (`encryptGids` / `decryptGids`) & `getNoisedIds`.
-- `api.chat`: Tin nhắn 1-1, nhóm & Zalo OA (`preloadConversations`), thu hồi đơn/đa tin nhắn (`undoMultiMessage`), hội thoại ghim/ẩn/lưu trữ.
-- `api.group`: Quản lý nhóm/Cộng đồng, lịch sử Cloud (`getGroupChatHistory`, `getGroupCloudMessagePath`), trạng thái đã xem (`getGroupMessageStatus`).
-- `api.friend`: Bạn bè, danh bạ V2 (`getPhonebookV2`), biệt danh V2 (`getAliasListV2`), kiểm tra online PC/Web (`getFriendsActivePCWeb`).
-- `api.profile`: Hồ sơ cá nhân, Emoji Status, xác thực tài khoản.
-- `api.sync`: Đồng bộ lịch sử tin nhắn từ Mobile (`requestSyncFromPhone`, `pullMobile`, `getSyncData`).
-- `api.zcloud`: ZCloud & ZFamily (`getCloudViewerKey`, `getUsageZCloud`, `verifyCloudMedia`).
-- `api.call`: Gọi thoại, Video 1-1 & Gọi nhóm — trọn bộ 30 API (`sendVoiceCall`, `requestVoiceCall`, `sendRequestVoiceCall`, `ringRingVoiceCall`, `answerVoiceCall`, `answerAckVoiceCall`, `cancelVoiceCall`, `endVoiceCall`, `holdVoiceCall`, `unholdVoiceCall`, `logEndVoiceCall`, `updateCallMediaState`, `requestAudioToVideoCall`, `requestShareScreenCall`, 14 API `*GroupCall*`, `createRtcSession`, `createController`).
-- `api.media`: Kho lưu trữ Media/File/Link nhóm & cá nhân (`getConversationMedia`, `getMediaStorePreview`, `getPersonalMedia`), `voiceToText`.
-- `api.sticker`: Nhãn dán, danh mục V2, gợi ý nhãn dán theo từ khóa.
-- `api.board`: Bảng tin nhóm, Tin ghim (`getListPinTopics`), Bình chọn (`getPollDetail`), Lịch hẹn (`getListReminder`).
-- `api.business`: Zalo Official Account (`getOAProfile`, `blockOA`, `unblockOA`, `convertOAIds`), Nhãn hội thoại (`getLabels`), Tin nhắn nhanh, Trả lời tự động, Danh mục sản phẩm.
+- **`api.auth` (`14 API`)**: Xác thực, QR, phiên đăng nhập (`exportSession`), danh sách thiết bị (`getListDevice`), giải mã `globalId` (`encryptGids` / `decryptGids`) & `getNoisedIds`.
+- **`api.chat` (`52 API`)**: Tin nhắn 1-1, nhóm & Zalo OA (`preloadConversations`), dịch tự động bằng Zalo AI (`translateMessage`, `translateMessageAuto`, `translateMessageSuggest`, `getTranslateSetting`, `updateTranslateSetting`), chặn chia sẻ (`getBlockSharingConversations`, `updateBlockSharingConversation`), tải tin nhắn quan trọng (`fetchImportantMessages`), gia hạn link tệp (`renewMessageLink`), thu hồi đơn/đa tin nhắn (`undoMultiMessage`), hội thoại ghim/ẩn/lưu trữ.
+- **`api.group` (`47 API`)**: Quản lý nhóm/Cộng đồng (`getGroupInfoV2`, `getGroupListV3`, `checkQuotaCommunityMember`, `analyseGroup`, `getE2eeGroupList`), lịch sử Cloud (`getGroupChatHistory`, `getGroupCloudMessagePath`), trạng thái đã xem (`getGroupMessageStatus`).
+- **`api.friend` (`37 API`)**: Bạn bè, danh bạ V2 (`getPhonebookV2`), biệt danh V2 (`getAliasListV2`), kiểm tra online PC/Web (`getFriendsActivePCWeb`), lấy mã QR hàng loạt (`getMultiUserQRCodes`), xóa gợi ý kết bạn V2 (`removeFriendRecommendationV2`), trạng thái tab danh bạ (`getLastReadContactTab`, `readContactTab`).
+- **`api.profile` (`22 API`)**: Hồ sơ cá nhân, hồ sơ thu gọn (`getMiniProfile`), thông tin mở rộng (`getProfileExtra`), hồ sơ doanh nghiệp (`getEnterpriseProfiles`), trạng thái xác thực EKYC (`getProfileVerificationStatus`, `pushProfileVerificationMessage`), đăng ký dùng thử Business (`registerTrialBizAccount`), Emoji Status (`getEmojiStatusConfig`).
+- **`api.sync` (`11 API`)**: Đồng bộ lịch sử tin nhắn từ Mobile (`requestSyncFromPhone`, `pullMobile`, `cancelPullMobile`, `deleteMobileMsgSnapshot`, `getSyncData`), thông tin sao lưu (`getBackupMsgInfo`, `getCrossDbInfo`), đồng bộ hành động Media (`submitSyncMediaActions`) & tải lên gói sao lưu (`uploadBackupChunk`).
+- **`api.zcloud` (`17 API`)**: ZCloud & ZFamily (`getCloudViewerKey`, `getFamilyViewerKey`, `getUsageZCloud`, `getUsageMyCloud`, `getCloudInfo`, `getCloudSettings`, `verifyCloudMedia`, `getCloudDownloadUrls`, `resetCloudQueue`, `submitCloudMediaExtInfo`, `ackCloudOnboarding`, `submitCloudVerifyAction`, `getCloudUploadUrl`, `migrateCloudRecent`).
+- **`api.call` (`27 API`)**: Gọi thoại, Video 1-1 & Gọi nhóm — trọn bộ API báo hiệu (`sendVoiceCall`, `requestVoiceCall`, `sendRequestVoiceCall`, `ringRingVoiceCall`, `answerVoiceCall`, `answerAckVoiceCall`, `cancelVoiceCall`, `endVoiceCall`, `holdVoiceCall`, `unholdVoiceCall`, `logEndVoiceCall`, `updateCallMediaState`, `requestAudioToVideoCall`, `requestShareScreenCall`, 11 API `*GroupCall*`) cùng 2 bộ máy điều khiển truyền tải `createRtcSession` & `createController`.
+- **`api.media` (`8 API`)**: Kho lưu trữ Media/File/Link nhóm & cá nhân (`getConversationMedia`, `getMediaStorePreview`, `getPersonalMedia`, `removeConversationMedia`, `removePersonalMedia`), `uploadAttachment` & `voiceToText`.
+- **`api.sticker` (`24 API`)**: Nhãn dán, danh mục V2, gợi ý nhãn dán theo từ khóa, nhãn dán cá nhân hóa (`getPersonalizedStickerList`, `updatePersonalizedStickerList`), hiệu ứng tin nhắn (`getMessageEffects`, `getMessageEffectById`), ánh xạ Tenor (`getTenorStickerMapping`), ảnh động Guggy (`getDefaultGuggyGifs`, `searchGuggyGifs`) và kho GIF Giphy (`getGifCategories`, `getGifsByCategory`, `getTrendingGifs`, `searchGifs`, `getGifDictionaries`, `getGifsByDictionary`).
+- **`api.board` (`38 API`)**: Công việc Zalo To-Do (`createTodo`, `updateTodo`, `deleteTodo`, `getTodoList`, `getTodoDetail`, `updateTodoStatus`, `dingTodo`, `ackDingTodo`, `verifyTodo`), Bảng tin & Nhắc hẹn 1-1 (`createOneOneBoardTopic`, `updateOneOneBoardTopic`, `removeOneOneBoardTopic`, `getListOneOneBoard`), Ghim hội thoại bạn bè (`pinFriendMessage`, `reorderFriendBoard`, `unpinFriendMessages`), Tin ghim nhóm (`getListPinTopics`, `pinBoardTopic`, `unpinBoardTopic`, `multiUnpinBoardTopics`, `reorderPinTopics`, `removeBoardTopic`), Bình chọn (`createPoll`, `getPollDetail`, `votePoll`, `addPollOptions`, `sharePoll`, `lockPoll`), Ghi chú & Lịch hẹn nhóm (`createNote`, `editNote`, `createReminder`, `editReminder`, `getReminder`, `getListReminder`, `removeReminder`, `respondReminder`, `getReminderResponses`).
+- **`api.business` (`36 API`)**: Zalo Official Account (`getOAProfile`, `blockOA`, `unblockOA`, `convertOAIds`), Quản lý Nhãn phân loại CRM (`getLabels`, `updateLabels`, `addConversationLabel`, `updateConversationLabelItem`, `deleteConversationLabel`, `reorderConversationLabels`), Tin nhắn nhanh (`getQuickMessageList`, `addQuickMessage`, `updateQuickMessage`, `removeQuickMessage`), Trả lời tự động (`getAutoReplyList`, `createAutoReply`, `updateAutoReply`, `deleteAutoReply`), Danh mục & Sản phẩm (`getCatalogList`, `createCatalog`, `updateCatalog`, `deleteCatalog`, `getProductCatalogList`, `getProductDetail`, `createProductCatalog`, `updateProductCatalog`, `deleteProductCatalog`, `deleteSingleProduct`, `uploadProductPhoto`) & Ngân hàng (`getListBank`, `getListBankAccount`, `createBankAccount`, `updateBankAccount`, `deleteBankAccount`).
 
 ## 3. Cơ chế Bảo toàn Số nguyên 64-bit (`preParseJsonIds`)
 

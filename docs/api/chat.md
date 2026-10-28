@@ -1,59 +1,70 @@
 ---
-title: "Tin nhắn & Hội thoại (Chat) (api.chat) - 41 APIs"
-description: "Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nhắn, ghim/ẩn/lưu trữ hội thoại và trạng thái Đã nhận/Đã xem. Tra cứu chi tiết 41 phương thức thuộc phân hệ api.chat trong bộ SDK @softtynet/zca-js."
+title: "Tin nhắn, Hội thoại & Dịch AI (Chat) (api.chat) - 52 APIs"
+description: "Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nhắn, Dịch đa ngôn ngữ bằng Zalo AI, đánh dấu tin nhắn quan trọng, chặn chia sẻ và trạng thái Đã nhận/Đã xem. Tra cứu chi tiết 52 phương thức thuộc phân hệ api.chat trong bộ SDK @softtynet/zca-js."
 ---
 
-# 💬 Tin nhắn & Hội thoại (Chat)
+# 💬 Tin nhắn, Hội thoại & Dịch AI (Chat)
 
-> Namespace: `api.chat` (hoặc gọi trực tiếp `api.<methodName>`) — **41 API nguyên bản**
+> Namespace: `api.chat` (hoặc gọi trực tiếp `api.<methodName>`) — **52 API nguyên bản**
 
-Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nhắn, ghim/ẩn/lưu trữ hội thoại và trạng thái Đã nhận/Đã xem.
+Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nhắn, Dịch đa ngôn ngữ bằng Zalo AI, đánh dấu tin nhắn quan trọng, chặn chia sẻ và trạng thái Đã nhận/Đã xem.
 
 ## Danh sách nhanh
 
-| Phương thức                                               |  HTTP  | Endpoint Zalo                                                         | Mô tả                                                                                                                          |
-| :-------------------------------------------------------- | :----: | :-------------------------------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------- |
-| [`addReaction`](#addreaction)                             | `POST` | `/api/message/reaction`<br/>`/api/group/reaction`                     | Thả biểu cảm (Reaction: Tim, Like, Haha, Wow, Buồn, Giận) vào một tin nhắn cá nhân hoặc nhóm.                                  |
-| [`addUnreadMark`](#addunreadmark)                         | `POST` | `/api/conv/addUnreadMark`                                             | Đánh dấu hội thoại là chưa đọc (Unread).                                                                                       |
-| [`deleteChat`](#deletechat)                               | `POST` | `/api/message/deleteconver`<br/>`/api/group/deleteconver`             | Xóa lịch sử cuộc trò chuyện cá nhân hoặc nhóm ở phía tài khoản hiện tại.                                                       |
-| [`deleteMessage`](#deletemessage)                         | `POST` | `/api/message/delete`<br/>`/api/group/deletemsg`                      | Xóa một tin nhắn cụ thể (chỉ xóa ở phía tôi hoặc thu hồi).                                                                     |
-| [`forwardMessage`](#forwardmessage)                       | `POST` | `/api/message/mforward`<br/>`/api/group/mforward`                     | Chuyển tiếp (Forward) tin nhắn văn bản hoặc đính kèm tới nhiều hội thoại cùng lúc.                                             |
-| [`getArchivedChatList`](#getarchivedchatlist)             | `GET`  | `/api/archivedchat/list`                                              | Lấy danh sách các hội thoại đã được lưu trữ (Archived Chats).                                                                  |
-| [`getAutoDeleteChat`](#getautodeletechat)                 | `GET`  | `/api/conv/autodelete/getConvers`                                     | Lấy danh sách các hội thoại đang bật chế độ tin nhắn tự xóa.                                                                   |
-| [`getDirectMessageStatus`](#getdirectmessagestatus)       | `POST` | `/api/message/getStatusMsg`                                           | Truy vấn trạng thái Đã nhận (`deliver`) và Đã xem (`seen`) tin nhắn trong các hội thoại cá nhân 1-1 (command 12016)            |
-| [`getHiddenConversations`](#gethiddenconversations)       | `GET`  | `/api/hiddenconvers/get-all`                                          | Lấy danh sách các cuộc trò chuyện đang được ẩn bằng mã PIN.                                                                    |
-| [`getLastSeen`](#getlastseen)                             | `GET`  | `/api/preloadconvers/get-last-seen`                                   | Lấy thông tin trạng thái đã xem cuối cùng của danh sách nhóm và cá nhân (command 12009)                                        |
-| [`getLastSeenReaction`](#getlastseenreaction)             | `GET`  | `/api/react/gLastSn`                                                  | Lấy trạng thái đã xem cảm xúc (Reaction) cuối cùng của danh sách nhóm và cá nhân (command 12450)                               |
-| [`getMute`](#getmute)                                     | `GET`  | `/api/social/profile/getmute`                                         | Lấy danh sách các cuộc trò chuyện đang tắt thông báo (Mute).                                                                   |
-| [`getPinConversations`](#getpinconversations)             | `GET`  | `/api/pinconvers/list`                                                | Lấy danh sách các cuộc trò chuyện đang được ghim trên đầu danh sách chat.                                                      |
-| [`getRecentSearchList`](#getrecentsearchlist)             | `GET`  | `/api/recentsearch/list`                                              | Lấy danh sách lịch sử tìm kiếm gần đây trên Zalo (command 12125)                                                               |
-| [`getSuggestedConversations`](#getsuggestedconversations) | `GET`  | `/api/suggestconvers/list`                                            | Lấy danh sách các cuộc hội thoại được gợi ý (command 11233)                                                                    |
-| [`getUnreadMark`](#getunreadmark)                         | `GET`  | `/api/conv/getUnreadMark`                                             | Lấy danh sách các cuộc trò chuyện đang được đánh dấu là chưa đọc.                                                              |
-| [`parseLink`](#parselink)                                 | `GET`  | `/api/message/parselink`                                              | Phân tích siêu dữ liệu (Title, Description, Thumbnail) của một đường dẫn URL trước khi gửi.                                    |
-| [`preloadConversations`](#preloadconversations)           | `GET`  | `/api/preloadconvers/get-last-msgs`                                   | Tải trước tin nhắn cuối cùng và trạng thái đã đọc của các hội thoại đang hoạt động (command 10053).                            |
-| [`removeUnreadMark`](#removeunreadmark)                   | `POST` | `/api/conv/removeUnreadMark`                                          | Gỡ bỏ đánh dấu chưa đọc trên cuộc trò chuyện.                                                                                  |
-| [`resetHiddenConversPin`](#resethiddenconverspin)         | `GET`  | `/api/hiddenconvers/reset`                                            | Đặt lại (Reset) mã PIN bảo vệ trò chuyện ẩn.                                                                                   |
-| [`sendBankCard`](#sendbankcard)                           | `POST` | `/api/transfer/card`                                                  | Gửi danh thiếp thông tin tài khoản ngân hàng (Bank Card) vào cuộc trò chuyện.                                                  |
-| [`sendCard`](#sendcard)                                   | `POST` | `/api/message/forward`<br/>`/api/group/forward`                       | Gửi danh thiếp liên hệ Zalo (Contact Card / QR) vào hội thoại cá nhân hoặc nhóm.                                               |
-| [`sendDeliveredEvent`](#senddeliveredevent)               | `POST` | `/api/message/deliveredv2`<br/>`/api/group/deliveredv2`               | Gửi tín hiệu xác nhận Đã nhận (Delivered) cho một hoặc nhiều tin nhắn.                                                         |
-| [`sendLink`](#sendlink)                                   | `POST` | `/api/message/link`<br/>`/api/group/sendlink`                         | Gửi tin nhắn kèm bản xem trước liên kết (Link Preview) vào hội thoại.                                                          |
-| [`sendMessage`](#sendmessage)                             | `POST` | `/api/message`<br/>`/api/group`<br/>`/api/message/`<br/>`/api/group/` | Gửi tin nhắn văn bản, trích dẫn (Quote), nhắc tên (@Mention) hoặc tệp đính kèm (Ảnh/File/GIF) tới cá nhân hoặc nhóm.           |
-| [`sendReport`](#sendreport)                               | `POST` | `/api/report/abuse-v2`<br/>`/api/social/profile/reportabuse`          | Gửi báo cáo vi phạm (Report Abuse) đối với người dùng hoặc cuộc trò chuyện.                                                    |
-| [`sendSeenEvent`](#sendseenevent)                         | `POST` | `/api/message/seenv2`<br/>`/api/group/seenv2`                         | Gửi tín hiệu xác nhận Đã xem (Seen) cho các tin nhắn trong hội thoại.                                                          |
-| [`sendSticker`](#sendsticker)                             | `POST` | `/api/message/sticker`<br/>`/api/group/sticker`                       | Gửi nhãn dán (Sticker) vào cuộc trò chuyện cá nhân hoặc nhóm.                                                                  |
-| [`sendTypingEvent`](#sendtypingevent)                     | `POST` | `/api/message/typing`<br/>`/api/group/typing`                         | Gửi tín hiệu trạng thái Đang soạn tin nhắn (Typing...) tới người nhận hoặc nhóm.                                               |
-| [`sendVideo`](#sendvideo)                                 | `POST` | `/api/message/forward`<br/>`/api/group/forward`                       | Gửi tệp video kèm ảnh thu nhỏ (Thumbnail) và thời lượng vào hội thoại cá nhân hoặc nhóm.                                       |
-| [`sendVoice`](#sendvoice)                                 | `POST` | `/api/message/forward`<br/>`/api/group/forward`                       | Gửi tin nhắn thoại (Voice / Audio MP3 / AAC) vào hội thoại cá nhân hoặc nhóm.                                                  |
-| [`setHiddenConversations`](#sethiddenconversations)       | `POST` | `/api/hiddenconvers/add-remove`                                       | Ẩn hoặc bỏ ẩn một hoặc nhiều cuộc trò chuyện bằng mã PIN.                                                                      |
-| [`setMute`](#setmute)                                     | `POST` | `/api/social/profile/setmute`                                         | Bật hoặc tắt chế độ im lặng (Mute thông báo) cho cuộc trò chuyện theo khoảng thời gian.                                        |
-| [`setPinnedConversations`](#setpinnedconversations)       | `POST` | `/api/pinconvers/updatev2`                                            | Ghim hoặc bỏ ghim cuộc trò chuyện lên đầu danh sách.                                                                           |
-| [`undo`](#undo)                                           | `POST` | `/api/message/undo`<br/>`/api/group/undomsg`                          | Thu hồi (Undo) một tin nhắn đã gửi với tất cả mọi người trong cuộc trò chuyện.                                                 |
-| [`undoMultiMessage`](#undomultimessage)                   | `POST` | `/api/group/multi_undomsg`<br/>`/api/message/multi_undo`              | Thu hồi hàng loạt nhiều tin nhắn cùng lúc trong hội thoại cá nhân hoặc nhóm (command 12115 / 12116)                            |
-| [`updateArchivedChatList`](#updatearchivedchatlist)       | `POST` | `/api/archivedchat/update`                                            | Đưa cuộc trò chuyện vào mục Lưu trữ (Archive) hoặc khôi phục ra ngoài.                                                         |
-| [`updateAutoDeleteChat`](#updateautodeletechat)           | `POST` | `/api/conv/autodelete/updateConvers`                                  | Cấu hình thời gian tự động xóa tin nhắn cho cuộc trò chuyện (1 ngày, 7 ngày, 30 ngày hoặc tắt).                                |
-| [`updateHiddenConversPin`](#updatehiddenconverspin)       | `GET`  | `/api/hiddenconvers/update-pin`                                       | Đặt mới hoặc thay đổi mã PIN bảo mật cho tính năng Trò chuyện ẩn.                                                              |
-| [`updatePinConversations`](#updatepinconversations)       | `POST` | `/api/pinconvers/updatev2`<br/>`/api/pinconvers/update`               | Cập nhật danh sách hội thoại ghim qua `/api/pinconvers/update` (command 12121) hoặc `/api/pinconvers/updatev2` (command 12122) |
-| [`updateRecentSearch`](#updaterecentsearch)               | `POST` | `/api/recentsearch/update`                                            | Cập nhật danh sách lịch sử tìm kiếm gần đây trên Zalo (command 12126)                                                          |
+| Phương thức                                                         |  HTTP  | Endpoint Zalo                                                         | Mô tả                                                                                                                                                                            |
+| :------------------------------------------------------------------ | :----: | :-------------------------------------------------------------------- | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`addReaction`](#addreaction)                                       | `POST` | `/api/message/reaction`<br/>`/api/group/reaction`                     | Thả biểu cảm (Reaction: Tim, Like, Haha, Wow, Buồn, Giận) vào một tin nhắn cá nhân hoặc nhóm.                                                                                    |
+| [`addUnreadMark`](#addunreadmark)                                   | `POST` | `/api/conv/addUnreadMark`                                             | Đánh dấu hội thoại là chưa đọc (Unread).                                                                                                                                         |
+| [`deleteChat`](#deletechat)                                         | `POST` | `/api/message/deleteconver`<br/>`/api/group/deleteconver`             | Xóa lịch sử cuộc trò chuyện cá nhân hoặc nhóm ở phía tài khoản hiện tại.                                                                                                         |
+| [`deleteMessage`](#deletemessage)                                   | `POST` | `/api/message/delete`<br/>`/api/group/deletemsg`                      | Xóa một tin nhắn cụ thể (chỉ xóa ở phía tôi hoặc thu hồi).                                                                                                                       |
+| [`fetchImportantMessages`](#fetchimportantmessages)                 | `GET`  | `/api/message/fetchImportant`                                         | Lấy danh sách các tin nhắn được đánh dấu quan trọng / đánh dấu sao (command 12114)                                                                                               |
+| [`forwardMessage`](#forwardmessage)                                 | `POST` | `/api/message/mforward`<br/>`/api/group/mforward`                     | Chuyển tiếp (Forward) tin nhắn văn bản hoặc đính kèm tới nhiều hội thoại cùng lúc.                                                                                               |
+| [`getArchivedChatList`](#getarchivedchatlist)                       | `GET`  | `/api/archivedchat/list`                                              | Lấy danh sách các hội thoại đã được lưu trữ (Archived Chats).                                                                                                                    |
+| [`getAutoDeleteChat`](#getautodeletechat)                           | `GET`  | `/api/conv/autodelete/getConvers`                                     | Lấy danh sách các hội thoại đang bật chế độ tin nhắn tự xóa.                                                                                                                     |
+| [`getBlockSharingConversations`](#getblocksharingconversations)     | `GET`  | `/api/conv/blocksharing/getConvers`                                   | Lấy danh sách hội thoại đang bật chế độ chặn chia sẻ / chuyển tiếp tin nhắn (command 12178)                                                                                      |
+| [`getConvOfflineMessages`](#getconvofflinemessages)                 | `GET`  | `/api/conv/cm/grOfl`                                                  | Lấy danh sách hội thoại nhóm có tin nhắn ngoại tuyến mới (command 12300)                                                                                                         |
+| [`getDirectMessageStatus`](#getdirectmessagestatus)                 | `POST` | `/api/message/getStatusMsg`                                           | Truy vấn trạng thái Đã nhận (`deliver`) và Đã xem (`seen`) tin nhắn trong các hội thoại cá nhân 1-1 (command 12016)                                                              |
+| [`getHiddenConversations`](#gethiddenconversations)                 | `GET`  | `/api/hiddenconvers/get-all`                                          | Lấy danh sách các cuộc trò chuyện đang được ẩn bằng mã PIN.                                                                                                                      |
+| [`getLastSeen`](#getlastseen)                                       | `GET`  | `/api/preloadconvers/get-last-seen`                                   | Lấy thông tin trạng thái đã xem cuối cùng của danh sách nhóm và cá nhân (command 12009)                                                                                          |
+| [`getLastSeenReaction`](#getlastseenreaction)                       | `GET`  | `/api/react/gLastSn`                                                  | Lấy trạng thái đã xem cảm xúc (Reaction) cuối cùng của danh sách nhóm và cá nhân (command 12450)                                                                                 |
+| [`getMute`](#getmute)                                               | `GET`  | `/api/social/profile/getmute`                                         | Lấy danh sách các cuộc trò chuyện đang tắt thông báo (Mute).                                                                                                                     |
+| [`getPinConversations`](#getpinconversations)                       | `GET`  | `/api/pinconvers/list`                                                | Lấy danh sách các cuộc trò chuyện đang được ghim trên đầu danh sách chat.                                                                                                        |
+| [`getRecentSearchList`](#getrecentsearchlist)                       | `GET`  | `/api/recentsearch/list`                                              | Lấy danh sách lịch sử tìm kiếm gần đây trên Zalo (command 12125)                                                                                                                 |
+| [`getSuggestedConversations`](#getsuggestedconversations)           | `GET`  | `/api/suggestconvers/list`                                            | Lấy danh sách các cuộc hội thoại được gợi ý (command 11233)                                                                                                                      |
+| [`getTranslateSetting`](#gettranslatesetting)                       | `GET`  | `/api/aifeatures/translate/v1/setting`                                | Lấy cấu hình tính năng dịch tin nhắn tự động bằng Zalo AI (command 13395)                                                                                                        |
+| [`getUnreadMark`](#getunreadmark)                                   | `GET`  | `/api/conv/getUnreadMark`                                             | Lấy danh sách các cuộc trò chuyện đang được đánh dấu là chưa đọc.                                                                                                                |
+| [`markSubTabSeen`](#marksubtabseen)                                 | `POST` | `/api/subtab/seen`                                                    | Đánh dấu đã xem các tab phụ của danh sách hội thoại (command 16214)                                                                                                              |
+| [`parseLink`](#parselink)                                           | `GET`  | `/api/message/parselink`                                              | Phân tích siêu dữ liệu (Title, Description, Thumbnail) của một đường dẫn URL trước khi gửi.                                                                                      |
+| [`preloadConversations`](#preloadconversations)                     | `GET`  | `/api/preloadconvers/get-last-msgs`                                   | Tải trước tin nhắn cuối cùng và trạng thái đã đọc của các hội thoại đang hoạt động (command 10053).                                                                              |
+| [`removeUnreadMark`](#removeunreadmark)                             | `POST` | `/api/conv/removeUnreadMark`                                          | Gỡ bỏ đánh dấu chưa đọc trên cuộc trò chuyện.                                                                                                                                    |
+| [`renewMessageLink`](#renewmessagelink)                             | `POST` | `/api/message/renewlink`                                              | Gia hạn đường dẫn tải tệp đính kèm / đa phương tiện đã hết hạn trong tin nhắn (command 12094)                                                                                    |
+| [`resetHiddenConversPin`](#resethiddenconverspin)                   | `GET`  | `/api/hiddenconvers/reset`                                            | Đặt lại (Reset) mã PIN bảo vệ trò chuyện ẩn.                                                                                                                                     |
+| [`sendBankCard`](#sendbankcard)                                     | `POST` | `/api/transfer/card`                                                  | Gửi danh thiếp thông tin tài khoản ngân hàng (Bank Card) vào cuộc trò chuyện.                                                                                                    |
+| [`sendCard`](#sendcard)                                             | `POST` | `/api/message/forward`<br/>`/api/group/forward`                       | Gửi danh thiếp liên hệ Zalo (Contact Card / QR) vào hội thoại cá nhân hoặc nhóm.                                                                                                 |
+| [`sendDeliveredEvent`](#senddeliveredevent)                         | `POST` | `/api/message/deliveredv2`<br/>`/api/group/deliveredv2`               | Gửi tín hiệu xác nhận Đã nhận (Delivered) cho một hoặc nhiều tin nhắn.                                                                                                           |
+| [`sendLink`](#sendlink)                                             | `POST` | `/api/message/link`<br/>`/api/group/sendlink`                         | Gửi tin nhắn kèm bản xem trước liên kết (Link Preview) vào hội thoại.                                                                                                            |
+| [`sendMessage`](#sendmessage)                                       | `POST` | `/api/message`<br/>`/api/group`<br/>`/api/message/`<br/>`/api/group/` | Gửi tin nhắn văn bản, trích dẫn (Quote), nhắc tên (@Mention) hoặc tệp đính kèm (Ảnh/File/GIF) tới cá nhân hoặc nhóm.                                                             |
+| [`sendReport`](#sendreport)                                         | `POST` | `/api/report/abuse-v2`<br/>`/api/social/profile/reportabuse`          | Gửi báo cáo vi phạm (Report Abuse) đối với người dùng hoặc cuộc trò chuyện.                                                                                                      |
+| [`sendSeenEvent`](#sendseenevent)                                   | `POST` | `/api/message/seenv2`<br/>`/api/group/seenv2`                         | Gửi tín hiệu xác nhận Đã xem (Seen) cho các tin nhắn trong hội thoại.                                                                                                            |
+| [`sendSticker`](#sendsticker)                                       | `POST` | `/api/message/sticker`<br/>`/api/group/sticker`                       | Gửi nhãn dán (Sticker) vào cuộc trò chuyện cá nhân hoặc nhóm.                                                                                                                    |
+| [`sendTypingEvent`](#sendtypingevent)                               | `POST` | `/api/message/typing`<br/>`/api/group/typing`                         | Gửi tín hiệu trạng thái Đang soạn tin nhắn (Typing...) tới người nhận hoặc nhóm.                                                                                                 |
+| [`sendVideo`](#sendvideo)                                           | `POST` | `/api/message/forward`<br/>`/api/group/forward`                       | Gửi tệp video kèm ảnh thu nhỏ (Thumbnail) và thời lượng vào hội thoại cá nhân hoặc nhóm.                                                                                         |
+| [`sendVoice`](#sendvoice)                                           | `POST` | `/api/message/forward`<br/>`/api/group/forward`                       | Gửi tin nhắn thoại (Voice / Audio MP3 / AAC) vào hội thoại cá nhân hoặc nhóm.                                                                                                    |
+| [`setHiddenConversations`](#sethiddenconversations)                 | `POST` | `/api/hiddenconvers/add-remove`                                       | Ẩn hoặc bỏ ẩn một hoặc nhiều cuộc trò chuyện bằng mã PIN.                                                                                                                        |
+| [`setMute`](#setmute)                                               | `POST` | `/api/social/profile/setmute`                                         | Bật hoặc tắt chế độ im lặng (Mute thông báo) cho cuộc trò chuyện theo khoảng thời gian.                                                                                          |
+| [`setPinnedConversations`](#setpinnedconversations)                 | `POST` | `/api/pinconvers/updatev2`                                            | Ghim hoặc bỏ ghim cuộc trò chuyện lên đầu danh sách.                                                                                                                             |
+| [`translateMessage`](#translatemessage)                             | `POST` | `/api/aifeatures/translate/v1/manual`                                 | Dịch thủ công một tin nhắn văn bản bằng Zalo AI (command 13397)                                                                                                                  |
+| [`translateMessageAuto`](#translatemessageauto)                     | `POST` | `/api/aifeatures/translate/v1/auto`                                   | Gửi yêu cầu dịch tự động hàng loạt tin nhắn đến bằng Zalo AI (command 13398). Kết quả dịch bất đồng bộ có thể được đẩy về qua sự kiện `api.listener.on("translate_event", ...)`. |
+| [`translateMessageSuggest`](#translatemessagesuggest)               | `POST` | `/api/aifeatures/translate/v1/suggest`                                | Gửi yêu cầu dịch gợi ý tin nhắn đang soạn thảo bằng Zalo AI (command 13399). Kết quả dịch bất đồng bộ có thể được đẩy về qua sự kiện `api.listener.on("translate_event", ...)`.  |
+| [`undo`](#undo)                                                     | `POST` | `/api/message/undo`<br/>`/api/group/undomsg`                          | Thu hồi (Undo) một tin nhắn đã gửi với tất cả mọi người trong cuộc trò chuyện.                                                                                                   |
+| [`undoMultiMessage`](#undomultimessage)                             | `POST` | `/api/group/multi_undomsg`<br/>`/api/message/multi_undo`              | Thu hồi hàng loạt nhiều tin nhắn cùng lúc trong hội thoại cá nhân hoặc nhóm (command 12115 / 12116)                                                                              |
+| [`updateArchivedChatList`](#updatearchivedchatlist)                 | `POST` | `/api/archivedchat/update`                                            | Đưa cuộc trò chuyện vào mục Lưu trữ (Archive) hoặc khôi phục ra ngoài.                                                                                                           |
+| [`updateAutoDeleteChat`](#updateautodeletechat)                     | `POST` | `/api/conv/autodelete/updateConvers`                                  | Cấu hình thời gian tự động xóa tin nhắn cho cuộc trò chuyện (1 ngày, 7 ngày, 30 ngày hoặc tắt).                                                                                  |
+| [`updateBlockSharingConversation`](#updateblocksharingconversation) | `POST` | `/api/conv/blocksharing/updateConvers`                                | Bật hoặc tắt chế độ chặn chia sẻ / chuyển tiếp tin nhắn trong một hội thoại (command 12179)                                                                                      |
+| [`updateHiddenConversPin`](#updatehiddenconverspin)                 | `GET`  | `/api/hiddenconvers/update-pin`                                       | Đặt mới hoặc thay đổi mã PIN bảo mật cho tính năng Trò chuyện ẩn.                                                                                                                |
+| [`updatePinConversations`](#updatepinconversations)                 | `POST` | `/api/pinconvers/updatev2`<br/>`/api/pinconvers/update`               | Cập nhật danh sách hội thoại ghim qua `/api/pinconvers/update` (command 12121) hoặc `/api/pinconvers/updatev2` (command 12122)                                                   |
+| [`updateRecentSearch`](#updaterecentsearch)                         | `POST` | `/api/recentsearch/update`                                            | Cập nhật danh sách lịch sử tìm kiếm gần đây trên Zalo (command 12126)                                                                                                            |
+| [`updateTranslateSetting`](#updatetranslatesetting)                 | `POST` | `/api/aifeatures/translate/v1/setting`                                | Cập nhật cấu hình dịch tin nhắn Zalo AI cho một hội thoại (command 13396)                                                                                                        |
 
 ---
 
@@ -213,6 +224,37 @@ export type DeleteMessageDestination = {
 
 ---
 
+## `fetchImportantMessages`
+
+Lấy danh sách các tin nhắn được đánh dấu quan trọng / đánh dấu sao (command 12114)
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/fetchImportant</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.fetchImportantMessages(options: FetchImportantMessagesOptions = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.fetchImportantMessages(options: FetchImportantMessagesOptions = {})
+```
+
+### Tham số
+
+- `options`: Tùy chọn phân trang (`newestId` hoặc `lastId`, mặc định `lastId = "-1"`)
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type FetchImportantMessagesOptions = {
+    limit?: number;
+    newestId?: string | null;
+    lastId?: string | null;
+};
+
+export type FetchImportantMessagesResponse = Record<string, unknown>;
+```
+
+---
+
 ## `forwardMessage`
 
 Chuyển tiếp (Forward) tin nhắn văn bản hoặc đính kèm tới nhiều hội thoại cùng lúc.
@@ -312,6 +354,61 @@ export type GetAutoDeleteChatResponse = {
         createdAt: number;
     }[];
 };
+```
+
+---
+
+## `getBlockSharingConversations`
+
+Lấy danh sách hội thoại đang bật chế độ chặn chia sẻ / chuyển tiếp tin nhắn (command 12178)
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/conv/blocksharing/getConvers</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getBlockSharingConversations();
+// Hoặc gọi phẳng (Flat Alias):
+await api.getBlockSharingConversations();
+```
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type GetBlockSharingConversationsResponse = {
+    convers?: unknown[];
+    [key: string]: unknown;
+};
+```
+
+---
+
+## `getConvOfflineMessages`
+
+Lấy danh sách hội thoại nhóm có tin nhắn ngoại tuyến mới (command 12300)
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/conv/cm/grOfl</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getConvOfflineMessages(options: GetConvOfflineMessagesOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getConvOfflineMessages(options: GetConvOfflineMessagesOptions)
+```
+
+### Tham số
+
+- `options`: Thông tin hàng đợi và ID tin nhắn / hành động cuối cùng
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type GetConvOfflineMessagesOptions = {
+    queueInfo: unknown;
+    lastMsgId?: string | number;
+    lastActId?: string | number;
+};
+
+export type GetConvOfflineMessagesResponse = Record<string, unknown>;
 ```
 
 ---
@@ -563,6 +660,31 @@ export type GetSuggestedConversationsResponse = {
 
 ---
 
+## `getTranslateSetting`
+
+Lấy cấu hình tính năng dịch tin nhắn tự động bằng Zalo AI (command 13395)
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/aifeatures/translate/v1/setting</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.getTranslateSetting();
+// Hoặc gọi phẳng (Flat Alias):
+await api.getTranslateSetting();
+```
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type GetTranslateSettingResponse = {
+    info?: unknown[];
+    version?: number;
+    [key: string]: unknown;
+};
+```
+
+---
+
 ## `getUnreadMark`
 
 Lấy danh sách các cuộc trò chuyện đang được đánh dấu là chưa đọc.
@@ -592,6 +714,34 @@ export type GetUnreadMarkResponse = {
         convsUser: UnreadMark[];
     };
     status: number;
+};
+```
+
+---
+
+## `markSubTabSeen`
+
+Đánh dấu đã xem các tab phụ của danh sách hội thoại (command 16214)
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/subtab/seen</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.markSubTabSeen(seens: unknown[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.markSubTabSeen(seens: unknown[])
+```
+
+### Tham số
+
+- `seens`: Danh sách thông tin tab phụ đã xem
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type MarkSubTabSeenResponse = {
+    status?: number;
+    [key: string]: unknown;
 };
 ```
 
@@ -723,6 +873,39 @@ export type RemoveUnreadMarkResponse = {
 
 ---
 
+## `renewMessageLink`
+
+Gia hạn đường dẫn tải tệp đính kèm / đa phương tiện đã hết hạn trong tin nhắn (command 12094)
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/message/renewlink</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.renewMessageLink(options: RenewMessageLinkOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.renewMessageLink(options: RenewMessageLinkOptions)
+```
+
+### Tham số
+
+- `options`: Thông tin tin nhắn và đường dẫn cần gia hạn
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type RenewMessageLinkOptions = {
+    toId: string;
+    msgType: number;
+    msgInfo: Record<string, unknown>;
+    clientId?: string | number;
+    isGroup?: boolean;
+};
+
+export type RenewMessageLinkResponse = Record<string, unknown>;
+```
+
+---
+
 ## `resetHiddenConversPin`
 
 Đặt lại (Reset) mã PIN bảo vệ trò chuyện ẩn.
@@ -752,9 +935,9 @@ Gửi danh thiếp thông tin tài khoản ngân hàng (Bank Card) vào cuộc t
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.chat.sendBankCard(payload: SendBankCardPayload, threadId: string, type: ThreadType = ThreadType.User)
+await api.chat.sendBankCard(payload: SendBankCardPayload, threadId: string, type: ThreadType = ThreadType.User,)
 // Hoặc gọi phẳng (Flat Alias):
-await api.sendBankCard(payload: SendBankCardPayload, threadId: string, type: ThreadType = ThreadType.User)
+await api.sendBankCard(payload: SendBankCardPayload, threadId: string, type: ThreadType = ThreadType.User,)
 ```
 
 ### Tham số
@@ -1148,9 +1331,9 @@ Gửi nhãn dán (Sticker) vào cuộc trò chuyện cá nhân hoặc nhóm.
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.chat.sendSticker(sticker: SendStickerPayload, threadId: string, type: ThreadType = ThreadType.User)
+await api.chat.sendSticker(sticker: SendStickerPayload, threadId: string, type: ThreadType = ThreadType.User,)
 // Hoặc gọi phẳng (Flat Alias):
-await api.sendSticker(sticker: SendStickerPayload, threadId: string, type: ThreadType = ThreadType.User)
+await api.sendSticker(sticker: SendStickerPayload, threadId: string, type: ThreadType = ThreadType.User,)
 ```
 
 ### Tham số
@@ -1402,6 +1585,127 @@ export type SetPinnedConversationsResponse = "";
 
 ---
 
+## `translateMessage`
+
+Dịch thủ công một tin nhắn văn bản bằng Zalo AI (command 13397)
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/aifeatures/translate/v1/manual</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.translateMessage(options: TranslateMessageOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.translateMessage(options: TranslateMessageOptions)
+```
+
+### Tham số
+
+- `options`: Thông tin tin nhắn và cặp ngôn ngữ cần dịch
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type TranslateMessageOptions = {
+    reqId?: string;
+    msgId: string;
+    threadId: string;
+    type?: number;
+    srcLang: string;
+    desLang: string;
+    text: string;
+    immutableItems?: unknown[];
+};
+
+export type TranslateMessageResponse = {
+    reqId?: string;
+    text?: string;
+    metadata?: {
+        immutableItems?: unknown[];
+    };
+    [key: string]: unknown;
+};
+```
+
+---
+
+## `translateMessageAuto`
+
+Gửi yêu cầu dịch tự động hàng loạt tin nhắn đến bằng Zalo AI (command 13398). Kết quả dịch bất đồng bộ có thể được đẩy về qua sự kiện `api.listener.on("translate_event", ...)`.
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/aifeatures/translate/v1/auto</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.translateMessageAuto(options: TranslateMessageAutoOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.translateMessageAuto(options: TranslateMessageAutoOptions)
+```
+
+### Tham số
+
+- `options`: Danh sách tin nhắn và cặp ngôn ngữ cần dịch tự động
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type TranslateMessageAutoItem = {
+    text: string;
+    metadata: {
+        cmi: string;
+        gmi: string;
+        immutableItems?: unknown[];
+    };
+};
+
+export type TranslateMessageAutoOptions = {
+    reqId?: string;
+    threadId: string;
+    type?: number;
+    srcLang: string;
+    desLang: string;
+    msgs: TranslateMessageAutoItem[];
+};
+
+export type TranslateMessageAutoResponse = Record<string, unknown>;
+```
+
+---
+
+## `translateMessageSuggest`
+
+Gửi yêu cầu dịch gợi ý tin nhắn đang soạn thảo bằng Zalo AI (command 13399). Kết quả dịch bất đồng bộ có thể được đẩy về qua sự kiện `api.listener.on("translate_event", ...)`.
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/aifeatures/translate/v1/suggest</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.translateMessageSuggest(options: TranslateMessageSuggestOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.translateMessageSuggest(options: TranslateMessageSuggestOptions)
+```
+
+### Tham số
+
+- `options`: Nội dung tin nhắn đang soạn thảo và cặp ngôn ngữ cần dịch
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type TranslateMessageSuggestOptions = {
+    reqId?: string;
+    threadId: string;
+    type?: number;
+    srcLang: string;
+    desLang: string;
+    text: string;
+    immutableItems?: unknown[];
+};
+
+export type TranslateMessageSuggestResponse = Record<string, unknown>;
+```
+
+---
+
 ## `undo`
 
 Thu hồi (Undo) một tin nhắn đã gửi với tất cả mọi người trong cuộc trò chuyện.
@@ -1478,9 +1782,9 @@ export type UndoMultiMessageResponse = Record<string, unknown>;
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.chat.updateArchivedChatList(isArchived: boolean, conversations: UpdateArchivedChatListTarget | UpdateArchivedChatListTarget[])
+await api.chat.updateArchivedChatList(isArchived: boolean, conversations: UpdateArchivedChatListTarget | UpdateArchivedChatListTarget[],)
 // Hoặc gọi phẳng (Flat Alias):
-await api.updateArchivedChatList(isArchived: boolean, conversations: UpdateArchivedChatListTarget | UpdateArchivedChatListTarget[])
+await api.updateArchivedChatList(isArchived: boolean, conversations: UpdateArchivedChatListTarget | UpdateArchivedChatListTarget[],)
 ```
 
 ### Tham số
@@ -1528,6 +1832,38 @@ export enum ChatTTL {
 }
 
 export type UpdateAutoDeleteChatResponse = "";
+```
+
+---
+
+## `updateBlockSharingConversation`
+
+Bật hoặc tắt chế độ chặn chia sẻ / chuyển tiếp tin nhắn trong một hội thoại (command 12179)
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/conv/blocksharing/updateConvers</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.updateBlockSharingConversation(options: UpdateBlockSharingConversationOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateBlockSharingConversation(options: UpdateBlockSharingConversationOptions)
+```
+
+### Tham số
+
+- `options`: Thông tin hội thoại và trạng thái bật/tắt
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type UpdateBlockSharingConversationOptions = {
+    threadId: string;
+    isGroup?: boolean;
+    isEnabled: boolean | number;
+    clientLang?: string;
+};
+
+export type UpdateBlockSharingConversationResponse = Record<string, unknown>;
 ```
 
 ---
@@ -1636,6 +1972,43 @@ export type UpdateRecentSearchResponse = {
     list_recent: Record<string, unknown>[];
     list_keyword: string[];
 };
+```
+
+---
+
+## `updateTranslateSetting`
+
+Cập nhật cấu hình dịch tin nhắn Zalo AI cho một hội thoại (command 13396)
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.chat</span><span class="zca-endpoint-pill">/api/aifeatures/translate/v1/setting</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.chat.updateTranslateSetting(options: UpdateTranslateSettingOptions)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateTranslateSetting(options: UpdateTranslateSettingOptions)
+```
+
+### Tham số
+
+- `options`: Thiết lập dịch tự động và cặp ngôn ngữ cho hội thoại
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type UpdateTranslateSettingOptions = {
+    threadId: string;
+    type: number;
+    settings: {
+        auto: boolean | number;
+        suggest: boolean | number;
+        srcLang: string;
+        desLang: string;
+    };
+    [key: string]: unknown;
+};
+
+export type UpdateTranslateSettingResponse = Record<string, unknown>;
 ```
 
 ---

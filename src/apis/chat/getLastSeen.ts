@@ -13,7 +13,7 @@ export type GetLastSeenResponse = {
     [key: string]: unknown;
 };
 
-export const getLastSeenFactory = apiFactory<GetLastSeenResponse>()((api, _ctx, utils) => {
+export const getLastSeenFactory = apiFactory<GetLastSeenResponse>()((api, ctx, utils) => {
     const serviceURL = utils.makeURL(`${api.zpwServiceMap.chat[0]}/api/preloadconvers/get-last-seen`);
 
     /**
@@ -24,7 +24,12 @@ export const getLastSeenFactory = apiFactory<GetLastSeenResponse>()((api, _ctx, 
      */
     return async function getLastSeen(options: GetLastSeenOptions = {}) {
         const group = (options.groupIds ?? []).map((g) => (g.startsWith("g") ? g.slice(1) : g));
-        const oneone = options.userIds ?? [];
+        const oneone =
+            options.userIds && options.userIds.length > 0
+                ? options.userIds
+                : group.length === 0 && ctx.uid
+                  ? [ctx.uid]
+                  : [];
         const params = {
             param: JSON.stringify({ group, oneone }),
         };

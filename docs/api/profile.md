@@ -1,34 +1,40 @@
 ---
-title: "Hồ sơ cá nhân (Profile) (api.profile) - 16 APIs"
-description: "Thông tin tài khoản, đổi ảnh đại diện, cài đặt quyền riêng tư, trạng thái cảm xúc (Emoji Status) và xác thực EKYC. Tra cứu chi tiết 16 phương thức thuộc phân hệ api.profile trong bộ SDK @softtynet/zca-js."
+title: "Hồ sơ cá nhân & Emoji Status (Profile) (api.profile) - 22 APIs"
+description: "Thông tin tài khoản, Mini Profile, đổi ảnh đại diện, cài đặt quyền riêng tư, trạng thái cảm xúc (Emoji Status), hồ sơ Doanh nghiệp và xác thực EKYC. Tra cứu chi tiết 22 phương thức thuộc phân hệ api.profile trong bộ SDK @softtynet/zca-js."
 ---
 
-# 🪪 Hồ sơ cá nhân (Profile)
+# 🪪 Hồ sơ cá nhân & Emoji Status (Profile)
 
-> Namespace: `api.profile` (hoặc gọi trực tiếp `api.<methodName>`) — **16 API nguyên bản**
+> Namespace: `api.profile` (hoặc gọi trực tiếp `api.<methodName>`) — **22 API nguyên bản**
 
-Thông tin tài khoản, đổi ảnh đại diện, cài đặt quyền riêng tư, trạng thái cảm xúc (Emoji Status) và xác thực EKYC.
+Thông tin tài khoản, Mini Profile, đổi ảnh đại diện, cài đặt quyền riêng tư, trạng thái cảm xúc (Emoji Status), hồ sơ Doanh nghiệp và xác thực EKYC.
 
 ## Danh sách nhanh
 
-| Phương thức                                                     |  HTTP  | Endpoint Zalo                             | Mô tả                                                                                                                         |
-| :-------------------------------------------------------------- | :----: | :---------------------------------------- | :---------------------------------------------------------------------------------------------------------------------------- |
-| [`changeAccountAvatar`](#changeaccountavatar)                   | `POST` | `/api/profile/upavatar`                   | Thay đổi ảnh đại diện (Avatar) cho tài khoản cá nhân.                                                                         |
-| [`deleteAvatar`](#deleteavatar)                                 | `GET`  | `/api/social/del-avatars`                 | Xóa một hoặc nhiều ảnh đại diện cũ trong kho ảnh đại diện.                                                                    |
-| [`fetchAccountInfo`](#fetchaccountinfo)                         | `GET`  | `/api/social/profile/me-v2`               | API `fetchAccountInfo` thuộc phân hệ `profile`.                                                                               |
-| [`getAvatarList`](#getavatarlist)                               | `GET`  | `/api/social/avatar-list`                 | Lấy danh sách lịch sử các ảnh đại diện đã từng sử dụng của tài khoản.                                                         |
-| [`getAvatarUrlProfile`](#getavatarurlprofile)                   | `GET`  | `/api/social/profile/avatar-url`          | Lấy đường dẫn ảnh đại diện của danh sách hồ sơ người dùng.                                                                    |
-| [`getEmojiStatusConfig`](#getemojistatusconfig)                 | `GET`  | `/api/v1/emoji-status/resource-config`    | Lấy cấu hình và danh sách bộ biểu tượng Trạng thái Emoji (Emoji Status - command 16300)                                       |
-| [`getFullAvatar`](#getfullavatar)                               | `GET`  | `/api/social/profile/avatar`              | Lấy ảnh đại diện kích thước gốc (Full HD) của một người dùng theo UID.                                                        |
-| [`getMiniProfile`](#getminiprofile)                             | `POST` | `/api/social/friend/getminiprofiles`      | Lấy nhanh thông tin hồ sơ rút gọn (Avatar, Global ID, gói Biz) của danh sách người dùng (command 12134)                       |
-| [`getProfileRank`](#getprofilerank)                             | `GET`  | `/api/social/profile/getrank`             | Lấy hạng tài khoản Zalo của một người dùng (ví dụ `"WHITE"`, `"GOLD"` - command 12012)                                        |
-| [`getProfileVerificationStatus`](#getprofileverificationstatus) | `GET`  | `/api/social/profile/verification/status` | Kiểm tra trạng thái xác thực định danh (eKYC) của tài khoản Zalo (command 12150)                                              |
-| [`getSettings`](#getsettings)                                   | `GET`  | `Internal`                                | Lấy toàn bộ cấu hình quyền riêng tư và cài đặt của tài khoản hiện tại.                                                        |
-| [`getUserInfo`](#getuserinfo)                                   | `POST` | `/api/social/friend/getprofiles/v2`       | Lấy thông tin hồ sơ chi tiết (Tên, Ảnh bìa, Ngày sinh, Giới tính, Bio, Zalo Business) của một hoặc nhiều UID.                 |
-| [`reuseAvatar`](#reuseavatar)                                   | `GET`  | `/api/social/reuse-avatar`                | Sử dụng lại một ảnh đại diện cũ từ kho lịch sử ảnh đại diện.                                                                  |
-| [`updateProfile`](#updateprofile)                               | `POST` | `/api/social/profile/update`              | Cập nhật thông tin cá nhân (Tên hiển thị, Ngày sinh, Giới tính) và thông tin Zalo Business.                                   |
-| [`updateProfileBio`](#updateprofilebio)                         | `POST` | `/api/social/profile/status`              | Cập nhật dòng tiểu sử (Status / Bio) trên trang cá nhân.                                                                      |
-| [`updateSettings`](#updatesettings)                             | `GET`  | `Internal`                                | Cập nhật cài đặt quyền riêng tư (Hiển thị ngày sinh, Trạng thái Online, Đã xem, Nguồn nhận tin nhắn/cuộc gọi, Nguồn kết bạn). |
+| Phương thức                                                           |  HTTP  | Endpoint Zalo                               | Mô tả                                                                                                                         |
+| :-------------------------------------------------------------------- | :----: | :------------------------------------------ | :---------------------------------------------------------------------------------------------------------------------------- |
+| [`changeAccountAvatar`](#changeaccountavatar)                         | `POST` | `/api/profile/upavatar`                     | Thay đổi ảnh đại diện (Avatar) cho tài khoản cá nhân.                                                                         |
+| [`deleteAvatar`](#deleteavatar)                                       | `GET`  | `/api/social/del-avatars`                   | Xóa một hoặc nhiều ảnh đại diện cũ trong kho ảnh đại diện.                                                                    |
+| [`disableLimitSearchPhoneReminder`](#disablelimitsearchphonereminder) | `POST` | `/api/social/profile/biz-off-remind`        | Tắt thông báo nhắc nhở giới hạn tìm kiếm số điện thoại (command 12131)                                                        |
+| [`fetchAccountInfo`](#fetchaccountinfo)                               | `GET`  | `/api/social/profile/me-v2`                 | API `fetchAccountInfo` thuộc phân hệ `profile`.                                                                               |
+| [`getAvatarList`](#getavatarlist)                                     | `GET`  | `/api/social/avatar-list`                   | Lấy danh sách lịch sử các ảnh đại diện đã từng sử dụng của tài khoản.                                                         |
+| [`getAvatarUrlProfile`](#getavatarurlprofile)                         | `GET`  | `/api/social/profile/avatar-url`            | Lấy đường dẫn ảnh đại diện của danh sách hồ sơ người dùng.                                                                    |
+| [`getEmojiStatusConfig`](#getemojistatusconfig)                       | `GET`  | `/api/v1/emoji-status/resource-config`      | Lấy cấu hình và danh sách bộ biểu tượng Trạng thái Emoji (Emoji Status - command 16300)                                       |
+| [`getEnterpriseProfiles`](#getenterpriseprofiles)                     | `POST` | `/api/enterprise/profiles`                  | Lấy thông tin hồ sơ doanh nghiệp (Zalo Enterprise) của một hoặc nhiều tài khoản (command 12193)                               |
+| [`getFullAvatar`](#getfullavatar)                                     | `GET`  | `/api/social/profile/avatar`                | Lấy ảnh đại diện kích thước gốc (Full HD) của một người dùng theo UID.                                                        |
+| [`getMiniProfile`](#getminiprofile)                                   | `POST` | `/api/social/friend/getminiprofiles`        | Lấy nhanh thông tin hồ sơ rút gọn (Avatar, Global ID, gói Biz) của danh sách người dùng (command 12134)                       |
+| [`getProfileExtra`](#getprofileextra)                                 | `GET`  | `/api/social/profile/extra`                 | Lấy thông tin mở rộng của hồ sơ cá nhân (command 11864)                                                                       |
+| [`getProfileRank`](#getprofilerank)                                   | `GET`  | `/api/social/profile/getrank`               | Lấy hạng tài khoản Zalo của một người dùng (ví dụ `"WHITE"`, `"GOLD"` - command 12012)                                        |
+| [`getProfileVerificationStatus`](#getprofileverificationstatus)       | `GET`  | `/api/social/profile/verification/status`   | Kiểm tra trạng thái xác thực định danh (eKYC) của tài khoản Zalo (command 12150)                                              |
+| [`getSettings`](#getsettings)                                         | `GET`  | `/api/setting/me`                           | Lấy toàn bộ cấu hình quyền riêng tư và cài đặt của tài khoản hiện tại.                                                        |
+| [`getUserInfo`](#getuserinfo)                                         | `POST` | `/api/social/friend/getprofiles/v2`         | Lấy thông tin hồ sơ chi tiết (Tên, Ảnh bìa, Ngày sinh, Giới tính, Bio, Zalo Business) của một hoặc nhiều UID.                 |
+| [`pushProfileVerificationMessage`](#pushprofileverificationmessage)   | `POST` | `/api/social/ekyc/push-oa`                  | Yêu cầu đẩy tin nhắn hướng dẫn xác thực tài khoản (eKYC) từ Official Account (command 12151)                                  |
+| [`registerTrialBizAccount`](#registertrialbizaccount)                 | `POST` | `/api/social/profile/biz-register-trial-v2` | Đăng ký dùng thử gói Zalo Business V2 cho tài khoản (command 12152)                                                           |
+| [`reuseAvatar`](#reuseavatar)                                         | `GET`  | `/api/social/reuse-avatar`                  | Sử dụng lại một ảnh đại diện cũ từ kho lịch sử ảnh đại diện.                                                                  |
+| [`updateProfile`](#updateprofile)                                     | `POST` | `/api/social/profile/update`                | Cập nhật thông tin cá nhân (Tên hiển thị, Ngày sinh, Giới tính) và thông tin Zalo Business.                                   |
+| [`updateProfileBio`](#updateprofilebio)                               | `POST` | `/api/social/profile/status`                | Cập nhật dòng tiểu sử (Status / Bio) trên trang cá nhân.                                                                      |
+| [`updateProfileMode`](#updateprofilemode)                             | `GET`  | `/api/social/profile/mode`                  | Cập nhật chế độ hồ sơ người dùng (command 11865)                                                                              |
+| [`updateSettings`](#updatesettings)                                   | `GET`  | `/api/setting/update`                       | Cập nhật cài đặt quyền riêng tư (Hiển thị ngày sinh, Trạng thái Online, Đã xem, Nguồn nhận tin nhắn/cuộc gọi, Nguồn kết bạn). |
 
 ---
 
@@ -85,6 +91,31 @@ export type DeleteAvatarResponse = {
         };
     };
 };
+```
+
+---
+
+## `disableLimitSearchPhoneReminder`
+
+Tắt thông báo nhắc nhở giới hạn tìm kiếm số điện thoại (command 12131)
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/profile/biz-off-remind</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.disableLimitSearchPhoneReminder(uid?: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.disableLimitSearchPhoneReminder(uid?: string)
+```
+
+### Tham số
+
+- `uid`: ID người dùng (mặc định là `ctx.uid`)
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type DisableLimitSearchPhoneReminderResponse = Record<string, unknown>;
 ```
 
 ---
@@ -217,6 +248,31 @@ export type GetEmojiStatusConfigResponse = {
 
 ---
 
+## `getEnterpriseProfiles`
+
+Lấy thông tin hồ sơ doanh nghiệp (Zalo Enterprise) của một hoặc nhiều tài khoản (command 12193)
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/enterprise/profiles</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.getEnterpriseProfiles(uids: string | string[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.getEnterpriseProfiles(uids: string | string[])
+```
+
+### Tham số
+
+- `uids`: ID hoặc danh sách ID người dùng
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type GetEnterpriseProfilesResponse = Record<string, unknown>;
+```
+
+---
+
 ## `getFullAvatar`
 
 Lấy ảnh đại diện kích thước gốc (Full HD) của một người dùng theo UID.
@@ -283,6 +339,31 @@ export type GetMiniProfileResponse = Record<string, MiniProfileItem>;
 
 ---
 
+## `getProfileExtra`
+
+Lấy thông tin mở rộng của hồ sơ cá nhân (command 11864)
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/profile/extra</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.getProfileExtra(profileId?: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getProfileExtra(profileId?: string)
+```
+
+### Tham số
+
+- `profileId`: ID người dùng (mặc định là `ctx.uid`)
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type GetProfileExtraResponse = Record<string, unknown>;
+```
+
+---
+
 ## `getProfileRank`
 
 Lấy hạng tài khoản Zalo của một người dùng (ví dụ `"WHITE"`, `"GOLD"` - command 12012)
@@ -339,7 +420,7 @@ export type GetProfileVerificationStatusResponse = {
 
 Lấy toàn bộ cấu hình quyền riêng tư và cài đặt của tài khoản hiện tại.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/setting/me</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -384,6 +465,62 @@ export type UserInfoResponse = {
     phonebook_version: number;
     changed_profiles: Record<string, ProfileInfo>;
 };
+```
+
+---
+
+## `pushProfileVerificationMessage`
+
+Yêu cầu đẩy tin nhắn hướng dẫn xác thực tài khoản (eKYC) từ Official Account (command 12151)
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/ekyc/push-oa</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.pushProfileVerificationMessage(options: PushProfileVerificationMessageOptions = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.pushProfileVerificationMessage(options: PushProfileVerificationMessageOptions = {})
+```
+
+### Tham số
+
+- `options`: Thông tin `uid`, `groupName`, `type`
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type PushProfileVerificationMessageOptions = {
+    uid?: string;
+    groupName?: string;
+    type?: number;
+};
+
+export type PushProfileVerificationMessageResponse = Record<string, unknown>;
+```
+
+---
+
+## `registerTrialBizAccount`
+
+Đăng ký dùng thử gói Zalo Business V2 cho tài khoản (command 12152)
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/profile/biz-register-trial-v2</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.registerTrialBizAccount(uid?: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.registerTrialBizAccount(uid?: string)
+```
+
+### Tham số
+
+- `uid`: ID người dùng (mặc định là `ctx.uid`)
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type RegisterTrialBizAccountResponse = Record<string, unknown>;
 ```
 
 ---
@@ -481,11 +618,36 @@ export type UpdateProfileBioResponse = "";
 
 ---
 
+## `updateProfileMode`
+
+Cập nhật chế độ hồ sơ người dùng (command 11865)
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/social/profile/mode</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.profile.updateProfileMode(mode: number)
+// Hoặc gọi phẳng (Flat Alias):
+await api.updateProfileMode(mode: number)
+```
+
+### Tham số
+
+- `mode`: Chế độ hồ sơ cần đặt
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type UpdateProfileModeResponse = Record<string, unknown>;
+```
+
+---
+
 ## `updateSettings`
 
 Cập nhật cài đặt quyền riêng tư (Hiển thị ngày sinh, Trạng thái Online, Đã xem, Nguồn nhận tin nhắn/cuộc gọi, Nguồn kết bạn).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.profile</span><span class="zca-endpoint-pill">/api/setting/update</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
