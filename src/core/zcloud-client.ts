@@ -29,18 +29,26 @@ export async function requestZCloudDecrypted<T>(
         if (!keyInfo?.viewer_key || !keyInfo?.enk) {
             throw new ZaloApiError("Invalid CloudViewerKey");
         }
-        const targetUrl = options.paramsPayload
-            ? utils.makeURL(options.url, {
-                  params: encryptZCloudAES(JSON.stringify(options.paramsPayload), keyInfo.enk),
-              })
-            : options.url;
+        const isPost = (options.method ?? "GET") === "POST";
+        const encryptedPayload = options.paramsPayload
+            ? encryptZCloudAES(JSON.stringify(options.paramsPayload), keyInfo.enk)
+            : undefined;
+        const targetUrl =
+            encryptedPayload && !isPost
+                ? utils.makeURL(options.url, {
+                      params: encryptedPayload,
+                  })
+                : options.url;
+        const resolvedBody =
+            options.body ??
+            (encryptedPayload && isPost ? new URLSearchParams({ params: encryptedPayload }) : undefined);
 
         const response = await utils.request(targetUrl, {
             method: options.method ?? "GET",
             headers: {
                 "cloud-viewer-key": keyInfo.viewer_key,
             },
-            ...(options.body ? { body: options.body } : {}),
+            ...(resolvedBody ? { body: resolvedBody } : {}),
         });
         const json = (await response.json()) as { error_code: number; error_message: string; data?: string };
         return { json, keyInfo };

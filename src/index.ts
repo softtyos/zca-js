@@ -402,6 +402,107 @@ export type { BlockOAResponse } from "./apis/business/blockOA.js";
 export type { UnblockOAResponse } from "./apis/business/unblockOA.js";
 export type { ConvertOAIdsResponse } from "./apis/business/convertOAIds.js";
 export type { GetOAProfileOptions, GetOAProfileResponse } from "./apis/business/getOAProfile.js";
+export type { CreateTodoOptions, CreateTodoResponse } from "./apis/board/createTodo.js";
+export type { UpdateTodoOptions, UpdateTodoResponse } from "./apis/board/updateTodo.js";
+export type { DeleteTodoResponse } from "./apis/board/deleteTodo.js";
+export type { GetTodoListOptions, GetTodoListResponse } from "./apis/board/getTodoList.js";
+export type { GetTodoDetailResponse } from "./apis/board/getTodoDetail.js";
+export type { UpdateTodoStatusResponse } from "./apis/board/updateTodoStatus.js";
+export type { DingTodoResponse } from "./apis/board/dingTodo.js";
+export type { AckDingTodoResponse } from "./apis/board/ackDingTodo.js";
+export type { VerifyTodoResponse } from "./apis/board/verifyTodo.js";
+export type { PinBoardTopicResponse } from "./apis/board/pinBoardTopic.js";
+export type { UnpinBoardTopicResponse } from "./apis/board/unpinBoardTopic.js";
+export type { MultiUnpinBoardTopicsResponse } from "./apis/board/multiUnpinBoardTopics.js";
+export type { ReorderPinTopicsResponse } from "./apis/board/reorderPinTopics.js";
+export type { RemoveBoardTopicResponse } from "./apis/board/removeBoardTopic.js";
+export type { RespondReminderResponse } from "./apis/board/respondReminder.js";
+export type {
+    CreateOneOneBoardTopicOptions,
+    CreateOneOneBoardTopicResponse,
+} from "./apis/board/createOneOneBoardTopic.js";
+export type {
+    UpdateOneOneBoardTopicOptions,
+    UpdateOneOneBoardTopicResponse,
+} from "./apis/board/updateOneOneBoardTopic.js";
+export type { RemoveOneOneBoardTopicResponse } from "./apis/board/removeOneOneBoardTopic.js";
+export type { GetListOneOneBoardOptions, GetListOneOneBoardResponse } from "./apis/board/getListOneOneBoard.js";
+export type { PinFriendMessageResponse } from "./apis/board/pinFriendMessage.js";
+export type { ReorderFriendBoardResponse } from "./apis/board/reorderFriendBoard.js";
+export type { UnpinFriendMessagesResponse } from "./apis/board/unpinFriendMessages.js";
+export type { GetTranslateSettingResponse } from "./apis/chat/getTranslateSetting.js";
+export type { UpdateTranslateSettingResponse } from "./apis/chat/updateTranslateSetting.js";
+export type { TranslateMessageOptions, TranslateMessageResponse } from "./apis/chat/translateMessage.js";
+export type { TranslateMessageAutoOptions, TranslateMessageAutoResponse } from "./apis/chat/translateMessageAuto.js";
+export type {
+    TranslateMessageSuggestOptions,
+    TranslateMessageSuggestResponse,
+} from "./apis/chat/translateMessageSuggest.js";
+export type { GetBlockSharingConversationsResponse } from "./apis/chat/getBlockSharingConversations.js";
+export type {
+    UpdateBlockSharingConversationOptions,
+    UpdateBlockSharingConversationResponse,
+} from "./apis/chat/updateBlockSharingConversation.js";
+export type {
+    GetConvOfflineMessagesOptions,
+    GetConvOfflineMessagesResponse,
+} from "./apis/chat/getConvOfflineMessages.js";
+export type { MarkSubTabSeenResponse } from "./apis/chat/markSubTabSeen.js";
+export type {
+    FetchImportantMessagesOptions,
+    FetchImportantMessagesResponse,
+} from "./apis/chat/fetchImportantMessages.js";
+export type { RenewMessageLinkOptions, RenewMessageLinkResponse } from "./apis/chat/renewMessageLink.js";
+export type {
+    AddConversationLabelOptions,
+    AddConversationLabelResponse,
+} from "./apis/business/addConversationLabel.js";
+export type {
+    UpdateConversationLabelItemOptions,
+    UpdateConversationLabelItemResponse,
+} from "./apis/business/updateConversationLabelItem.js";
+export type { DeleteConversationLabelResponse } from "./apis/business/deleteConversationLabel.js";
+export type { ReorderConversationLabelsResponse } from "./apis/business/reorderConversationLabels.js";
+export type { DeleteSingleProductOptions, DeleteSingleProductResponse } from "./apis/business/deleteSingleProduct.js";
+export type { GetProductDetailResponse } from "./apis/business/getProductDetail.js";
+export type { GetMessageEffectsResponse } from "./apis/sticker/getMessageEffects.js";
+export type { GetMessageEffectByIdResponse } from "./apis/sticker/getMessageEffectById.js";
+export type { GetTenorStickerMappingResponse } from "./apis/sticker/getTenorStickerMapping.js";
+export type { GetRecommendedStickersResponse } from "./apis/sticker/getRecommendedStickers.js";
+export type { GetAIStickerListResponse } from "./apis/sticker/getAIStickerList.js";
+export type { UpdatePersonalizedStickerListResponse } from "./apis/sticker/updatePersonalizedStickerList.js";
+export type { GetDefaultGuggyGifsResponse } from "./apis/sticker/getDefaultGuggyGifs.js";
+export type { SearchGuggyGifsResponse } from "./apis/sticker/searchGuggyGifs.js";
+export type { GetGifCategoriesResponse } from "./apis/sticker/getGifCategories.js";
+export type { GetGifsByCategoryResponse } from "./apis/sticker/getGifsByCategory.js";
+export type { GetTrendingGifsResponse } from "./apis/sticker/getTrendingGifs.js";
+export type { SearchGifsResponse } from "./apis/sticker/searchGifs.js";
+export type { GetGifDictionariesResponse } from "./apis/sticker/getGifDictionaries.js";
+export type { GetGifsByDictionaryResponse } from "./apis/sticker/getGifsByDictionary.js";
+export type { UpdateCloseFriendResponse } from "./apis/friend/updateCloseFriend.js";
+export type { RemoveFriendRecommendationResponse } from "./apis/friend/removeFriendRecommendation.js";
+export type { RemoveFriendRecommendationV2Response } from "./apis/friend/removeFriendRecommendationV2.js";
+export type { GetMultiUserQRCodesResponse } from "./apis/friend/getMultiUserQRCodes.js";
+export type { RemoveUserFromGroupsResponse } from "./apis/group/removeUserFromGroups.js";
+export type { RemoveGroupTopicResponse } from "./apis/group/removeGroupTopic.js";
+export type { GetProfileExtraResponse } from "./apis/profile/getProfileExtra.js";
+export type { UpdateProfileModeResponse } from "./apis/profile/updateProfileMode.js";
+export type { GetEnterpriseProfilesResponse } from "./apis/profile/getEnterpriseProfiles.js";
+export type { PushProfileVerificationMessageResponse } from "./apis/profile/pushProfileVerificationMessage.js";
+export type { RegisterTrialBizAccountResponse } from "./apis/profile/registerTrialBizAccount.js";
+export type { DisableLimitSearchPhoneReminderResponse } from "./apis/profile/disableLimitSearchPhoneReminder.js";
+export type { GetCloudDownloadUrlsResponse } from "./apis/zcloud/getCloudDownloadUrls.js";
+export type { ResetCloudQueueResponse } from "./apis/zcloud/resetCloudQueue.js";
+export type { SubmitCloudMediaExtInfoResponse } from "./apis/zcloud/submitCloudMediaExtInfo.js";
+export type { AckCloudOnboardingResponse } from "./apis/zcloud/ackCloudOnboarding.js";
+export type { SubmitCloudVerifyActionResponse } from "./apis/zcloud/submitCloudVerifyAction.js";
+export type { GetCloudUploadUrlResponse } from "./apis/zcloud/getCloudUploadUrl.js";
+export type { MigrateCloudRecentResponse } from "./apis/zcloud/migrateCloudRecent.js";
+export type { GetBackupMsgInfoResponse } from "./apis/sync/getBackupMsgInfo.js";
+export type { DeleteMobileMsgSnapshotResponse } from "./apis/sync/deleteMobileMsgSnapshot.js";
+export type { GetCrossDbInfoOptions, GetCrossDbInfoResponse } from "./apis/sync/getCrossDbInfo.js";
+export type { SubmitSyncMediaActionsResponse } from "./apis/sync/submitSyncMediaActions.js";
+export type { UploadBackupChunkResponse } from "./apis/sync/uploadBackupChunk.js";
 
 // Others (Enum)
 export { CloseReason } from "./apis/listen.js";
@@ -428,10 +529,15 @@ export {
     ZaloCallTransport,
     ZaloRtcSession,
     ZaloSrtpSession,
+    buildAudioCodecMutePacket,
     buildEchoRequest,
     buildEndCallRequest,
+    buildGroupCallVideoRtpHeaderExtension,
+    buildGroupVideoQualityBitrateConfigPacket,
+    buildGroupVideoQualityRequestPacket,
     buildInitCallRequest,
     buildInitCallResponse,
+    buildInitZaviPingRequest,
     buildPingRequest,
     buildPingResponse,
     buildRelayPingRequest,
@@ -461,21 +567,28 @@ export {
     type ParsedRtpPacket,
     type ParsedZRTPPacket,
     type RejectIncomingCallOptions,
+    type SfuSvcExtensionData,
     type SrtpCryptoSuite,
     type StartGroupCallOptions,
     type StartOutgoingCallOptions,
     type ZRTCMultiplexedMediaPacket,
     type ZRTCP2PPacket,
+    type ZRTPAudioCodecMuteOptions,
     type ZRTPControlPacket,
     type ZRTPEchoRequestOptions,
     type ZRTPEndCallRequestOptions,
+    type ZRTPGroupVideoQualityBitrateConfigOptions,
+    type ZRTPGroupVideoQualityRequestOptions,
     type ZRTPInitCallRequestOptions,
     type ZRTPInitCallResponseOptions,
+    type ZRTPInitZaviPingOptions,
     type ZRTPLegacyMediaPacket,
     type ZRTPPingRequestOptions,
     type ZRTPRawPacket,
     type ZRTPRelayPingRequestOptions,
     type ZRTPRequestForwardOptions,
+    type ZRTPVideoQualityConfigEntry,
+    type ZRTPVideoQualityRequestEntry,
     type ZaloCallConnectionParams,
     type ZaloCallControllerEvents,
     type ZaloCallControllerOptions,
@@ -485,9 +598,14 @@ export {
     type ZaloCallTransportEvents,
     type ZaloCallTransportOptions,
     type ZaloMobileDirectHandoffBundle,
+    type ZaloRtcAudioFrameEvent,
+    type ZaloRtcMediaStateChangeEvent,
     type ZaloRtcSessionEvents,
     type ZaloRtcSessionOptions,
     type ZaloRtcSessionState,
+    type ZaloRtcVideoAnnexBFrameEvent,
+    type ZaloRtcVideoFrameEvent,
+    type ZaloSrtpSessionOptions,
     type ZrtcExtendDataOptions,
 } from "./call-engine/index.js";
 export {

@@ -38,8 +38,10 @@ export const shareScreenGroupCallFactory = apiFactory<ShareScreenGroupCallRespon
                   ? options.data
                   : JSON.stringify(options.data);
 
-        const audioState = options.audioState ?? 1;
-        const videoState = options.videoState ?? 1;
+        // Trong Zalo Group Call: audiostate = 0 là Bật Mic (Unmuted), 1 là Tắt Mic (Muted);
+        // videostate = 0 là Bật Camera / ShareScreen, 1 là Tắt Camera.
+        const audioState = options.audioState ?? 0;
+        const videoState = options.videoState ?? 0;
         const params = {
             userId: toVoipInt(options.userId ?? options.hostCall ?? ctx.uid),
             callId,

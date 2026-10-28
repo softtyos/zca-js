@@ -17,49 +17,49 @@ const DOMAIN_META = {
         title: "Xác thực & Phiên (Auth)",
         badge: "api.auth",
         description:
-            "Quản lý thiết bị đăng nhập, xuất/nhập phiên (exportSession), mã QR, Keep-Alive, giải mã GID (Global ID) và Noised ID.",
+            "Quản lý thiết bị đăng nhập, xuất/nhập phiên (exportSession), mã QR, Keep-Alive, đổi mật khẩu, E2EE và giải mã GID (Global ID) / Noised ID.",
     },
     chat: {
         icon: "💬",
-        title: "Tin nhắn & Hội thoại (Chat)",
+        title: "Tin nhắn, Hội thoại & Dịch AI (Chat)",
         badge: "api.chat",
         description:
-            "Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nhắn, ghim/ẩn/lưu trữ hội thoại và trạng thái Đã nhận/Đã xem.",
+            "Gửi/nhận tin nhắn văn bản, ảnh, video, voice, card, thu hồi tin nhắn, Dịch đa ngôn ngữ bằng Zalo AI, đánh dấu tin nhắn quan trọng, chặn chia sẻ và trạng thái Đã nhận/Đã xem.",
     },
     group: {
         icon: "👥",
         title: "Nhóm & Cộng đồng (Group)",
         badge: "api.group",
         description:
-            "Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch sử tin nhắn Cloud, trạng thái tin nhắn thành viên và phân quyền.",
+            "Quản lý nhóm & Cộng đồng, lấy thông tin nhóm (V1/V2/V3/V4), lịch sử tin nhắn Cloud, trạng thái tin nhắn thành viên, chủ đề (Topic) và phân quyền.",
     },
     friend: {
         icon: "🤝",
         title: "Bạn bè & Danh bạ (Friend)",
         badge: "api.friend",
         description:
-            "Quản lý danh sách bạn bè, lời mời kết bạn, gợi ý kết bạn, biệt danh (alias), chặn và kiểm tra trạng thái hoạt động PC/Web.",
+            "Quản lý danh sách bạn bè, lời mời kết bạn, gợi ý kết bạn, biệt danh (alias), chặn, đồng bộ danh bạ và kiểm tra trạng thái hoạt động PC/Web.",
     },
     profile: {
         icon: "🪪",
-        title: "Hồ sơ cá nhân (Profile)",
+        title: "Hồ sơ cá nhân & Emoji Status (Profile)",
         badge: "api.profile",
         description:
-            "Thông tin tài khoản, đổi ảnh đại diện, cài đặt quyền riêng tư, trạng thái cảm xúc (Emoji Status) và xác thực EKYC.",
+            "Thông tin tài khoản, Mini Profile, đổi ảnh đại diện, cài đặt quyền riêng tư, trạng thái cảm xúc (Emoji Status), hồ sơ Doanh nghiệp và xác thực EKYC.",
     },
     sync: {
         icon: "🔄",
         title: "Đồng bộ Mobile ZDB 4.0 (Sync)",
         badge: "api.sync",
         description:
-            "Đồng bộ toàn bộ lịch sử tin nhắn từ điện thoại sang PC qua giao thức RSA-2048 & ZDB 4.0 AES-256-CBC multi-chunk.",
+            "Đồng bộ toàn bộ lịch sử tin nhắn từ điện thoại sang PC qua giao thức RSA-2048 & ZDB 4.0 AES-256-CBC multi-chunk, kiểm tra Backup, Cross-DB và đồng bộ hành động Media.",
     },
     zcloud: {
         icon: "☁️",
         title: "Đám mây ZCloud & ZFamily (ZCloud)",
         badge: "api.zcloud",
         description:
-            "Truy vấn dung lượng My Cloud / ZCloud, ZFamily, khóa giải mã ViewerKey (98yS AES-256-CBC) và xác thực Media.",
+            "Truy vấn dung lượng My Cloud / ZCloud, ZFamily, khóa giải mã ViewerKey (98yS AES-256-CBC), lấy link tải hàng loạt, quản lý hàng đợi và di chuyển dữ liệu.",
     },
     call: {
         icon: "📞",
@@ -77,22 +77,24 @@ const DOMAIN_META = {
     },
     sticker: {
         icon: "✨",
-        title: "Nhãn dán & Biểu cảm (Sticker)",
+        title: "Nhãn dán, GIF Giphy/Guggy & Hiệu ứng (Sticker)",
         badge: "api.sticker",
-        description: "Tìm kiếm nhãn dán, danh mục nhãn dán V2, nhãn dán gợi ý theo ngữ cảnh và nhãn dán cá nhân hóa.",
+        description:
+            "Tìm kiếm nhãn dán, danh mục nhãn dán V2, nhãn dán gợi ý theo ngữ cảnh, kho ảnh động GIF (Giphy, Guggy, Tenor) và hiệu ứng tin nhắn nền (Message Effects).",
     },
     board: {
         icon: "📌",
-        title: "Bảng tin, Ghi chú, Bình chọn & Lịch hẹn (Board)",
+        title: "Bảng tin, Bình chọn, Lịch hẹn & Zalo To-Do (Board)",
         badge: "api.board",
-        description: "Quản lý Tin ghim (Pin Topics), Ghi chú nhóm (Notes), Bình chọn (Polls) và Lịch hẹn (Reminders).",
+        description:
+            "Quản lý Tin ghim (Pin Topics), Ghi chú nhóm (Notes), Bình chọn (Polls), Lịch hẹn nhóm & 1-1 (Reminders), Bảng tin bạn bè và Giao việc Zalo To-Do.",
     },
     business: {
         icon: "💼",
-        title: "Zalo Business, OA, Nhãn & Danh mục (Business)",
+        title: "Zalo Business, OA, Nhãn CRM & Danh mục (Business)",
         badge: "api.business",
         description:
-            "Quản lý Zalo Official Account (getOAProfile, blockOA, unblockOA, convertOAIds), nhãn phân loại (Labels), tin nhắn nhanh (Quick Messages), trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng.",
+            "Quản lý Zalo Official Account (getOAProfile, blockOA, unblockOA, convertOAIds), Nhãn phân loại hội thoại CRM (Labels), Tin nhắn nhanh (Quick Messages), Trả lời tự động (Auto Reply), Danh mục sản phẩm (Catalog) và Ngân hàng.",
     },
 };
 
@@ -333,6 +335,27 @@ function escapeMarkdownHtml(str) {
         .join("");
 }
 
+function loadEndpointRegistry() {
+    const endpointsFile = path.join(rootDir, "src", "constants", "endpoints.ts");
+    const map = {};
+    if (!fs.existsSync(endpointsFile)) return map;
+    const raw = fs.readFileSync(endpointsFile, "utf-8");
+    const groupRegex = /([A-Z0-9_]+)\s*:\s*\{([\s\S]*?)\}/g;
+    let gm;
+    while ((gm = groupRegex.exec(raw)) !== null) {
+        const groupName = gm[1];
+        const body = gm[2];
+        const keyRegex = /([A-Z0-9_]+)\s*:\s*"([^"]+)"/g;
+        let km;
+        while ((km = keyRegex.exec(body)) !== null) {
+            map[`ZALO_ENDPOINTS.${groupName}.${km[1]}`] = km[2];
+        }
+    }
+    return map;
+}
+
+const ENDPOINT_REGISTRY = loadEndpointRegistry();
+
 function parseApiFile(filePath, domain, name) {
     const content = fs.readFileSync(filePath, "utf-8");
 
@@ -375,7 +398,13 @@ function parseApiFile(filePath, domain, name) {
             .join(" ");
     }
 
-    const endpoints = Array.from(new Set(content.match(/\/api\/[a-zA-Z0-9_/-]+/g) || []));
+    const literalEndpoints = content.match(/\/(?:api|cloudmedia|zalocloud|zfamily|keepalive)[a-zA-Z0-9_/-]*/g) || [];
+    const externalEndpoints =
+        content.match(/https:\/\/(?:api\.giphy\.com|text2gif\.guggy\.com|api\.tenor\.com)\/[a-zA-Z0-9_/-]+/g) || [];
+    const constRefs = content.match(/ZALO_ENDPOINTS\.[A-Z0-9_]+\.[A-Z0-9_]+/g) || [];
+    const resolvedConstEndpoints = constRefs.map((ref) => ENDPOINT_REGISTRY[ref]).filter(Boolean);
+
+    const endpoints = Array.from(new Set([...literalEndpoints, ...resolvedConstEndpoints, ...externalEndpoints]));
     const methodMatch = content.match(/method:\s*"(GET|POST|PUT|DELETE)"/);
     const httpMethod = methodMatch ? methodMatch[1] : "GET";
 
@@ -470,16 +499,16 @@ function generateModelsAndCookbookDocs() {
 
     fs.writeFileSync(path.join(docsDir, "api", "models.md"), modelLines.join("\n"), "utf-8");
 
-    // 2. Generate docs/guide/cookbook.md (6 Real-World Production Recipes)
+    // 2. Generate docs/guide/cookbook.md (10 Real-World Production Recipes)
     const cookbookLines = [
         "---",
-        'title: "Cookbook & Best Practices - 6 Kịch bản Thực chiến Production"',
-        'description: "Hướng dẫn thực chiến: Lưu & khôi phục phiên đăng nhập (exportSession), gắn Proxy HTTP/SOCKS5 cho đa tài khoản, phân trang chống Rate-Limit, WebSocket 24/7, xử lý lỗi ZaloApiError và điều khiển 28 API Gọi thoại/Video 1-1 & Nhóm."',
+        'title: "Cookbook & Best Practices - 10 Kịch bản Thực chiến Production"',
+        'description: "Hướng dẫn thực chiến: Lưu & khôi phục phiên đăng nhập (exportSession), gắn Proxy HTTP/SOCKS5 cho đa tài khoản, phân trang chống Rate-Limit, WebSocket 24/7, xử lý lỗi ZaloApiError, Gọi thoại/Video 2 chiều 1-1 & Nhóm (ZaloRtcSession), quản lý Zalo Official Account (OA), Dịch AI đa ngôn ngữ, Zalo To-Do & Nhắc hẹn 1-1, GIF Giphy/Guggy & Nhãn CRM."',
         "---",
         "",
         "# 🛠️ Kịch bản Thực chiến (Cookbook & Production Best Practices)",
         "",
-        "Tài liệu này tổng hợp **6 mẫu thiết kế chuẩn Production** khi vận hành hệ thống Bot / Worker Zalo thực tế với `@softtynet/zca-js`.",
+        "Tài liệu này tổng hợp **10 mẫu thiết kế chuẩn Production** khi vận hành hệ thống Bot / Worker Zalo thực tế với `@softtynet/zca-js`.",
         "",
         "---",
         "",
@@ -603,11 +632,16 @@ function generateModelsAndCookbookDocs() {
         "",
         "---",
         "",
-        "## 4. Duy trì Kết nối WebSocket Bền bỉ 24/7 (`Listener` + `KeepAlive`)",
+        "## 4. Duy trì Kết nối WebSocket Bền bỉ 24/7 (`Listener` + `KeepAlive` + 4 Outbound WS Requests)",
         "",
         "```ts",
         'api.listener.on("connected", () => {',
         '    console.log("🟢 WebSocket Zalo đã kết nối");',
+        "    // Chủ động đồng bộ trạng thái Online, Đã nhận/Đã xem và cảm xúc ngay khi kết nối",
+        "    api.listener.sendPingActive();",
+        "    api.listener.requestLastDeliverSeen();",
+        "    api.listener.requestLastSeenSubChatTab();",
+        "    api.listener.requestLastSeenReaction();",
         "});",
         "",
         'api.listener.on("disconnected", (code, reason) => {',
@@ -643,45 +677,49 @@ function generateModelsAndCookbookDocs() {
         "",
         "---",
         "",
-        "## 6. Điều khiển Vòng đời Cuộc gọi Thoại / Video 1-1 & Gọi Nhóm (`api.call` — 28 APIs)",
+        "## 6. Gọi Thoại, Video 1-1 & Gọi Nhóm 2 Chiều (`ZaloRtcSession` & 30 APIs trong `api.call`)",
         "",
-        "Phân hệ `api.call` cung cấp trọn bộ **28 API Báo hiệu (`zpw_type = 24`)** từ cuộc gọi 1-1 (`11300` → `11311`, `12006`, `12056`, `12064`) đến cuộc gọi nhóm (`12433` → `12447`, `12043`, `12044`, `12097`, `12098`):",
+        "Phân hệ `api.call` cung cấp trọn bộ **30 API** gồm 28 API Báo hiệu (`zpw_type = 24`) và 2 bộ máy truyền tải **2 chiều thuần TypeScript (`createRtcSession` & `createController`)**:",
         "",
         "```ts",
         'import { CallType } from "@softtynet/zca-js";',
         "",
-        "// A. Khởi tạo cuộc gọi 1-1 nhanh (gộp tự động 11300 + 11301)",
-        "const callRes = await api.call.sendVoiceCall(targetUid, {",
-        "    callType: CallType.Audio, // Hoặc CallType.Video",
-        "});",
-        'console.log("Đã đổ chuông! Call ID:", callRes.callId, "RTP Server:", callRes.rtpServer);',
+        "const session = api.call.createRtcSession({ autoAttachListener: true });",
         "",
-        "// B. Hoặc điều khiển từng bước (Step-by-step Signaling cho ZRTC Media Engine)",
-        "const step1 = await api.call.requestVoiceCall(targetUid, { callType: CallType.Video });",
-        "const step2 = await api.call.sendRequestVoiceCall(targetUid, {",
-        "    callId: step1.callId,",
-        "    sessId: step1.sessId,",
-        "    callType: CallType.Video,",
-        "    rtpServer: step1.rtpServer,",
-        "    rtcpServer: step1.rtcpServer,",
-        "    zrtpKey: step1.zrtpKey,",
+        "// A. Gọi Video 1-1 hai chiều (Opus 16kHz + H.264 Annex-B FU-A)",
+        "const callParams = await session.startOutgoingCall(targetUid, {",
+        "    callType: CallType.Video, // Hoặc CallType.Audio",
+        "});",
+        'console.log("Đã kết nối RTP Server:", callParams.rtpAddress);',
+        "",
+        "// B. Nhận khung âm thanh Opus & hình ảnh H.264 Annex-B từ đối phương / thành viên nhóm",
+        'session.on("audio_frame", (frame) => {',
+        "    // frame.payload: Buffer (Opus 16kHz Mono), frame.ssrc: number",
+        "});",
+        'session.on("video_annexb_frame", (frame) => {',
+        "    // frame.annexB: Buffer (00 00 00 01 + SPS/PPS/IDR/P-Slice)",
+        "    // frame.partnerId?: string (Zalo UID 19 chữ số của người phát trong Group Call)",
+        "    // frame.isKeyframe: boolean",
         "});",
         "",
-        "// C. Xử lý khi có cuộc gọi đến qua WebSocket (ringring -> answer -> conf -> endcall)",
-        'api.listener.on("call_event", async (evt) => {',
-        '    if (evt.action === "request") {',
-        "        // 1. Báo máy đang đổ chuông (cmd 11302)",
-        "        await api.call.ringRingVoiceCall(evt.fromUid, evt.callId);",
-        "        // 2. Bắt máy (cmd 11303) hoặc từ chối (cmd 11306)",
-        "        await api.call.answerVoiceCall(evt.fromUid, evt.callId);",
-        "        // 3. Đồng bộ trạng thái bật/tắt Mic & Camera (cmd 12006)",
-        "        await api.call.updateCallMediaState(evt.fromUid, evt.callId, { isMuteAudio: false, isOffVideo: true });",
+        "// C. Tự động bắt máy khi có cuộc gọi 1-1 hoặc Gọi Nhóm đến qua WebSocket",
+        'api.listener.on("call_event", async (ev) => {',
+        '    if (ev.act === "request") {',
+        "        await session.ringIncomingCall(ev);",
+        "        await session.acceptIncomingCall(ev, { skipRingRing: true });",
+        '    } else if (ev.act === "group_request") {',
+        "        await session.ringIncomingCall(ev);",
+        "        await session.acceptIncomingGroupCall(ev, { skipRingRing: true });",
         "    }",
         "});",
         "",
-        "// D. Khởi tạo và quản lý Cuộc gọi Nhóm (Group Call)",
-        "const grpRoom = await api.call.requestGroupCall(groupId, memberUids, { callType: CallType.GroupAudio });",
-        "await api.call.sendRequestGroupCall(groupId, grpRoom.callId, memberUids);",
+        "// D. Khởi tạo hoặc tham gia Cuộc gọi Nhóm Video 2 chiều qua Zavi SFU",
+        "// Lưu ý quy ước trạng thái Group Call: audioState = 0 (Mic Bật) / 1 (Mic Tắt), videoState = 0 (Cam Bật) / 1 (Cam Tắt)",
+        "const grpParams = await session.startGroupCall(groupId, memberUids, {",
+        "    callType: CallType.GroupVideo,",
+        "});",
+        "// Hoặc tham gia phòng gọi nhóm đang mở trên Banner:",
+        "// await session.joinActiveGroupCall(groupId, { callType: CallType.GroupVideo });",
         "```",
         "",
         "---",
@@ -720,6 +758,93 @@ function generateModelsAndCookbookDocs() {
         "});",
         'await api.business.blockOA("2359864726282056346");',
         'await api.business.unblockOA("2359864726282056346");',
+        "```",
+        "",
+        "---",
+        "",
+        "## 8. Dịch Tin Nhắn Đa Ngôn Ngữ Tự Động Bằng Zalo AI (`api.chat` & `translate_event`)",
+        "",
+        "Sử dụng bộ 5 API Dịch AI nguyên bản của Zalo PC (`zpw_type = 30`) để dịch tức thì tin nhắn thủ công, dịch tự động theo hội thoại hoặc lấy gợi ý bản dịch:",
+        "",
+        "```ts",
+        "// 1. Dịch thủ công một đoạn văn bản sang tiếng Việt hoặc tiếng Anh",
+        "const manualRes = await api.chat.translateMessageManual({",
+        '    content: "Bonjour, comment allez-vous aujourd\'hui ?",',
+        '    targetLanguage: "vi",',
+        "});",
+        'console.log("Bản dịch AI:", manualRes);',
+        "",
+        "// 2. Dịch tự động tin nhắn trong luồng hội thoại",
+        "const autoRes = await api.chat.translateMessageAuto({",
+        '    content: "Let\'s schedule our deployment at 10 AM tomorrow.",',
+        '    targetLanguage: "vi",',
+        "});",
+        "",
+        "// 3. Lấy gợi ý bản dịch nhanh khi đang soạn thảo",
+        "const suggestRes = await api.chat.getTranslateSuggestion({",
+        '    content: "Cảm ơn bạn đã hợp tác cùng chúng tôi!",',
+        '    targetLanguage: "en",',
+        "});",
+        "",
+        "// 4. Kiểm tra và cập nhật cấu hình tự động dịch cho hội thoại",
+        "const translateSetting = await api.chat.getTranslateSetting();",
+        'api.listener.on("translate_event", (ev) => {',
+        '    console.log("[WebSocket AI Translate Update]", ev.data);',
+        "});",
+        "```",
+        "",
+        "---",
+        "",
+        "## 9. Quản Lý Công Việc Zalo To-Do, Nhắc Hẹn 1-1 & Bảng Tin Nhóm (`api.board`)",
+        "",
+        "Tự động hóa giao việc (Zalo To-Do), quản lý lịch hẹn 1-1 (`getListOneOneBoard`) và lắng nghe sự kiện công việc / bình chọn thời gian thực:",
+        "",
+        "```ts",
+        "// 1. Kiểm tra trạng thái kích hoạt Zalo To-Do và lấy danh sách công việc",
+        "const todoVerify = await api.board.verifyTodo();",
+        "const todoList = await api.board.getTodoList({ page: 1, count: 20 });",
+        "",
+        "// 2. Tạo công việc mới (Zalo To-Do) giao cho thành viên kèm hạn hoàn thành",
+        "const newTodo = await api.board.createTodo({",
+        '    title: "Hoàn thành kiểm thử tích hợp ZCA-JS v1.4",',
+        '    content: "Kiểm tra toàn bộ 333 API và 18 sự kiện WebSocket Realtime",',
+        "    assignees: [targetUid],",
+        "    dueDate: Date.now() + 24 * 3600 * 1000,",
+        "    watchers: [],",
+        "});",
+        "",
+        "// 3. Lấy danh sách nhắc hẹn 1-1 và bảng tin chung với một người bạn",
+        "const oneOneReminders = await api.board.getListOneOneBoard(targetUid);",
+        "const friendBoards = await api.board.getFriendBoardList(targetUid);",
+        "",
+        "// 4. Lắng nghe sự kiện Zalo To-Do & Bình chọn nhóm qua WebSocket",
+        'api.listener.on("todo_event", (ev) => {',
+        "    console.log(`[To-Do Realtime] subCmd=${ev.subCmd}:`, ev.data);",
+        "});",
+        'api.listener.on("poll_event", (ev) => {',
+        "    console.log(`[Poll Realtime] pollId=${ev.pollId}:`, ev.data);",
+        "});",
+        "```",
+        "",
+        "---",
+        "",
+        "## 10. Kho Ảnh Động GIF Giphy/Guggy, Hiệu Ứng Tin Nhắn & Quản Lý Nhãn CRM (`api.sticker` & `api.business`)",
+        "",
+        "Tích hợp tìm kiếm ảnh động GIF từ Giphy / Guggy / Tenor, hiệu ứng tin nhắn nền và quản lý Nhãn phân loại khách hàng CRM:",
+        "",
+        "```ts",
+        "// 1. Lấy danh sách GIF thịnh hành & tìm kiếm GIF theo từ khóa (Giphy & Guggy)",
+        "const trendingGifs = await api.sticker.getTrendingGiphyGifs({ limit: 10 });",
+        'const happyGifs = await api.sticker.searchGiphyGifs("chúc mừng", { limit: 10 });',
+        'const textGifs = await api.sticker.searchGuggyGifs("Xin chào");',
+        "",
+        "// 2. Lấy danh sách hiệu ứng tin nhắn (Message Effects & Visual Keyword Rules)",
+        "const effects = await api.sticker.getMessageEffects();",
+        "const keywordRules = await api.sticker.getVisualKeywordRule();",
+        "",
+        "// 3. Quản lý Nhãn phân loại hội thoại CRM (Conversation Labels)",
+        "const crmLabels = await api.business.getConversationLabels();",
+        'console.log("Danh sách nhãn CRM hiện tại:", crmLabels.labelData, "Phiên bản:", crmLabels.version);',
         "```",
     ];
     fs.writeFileSync(path.join(docsDir, "guide", "cookbook.md"), cookbookLines.join("\n"), "utf-8");
@@ -820,12 +945,18 @@ Sitemap: ${SITE_URL}/sitemap.xml
         "",
         "2. **Bảo toàn số nguyên 64-bit (`preParseJsonIds` & `ws-cipher` `storeAsString`)**: Tự động chuyển các trường ID 16+ chữ số không ngoặc kép (`owner_id`, `group_id`, `globalMsgId`, `cliMsgId`) thành `string` trước khi `JSON.parse()` để không bị làm tròn IEEE-754.",
         "3. **Quản lý Phiên & Timeout**: Hỗ trợ `api.auth.exportSession()` để lưu/khôi phục phiên đăng nhập và `requestTimeout` (mặc định 30s) bảo vệ kết nối.",
-        "4. **Đồng bộ Mobile ZDB 4.0 (`api.sync`)**: Giải mã RSA-2048 OAEP/PKCS1 + ZDB 4.0 64KB multi-chunk AES-256-CBC + Deflate.",
-        "5. **ZCloud & ZFamily (`api.zcloud`)**: Tích hợp chuẩn mã hóa `98yS` AES-256-CBC 16-byte random IV và tự động cache `viewer_key`.",
+        "4. **Đồng bộ Mobile ZDB 4.0 (`api.sync`)**: Giải mã RSA-2048 OAEP/PKCS1 + ZDB 4.0 64KB multi-chunk AES-256-CBC + Deflate, cùng `getBackupMsgInfo`, `getCrossDbInfo`, `syncActionMedia`.",
+        "5. **ZCloud & ZFamily (`api.zcloud`)**: Tích hợp chuẩn mã hóa `98yS` AES-256-CBC 16-byte random IV, tự động cache `viewer_key`, lấy link tải hàng loạt (`getZCloudDownloadUrls`), quản lý hàng đợi và di chuyển dữ liệu.",
+        "6. **Zalo Call Engine 2 Chiều (`api.call` — 30 APIs & `ZaloRtcSession`)**: Gọi Thoại / Video 1-1 và Gọi Nhóm (Zavi SFU) 2 chiều thuần TypeScript (UDP `ZRTPPacket` + `SRTP` + `Opus 16kHz` + `H.264 Annex-B FU-A 0x1c` + `0xBEDE` 24-byte extension + `CSRC[0]` multi-partner demuxing + Mobile Direct UDP Handoff).",
+        "7. **Zalo Official Account & Nhãn CRM (`api.business` & `oa_message`)**: Lấy hồ sơ tích vàng (`getOAProfile`), chặn/bỏ chặn OA (`blockOA`/`unblockOA`), chuyển đổi OA ID (`convertOAIds`), quản lý Nhãn CRM (`getConversationLabels`, `updateConversationLabels`) và nhận/trả lời tin nhắn OA thời gian thực (`oa_message`, `oa_event`, `footerv2`).",
+        "8. **Zalo AI Dịch Đa Ngôn Ngữ (`api.chat`)**: Dịch tin nhắn thủ công (`translateMessageManual`), tự động (`translateMessageAuto`), gợi ý dịch (`getTranslateSuggestion`) và đồng bộ cấu hình dịch (`getTranslateSetting`, `updateTranslateSetting`).",
+        "9. **Zalo To-Do, Nhắc Hẹn 1-1 & Bảng Tin Nhóm (`api.board`)**: Tạo/cập nhật/theo dõi công việc Zalo To-Do (`createTodo`, `updateTodo`, `updateTodoStatus`, `getTodoList`, `verifyTodo`), nhắc hẹn 1-1 (`getListOneOneBoard`) và bảng tin bạn bè (`getFriendBoardList`).",
+        "10. **18 Sự Kiện WebSocket Realtime & 4 Phương Thức Điều Khiển Chủ Động (`api.listener`)**: Hỗ trợ `message`, `oa_message`, `oa_event`, `reaction`, `undo`, `typing`, `seen_messages`, `delivered_messages`, `group_event`, `friend_event`, `call_event`, `sync_event`, `zcloud_event`, `todo_event`, `poll_event`, `translate_event`, `emoji_status_event`, `online_status_event`, `control_sync_event` cùng `sendPingActive()`, `requestLastDeliverSeen()`, `requestLastSeenSubChatTab()`, `requestLastSeenReaction()`.",
         "",
         "## Liên kết Tài liệu Chính",
         `- [Bắt đầu nhanh (Getting Started)](${SITE_URL}/guide/getting-started.html)`,
         `- [Kịch bản Thực chiến (Cookbook & Best Practices)](${SITE_URL}/guide/cookbook.html)`,
+        `- [Hướng dẫn Gọi Thoại, Video 1-1 & Gọi Nhóm 2 Chiều (ZaloRtcSession)](${SITE_URL}/guide/call-engine.html)`,
         `- [Kiến trúc 12 Domains & 64-bit ID](${SITE_URL}/guide/architecture.html)`,
         `- [Lắng nghe sự kiện WebSocket (Listener)](${SITE_URL}/guide/listeners.html)`,
         `- [Tra cứu toàn bộ ${totalApis} API (API Explorer)](${SITE_URL}/api/)`,
@@ -1204,6 +1335,7 @@ export default defineConfig({
                 items: [
                     { text: "Cài đặt & Bắt đầu nhanh", link: "/guide/getting-started" },
                     { text: "🛠️ Kịch bản Thực chiến (Cookbook)", link: "/guide/cookbook" },
+                    { text: "📞 Gọi Thoại, Video & Gọi Nhóm 2 Chiều", link: "/guide/call-engine" },
                     { text: "Kiến trúc 12 Domains & 64-bit ID", link: "/guide/architecture" },
                     { text: "Lắng nghe WebSocket (Listener)", link: "/guide/listeners" },
                 ],

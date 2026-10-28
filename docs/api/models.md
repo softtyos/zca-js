@@ -515,6 +515,7 @@ export enum CallEventType {
     GROUP_CANCEL = "group_cancel",
     GROUP_END = "group_end_call",
     GROUP_ADD_USER = "group_add_user",
+    GROUP_JOIN = "group_join_call",
     GROUP_NOTIFY = "group_notify",
     GROUP_BROADCAST = "group_broadcast",
     GROUP_BROADCAST_CONFIG = "group_broadcast_config",
@@ -579,6 +580,7 @@ export function initializeCallEvent(data: TCallEventData, act: string, act_type:
             type = CallEventType.AUDIO_TO_VIDEO;
             break;
         case "share_screen":
+        case "group_sharescreen":
             type = CallEventType.SHARE_SCREEN;
             break;
         case "group_request":
@@ -592,6 +594,7 @@ export function initializeCallEvent(data: TCallEventData, act: string, act_type:
             type = CallEventType.GROUP_ANSWER;
             break;
         case "group_answer_ack":
+        case "group_answerack":
             type = CallEventType.GROUP_ANSWER_ACK;
             break;
         case "group_cancel":
@@ -604,6 +607,10 @@ export function initializeCallEvent(data: TCallEventData, act: string, act_type:
             break;
         case "group_add_user":
             type = CallEventType.GROUP_ADD_USER;
+            break;
+        case "group_join_call":
+        case "group_join":
+            type = CallEventType.GROUP_JOIN;
             break;
         case "group_notify":
             type = CallEventType.GROUP_NOTIFY;

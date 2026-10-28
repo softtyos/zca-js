@@ -19,7 +19,7 @@ Truy vấn Kho Lưu Trữ Ảnh/Video, File, Link của nhóm và Cloud của t�
 | [`getPersonalMediaPreview`](#getpersonalmediapreview) | `POST` | `/api/media/oneone/preview`  | Lấy danh sách xem trước nhanh Kho Lưu Trữ trong Cloud của tôi (Send2Me) (command 12221)                                                                                                                      |
 | [`removeConversationMedia`](#removeconversationmedia) | `POST` | `/api/mediastore/remove`     | Xóa mục Ảnh/Video, File hoặc Link khỏi Kho Lưu Trữ của nhóm (command 11842)                                                                                                                                  |
 | [`removePersonalMedia`](#removepersonalmedia)         | `POST` | `/api/media/oneone/remove`   | Xóa mục lưu trữ trong Kho Lưu Trữ Cloud của tôi (Send2Me) (command 12222)                                                                                                                                    |
-| [`uploadAttachment`](#uploadattachment)               | `POST` | `Internal`                   | Tải tệp đính kèm (Ảnh, Video, File) lên máy chủ Zalo để lấy thông tin fileUrl / fileId trước khi gửi.                                                                                                        |
+| [`uploadAttachment`](#uploadattachment)               | `POST` | `/api`                       | Tải tệp đính kèm (Ảnh, Video, File) lên máy chủ Zalo để lấy thông tin fileUrl / fileId trước khi gửi.                                                                                                        |
 | [`voiceToText`](#voicetotext)                         | `POST` | `/api/aifeatures/voice2text` | Gửi yêu cầu chuyển đổi tin nhắn thoại sang văn bản bằng Zalo AI (command 13394). Kết quả văn bản sau khi xử lý xong sẽ được đẩy về qua sự kiện `api.listener.on("voice2text_event", ...)` khớp với `req_id`. |
 
 ---
@@ -234,7 +234,7 @@ export type RemovePersonalMediaResponse = {
 
 Tải tệp đính kèm (Ảnh, Video, File) lên máy chủ Zalo để lấy thông tin fileUrl / fileId trước khi gửi.
 
-<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.media</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.media</span><span class="zca-endpoint-pill">/api</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

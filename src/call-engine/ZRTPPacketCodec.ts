@@ -4,18 +4,23 @@ import { Buffer } from "node:buffer";
  * Các mã lệnh điều khiển UDP trong `zrtc::ZRTPPacket` (`_buildPacketInternal` @ `0x10015830c`)
  */
 export enum ZRTPControlCommand {
+    AudioCodec = 1,
     RelayPing = 2,
     EndCall = 3,
     Ping = 5,
     InitCallCaller = 11,
     InitCallCallee = 12,
     RequestForward = 32,
+    GroupCallMessage = 33,
+    ZaviRoomUpdated = 50,
     InitZaviPing = 51,
 }
 
 /**
  * Sub-command cho gói tin điều khiển `RequestForward` (`cmd = 32` / `0x0020`, `byte[20]`)
- * dùng để Ping/Pong kiểm tra kết nối 2 chiều qua máy chủ Relay và điều khiển Audio/Video.
+ * khớp với `GroupCallPeer::startStopVideoCapture` (`0x100213648` & `0x100213710`),
+ * `GroupCallController::vidSetLocalOffCamera` (`0x100207134`, `0x00090708 >> (mode * 8)` với `mode=1` là OnCamera -> `7`, `mode=0` là OffCamera -> `8`),
+ * `GroupCallController::vidSendSignalOffCamera` (`0x1002074c4`), và `_handleZRTPReqForward` (`0x1001fec58`–`0x1001fecc4`).
  */
 export enum ZRTPForwardSubCommand {
     OnMic = 5,
@@ -23,8 +28,12 @@ export enum ZRTPForwardSubCommand {
     OnCamera = 7,
     OffCamera = 8,
     OffCameraCallKit = 9,
+    // eslint-disable-next-line @typescript-eslint/no-duplicate-enum-values
+    ShareScreen = 9,
     VideoControl = 10,
     Ping = 11,
+    VideoQualityBitrateConfig = 12,
+    VideoQualityRequest = 13,
     Pong = 16,
     PartnerSuspendVideo = 17,
 }
@@ -76,6 +85,63 @@ export type ZRTPInitCallRequestOptions = {
     subFlags?: number;
     sessId: string;
     zrtcConfig?: string;
+    /**
+     * Dữ liệu nhị phân hoặc chuỗi đính kèm sau `sessId` (ví dụ trong Group Call `zavi`:
+     * `Buffer.from([debugLoopback(0), 0x05, isVideo ? 0x01 : 0x00, 0x01])`).
+     */
+    extraData?: Buffer | string;
+    debugLoopback?: number;
+};
+
+export type ZRTPInitZaviPingOptions = {
+    seqNum?: number;
+    headerCallId?: number;
+    callId?: number;
+    fromUid: number;
+    routingToken?: number;
+    sessId?: string;
+    subCmd?: number;
+    subFlags?: number;
+    isVideo?: boolean;
+    debugLoopback?: number;
+    extraData?: Buffer;
+};
+
+export type ZRTPVideoQualityConfigEntry = {
+    qualityId: number;
+    bitrate: number;
+    width: number;
+    height: number;
+};
+
+export type ZRTPVideoQualityRequestEntry = {
+    partnerUid: number;
+    qualityId?: number;
+};
+
+export type ZRTPGroupVideoQualityBitrateConfigOptions = {
+    seqNum?: number;
+    seqId?: number;
+    fromUid: number;
+    routingToken: number;
+    entries?: ZRTPVideoQualityConfigEntry[];
+};
+
+export type ZRTPGroupVideoQualityRequestOptions = {
+    seqNum?: number;
+    seqId?: number;
+    fromUid: number;
+    routingToken: number;
+    partners: ZRTPVideoQualityRequestEntry[];
+};
+
+export type ZRTPAudioCodecMuteOptions = {
+    seqNum?: number;
+    callId?: number;
+    fromUid: number;
+    routingToken: number;
+    muted: boolean;
+    codecType?: number;
 };
 
 export type ZRTPInitCallResponseOptions = {
@@ -151,6 +217,11 @@ export type ZRTPControlPacket = {
     routingToken?: number;
     sessId?: string;
     zrtcConfig?: string;
+    extraData?: Buffer;
+    roomPartnerUids?: number[];
+    audioCodecType?: number;
+    videoQualityConfigs?: ZRTPVideoQualityConfigEntry[];
+    videoQualityRequests?: Array<{ partnerUid: number; qualityId: number }>;
     pingString?: string;
     forwardPayload?: Buffer;
     echoToken?: number;
@@ -335,7 +406,32 @@ export function buildInitCallRequest(options: ZRTPInitCallRequestOptions): Buffe
     const subFlags = options.subFlags ?? toUid;
 
     const sessBytes = Buffer.from(options.sessId, "utf-8");
-    const cfgBytes = options.zrtcConfig ? Buffer.from(options.zrtcConfig, "utf-8") : undefined;
+    const cfgBytes =
+        options.extraData !== undefined
+            ? Buffer.isBuffer(options.extraData)
+                ? options.extraData
+                : Buffer.from(options.extraData, "utf-8")
+            : options.zrtcConfig
+              ? Buffer.from(options.zrtcConfig, "utf-8")
+              : undefined;
+
+    if (flags === 6) {
+        const totalLen = 21 + 4 + 3 + 2 + sessBytes.length + (cfgBytes ? 2 + cfgBytes.length : 0);
+        const buf = Buffer.alloc(totalLen);
+        writeControlHeader(buf, 1, 0x7e, seqNum, headerCallId, fromUid, toUid, cmd, flags);
+        buf.writeUInt32LE(options.callId >>> 0, 21);
+        buf.writeUInt8(isCaller ? 1 : 0, 25);
+        buf.writeUInt8(5, 26);
+        buf.writeUInt8((options.debugLoopback ?? 0) & 0xff, 27);
+        buf.writeUInt16LE(sessBytes.length, 28);
+        sessBytes.copy(buf, 30);
+        if (cfgBytes) {
+            const offset = 30 + sessBytes.length;
+            buf.writeUInt16LE(cfgBytes.length, offset);
+            cfgBytes.copy(buf, offset + 2);
+        }
+        return buf;
+    }
 
     const totalLen = 21 + 4 + 4 + 2 + sessBytes.length + (cfgBytes ? 2 + cfgBytes.length : 0);
     const buf = Buffer.alloc(totalLen);
@@ -351,6 +447,47 @@ export function buildInitCallRequest(options: ZRTPInitCallRequestOptions): Buffe
         buf.writeUInt16LE(cfgBytes.length, offset);
         cfgBytes.copy(buf, offset + 2);
     }
+
+    return buf;
+}
+
+/**
+ * Đóng gói gói tin UDP `InitZaviPing` (`0x01 0x7e`, `cmd = 51` / `0x0033`, `subCmd = 1`)
+ * gửi định kỳ tới máy chủ SFU `zavi` trong cuộc gọi nhóm
+ * (`zrtc::groupcall::GroupCallController::_sendRequestZRTPPing` @ `0x100201dd0` &
+ * `zrtc::ZRTPPacket::initZRTPPacketRequestInitZaviPing` @ `0x100157ad4`).
+ */
+export function buildInitZaviPingRequest(options: ZRTPInitZaviPingOptions): Buffer {
+    const seqNum = options.seqNum ?? 0;
+    const headerCallId = options.headerCallId ?? 0;
+    const subCmd = options.subCmd ?? 1;
+    const subFlags = options.subFlags ?? 0;
+    const sessBytes = Buffer.from(options.sessId ?? "", "utf-8");
+    const extraBytes =
+        options.extraData ?? Buffer.from([(options.debugLoopback ?? 0) & 0xff, 0x05, options.isVideo ? 0x01 : 0x00]);
+
+    const totalLen = 21 + 4 + 4 + 2 + sessBytes.length + 2 + extraBytes.length;
+    const buf = Buffer.alloc(totalLen);
+
+    writeControlHeader(
+        buf,
+        1,
+        0x7e,
+        seqNum,
+        headerCallId,
+        options.fromUid >>> 0,
+        (options.routingToken ?? 0) >>> 0,
+        ZRTPControlCommand.InitZaviPing,
+        subCmd & 0xff,
+    );
+    buf.writeUInt32LE((options.callId ?? 0) >>> 0, 21);
+    buf.writeUInt32LE(subFlags >>> 0, 25);
+    buf.writeUInt16LE(sessBytes.length, 29);
+    sessBytes.copy(buf, 31);
+
+    const extraOffset = 31 + sessBytes.length;
+    buf.writeUInt16LE(extraBytes.length, extraOffset);
+    extraBytes.copy(buf, extraOffset + 2);
 
     return buf;
 }
@@ -462,8 +599,9 @@ export function buildRelayPingRequest(options: ZRTPRelayPingRequestOptions): Buf
 
 /**
  * Đóng gói gói tin UDP `RequestForward` (`0x01 0x01`, `cmd = 32` / `0x0020`)
- * dùng cho Ping (`subCmd = 11`) / Pong (`subCmd = 16`) giữa 2 đầu qua máy chủ Relay
- * (`zrtc::ZRTPPacket::initZRTPPacketRequestForward` @ `0x100157c4c`).
+ * dùng cho Ping (`subCmd = 11`) / Pong (`subCmd = 16`), điều khiển Camera (`subCmd = 7, 8, 9`),
+ * và cấu hình / yêu cầu chất lượng Video Group Call (`subCmd = 12, 13`)
+ * (`zrtc::ZRTPPacket::_buildPacketInternal` @ `0x1001586a4` & `0x1001587c0`).
  */
 export function buildRequestForwardPacket(options: ZRTPRequestForwardOptions): Buffer {
     const payloadBuf =
@@ -473,7 +611,16 @@ export function buildRequestForwardPacket(options: ZRTPRequestForwardOptions): B
               ? options.payload
               : Buffer.from(options.payload, "utf-8");
 
-    const buf = Buffer.alloc(21 + 4 + payloadBuf.length);
+    const subCmd = options.subCmd & 0xff;
+    // Trong `_buildPacketInternal` (0x1001586a4 vs 0x1001587c0):
+    // - subCmd = 12 (VideoQualityBitrateConfig) và 13 (VideoQualityRequest) dùng 2-byte uint16LE length tại offset 21
+    // - các subCmd khác (7, 8, 9, 10, 11, 16, 17) dùng 4-byte uint32LE length tại offset 21
+    const useUint16Length =
+        subCmd === ZRTPForwardSubCommand.VideoQualityBitrateConfig ||
+        subCmd === ZRTPForwardSubCommand.VideoQualityRequest;
+    const lenFieldBytes = useUint16Length ? 2 : 4;
+
+    const buf = Buffer.alloc(21 + lenFieldBytes + payloadBuf.length);
     writeControlHeader(
         buf,
         1,
@@ -483,13 +630,98 @@ export function buildRequestForwardPacket(options: ZRTPRequestForwardOptions): B
         options.fromUid >>> 0,
         options.routingToken >>> 0,
         ZRTPControlCommand.RequestForward,
-        options.subCmd & 0xff,
+        subCmd,
     );
-    buf.writeUInt32LE(payloadBuf.length >>> 0, 21);
+    if (useUint16Length) {
+        buf.writeUInt16LE(payloadBuf.length & 0xffff, 21);
+    } else {
+        buf.writeUInt32LE(payloadBuf.length >>> 0, 21);
+    }
     if (payloadBuf.length > 0) {
-        payloadBuf.copy(buf, 25);
+        payloadBuf.copy(buf, 21 + lenFieldBytes);
     }
 
+    return buf;
+}
+
+/**
+ * Đóng gói gói tin `RequestForward` cấu hình các mức chất lượng Video của người gửi trong Group Call
+ * (`cmd = 32`, `subCmd = 12` — `GroupCallController::sendVideoQualityBitrateConfig` @ `0x1001f9298`).
+ */
+export function buildGroupVideoQualityBitrateConfigPacket(options: ZRTPGroupVideoQualityBitrateConfigOptions): Buffer {
+    const entries =
+        options.entries && options.entries.length > 0
+            ? options.entries
+            : [{ qualityId: 0, bitrate: 300, width: 320, height: 240 }];
+    const payload = Buffer.alloc(1 + entries.length * 9);
+    payload.writeUInt8(entries.length & 0xff, 0);
+    for (let i = 0; i < entries.length; i++) {
+        const entry = entries[i];
+        const offset = 1 + i * 9;
+        // GroupCallConfig::BuildQualityBitrateConfigs (0x100449f94) chia maxBitrateBps cho 1000 (đơn vị Kbps)
+        const bitrateKbps =
+            entry.bitrate > 10000 ? Math.max(1, Math.round(entry.bitrate / 1000)) : Math.max(1, entry.bitrate | 0);
+        payload.writeUInt8(entry.qualityId & 0xff, offset);
+        payload.writeUInt32LE(bitrateKbps >>> 0, offset + 1);
+        payload.writeUInt16LE(entry.width & 0xffff, offset + 5);
+        payload.writeUInt16LE(entry.height & 0xffff, offset + 7);
+    }
+    return buildRequestForwardPacket({
+        seqNum: options.seqNum ?? 0,
+        seqId: options.seqId ?? 0,
+        fromUid: options.fromUid,
+        routingToken: options.routingToken,
+        subCmd: ZRTPForwardSubCommand.VideoQualityBitrateConfig,
+        payload,
+    });
+}
+
+/**
+ * Đóng gói gói tin `RequestForward` đăng ký nhận luồng Video của các thành viên trong Group Call từ SFU `zavi`
+ * (`cmd = 32`, `subCmd = 13` — `GroupCallController::sendVideoQualityRequest` @ `0x100204fd8`).
+ * Nếu không gửi gói này, máy chủ `zavi` sẽ KHÔNG chuyển tiếp gói `0x0e` (`IncomingVideoRtp`) của thành viên đó.
+ */
+export function buildGroupVideoQualityRequestPacket(options: ZRTPGroupVideoQualityRequestOptions): Buffer {
+    const partners = options.partners ?? [];
+    const payload = Buffer.alloc(1 + partners.length * 5);
+    payload.writeUInt8(partners.length & 0xff, 0);
+    for (let i = 0; i < partners.length; i++) {
+        const partner = partners[i];
+        const offset = 1 + i * 5;
+        payload.writeUInt32LE(partner.partnerUid >>> 0, offset);
+        // qualityId: 1 = Standard/High, 0 = Low, 0xff (-1) = Pause/Stop
+        const qId = partner.qualityId !== undefined ? partner.qualityId & 0xff : 1;
+        payload.writeUInt8(qId, offset + 4);
+    }
+    return buildRequestForwardPacket({
+        seqNum: options.seqNum ?? 0,
+        seqId: options.seqId ?? 0,
+        fromUid: options.fromUid,
+        routingToken: options.routingToken,
+        subCmd: ZRTPForwardSubCommand.VideoQualityRequest,
+        payload,
+    });
+}
+
+/**
+ * Đóng gói gói tin điều khiển trạng thái Mic / Audio Codec (`0x01 0x01`, `cmd = 1`, `byte[21] = codecType`: `9` = Mute, `3` = Opus Unmute)
+ * (`GroupCallController::audSetLocalMuteState` / `_handleAudioCodecChanged` @ `0x100206bc0`).
+ */
+export function buildAudioCodecMutePacket(options: ZRTPAudioCodecMuteOptions): Buffer {
+    const buf = Buffer.alloc(22);
+    const codecType = options.codecType !== undefined ? options.codecType & 0xff : options.muted ? 9 : 3;
+    writeControlHeader(
+        buf,
+        1,
+        0x01,
+        options.seqNum ?? 0,
+        options.callId ?? 0,
+        options.fromUid >>> 0,
+        options.routingToken >>> 0,
+        ZRTPControlCommand.AudioCodec,
+        0x01,
+    );
+    buf.writeUInt8(codecType, 21);
     return buf;
 }
 
@@ -611,7 +843,21 @@ export function parseZRTPPacket(buf: Buffer): ParsedZRTPPacket {
         };
 
         if (cmd === ZRTPControlCommand.InitCallCaller || cmd === ZRTPControlCommand.InitCallCallee) {
-            if (!isResponse && flags !== 6 && buf.length >= 31) {
+            if (!isResponse && flags === 6 && buf.length >= 30) {
+                packet.callId = buf.readUInt32LE(21);
+                const sessLen = buf.readUInt16LE(28);
+                const sessEnd = Math.min(30 + sessLen, buf.length);
+                packet.sessId = buf.subarray(30, sessEnd).toString("utf-8");
+                if (buf.length >= sessEnd + 2) {
+                    const cfgLen = buf.readUInt16LE(sessEnd);
+                    const cfgEnd = Math.min(sessEnd + 2 + cfgLen, buf.length);
+                    if (cfgLen > 0) {
+                        const rawExtra = buf.subarray(sessEnd + 2, cfgEnd);
+                        packet.extraData = rawExtra;
+                        packet.zrtcConfig = rawExtra.toString("utf-8");
+                    }
+                }
+            } else if (!isResponse && flags !== 6 && buf.length >= 31) {
                 packet.callId = buf.readUInt32LE(21);
                 packet.subFlags = buf.readUInt32LE(25);
                 const sessLen = buf.readUInt16LE(29);
@@ -621,7 +867,9 @@ export function parseZRTPPacket(buf: Buffer): ParsedZRTPPacket {
                     const cfgLen = buf.readUInt16LE(sessEnd);
                     const cfgEnd = Math.min(sessEnd + 2 + cfgLen, buf.length);
                     if (cfgLen > 0) {
-                        packet.zrtcConfig = buf.subarray(sessEnd + 2, cfgEnd).toString("utf-8");
+                        const rawExtra = buf.subarray(sessEnd + 2, cfgEnd);
+                        packet.extraData = rawExtra;
+                        packet.zrtcConfig = rawExtra.toString("utf-8");
                     }
                 }
             } else if (isResponse && buf.length >= 25) {
@@ -635,6 +883,43 @@ export function parseZRTPPacket(buf: Buffer): ParsedZRTPPacket {
                     const sessEnd = Math.min(35 + sessLen, buf.length);
                     packet.sessId = buf.subarray(35, sessEnd).toString("utf-8");
                 }
+            }
+        } else if (cmd === ZRTPControlCommand.InitZaviPing) {
+            if (!isResponse && buf.length >= 31) {
+                packet.callId = buf.readUInt32LE(21);
+                packet.subFlags = buf.readUInt32LE(25);
+                const sessLen = buf.readUInt16LE(29);
+                const sessEnd = Math.min(31 + sessLen, buf.length);
+                packet.sessId = buf.subarray(31, sessEnd).toString("utf-8");
+                if (buf.length >= sessEnd + 2) {
+                    const extraLen = buf.readUInt16LE(sessEnd);
+                    const extraEnd = Math.min(sessEnd + 2 + extraLen, buf.length);
+                    if (extraLen > 0) {
+                        packet.extraData = buf.subarray(sessEnd + 2, extraEnd);
+                    }
+                }
+            } else if (isResponse && buf.length >= 25) {
+                packet.errorCode = buf.readInt32LE(21);
+                if (buf.length >= 27) {
+                    const sessLen = buf.readUInt16LE(25);
+                    const sessEnd = Math.min(27 + sessLen, buf.length);
+                    packet.sessId = buf.subarray(27, sessEnd).toString("utf-8");
+                }
+            }
+        } else if (cmd === ZRTPControlCommand.ZaviRoomUpdated) {
+            if (buf.length >= 25) {
+                packet.errorCode = buf.readInt32LE(21);
+                const count = (buf.length - 25) >> 2;
+                const uids: number[] = [];
+                for (let i = 0; i < count; i++) {
+                    const uid = buf.readUInt32LE(25 + i * 4);
+                    if (uid !== 0) uids.push(uid);
+                }
+                packet.roomPartnerUids = uids;
+            }
+        } else if (cmd === ZRTPControlCommand.AudioCodec) {
+            if (buf.length >= 22) {
+                packet.audioCodecType = buf.readUInt8(21);
             }
         } else if (cmd === ZRTPControlCommand.RelayPing) {
             if (!isResponse && buf.length >= 23) {
@@ -663,7 +948,40 @@ export function parseZRTPPacket(buf: Buffer): ParsedZRTPPacket {
                 }
             }
         } else if (cmd === ZRTPControlCommand.RequestForward) {
-            if (!isResponse && buf.length >= 25) {
+            const useUint16Length =
+                flags === ZRTPForwardSubCommand.VideoQualityBitrateConfig ||
+                flags === ZRTPForwardSubCommand.VideoQualityRequest;
+            if (!isResponse && useUint16Length && buf.length >= 23) {
+                const payloadLen = buf.readUInt16LE(21);
+                const payloadEnd = Math.min(23 + payloadLen, buf.length);
+                const fp = buf.subarray(23, payloadEnd);
+                packet.forwardPayload = fp;
+                if (flags === ZRTPForwardSubCommand.VideoQualityBitrateConfig && fp.length >= 1) {
+                    const count = fp.readUInt8(0);
+                    const entries: ZRTPVideoQualityConfigEntry[] = [];
+                    for (let i = 0; i < count && 1 + (i + 1) * 9 <= fp.length; i++) {
+                        const off = 1 + i * 9;
+                        entries.push({
+                            qualityId: fp.readUInt8(off),
+                            bitrate: fp.readUInt32LE(off + 1),
+                            width: fp.readUInt16LE(off + 5),
+                            height: fp.readUInt16LE(off + 7),
+                        });
+                    }
+                    packet.videoQualityConfigs = entries;
+                } else if (flags === ZRTPForwardSubCommand.VideoQualityRequest && fp.length >= 1) {
+                    const count = fp.readUInt8(0);
+                    const reqs: Array<{ partnerUid: number; qualityId: number }> = [];
+                    for (let i = 0; i < count && 1 + (i + 1) * 5 <= fp.length; i++) {
+                        const off = 1 + i * 5;
+                        reqs.push({
+                            partnerUid: fp.readUInt32LE(off),
+                            qualityId: fp.readUInt8(off + 4),
+                        });
+                    }
+                    packet.videoQualityRequests = reqs;
+                }
+            } else if (!isResponse && buf.length >= 25) {
                 const payloadLen = buf.readUInt32LE(21);
                 const payloadEnd = Math.min(25 + payloadLen, buf.length);
                 packet.forwardPayload = buf.subarray(25, payloadEnd);
@@ -688,10 +1006,14 @@ export function parseZRTPPacket(buf: Buffer): ParsedZRTPPacket {
         return packet;
     }
 
-    // 2a. Gói tin Relay Media nhận về từ máy chủ Zalo (1-byte header: type in {4, 14})
+    // 2a. Gói tin Relay Media nhận về từ máy chủ Zalo (1-byte header: type in {4, 7, 14})
     // (`zrtc::ZRTPPacket::_parsePacketInternal` @ `0x100158a1c`, mask `0x4090`)
     if (
-        (firstByte === ZRTPLegacyMediaType.IncomingAudioRtp || firstByte === ZRTPLegacyMediaType.IncomingVideoRtp) &&
+        (firstByte === ZRTPLegacyMediaType.IncomingAudioRtp ||
+            firstByte === ZRTPLegacyMediaType.IncomingVideoRtp ||
+            (firstByte === ZRTPLegacyMediaType.AudioFec &&
+                (buf.readUInt8(1) & 0xc0) === 0x80 &&
+                (buf.length < 17 || (buf.readUInt8(5) & 0xc0) !== 0x80 || buf.readUInt32LE(1) > 0x00ffffff))) &&
         buf.length >= 13
     ) {
         const mediaType = firstByte as ZRTPLegacyMediaType;
@@ -700,7 +1022,7 @@ export function parseZRTPPacket(buf: Buffer): ParsedZRTPPacket {
             mediaType,
             isVideo: mediaType === ZRTPLegacyMediaType.IncomingVideoRtp,
             isRtcp: false,
-            isFec: false,
+            isFec: mediaType === ZRTPLegacyMediaType.AudioFec,
             routingId: 0,
             rtpPayload: buf.subarray(1),
         };

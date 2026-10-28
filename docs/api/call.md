@@ -20,8 +20,8 @@ description: "Điều khiển trọn vẹn 30 API cuộc gọi thoại, video 1-
 | [`broadcastGroupCallState`](#broadcastgroupcallstate) | `GET` | `/api/voicecall/group/broadcast`                                                 | Phát quảng bá trạng thái thiết bị (Mic, Camera, Screen Share) tới các thành viên trong cuộc gọi nhóm (cmd 12098 - /api/voicecall/group/broadcast).             |
 | [`cancelGroupCall`](#cancelgroupcall)                 | `GET` | `/api/voicecall/group/cancel`                                                    | Hủy lời mời cuộc gọi nhóm (cmd 12437 - /api/voicecall/group/cancel).                                                                                           |
 | [`cancelVoiceCall`](#cancelvoicecall)                 | `GET` | `/api/voicecall/cancel`                                                          | Hủy cuộc gọi 1-1 đang đổ chuông trước khi người nhận bắt máy (cmd 11305 - /api/voicecall/cancel, signal 405).                                                  |
-| [`createController`](#createcontroller)               | `GET` | `Internal`                                                                       | Khởi tạo bộ điều phối cuộc gọi ZaloCallController quản lý vòng đời gọi đi, nhận cuộc gọi đến và kênh IPC cục bộ.                                               |
-| [`createRtcSession`](#creatertcsession)               | `GET` | `Internal`                                                                       | Khởi tạo phiên gọi thoại / video 2 chiều thuần TypeScript (ZaloRtcSession — UDP ZRTPPacket + SRTP + H.264 Annex-B + Mobile Direct UDP Handoff).                |
+| [`createController`](#createcontroller)               | `GET` | `/apis`                                                                          | Khởi tạo bộ điều phối cuộc gọi ZaloCallController quản lý vòng đời gọi đi, nhận cuộc gọi đến và kênh IPC cục bộ.                                               |
+| [`createRtcSession`](#creatertcsession)               | `GET` | `/apis`                                                                          | Khởi tạo phiên gọi thoại / video 2 chiều thuần TypeScript (ZaloRtcSession — UDP ZRTPPacket + SRTP + H.264 Annex-B + Mobile Direct UDP Handoff).                |
 | [`endGroupCall`](#endgroupcall)                       | `GET` | `/api/voicecall/group/endcall`                                                   | Rời khỏi cuộc gọi nhóm hoặc từ chối lời mời gọi nhóm (cmd 12438 - /api/voicecall/group/endcall).                                                               |
 | [`endVoiceCall`](#endvoicecall)                       | `GET` | `/api/voicecall/endcall`                                                         | Kết thúc cuộc gọi 1-1 đang diễn ra hoặc từ chối cuộc gọi đến (cmd 11306 - /api/voicecall/endcall, signal 404).                                                 |
 | [`finishGroupCall`](#finishgroupcall)                 | `GET` | `/api/voicecall/group/finish`                                                    | Kết thúc hoàn toàn phòng gọi nhóm cho tất cả thành viên (cmd 12446 - /api/voicecall/group/finish).                                                             |
@@ -62,7 +62,7 @@ await api.addUserGroupCall(callId: number, options: AddUserGroupCallOptions,)
 ### Tham số
 
 - `callId`: ID của cuộc gọi nhóm
-- `options`: Thông tin `hostCall`, `session`, `partners`, `calleeId`, `callType` và `data`
+- `options`: Thông tin `hostCall`, `session`, `partners`, `calleeId`, `callType` (`0` Audio / `1` Video) và `data`
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -70,7 +70,15 @@ await api.addUserGroupCall(callId: number, options: AddUserGroupCallOptions,)
 export type AddUserGroupCallOptions = {
     calleeId?: string;
     callType?: CallType | number;
-    hostCall: string;
+    hostCall: string | number;
+    groupId?: string | number;
+    groupName?: string;
+    groupAvatar?: string;
+    maxUsers?: number;
+    rtpAddress?: string;
+    rtcpAddress?: string;
+    codec?: string;
+    extendData?: string | Record<string, unknown>;
     data?: string | Record<string, unknown>;
     session: string;
     partners: string[];
@@ -128,7 +136,7 @@ await api.answerGroupCall(callId: number, options: AnswerGroupCallOptions,)
 ### Tham số
 
 - `callId`: ID của cuộc gọi nhóm
-- `options`: Thông tin `hostCall`, `calleeId`, `callType`, `partners` và `data`
+- `options`: Thông tin `hostCall`, `calleeId`, `callType` (`0` Audio / `1` Video), `session`, `status`, `partners` và `data`
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -136,7 +144,10 @@ await api.answerGroupCall(callId: number, options: AnswerGroupCallOptions,)
 export type AnswerGroupCallOptions = {
     calleeId?: string;
     callType?: CallType | number;
-    hostCall: string;
+    hostCall: string | number;
+    groupId?: string | number;
+    session?: string;
+    status?: number;
     data?: string | Record<string, unknown>;
     partners?: string[];
 };
@@ -205,8 +216,8 @@ await api.broadcastGroupCallState(callId: number, options: BroadcastGroupCallSta
 
 ```ts
 export type BroadcastGroupCallStateOptions = {
-    hostCall: string;
-    userId?: string;
+    hostCall: string | number;
+    userId?: string | number;
     callState?: number;
     audioState?: number;
     videoState?: number;
@@ -234,7 +245,7 @@ await api.cancelGroupCall(callId: number, options: CancelGroupCallOptions,)
 ### Tham số
 
 - `callId`: ID của cuộc gọi nhóm
-- `options`: Thông tin `hostCall`, `calleeId`, `callType`, `partners` và `data`
+- `options`: Thông tin `hostCall`, `groupId`, `calleeId`, `callType` (`0` Audio / `1` Video), `session`, `status`, `partners` và `data`
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -242,7 +253,11 @@ await api.cancelGroupCall(callId: number, options: CancelGroupCallOptions,)
 export type CancelGroupCallOptions = {
     calleeId?: string;
     callType?: CallType | number;
-    hostCall: string;
+    hostCall: string | number;
+    groupId?: string | number;
+    session?: string;
+    status?: number;
+    duration?: number;
     data?: string | Record<string, unknown>;
     partners?: string[];
 };
@@ -288,7 +303,7 @@ export type CancelVoiceCallResponse = Record<string, unknown>;
 
 Khởi tạo bộ điều phối cuộc gọi ZaloCallController quản lý vòng đời gọi đi, nhận cuộc gọi đến và kênh IPC cục bộ.
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.call</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.call</span><span class="zca-endpoint-pill">/apis</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -303,7 +318,7 @@ await api.createController(options: ZaloCallControllerOptions = {})
 
 Khởi tạo phiên gọi thoại / video 2 chiều thuần TypeScript (ZaloRtcSession — UDP ZRTPPacket + SRTP + H.264 Annex-B + Mobile Direct UDP Handoff).
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.call</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.call</span><span class="zca-endpoint-pill">/apis</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -322,15 +337,15 @@ Rời khỏi cuộc gọi nhóm hoặc từ chối lời mời gọi nhóm (cmd 
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.call.endGroupCall(callId: number, options: EndGroupCallOptions,)
+await api.call.endGroupCall(callId: number, options: EndGroupCallOptions)
 // Hoặc gọi phẳng (Flat Alias):
-await api.endGroupCall(callId: number, options: EndGroupCallOptions,)
+await api.endGroupCall(callId: number, options: EndGroupCallOptions)
 ```
 
 ### Tham số
 
 - `callId`: ID của cuộc gọi nhóm
-- `options`: Thông tin `hostCall`, `calleeId`, `callType`, `partners` và `data`
+- `options`: Thông tin `hostCall`, `groupId`, `calleeId`, `callType` (`0` Audio / `1` Video), `session`, `status`, `partners` và `data`
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -338,7 +353,11 @@ await api.endGroupCall(callId: number, options: EndGroupCallOptions,)
 export type EndGroupCallOptions = {
     calleeId?: string;
     callType?: CallType | number;
-    hostCall: string;
+    hostCall: string | number;
+    groupId?: string | number;
+    session?: string;
+    status?: number;
+    duration?: number;
     data?: string | Record<string, unknown>;
     partners?: string[];
 };
@@ -404,7 +423,7 @@ export type FinishGroupCallOptions = {
     callType?: CallType | number;
     data?: string | Record<string, unknown>;
     duration?: number;
-    hostCall: string;
+    hostCall: string | number;
     partners?: string[];
     status?: number;
     joinTime?: number;
@@ -423,9 +442,9 @@ Truy vấn trạng thái hiện tại và danh sách thành viên trong phòng g
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.call.getGroupCallState(callId: number, hostCall: string, callType: CallType | number = CallType.GroupAudio,)
+await api.call.getGroupCallState(callId: number, hostCall: string | number, callType: CallType | number = CallType.GroupAudio,)
 // Hoặc gọi phẳng (Flat Alias):
-await api.getGroupCallState(callId: number, hostCall: string, callType: CallType | number = CallType.GroupAudio,)
+await api.getGroupCallState(callId: number, hostCall: string | number, callType: CallType | number = CallType.GroupAudio,)
 ```
 
 ### Tham số
@@ -480,9 +499,9 @@ Chủ động tham gia vào một cuộc gọi nhóm đang diễn ra từ banner
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.call.joinGroupCall(callId: number, options: JoinGroupCallOptions,)
+await api.call.joinGroupCall(callId: number, options: JoinGroupCallOptions)
 // Hoặc gọi phẳng (Flat Alias):
-await api.joinGroupCall(callId: number, options: JoinGroupCallOptions,)
+await api.joinGroupCall(callId: number, options: JoinGroupCallOptions)
 ```
 
 ### Tham số
@@ -494,8 +513,8 @@ await api.joinGroupCall(callId: number, options: JoinGroupCallOptions,)
 
 ```ts
 export type JoinGroupCallOptions = {
-    userId?: string;
-    hostCall: string;
+    userId?: string | number;
+    hostCall: string | number;
     status?: number;
     srcJoinCall?: number;
     audioState?: number;
@@ -564,7 +583,7 @@ await api.notifyGroupCall(callId: number, options: NotifyGroupCallOptions,)
 
 ```ts
 export type NotifyGroupCallOptions = {
-    hostCall: string;
+    hostCall: string | number;
     callType?: CallType | number;
     status?: number;
     data?: string | Record<string, unknown>;
@@ -583,9 +602,9 @@ Gửi nhịp tim (Heartbeat Ping) duy trì kết nối của thành viên trong 
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
-await api.call.pingGroupCall(callId: number, options: PingGroupCallOptions,)
+await api.call.pingGroupCall(callId: number, options: PingGroupCallOptions)
 // Hoặc gọi phẳng (Flat Alias):
-await api.pingGroupCall(callId: number, options: PingGroupCallOptions,)
+await api.pingGroupCall(callId: number, options: PingGroupCallOptions)
 ```
 
 ### Tham số
@@ -597,8 +616,8 @@ await api.pingGroupCall(callId: number, options: PingGroupCallOptions,)
 
 ```ts
 export type PingGroupCallOptions = {
-    hostCall: string;
-    userId?: string;
+    hostCall: string | number;
+    userId?: string | number;
     callState?: number;
     audioState?: number;
     videoState?: number;
@@ -657,7 +676,7 @@ await api.requestGroupCall(groupId: string, options: RequestGroupCallOptions,)
 ### Tham số
 
 - `groupId`: ID của nhóm
-- `options`: Danh sách `partners`, `callId`, `typeRequest` (`CallType.GroupAudio = 5` hoặc `CallType.GroupVideo = 6`) và `data`
+- `options`: Danh sách `partners`, `callId`, `typeRequest` (`0` / `CallType.GroupAudio = 5` hoặc `1` / `CallType.GroupVideo = 6`) và `data`
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -667,6 +686,10 @@ export type RequestGroupCallOptions = {
     typeRequest?: CallType | number;
     data?: string | Record<string, unknown>;
     partners: string[];
+    groupName?: string;
+    groupAvatar?: string;
+    maxUsers?: number;
+    extraData?: string;
 };
 
 export type RequestGroupCallResponse = Record<string, unknown>;
@@ -755,7 +778,7 @@ await api.ringRingGroupCall(callId: number, options: RingRingGroupCallOptions,)
 ### Tham số
 
 - `callId`: ID của cuộc gọi nhóm
-- `options`: Thông tin `hostCall`, `calleeId`, `callType`, `partners` và `data`
+- `options`: Thông tin `hostCall`, `calleeId`, `callType` (`0` Audio / `1` Video), `session`, `status`, `partners` và `data`
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -763,7 +786,10 @@ await api.ringRingGroupCall(callId: number, options: RingRingGroupCallOptions,)
 export type RingRingGroupCallOptions = {
     calleeId?: string;
     callType?: CallType | number;
-    hostCall: string;
+    hostCall: string | number;
+    groupId?: string | number;
+    session?: string;
+    status?: number;
     data?: string | Record<string, unknown>;
     partners?: string[];
 };
@@ -820,7 +846,7 @@ await api.sendRequestGroupCall(groupId: string, options: SendRequestGroupCallOpt
 ### Tham số
 
 - `groupId`: ID của nhóm
-- `options`: Thông tin `callId`, `session`, `partners`, `callType` và `data`
+- `options`: Thông tin `callId`, `session`, `partners`, `callType` (`0` Audio / `1` Video) và `data`
 
 ### Kiểu dữ liệu (TypeScript Types)
 
@@ -832,6 +858,14 @@ export type SendRequestGroupCallOptions = {
     data?: string | Record<string, unknown>;
     session: string;
     partners: string[];
+    hostCall?: string | number;
+    rtpAddress?: string;
+    rtcpAddress?: string;
+    codec?: string;
+    extendData?: string | Record<string, unknown>;
+    groupName?: string;
+    groupAvatar?: string;
+    maxUsers?: number;
 };
 
 export type SendRequestGroupCallResponse = Record<string, unknown>;
@@ -902,6 +936,12 @@ export enum CallType {
     GroupAudio = 5,
     GroupVideo = 6,
 }
+
+/**
+ * Chuẩn hoá mã loại cuộc gọi nhóm khi gửi lên máy chủ Zalo (`ZJBuilderInternal::fromZCallStateToGroupState` @ `0x100029620`):
+ * - `CallType.GroupAudio` (`5`) hoặc `0` ➔ `0` (Thoại nhóm)
+ * - `CallType.GroupVideo` (`6`), `CallType.Video` (`3`) hoặc `1` ➔ `1` (Video nhóm)
+ */
 
 export type SendVoiceCallOptions = {
     callType?: CallType;
@@ -976,8 +1016,8 @@ await api.shareScreenGroupCall(callId: number, options: ShareScreenGroupCallOpti
 
 ```ts
 export type ShareScreenGroupCallOptions = {
-    userId?: string;
-    hostCall: string;
+    userId?: string | number;
+    hostCall: string | number;
     status?: number;
     audioState?: number;
     videoState?: number;

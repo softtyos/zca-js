@@ -1,23 +1,28 @@
 ---
-title: "Đồng bộ Mobile ZDB 4.0 (Sync) (api.sync) - 5 APIs"
-description: "Đồng bộ toàn bộ lịch sử tin nhắn từ điện thoại sang PC qua giao thức RSA-2048 & ZDB 4.0 AES-256-CBC multi-chunk. Tra cứu chi tiết 5 phương thức thuộc phân hệ api.sync trong bộ SDK @softtynet/zca-js."
+title: "Đồng bộ Mobile ZDB 4.0 (Sync) (api.sync) - 10 APIs"
+description: "Đồng bộ toàn bộ lịch sử tin nhắn từ điện thoại sang PC qua giao thức RSA-2048 & ZDB 4.0 AES-256-CBC multi-chunk, kiểm tra Backup, Cross-DB và đồng bộ hành động Media. Tra cứu chi tiết 10 phương thức thuộc phân hệ api.sync trong bộ SDK @softtynet/zca-js."
 ---
 
 # 🔄 Đồng bộ Mobile ZDB 4.0 (Sync)
 
-> Namespace: `api.sync` (hoặc gọi trực tiếp `api.<methodName>`) — **5 API nguyên bản**
+> Namespace: `api.sync` (hoặc gọi trực tiếp `api.<methodName>`) — **10 API nguyên bản**
 
-Đồng bộ toàn bộ lịch sử tin nhắn từ điện thoại sang PC qua giao thức RSA-2048 & ZDB 4.0 AES-256-CBC multi-chunk.
+Đồng bộ toàn bộ lịch sử tin nhắn từ điện thoại sang PC qua giao thức RSA-2048 & ZDB 4.0 AES-256-CBC multi-chunk, kiểm tra Backup, Cross-DB và đồng bộ hành động Media.
 
 ## Danh sách nhanh
 
-| Phương thức                                     | HTTP  | Endpoint Zalo                         | Mô tả                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
-| :---------------------------------------------- | :---: | :------------------------------------ | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| [`cancelPullMobile`](#cancelpullmobile)         | `GET` | `/api/message/cancel_pull_mobile_msg` | Huỷ yêu cầu đồng bộ tin nhắn từ điện thoại đang chờ (`cancel_pull_mobile_msg`, command `12700`).                                                                                                                                                                                                                                                                                                                                                                                                 |
-| [`downloadTransferSync`](#downloadtransfersync) | `GET` | `Internal`                            | Tải khối dữ liệu snapshot đồng bộ tin nhắn từ máy chủ transfersync.zaloapp.com                                                                                                                                                                                                                                                                                                                                                                                                                   |
-| [`getSyncData`](#getsyncdata)                   | `GET` | `Internal`                            | Tải xuống file sao lưu tin nhắn từ sự kiện `syncmsg_info` (`.db.crypt`, định dạng `ZDB4.0`) và lưu ra ổ đĩa hoặc trả về `ReadableStream`.                                                                                                                                                                                                                                                                                                                                                        |
-| [`pullMobile`](#pullmobile)                     | `GET` | `/api/message/pull_mobile_msg`        | Yêu cầu thiết bị di động Zalo đóng gói và tải lên bản sao lưu tin nhắn (`pull_mobile_msg`, command `12000`). Sự kiện tiến trình (`user_confirm`, `syncmsg_info`, `transfer_error`) sẽ được đẩy về qua `api.listener.on("sync_event")`.                                                                                                                                                                                                                                                           |
-| [`requestSyncFromPhone`](#requestsyncfromphone) | `GET` | `Internal`                            | Phát tín hiệu yêu cầu đồng bộ tin nhắn từ ứng dụng Zalo trên điện thoại (`pull_mobile_msg`, command `12000`). Tự động sinh cặp khoá RSA 2048-bit (nếu chưa truyền vào) và gọi `api.pullMobile(...)`. Điện thoại của người dùng sẽ hiển thị thông báo yêu cầu xác nhận đồng bộ (hoặc tự động đồng bộ nếu có `tempKey` từ `transfer_after_login`). Lắng nghe sự kiện `api.listener.on("sync_event", ...)` để nhận tiến trình xác nhận (`user_confirm`) và thông tin file sao lưu (`syncmsg_info`). |
+| Phương thức                                           |  HTTP  | Endpoint Zalo                             | Mô tả                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| :---------------------------------------------------- | :----: | :---------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [`cancelPullMobile`](#cancelpullmobile)               | `GET`  | `/api/message/cancel_pull_mobile_msg`     | Huỷ yêu cầu đồng bộ tin nhắn từ điện thoại đang chờ (`cancel_pull_mobile_msg`, command `12700`).                                                                                                                                                                                                                                                                                                                                                                                                 |
+| [`deleteMobileMsgSnapshot`](#deletemobilemsgsnapshot) | `GET`  | `/api/message/delete_snapshot_mobile_msg` | Xóa bản chụp nhanh (snapshot) dữ liệu đồng bộ tin nhắn từ thiết bị di động sau khi hoàn tất (command 12003)                                                                                                                                                                                                                                                                                                                                                                                      |
+| [`downloadTransferSync`](#downloadtransfersync)       | `GET`  | `/api/transfer-sync-v2/download`          | Tải khối dữ liệu snapshot đồng bộ tin nhắn từ máy chủ transfersync.zaloapp.com                                                                                                                                                                                                                                                                                                                                                                                                                   |
+| [`getBackupMsgInfo`](#getbackupmsginfo)               | `GET`  | `/api/message/get_backupmsginfo`          | Lấy thông tin bản sao lưu tin nhắn hiện có trên máy chủ (command 12096)                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| [`getCrossDbInfo`](#getcrossdbinfo)                   | `GET`  | `/api/message/get_crossdb`                | Lấy thông tin cơ sở dữ liệu chéo (Cross-DB) phục vụ đồng bộ dữ liệu sang máy tính (command 12412)                                                                                                                                                                                                                                                                                                                                                                                                |
+| [`getSyncData`](#getsyncdata)                         | `GET`  | `Internal`                                | Tải xuống file sao lưu tin nhắn từ sự kiện `syncmsg_info` (`.db.crypt`, định dạng `ZDB4.0`) và lưu ra ổ đĩa hoặc trả về `ReadableStream`.                                                                                                                                                                                                                                                                                                                                                        |
+| [`pullMobile`](#pullmobile)                           | `GET`  | `/api/message/pull_mobile_msg`            | Yêu cầu thiết bị di động Zalo đóng gói và tải lên bản sao lưu tin nhắn (`pull_mobile_msg`, command `12000`). Sự kiện tiến trình (`user_confirm`, `syncmsg_info`, `transfer_error`) sẽ được đẩy về qua `api.listener.on("sync_event")`.                                                                                                                                                                                                                                                           |
+| [`requestSyncFromPhone`](#requestsyncfromphone)       | `GET`  | `Internal`                                | Phát tín hiệu yêu cầu đồng bộ tin nhắn từ ứng dụng Zalo trên điện thoại (`pull_mobile_msg`, command `12000`). Tự động sinh cặp khoá RSA 2048-bit (nếu chưa truyền vào) và gọi `api.pullMobile(...)`. Điện thoại của người dùng sẽ hiển thị thông báo yêu cầu xác nhận đồng bộ (hoặc tự động đồng bộ nếu có `tempKey` từ `transfer_after_login`). Lắng nghe sự kiện `api.listener.on("sync_event", ...)` để nhận tiến trình xác nhận (`user_confirm`) và thông tin file sao lưu (`syncmsg_info`). |
+| [`submitSyncMediaActions`](#submitsyncmediaactions)   | `POST` | `/api/sync_action/media`                  | Gửi danh sách hành động đồng bộ hóa tệp đa phương tiện lên máy chủ (command 16213)                                                                                                                                                                                                                                                                                                                                                                                                               |
+| [`uploadBackupChunk`](#uploadbackupchunk)             | `POST` | `/api/backuppc2mb/upload`                 | Tải lên gói dữ liệu phân mảnh (chunk) sao lưu tin nhắn từ máy tính sang điện thoại (command 13538)                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ---
 
@@ -56,11 +61,36 @@ export type CancelPullMobileParams = {
 
 ---
 
+## `deleteMobileMsgSnapshot`
+
+Xóa bản chụp nhanh (snapshot) dữ liệu đồng bộ tin nhắn từ thiết bị di động sau khi hoàn tất (command 12003)
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sync</span><span class="zca-endpoint-pill">/api/message/delete_snapshot_mobile_msg</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sync.deleteMobileMsgSnapshot(publicKey: string)
+// Hoặc gọi phẳng (Flat Alias):
+await api.deleteMobileMsgSnapshot(publicKey: string)
+```
+
+### Tham số
+
+- `publicKey`: Khóa công khai RSA SPKI DER Base64 của phiên đồng bộ
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type DeleteMobileMsgSnapshotResponse = Record<string, unknown>;
+```
+
+---
+
 ## `downloadTransferSync`
 
 Tải khối dữ liệu snapshot đồng bộ tin nhắn từ máy chủ transfersync.zaloapp.com
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sync</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sync</span><span class="zca-endpoint-pill">/api/transfer-sync-v2/download</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):
@@ -83,6 +113,62 @@ export type DownloadTransferSyncOptions =
           exp: number | string;
           sig: string;
       };
+```
+
+---
+
+## `getBackupMsgInfo`
+
+Lấy thông tin bản sao lưu tin nhắn hiện có trên máy chủ (command 12096)
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sync</span><span class="zca-endpoint-pill">/api/message/get_backupmsginfo</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sync.getBackupMsgInfo(nretry: number = 0)
+// Hoặc gọi phẳng (Flat Alias):
+await api.getBackupMsgInfo(nretry: number = 0)
+```
+
+### Tham số
+
+- `nretry`: Số lần thử lại (mặc định `0`)
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type GetBackupMsgInfoResponse = Record<string, unknown>;
+```
+
+---
+
+## `getCrossDbInfo`
+
+Lấy thông tin cơ sở dữ liệu chéo (Cross-DB) phục vụ đồng bộ dữ liệu sang máy tính (command 12412)
+
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.sync</span><span class="zca-endpoint-pill">/api/message/get_crossdb</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sync.getCrossDbInfo(options: GetCrossDbInfoOptions = {})
+// Hoặc gọi phẳng (Flat Alias):
+await api.getCrossDbInfo(options: GetCrossDbInfoOptions = {})
+```
+
+### Tham số
+
+- `options`: Thông tin `syncSession` và `pcName`
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type GetCrossDbInfoOptions = {
+    syncSession?: string;
+    pcName?: string;
+    nretry?: number;
+};
+
+export type GetCrossDbInfoResponse = Record<string, unknown>;
 ```
 
 ---
@@ -201,6 +287,56 @@ export type RequestSyncFromPhoneResponse = {
     publicKey: string;
     privateKey: string;
 };
+```
+
+---
+
+## `submitSyncMediaActions`
+
+Gửi danh sách hành động đồng bộ hóa tệp đa phương tiện lên máy chủ (command 16213)
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.sync</span><span class="zca-endpoint-pill">/api/sync_action/media</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sync.submitSyncMediaActions(syncList: unknown[])
+// Hoặc gọi phẳng (Flat Alias):
+await api.submitSyncMediaActions(syncList: unknown[])
+```
+
+### Tham số
+
+- `syncList`: Danh sách hành động đồng bộ Media
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type SubmitSyncMediaActionsResponse = Record<string, unknown>;
+```
+
+---
+
+## `uploadBackupChunk`
+
+Tải lên gói dữ liệu phân mảnh (chunk) sao lưu tin nhắn từ máy tính sang điện thoại (command 13538)
+
+<div class="zca-api-meta"><span class="zca-badge-method post">POST</span><span class="zca-endpoint-pill">api.sync</span><span class="zca-endpoint-pill">/api/backuppc2mb/upload</span></div>
+
+```ts
+// Gọi theo phân hệ (Domain Namespace):
+await api.sync.uploadBackupChunk(formData: BodyInit | Buffer | Uint8Array)
+// Hoặc gọi phẳng (Flat Alias):
+await api.uploadBackupChunk(formData: BodyInit | Buffer | Uint8Array)
+```
+
+### Tham số
+
+- `formData`: Dữ liệu `FormData` hoặc `BodyInit` chứa phân mảnh sao lưu
+
+### Kiểu dữ liệu (TypeScript Types)
+
+```ts
+export type UploadBackupChunkResponse = Record<string, unknown>;
 ```
 
 ---

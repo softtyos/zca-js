@@ -59,11 +59,85 @@
                 background: rgba(22, 199, 132, 0.15);
                 color: var(--success);
                 border: 1px solid rgba(22, 199, 132, 0.35);
+                white-space: nowrap;
+                flex-shrink: 0;
             }
             .grid {
                 display: grid;
-                grid-template-columns: 380px 1fr;
+                grid-template-columns: 420px minmax(0, 1fr);
                 gap: 20px;
+                align-items: start;
+            }
+            .grid > div {
+                min-width: 0;
+            }
+            .mode-tabs {
+                display: grid;
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 6px;
+                background: var(--panel);
+                border: 1px solid var(--border);
+                border-radius: 12px;
+                padding: 6px;
+                margin-bottom: 14px;
+            }
+            .mode-tab-btn {
+                padding: 10px 8px;
+                border-radius: 8px;
+                font-size: 12px;
+                font-weight: 700;
+                background: transparent;
+                color: var(--muted);
+                border: 1px solid transparent;
+                white-space: nowrap;
+            }
+            .mode-tab-btn.active {
+                background: var(--primary);
+                color: #fff;
+                box-shadow: 0 4px 14px rgba(0, 104, 255, 0.35);
+            }
+            .group-item {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                padding: 9px 11px;
+                border-radius: 10px;
+                background: var(--panel-2);
+                border: 1px solid var(--border);
+                margin-bottom: 7px;
+                cursor: pointer;
+                transition: all 0.15s ease;
+            }
+            .group-item:hover {
+                border-color: var(--primary);
+                background: rgba(0, 104, 255, 0.1);
+            }
+            .group-item.selected {
+                border-color: var(--success);
+                background: rgba(22, 199, 132, 0.12);
+                box-shadow: 0 0 0 1px rgba(22, 199, 132, 0.35);
+            }
+            .member-check-item {
+                display: flex;
+                align-items: center;
+                gap: 9px;
+                padding: 7px 10px;
+                border-radius: 8px;
+                background: var(--panel-2);
+                border: 1px solid rgba(39, 53, 97, 0.65);
+                margin-bottom: 6px;
+                cursor: pointer;
+                font-size: 12px;
+            }
+            .member-check-item:hover {
+                border-color: var(--primary);
+            }
+            .member-check-item input[type="checkbox"] {
+                width: 16px;
+                height: 16px;
+                accent-color: var(--success);
+                cursor: pointer;
+                flex-shrink: 0;
             }
             @media (max-width: 1024px) {
                 .grid {
@@ -76,6 +150,8 @@
                 border-radius: 14px;
                 padding: 20px;
                 margin-bottom: 20px;
+                min-width: 0;
+                overflow: hidden;
             }
             .card-title {
                 font-size: 15px;
@@ -252,6 +328,9 @@
                 overflow-x: auto;
                 max-height: 280px;
                 overflow-y: auto;
+                white-space: pre-wrap;
+                word-break: break-all;
+                max-width: 100%;
             }
             .log-list {
                 background: var(--code-bg);
@@ -339,15 +418,245 @@
                 <h1>
                     <span>📞 ZCA-JS Pure TypeScript Call Studio</span>
                     <span class="badge" id="engineBadge">100% Pure TS (Zero Zalo PC)</span>
+                    <span
+                        class="badge"
+                        id="sessionStatusPill"
+                        style="cursor: pointer"
+                        onclick="openAuthModal('qr')"
+                        title="Bấm để quản lý phiên đăng nhập Zalo"
+                    >
+                        ⏳ Đang kiểm tra phiên...
+                    </span>
                 </h1>
                 <div style="font-size: 12px; color: var(--muted); margin-top: 4px" id="accountInfo">
                     Đang kết nối phiên đăng nhập Zalo...
                 </div>
             </div>
-            <div style="display: flex; gap: 10px">
+            <div style="display: flex; flex-wrap: wrap; gap: 8px">
+                <button class="btn-primary" id="btnHeaderLoginQr" onclick="openAuthModal('qr')">
+                    🔑 Đăng Nhập QR / Đổi Phiên
+                </button>
+                <button class="btn-secondary" id="btnHeaderReloadCreds" onclick="reloadDiskCredentials()">
+                    🔄 Tải Lại Phiên
+                </button>
+                <button class="btn-danger" id="btnHeaderLogout" onclick="logoutSession(false)">🚪 Đăng Xuất</button>
                 <button class="btn-secondary" onclick="simulateIncoming(1)">🧪 Test Gọi Thoại Đến</button>
                 <button class="btn-secondary" onclick="simulateIncoming(3)">🧪 Test Gọi Video Đến</button>
+                <button class="btn-secondary" onclick="simulateIncoming(6)">🧪 Test Gọi Nhóm Đến</button>
                 <button class="btn-secondary" onclick="clearLogs()">🧹 Xoá Log</button>
+            </div>
+        </div>
+
+        <!-- Banner cảnh báo khi phiên Zalo hết hạn hoặc đang ở chế độ Giả lập Offline -->
+        <div
+            id="expiredSessionBanner"
+            style="
+                display: none;
+                background: linear-gradient(135deg, rgba(245, 166, 35, 0.16) 0%, rgba(234, 57, 67, 0.14) 100%);
+                border: 1px solid rgba(245, 166, 35, 0.55);
+                border-radius: 14px;
+                padding: 16px 20px;
+                margin-bottom: 18px;
+                align-items: center;
+                justify-content: space-between;
+                gap: 16px;
+                flex-wrap: wrap;
+            "
+        >
+            <div>
+                <div style="font-weight: 800; font-size: 15px; color: var(--warning)">
+                    ⚠️ Phiên Zalo thật đang bị mất hoặc đã hết hạn — Đang chạy Chế Độ Giả Lập Offline
+                </div>
+                <div style="font-size: 12px; color: #d8e2ff; margin-top: 4px" id="expiredSessionReason">
+                    Bạn vẫn có thể test đầy đủ giao thức UDP/SRTP/SFU ở chế độ Giả lập, hoặc bấm Đăng nhập QR bên phải
+                    để kết nối tài khoản Zalo thật ngay lập tức.
+                </div>
+            </div>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap">
+                <button class="btn-success" onclick="syncFromZPlusDesktop()">
+                    ⚡ Đồng Bộ Phiên Sống Từ ZPlus Desktop
+                </button>
+                <button class="btn-primary" onclick="openAuthModal('qr')">📱 Quét Mã QR Đăng Nhập Mới</button>
+                <button class="btn-secondary" onclick="openAuthModal('json')">📋 Dán Cookie / Credentials JSON</button>
+                <button class="btn-secondary" onclick="reloadDiskCredentials()">🔄 Thử Nạp Lại credentials.json</button>
+            </div>
+        </div>
+
+        <!-- Modal Quản lý Phiên Đăng Nhập Zalo (QR Code + Credentials JSON + Xuất/Đăng xuất) -->
+        <div
+            id="authModal"
+            style="
+                display: none;
+                position: fixed;
+                inset: 0;
+                z-index: 9999;
+                background: rgba(5, 9, 20, 0.82);
+                backdrop-filter: blur(6px);
+                align-items: center;
+                justify-content: center;
+                padding: 20px;
+            "
+        >
+            <div
+                style="
+                    background: var(--panel);
+                    border: 1px solid var(--border);
+                    border-radius: 16px;
+                    width: 100%;
+                    max-width: 620px;
+                    padding: 22px;
+                    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.65);
+                "
+            >
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px">
+                    <div style="font-size: 17px; font-weight: 800; color: #fff">
+                        🔑 Quản Lý Phiên Đăng Nhập Zalo (Chủ Động Login / Logout)
+                    </div>
+                    <button class="btn-secondary" style="padding: 6px 12px" onclick="closeAuthModal()">✖ Đóng</button>
+                </div>
+
+                <div style="display: flex; gap: 8px; margin-bottom: 12px">
+                    <button class="btn-primary" id="tabBtnQr" style="flex: 1" onclick="switchAuthTab('qr')">
+                        📱 Đăng Nhập Quét Mã QR
+                    </button>
+                    <button class="btn-secondary" id="tabBtnJson" style="flex: 1" onclick="switchAuthTab('json')">
+                        📋 Dán / Xuất JSON Credentials
+                    </button>
+                </div>
+                <div
+                    id="zplusAccountsBox"
+                    style="
+                        background: rgba(22, 199, 132, 0.1);
+                        border: 1px solid rgba(22, 199, 132, 0.35);
+                        border-radius: 10px;
+                        padding: 10px 12px;
+                        margin-bottom: 14px;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        gap: 10px;
+                        flex-wrap: wrap;
+                    "
+                >
+                    <div style="font-size: 12px; color: #d8e2ff">
+                        ⚡ <b>Đồng bộ nhanh từ ZPlus Desktop:</b> Nạp trực tiếp tài khoản Zalo đang đăng nhập trên ZPlus
+                        Desktop
+                    </div>
+                    <div id="zplusAccountsBtnList" style="display: flex; gap: 6px; flex-wrap: wrap">
+                        <button
+                            class="btn-success"
+                            style="padding: 5px 10px; font-size: 11px"
+                            onclick="syncFromZPlusDesktop()"
+                        >
+                            ⚡ Đồng Bộ Ngay
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB 1: QUÉT MÃ QR -->
+                <div id="authTabQr">
+                    <div
+                        style="
+                            background: var(--code-bg);
+                            border: 1px solid var(--border);
+                            border-radius: 12px;
+                            padding: 20px;
+                            text-align: center;
+                        "
+                    >
+                        <div
+                            id="qrStatusText"
+                            style="font-size: 14px; font-weight: 700; color: var(--warning); margin-bottom: 12px"
+                        >
+                            Bấm "Tạo Mã QR Mới" để lấy mã QR đăng nhập trực tiếp từ máy chủ Zalo
+                        </div>
+                        <div
+                            id="qrImageContainer"
+                            style="
+                                width: 230px;
+                                height: 230px;
+                                margin: 0 auto 14px;
+                                background: #fff;
+                                border-radius: 12px;
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                overflow: hidden;
+                                padding: 10px;
+                            "
+                        >
+                            <img
+                                id="qrCodeImg"
+                                alt="Zalo QR"
+                                style="max-width: 100%; max-height: 100%; display: none"
+                            />
+                            <span id="qrPlaceholder" style="color: #1a2a56; font-size: 12px; font-weight: 700">
+                                Chưa có mã QR
+                            </span>
+                        </div>
+                        <div
+                            id="qrScannedUserBox"
+                            style="
+                                display: none;
+                                margin-bottom: 12px;
+                                padding: 10px;
+                                border-radius: 10px;
+                                background: rgba(22, 199, 132, 0.14);
+                                border: 1px solid rgba(22, 199, 132, 0.4);
+                                color: #fff;
+                                font-size: 13px;
+                            "
+                        ></div>
+                        <div style="font-size: 12px; color: var(--muted); margin-bottom: 14px">
+                            Sau khi quét và xác nhận trên ứng dụng Zalo điện thoại, hệ thống sẽ tự động lưu phiên mới
+                            vào
+                            <code>test/credentials.json</code> và bật lắng nghe cuộc gọi thời gian thực.
+                        </div>
+                        <div style="display: flex; justify-content: center; gap: 10px; flex-wrap: wrap">
+                            <button class="btn-primary" onclick="startQrLogin()">🔄 Tạo Mã QR Mới</button>
+                            <button class="btn-secondary" onclick="cancelQrLogin()">⏹️ Huỷ Mã QR</button>
+                            <button class="btn-danger" onclick="logoutSession(false)">
+                                🚪 Chuyển Về Giả Lập Offline
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: DÁN / XUẤT CREDENTIALS JSON -->
+                <div id="authTabJson" style="display: none">
+                    <div class="field">
+                        <label
+                            >Nội dung JSON Credentials (<code>imei</code>, <code>cookie</code>,
+                            <code>userAgent</code>):</label
+                        >
+                        <textarea
+                            id="credentialsJsonInput"
+                            rows="9"
+                            placeholder='{"imei": "...", "userAgent": "...", "cookie": [...]}'
+                            style="
+                                width: 100%;
+                                background: var(--code-bg);
+                                border: 1px solid var(--border);
+                                border-radius: 8px;
+                                color: #8ff0a4;
+                                font-family: monospace;
+                                font-size: 11px;
+                                padding: 10px;
+                            "
+                        ></textarea>
+                    </div>
+                    <div id="jsonAuthFeedback" style="font-size: 12px; margin-bottom: 10px; color: var(--muted)"></div>
+                    <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                        <button class="btn-success" onclick="loginWithJson()">💾 Lưu & Đăng Nhập Ngay</button>
+                        <button class="btn-secondary" onclick="exportCurrentSession()">
+                            📤 Nạp / Xem Session Hiện Tại
+                        </button>
+                        <button class="btn-secondary" onclick="reloadDiskCredentials()">
+                            🔄 Đọc Lại test/credentials.json
+                        </button>
+                        <button class="btn-danger" onclick="logoutSession(true)">🗑️ Đăng Xuất & Xoá File Phiên</button>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -392,223 +701,411 @@
         </div>
 
         <div class="grid">
-            <!-- Cột điều khiển cuộc gọi -->
+            <!-- Cột điều khiển cuộc gọi (Chia 3 Tab gọn gàng, ưu tiên Gọi Nhóm & Chọn Nhóm trực quan) -->
             <div>
-                <!-- CARD 1: KHU VỰC NHẬN CUỘC GỌI ĐẾN (INCOMING CALL STUDIO) -->
-                <div class="card" id="incomingCallCard">
-                    <div class="card-title">
-                        <span>📲 Nhận Cuộc Gọi Đến (Incoming Call Studio)</span>
-                        <span class="badge" id="incomingStatusBadge">Đang Trực Chiến (WS 601/604)</span>
-                    </div>
-                    <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px">
-                        Hãy dùng điện thoại Zalo gọi vào tài khoản này hoặc bấm nút <b>Giả Lập Cuộc Gọi Đến</b> bên dưới
-                        để kiểm tra luồng nhận cuộc gọi đến, bắt máy (405/507 + UDP <code>cmd=12</code>), từ chối
-                        (406/508) hoặc bàn giao UDP cho Mobile.
-                    </div>
-
-                    <div class="kv-grid">
-                        <div class="kv-lbl">Trạng thái:</div>
-                        <div class="kv-val" id="incStateText" style="color: var(--success)">
-                            Đang chờ cuộc gọi đến...
-                        </div>
-                        <div class="kv-lbl">Người gọi đến:</div>
-                        <div class="kv-val" id="incCallerText">—</div>
-                        <div class="kv-lbl">Loại cuộc gọi:</div>
-                        <div class="kv-val" id="incTypeText">—</div>
-                        <div class="kv-lbl">Call ID / Session:</div>
-                        <div class="kv-val" id="incCallIdText">—</div>
-                        <div class="kv-lbl">UDP Relay Server:</div>
-                        <div class="kv-val" id="incRelayText">—</div>
-                        <div class="kv-lbl">32-bit UID Route:</div>
-                        <div class="kv-val" id="incUid32Text">—</div>
-                    </div>
-
-                    <div class="btn-row">
-                        <button class="btn-success" id="btnAccept" onclick="acceptIncoming(false, false)" disabled>
-                            📞 Nghe Máy (Thoại)
-                        </button>
-                        <button class="btn-primary" id="btnAcceptVideo" onclick="acceptIncoming(true, false)" disabled>
-                            🎥 Nghe Máy (Video)
-                        </button>
-                    </div>
-                    <div class="btn-row">
-                        <button
-                            class="btn-secondary"
-                            id="btnAcceptHandoff"
-                            onclick="acceptIncoming(false, true)"
-                            disabled
-                        >
-                            📲 Nghe & Bàn Giao Mobile
-                        </button>
-                        <button class="btn-danger" id="btnReject" onclick="rejectIncoming()" disabled>
-                            ❌ Từ Chối Cuộc Gọi
-                        </button>
-                    </div>
-
-                    <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border)">
-                        <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 600">
-                            🧪 Công Cụ Giả Lập Cuộc Gọi Đến (Test Nhanh Mọi Kịch Bản Gọi Đến):
-                        </div>
-                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px">
-                            <button
-                                class="btn-secondary"
-                                style="padding: 8px 6px; font-size: 11px"
-                                onclick="simulateIncoming(1)"
-                            >
-                                📞 Giả Lập Thoại 1-1
-                            </button>
-                            <button
-                                class="btn-secondary"
-                                style="padding: 8px 6px; font-size: 11px"
-                                onclick="simulateIncoming(3)"
-                            >
-                                🎥 Giả Lập Video 1-1
-                            </button>
-                            <button
-                                class="btn-secondary"
-                                style="padding: 8px 6px; font-size: 11px"
-                                onclick="simulateIncoming(6)"
-                            >
-                                👥 Giả Lập Gọi Nhóm
-                            </button>
-                        </div>
-                    </div>
+                <div class="mode-tabs">
+                    <button class="mode-tab-btn active" id="leftTabBtnGroup" onclick="switchLeftModeTab('group')">
+                        👥 Gọi Nhóm Zalo
+                    </button>
+                    <button class="mode-tab-btn" id="leftTabBtnDirect" onclick="switchLeftModeTab('direct')">
+                        📞 Gọi Cá Nhân 1-1
+                    </button>
+                    <button class="mode-tab-btn" id="leftTabBtnIncoming" onclick="switchLeftModeTab('incoming')">
+                        📲 Cuộc Gọi Đến
+                    </button>
                 </div>
 
-                <!-- CARD 2: KHU VỰC GỌI ĐI (OUTGOING CALL) -->
-                <div class="card">
-                    <div class="card-title">
-                        <span>📤 Gọi Đi Cá Nhân (Outgoing Call)</span>
-                    </div>
+                <!-- TAB 1: GỌI NHÓM ZALO (CHỌN NHÓM + CHỌN THÀNH VIÊN TRỰC QUAN) -->
+                <div id="leftPaneGroup">
+                    <div class="card">
+                        <div class="card-title">
+                            <span>👥 Gọi Nhóm Zalo (Zavi SFU Audio & Video)</span>
+                            <span class="badge" id="groupPartnerBadge">Sẵn sàng</span>
+                        </div>
 
-                    <div class="contact-card" onclick="selectPreset('5249661060655759359', 'Ly Van Bong (0332606964)')">
-                        <div class="avatar">LB</div>
-                        <div style="flex: 1">
-                            <div style="font-weight: 700; font-size: 14px">Ly Van Bong</div>
-                            <div style="font-size: 12px; color: var(--muted)">
-                                SĐT: 0332606964 • UID: 5249661060655759359
+                        <!-- BƯỚC 1: CHỌN NHÓM TỪ DANH SÁCH NHÓM ĐANG THAM GIA -->
+                        <div class="field">
+                            <div
+                                style="
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    margin-bottom: 6px;
+                                "
+                            >
+                                <label style="margin-bottom: 0"
+                                    >1. Chọn Nhóm Zalo (<span id="groupsCountText">0</span> nhóm)</label
+                                >
+                                <button
+                                    class="btn-secondary"
+                                    style="padding: 4px 10px; font-size: 11px"
+                                    onclick="loadGroups()"
+                                >
+                                    🔄 Tải Lại Danh Sách Nhóm
+                                </button>
                             </div>
-                            <div style="font-size: 11px; color: var(--success)">
-                                ✓ Đã xác minh đổ chuông & bắt máy thật
+                            <input
+                                type="text"
+                                id="groupSearchInput"
+                                placeholder="🔍 Tìm nhanh theo tên nhóm hoặc Group ID..."
+                                oninput="filterGroupsPickerUI()"
+                                style="margin-bottom: 8px; padding: 8px 10px; font-size: 12px"
+                            />
+                            <div
+                                id="groupsPickerList"
+                                style="
+                                    max-height: 210px;
+                                    overflow-y: auto;
+                                    background: var(--code-bg);
+                                    border: 1px solid var(--border);
+                                    border-radius: 10px;
+                                    padding: 8px;
+                                "
+                            >
+                                <div style="padding: 10px; font-size: 12px; color: var(--muted); text-align: center">
+                                    Đang tải danh sách nhóm Zalo của bạn...
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="field">
-                        <label>Tìm kiếm theo Số Điện Thoại</label>
-                        <div class="input-row">
-                            <input type="text" id="phoneInput" value="0332606964" placeholder="Nhập SĐT Zalo..." />
-                            <button class="btn-secondary" onclick="lookupPhone()">🔍 Tìm</button>
+                        <!-- BƯỚC 2: CHỌN THÀNH VIÊN TRONG NHÓM ĐỂ MỜI GỌI -->
+                        <div class="field">
+                            <div
+                                style="
+                                    display: flex;
+                                    justify-content: space-between;
+                                    align-items: center;
+                                    margin-bottom: 6px;
+                                "
+                            >
+                                <label style="margin-bottom: 0">
+                                    2. Thành Viên Mời Gọi (<span id="selectedMembersCountText">0</span> người đã chọn)
+                                </label>
+                                <div style="display: flex; gap: 6px">
+                                    <button
+                                        class="btn-secondary"
+                                        style="padding: 3px 8px; font-size: 11px"
+                                        onclick="toggleAllGroupMembers(true)"
+                                    >
+                                        ✓ Chọn hết
+                                    </button>
+                                    <button
+                                        class="btn-secondary"
+                                        style="padding: 3px 8px; font-size: 11px"
+                                        onclick="toggleAllGroupMembers(false)"
+                                    >
+                                        ✕ Bỏ chọn
+                                    </button>
+                                </div>
+                            </div>
+                            <div
+                                id="groupMembersPickerList"
+                                style="
+                                    max-height: 185px;
+                                    overflow-y: auto;
+                                    background: var(--code-bg);
+                                    border: 1px solid var(--border);
+                                    border-radius: 10px;
+                                    padding: 8px;
+                                "
+                            >
+                                <div style="padding: 10px; font-size: 12px; color: var(--muted); text-align: center">
+                                    Hãy bấm chọn 1 nhóm ở trên để tải danh sách thành viên trong nhóm.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ô Group ID & UID Thành viên (Có thể sửa tay nếu muốn) -->
+                        <details style="margin-bottom: 12px; font-size: 12px; color: var(--muted)">
+                            <summary style="cursor: pointer; font-weight: 600; margin-bottom: 8px">
+                                ⚙️ Tuỳ chỉnh nâng cao (Group ID & Danh sách UID thủ công)
+                            </summary>
+                            <div class="field" style="margin-top: 8px">
+                                <label>Group ID đang chọn</label>
+                                <input
+                                    type="text"
+                                    id="groupIdInput"
+                                    value="8889990001112223334"
+                                    placeholder="Nhập Group ID..."
+                                />
+                            </div>
+                            <div class="field" style="margin-bottom: 4px">
+                                <label>Danh sách UID Thành Viên Mời Gọi (cách nhau dấu phẩy)</label>
+                                <input
+                                    type="text"
+                                    id="groupPartnersInput"
+                                    value="5249661060655759359,7249661060655759999"
+                                />
+                            </div>
+                        </details>
+
+                        <!-- BƯỚC 3: NÚT BẤM KHỞI TẠO CUỘC GỌI NHÓM -->
+                        <div class="btn-row">
+                            <button class="btn-primary" onclick="startGroupCallUI(5)">📞 Gọi Nhóm Thoại</button>
+                            <button class="btn-success" onclick="startGroupCallUI(6)">🎥 Gọi Nhóm Video</button>
+                        </div>
+                        <div class="btn-row">
+                            <button class="btn-secondary" onclick="joinGroupCallUI(6)">
+                                🚪 Tham Gia Phòng Gọi Nhóm
+                            </button>
+                            <button class="btn-danger" onclick="endCall()">📴 Kết Thúc Gọi Nhóm</button>
+                        </div>
+
+                        <!-- TRẠNG THÁI THÀNH VIÊN TRONG PHÒNG & CÔNG CỤ GIẢ LẬP SFU -->
+                        <div style="margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--border)">
+                            <div style="font-size: 12px; color: #fff; margin-bottom: 6px; font-weight: 700">
+                                👥 Thành Viên Đang Trong Phòng Gọi Nhóm:
+                            </div>
+                            <div
+                                id="groupPartnersListUI"
+                                style="
+                                    margin-bottom: 10px;
+                                    background: var(--code-bg);
+                                    border: 1px solid var(--border);
+                                    border-radius: 8px;
+                                    padding: 8px 10px;
+                                    font-size: 11px;
+                                    color: var(--muted);
+                                "
+                            >
+                                Chưa có thành viên trong phòng gọi nhóm.
+                            </div>
+                            <div style="font-size: 11px; color: var(--muted); margin-bottom: 6px; font-weight: 600">
+                                🧪 Công cụ Giả lập SFU Zavi (Khi test nhóm Offline <code>8889990001112223334</code>):
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px">
+                                <button
+                                    class="btn-secondary"
+                                    style="padding: 7px 6px; font-size: 11px"
+                                    onclick="simulateGroupMemberEvent('answer')"
+                                >
+                                    ✅ TV#1 Bắt Máy
+                                </button>
+                                <button
+                                    class="btn-secondary"
+                                    style="padding: 7px 6px; font-size: 11px"
+                                    onclick="simulateGroupMemberEvent('toggle_media')"
+                                >
+                                    🎛️ Đổi Cam/Mic
+                                </button>
+                                <button
+                                    class="btn-secondary"
+                                    style="padding: 7px 6px; font-size: 11px"
+                                    onclick="simulateGroupMemberEvent('leave')"
+                                >
+                                    🚪 TV#1 Rời Phòng
+                                </button>
+                            </div>
                         </div>
                     </div>
+                </div>
 
-                    <div class="field">
-                        <label>Target Callee UID (64-bit Zalo ID)</label>
-                        <input type="text" id="calleeIdInput" value="5249661060655759359" />
-                    </div>
+                <!-- TAB 2: KHU VỰC GỌI ĐI CÁ NHÂN 1-1 -->
+                <div id="leftPaneDirect" style="display: none">
+                    <div class="card">
+                        <div class="card-title">
+                            <span>📤 Gọi Đi Cá Nhân 1-1 (Outgoing Call)</span>
+                        </div>
 
-                    <div class="field">
-                        <label>Loại cuộc gọi (CallType)</label>
-                        <select id="callTypeSelect">
-                            <option value="1">Cuộc gọi Thoại (Audio Call — Hỗ trợ nâng cấp lên Video)</option>
-                            <option value="3">Cuộc gọi Video (Video Call — Bật Camera ngay)</option>
-                            <option value="3_offcam">Cuộc gọi Video Tắt Cam (Video Call — Tắt Cam lúc đầu)</option>
-                        </select>
-                    </div>
-
-                    <div class="field">
-                        <label>Chế độ đóng gói UDP (PacketMode)</label>
-                        <select id="packetModeSelect">
-                            <option value="1">
-                                Mode 1 — Relay 5-byte Header (0x03 / 0x05 / 0x0d / 0x0f — Mặc định chuẩn Relay)
-                            </option>
-                            <option value="2">
-                                Mode 2 — ZRTC P2P 9-byte Header (0x7f — Chỉ dùng cho P2P trực tiếp)
-                            </option>
-                        </select>
-                    </div>
-
-                    <div class="field">
-                        <label>Mã hoá luồng Media (SRTP)</label>
-                        <select id="srtpSelect">
-                            <option value="0">Tắt (Plain RTP/RTCP — Tương thích cao nhất)</option>
-                            <option value="1">Bật (RFC 3711 AES_CM_128_HMAC_SHA1_80)</option>
-                        </select>
-                    </div>
-
-                    <div class="btn-row">
-                        <button class="btn-success" id="btnCall" onclick="startCall()">📞 Gọi Đi Ngay</button>
-                        <button class="btn-danger" id="btnEnd" onclick="endCall()" disabled>📴 Kết Thúc</button>
-                    </div>
-
-                    <div class="btn-row">
-                        <button class="btn-primary" id="btnToggleMic" onclick="toggleMic()">
-                            🎙️ Bật Mic (Opus 16kHz)
-                        </button>
-                        <button class="btn-primary" id="btnToggleCam" onclick="toggleCamera()">
-                            📷 Bật Camera (H.264)
-                        </button>
-                    </div>
-
-                    <div class="btn-row">
-                        <button class="btn-secondary" id="btnUpgradeVideo" onclick="upgradeToVideo()" disabled>
-                            🔄 Chuyển Thoại ➔ Video
-                        </button>
-                        <button class="btn-secondary" id="btnHoldCall" onclick="toggleHoldCall()" disabled>
-                            ⏸️ Tạm Giữ Cuộc Gọi
-                        </button>
-                    </div>
-
-                    <div class="btn-row">
-                        <button class="btn-secondary" id="btnSendAudio" onclick="sendTestAudio()" disabled>
-                            🔊 Bắn 25 Gói Opus Mẫu
-                        </button>
-                        <button class="btn-secondary" id="btnSendVideo" onclick="sendTestVideo()" disabled>
-                            📹 Bắn 25 Gói H.264 Mẫu
-                        </button>
-                    </div>
-
-                    <div class="btn-row">
-                        <button
-                            class="btn-secondary"
-                            id="btnCallSignalingOnly"
-                            onclick="startCall(true)"
-                            title="Worker chỉ gọi HTTP 401/416 để lấy thông số UDP Relay và đẩy về cho Mobile tự kết nối"
+                        <div
+                            class="contact-card"
+                            onclick="selectPreset('5249661060655759359', 'Ly Van Bong (0332606964)')"
                         >
-                            📲 Gọi Đi (Worker ➔ Mobile UDP)
-                        </button>
-                        <button class="btn-secondary" id="btnExportHandoff" onclick="exportMobileHandoff()" disabled>
-                            📦 Xuất Gói Bàn Giao Mobile
-                        </button>
-                    </div>
-                </div>
+                            <div class="avatar">LB</div>
+                            <div style="flex: 1">
+                                <div style="font-weight: 700; font-size: 14px">Ly Van Bong</div>
+                                <div style="font-size: 12px; color: var(--muted)">
+                                    SĐT: 0332606964 • UID: 5249661060655759359
+                                </div>
+                                <div style="font-size: 11px; color: var(--success)">
+                                    ✓ Bấm để chọn nhanh người nhận mặc định
+                                </div>
+                            </div>
+                        </div>
 
-                <div class="card">
-                    <div class="card-title">👥 Gọi Nhóm (Group Audio = 5 / Group Video = 6)</div>
-                    <div class="field">
-                        <label>Group ID (Chọn hoặc nhập ID nhóm)</label>
-                        <div class="input-row">
-                            <input type="text" id="groupIdInput" placeholder="Nhập Group ID..." />
-                            <button class="btn-secondary" onclick="loadGroups()">📂 Tải Nhóm</button>
+                        <div class="field">
+                            <label>Chọn nhanh từ Danh bạ Bạn bè (<span id="friendsCountText">0</span> bạn bè)</label>
+                            <div
+                                id="friendsList"
+                                style="
+                                    max-height: 150px;
+                                    overflow-y: auto;
+                                    background: var(--code-bg);
+                                    border: 1px solid var(--border);
+                                    border-radius: 8px;
+                                    padding: 6px;
+                                    font-size: 12px;
+                                    color: var(--muted);
+                                "
+                            >
+                                Đang tải danh bạ...
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>Tìm kiếm theo Số Điện Thoại</label>
+                            <div class="input-row">
+                                <input type="text" id="phoneInput" value="0332606964" placeholder="Nhập SĐT Zalo..." />
+                                <button class="btn-secondary" onclick="lookupPhone()">🔍 Tìm</button>
+                            </div>
+                        </div>
+
+                        <div class="field">
+                            <label>Target Callee UID (64-bit Zalo ID)</label>
+                            <input type="text" id="calleeIdInput" value="5249661060655759359" />
+                        </div>
+
+                        <div class="field">
+                            <label>Loại cuộc gọi (CallType)</label>
+                            <select id="callTypeSelect">
+                                <option value="1">Cuộc gọi Thoại (Audio Call — Hỗ trợ nâng cấp lên Video)</option>
+                                <option value="3">Cuộc gọi Video (Video Call — Bật Camera ngay)</option>
+                                <option value="3_offcam">Cuộc gọi Video Tắt Cam (Video Call — Tắt Cam lúc đầu)</option>
+                            </select>
+                        </div>
+
+                        <div class="field">
+                            <label>Chế độ đóng gói UDP & Mã hoá SRTP</label>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px">
+                                <select id="packetModeSelect">
+                                    <option value="1">Mode 1 — Relay 5B</option>
+                                    <option value="2">Mode 2 — P2P 9B</option>
+                                </select>
+                                <select id="srtpSelect">
+                                    <option value="0">SRTP: Tắt (Plain)</option>
+                                    <option value="1">SRTP: Bật (HMAC-80)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="btn-row">
+                            <button class="btn-success" id="btnCall" onclick="startCall()">📞 Gọi Đi Ngay</button>
+                            <button class="btn-danger" id="btnEnd" onclick="endCall()" disabled>📴 Kết Thúc</button>
+                        </div>
+
+                        <div class="btn-row">
+                            <button class="btn-secondary" id="btnUpgradeVideo" onclick="upgradeToVideo()" disabled>
+                                🔄 Chuyển Thoại ➔ Video
+                            </button>
+                            <button class="btn-secondary" id="btnHoldCall" onclick="toggleHoldCall()" disabled>
+                                ⏸️ Tạm Giữ Cuộc Gọi
+                            </button>
+                        </div>
+
+                        <div class="btn-row">
+                            <button class="btn-secondary" id="btnSendAudio" onclick="sendTestAudio()" disabled>
+                                🔊 Bắn 25 Gói Opus Mẫu
+                            </button>
+                            <button class="btn-secondary" id="btnSendVideo" onclick="sendTestVideo()" disabled>
+                                📹 Bắn 25 Gói H.264 Mẫu
+                            </button>
+                        </div>
+
+                        <div class="btn-row">
+                            <button
+                                class="btn-secondary"
+                                id="btnCallSignalingOnly"
+                                onclick="startCall(true)"
+                                title="Worker chỉ gọi HTTP 401/416 để lấy thông số UDP Relay và đẩy về cho Mobile tự kết nối"
+                            >
+                                📲 Gọi Đi (Worker ➔ Mobile)
+                            </button>
+                            <button
+                                class="btn-secondary"
+                                id="btnExportHandoff"
+                                onclick="exportMobileHandoff()"
+                                disabled
+                            >
+                                📦 Xuất Gói Handoff
+                            </button>
                         </div>
                     </div>
-                    <div class="field">
-                        <label>Danh sách UID Thành Viên Mời Gọi Nhóm (cách nhau dấu phẩy)</label>
-                        <input type="text" id="groupPartnersInput" value="5249661060655759359" />
-                    </div>
-                    <div class="btn-row">
-                        <button class="btn-primary" onclick="startGroupCallUI(5)">👥 Gọi Nhóm Thoại</button>
-                        <button class="btn-success" onclick="startGroupCallUI(6)">🎥 Gọi Nhóm Video</button>
-                    </div>
                 </div>
 
-                <div class="card">
-                    <div class="card-title">📋 Danh Bạ Bạn Bè Khả Dụng</div>
-                    <div
-                        id="friendsList"
-                        style="max-height: 240px; overflow-y: auto; font-size: 12px; color: var(--muted)"
-                    >
-                        Đang tải danh bạ...
+                <!-- TAB 3: KHU VỰC NHẬN CUỘC GỌI ĐẾN (INCOMING CALL STUDIO) -->
+                <div id="leftPaneIncoming" style="display: none">
+                    <div class="card" id="incomingCallCard">
+                        <div class="card-title">
+                            <span>📲 Nhận Cuộc Gọi Đến (Incoming Call)</span>
+                            <span class="badge" id="incomingStatusBadge">Trực Chiến WS 601/604</span>
+                        </div>
+                        <div style="font-size: 12px; color: var(--muted); margin-bottom: 10px">
+                            Dùng điện thoại Zalo gọi vào tài khoản này hoặc bấm <b>Giả Lập Cuộc Gọi Đến</b> bên dưới để
+                            test bắt máy (405/507 + UDP <code>cmd=12</code>) hoặc từ chối (406/508).
+                        </div>
+
+                        <div class="kv-grid">
+                            <div class="kv-lbl">Trạng thái:</div>
+                            <div class="kv-val" id="incStateText" style="color: var(--success)">
+                                Đang chờ cuộc gọi đến...
+                            </div>
+                            <div class="kv-lbl">Người gọi đến:</div>
+                            <div class="kv-val" id="incCallerText">—</div>
+                            <div class="kv-lbl">Loại cuộc gọi:</div>
+                            <div class="kv-val" id="incTypeText">—</div>
+                            <div class="kv-lbl">Call ID / Session:</div>
+                            <div class="kv-val" id="incCallIdText">—</div>
+                            <div class="kv-lbl">UDP Relay Server:</div>
+                            <div class="kv-val" id="incRelayText">—</div>
+                            <div class="kv-lbl">32-bit UID Route:</div>
+                            <div class="kv-val" id="incUid32Text">—</div>
+                        </div>
+
+                        <div class="btn-row">
+                            <button class="btn-success" id="btnAccept" onclick="acceptIncoming(false, false)" disabled>
+                                📞 Nghe Máy (Thoại)
+                            </button>
+                            <button
+                                class="btn-primary"
+                                id="btnAcceptVideo"
+                                onclick="acceptIncoming(true, false)"
+                                disabled
+                            >
+                                🎥 Nghe Máy (Video)
+                            </button>
+                        </div>
+                        <div class="btn-row">
+                            <button
+                                class="btn-secondary"
+                                id="btnAcceptHandoff"
+                                onclick="acceptIncoming(false, true)"
+                                disabled
+                            >
+                                📲 Nghe & Bàn Giao Mobile
+                            </button>
+                            <button class="btn-danger" id="btnReject" onclick="rejectIncoming()" disabled>
+                                ❌ Từ Chối Cuộc Gọi
+                            </button>
+                        </div>
+
+                        <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--border)">
+                            <div style="font-size: 11px; color: var(--muted); margin-bottom: 8px; font-weight: 600">
+                                🧪 Công Cụ Giả Lập Cuộc Gọi Đến:
+                            </div>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px">
+                                <button
+                                    class="btn-secondary"
+                                    style="padding: 8px 6px; font-size: 11px"
+                                    onclick="simulateIncoming(1)"
+                                >
+                                    📞 Thoại 1-1
+                                </button>
+                                <button
+                                    class="btn-secondary"
+                                    style="padding: 8px 6px; font-size: 11px"
+                                    onclick="simulateIncoming(3)"
+                                >
+                                    🎥 Video 1-1
+                                </button>
+                                <button
+                                    class="btn-secondary"
+                                    style="padding: 8px 6px; font-size: 11px"
+                                    onclick="simulateIncoming(6)"
+                                >
+                                    👥 Gọi Nhóm
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -651,12 +1148,12 @@
                         </div>
                     </div>
 
-                    <!-- Khu vực Media Trực Tiếp: Mic / Loa / Camera / Video Đối Phương -->
+                    <!-- Khu vực Media Trực Tiếp: Mic / Loa / Camera / Video Đối Phương (Tỷ lệ cân đối 240px) -->
                     <div
                         style="
                             background: var(--code-bg);
                             border: 1px solid var(--border);
-                            border-radius: 10px;
+                            border-radius: 12px;
                             padding: 14px;
                             margin-bottom: 16px;
                         "
@@ -666,19 +1163,46 @@
                                 display: flex;
                                 justify-content: space-between;
                                 align-items: center;
-                                margin-bottom: 10px;
+                                flex-wrap: wrap;
+                                gap: 8px;
+                                margin-bottom: 12px;
                             "
                         >
-                            <span style="font-size: 13px; font-weight: 700; color: #fff"
-                                >🎬 Phòng Media Trực Tiếp (WebCodecs Opus 16kHz & H.264 Annex-B)</span
-                            >
-                            <button
-                                class="btn-secondary"
-                                style="padding: 4px 10px; font-size: 11px"
-                                onclick="requestPliKeyframe()"
-                            >
-                                🔄 Yêu Cầu Keyframe (PLI)
-                            </button>
+                            <span style="font-size: 13px; font-weight: 700; color: #fff">
+                                🎬 Phòng Media Trực Tiếp (WebCodecs Opus 16kHz & H.264 Annex-B)
+                            </span>
+                            <div style="display: flex; gap: 8px; flex-wrap: wrap">
+                                <button
+                                    class="btn-primary"
+                                    id="btnToggleMic"
+                                    style="padding: 6px 12px; font-size: 12px"
+                                    onclick="toggleMic()"
+                                >
+                                    🎙️ Bật Mic (Opus 16kHz)
+                                </button>
+                                <button
+                                    class="btn-primary"
+                                    id="btnToggleCam"
+                                    style="padding: 6px 12px; font-size: 12px"
+                                    onclick="toggleCamera()"
+                                >
+                                    📷 Bật Camera (H.264)
+                                </button>
+                                <button
+                                    class="btn-secondary"
+                                    style="padding: 6px 10px; font-size: 12px"
+                                    onclick="requestPliKeyframe()"
+                                >
+                                    🔄 Xin Keyframe (PLI)
+                                </button>
+                                <button
+                                    class="btn-danger"
+                                    style="padding: 6px 12px; font-size: 12px"
+                                    onclick="endCall()"
+                                >
+                                    📴 Kết Thúc
+                                </button>
+                            </div>
                         </div>
 
                         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px">
@@ -717,7 +1241,7 @@
                                         justify-content: space-between;
                                     "
                                 >
-                                    <span>🔊 Cường độ Loa Nhận Về (Từ Điện Thoại)</span>
+                                    <span>🔊 Cường độ Loa Nhận Về (Từ Điện Thoại / Nhóm)</span>
                                     <span id="speakerStatusText" style="color: var(--success)">Sẵn sàng phát</span>
                                 </div>
                                 <div style="height: 8px; background: #141c33; border-radius: 99px; overflow: hidden">
@@ -740,9 +1264,10 @@
                                     position: relative;
                                     background: #050811;
                                     border: 1px solid var(--border);
-                                    border-radius: 8px;
+                                    border-radius: 10px;
                                     overflow: hidden;
-                                    aspect-ratio: 4/3;
+                                    height: 240px;
+                                    max-height: 240px;
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
@@ -753,17 +1278,17 @@
                                     autoplay
                                     muted
                                     playsinline
-                                    style="width: 100%; height: 100%; object-fit: cover"
+                                    style="width: 100%; height: 100%; object-fit: contain; background: #050811"
                                 ></video>
                                 <div
                                     style="
                                         position: absolute;
-                                        bottom: 6px;
+                                        bottom: 8px;
                                         left: 8px;
                                         font-size: 11px;
-                                        background: rgba(0, 0, 0, 0.65);
-                                        padding: 2px 8px;
-                                        border-radius: 4px;
+                                        background: rgba(0, 0, 0, 0.72);
+                                        padding: 3px 9px;
+                                        border-radius: 6px;
                                     "
                                 >
                                     📷 Camera Của Bạn (H.264 Gửi Đi)
@@ -774,9 +1299,10 @@
                                     position: relative;
                                     background: #050811;
                                     border: 1px solid var(--border);
-                                    border-radius: 8px;
+                                    border-radius: 10px;
                                     overflow: hidden;
-                                    aspect-ratio: 4/3;
+                                    height: 240px;
+                                    max-height: 240px;
                                     display: flex;
                                     align-items: center;
                                     justify-content: center;
@@ -786,27 +1312,28 @@
                                     id="remoteVideoCanvas"
                                     width="480"
                                     height="640"
-                                    style="width: 100%; height: 100%; object-fit: contain"
+                                    style="width: 100%; height: 100%; object-fit: contain; background: #050811"
                                 ></canvas>
                                 <div
                                     style="
                                         position: absolute;
-                                        bottom: 6px;
+                                        bottom: 8px;
                                         left: 8px;
                                         font-size: 11px;
-                                        background: rgba(0, 0, 0, 0.65);
-                                        padding: 2px 8px;
-                                        border-radius: 4px;
+                                        background: rgba(0, 0, 0, 0.72);
+                                        padding: 3px 9px;
+                                        border-radius: 6px;
                                     "
+                                    id="remoteVideoOverlayLabel"
                                 >
-                                    📱 Video Từ Điện Thoại Đối Phương (H.264 Nhận Về)
+                                    📱 Video Nhận Về (Đối Phương / Thành Viên Nhóm)
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="card-title">
-                        <span>📡 Nhật Ký Tín Hiệu HTTP 401/416, WebSocket & Gói UDP ZRTP Thời Gian Thực</span>
+                        <span>📡 Nhật Ký Tín Hiệu HTTP, WebSocket & Gói UDP ZRTP / SFU Thời Gian Thực</span>
                     </div>
                     <div class="log-list" id="logList"></div>
                 </div>
@@ -922,24 +1449,38 @@
 
             let currentVideoCodec = "avc1.42c01f";
             let isHoldOn = false;
+            let remoteDecodedFrames = 0;
 
-            function extractCodecFromAnnexB(u8) {
-                for (let i = 0; i + 7 < u8.length; i++) {
+            function analyzeAnnexBFrame(u8) {
+                let spsCodec = null;
+                let hasSps = false;
+                let hasPps = false;
+                let hasIdr = false;
+                for (let i = 0; i + 4 < u8.length; i++) {
                     if (u8[i] === 0 && u8[i + 1] === 0 && u8[i + 2] === 0 && u8[i + 3] === 1) {
                         const nalType = u8[i + 4] & 0x1f;
-                        if (nalType === 7) {
+                        if (nalType === 7 && i + 7 < u8.length) {
+                            hasSps = true;
                             const p = u8[i + 5].toString(16).padStart(2, "0");
                             const c = u8[i + 6].toString(16).padStart(2, "0");
-                            const l = u8[i + 7].toString(16).padStart(2, "0");
-                            return `avc1.${p}${c}${l}`;
+                            let l = u8[i + 7].toString(16).padStart(2, "0");
+                            // Nếu level thấp (như 0x0d = Level 1.3), nâng lên Level 3.1 (0x1f) để tương thích mọi độ phân giải trên WebCodecs
+                            if (parseInt(l, 16) < 0x1f) {
+                                l = "1f";
+                            }
+                            spsCodec = `avc1.${p}${c}${l}`;
+                        } else if (nalType === 8) {
+                            hasPps = true;
+                        } else if (nalType === 5) {
+                            hasIdr = true;
                         }
                     }
                 }
-                return null;
+                return { spsCodec, hasSps, hasPps, hasIdr };
             }
 
             function ensureVideoDecoder(codecStr) {
-                const targetCodec = codecStr || currentVideoCodec || "avc1.42c01f";
+                const targetCodec = codecStr || currentVideoCodec || "avc1.42001f";
                 if (typeof VideoDecoder === "undefined") return;
                 if (videoDecoder && videoDecoder.state === "configured" && currentVideoCodec === targetCodec) {
                     return;
@@ -956,20 +1497,30 @@
                 videoDecoder = new VideoDecoder({
                     output: (videoFrame) => {
                         try {
-                            if (
-                                canvas.width !== videoFrame.displayWidth ||
-                                canvas.height !== videoFrame.displayHeight
-                            ) {
-                                canvas.width = videoFrame.displayWidth || 480;
-                                canvas.height = videoFrame.displayHeight || 640;
+                            const w = videoFrame.displayWidth || videoFrame.codedWidth || 320;
+                            const h = videoFrame.displayHeight || videoFrame.codedHeight || 240;
+                            if (canvas.width !== w || canvas.height !== h) {
+                                canvas.width = w;
+                                canvas.height = h;
                             }
                             ctx2d.drawImage(videoFrame, 0, 0, canvas.width, canvas.height);
+                            remoteDecodedFrames++;
+                            if (remoteDecodedFrames === 1 || remoteDecodedFrames % 30 === 0) {
+                                const lbl = document.getElementById("remoteVideoOverlayLabel");
+                                if (lbl) {
+                                    lbl.textContent = `📱 Video Nhận Về (${w}x${h} • #${remoteDecodedFrames})`;
+                                }
+                            }
                         } finally {
                             videoFrame.close();
                         }
                     },
-                    error: () => {
+                    error: (err) => {
                         seenRemoteKeyframe = false;
+                        if (currentVideoCodec !== "avc1.42001f") {
+                            currentVideoCodec = "avc1.42001f";
+                        }
+                        videoDecoder = null;
                         requestPliKeyframe();
                     },
                 });
@@ -990,6 +1541,7 @@
 
             function resetMediaPipelineForNewCall() {
                 seenRemoteKeyframe = false;
+                remoteDecodedFrames = 0;
                 remoteVideoTs = 0;
                 lastPliSentAt = 0;
                 forceNextKeyframe = true;
@@ -1041,16 +1593,17 @@
                             } catch {}
                         }
                     } else if (kind === 0x02 && u8.length > 2) {
-                        const isKey = u8[1] === 1;
                         const annexB = u8.subarray(2);
+                        const info = analyzeAnnexBFrame(annexB);
+                        const isKey = u8[1] === 1 && info.hasIdr;
                         if (isKey) {
-                            const spsCodec = extractCodecFromAnnexB(annexB);
-                            ensureVideoDecoder(spsCodec || currentVideoCodec);
+                            ensureVideoDecoder(info.spsCodec || currentVideoCodec);
                             seenRemoteKeyframe = true;
                         } else {
                             ensureVideoDecoder(currentVideoCodec);
                             if (!seenRemoteKeyframe && Date.now() - lastPliSentAt > 1000) {
                                 requestPliKeyframe();
+                                return;
                             }
                         }
                         if (seenRemoteKeyframe && videoDecoder && videoDecoder.state === "configured") {
@@ -1065,6 +1618,7 @@
                                 remoteVideoTs += 66666;
                             } catch {
                                 seenRemoteKeyframe = false;
+                                videoDecoder = null;
                                 requestPliKeyframe();
                             }
                         }
@@ -1226,15 +1780,15 @@
                 }
                 try {
                     camStream = await navigator.mediaDevices.getUserMedia({
-                        video: { width: 480, height: 640, frameRate: 15 },
+                        video: { width: 320, height: 240, frameRate: 15 },
                         audio: false,
                     });
                     const videoEl = document.getElementById("localVideo");
                     videoEl.srcObject = camStream;
                     await videoEl.play();
 
-                    const encW = 480;
-                    const encH = 640;
+                    const encW = 320;
+                    const encH = 240;
                     const captureCanvas = document.createElement("canvas");
                     captureCanvas.width = encW;
                     captureCanvas.height = encH;
@@ -1252,10 +1806,10 @@
                     });
 
                     videoEncoder.configure({
-                        codec: "avc1.42c01f",
+                        codec: "avc1.42001e",
                         width: encW,
                         height: encH,
-                        bitrate: 450000,
+                        bitrate: 200000,
                         framerate: 15,
                         avc: { format: "annexb" },
                     });
@@ -1692,13 +2246,190 @@
                 }
             }
 
+            let allLoadedGroups = [];
+            let selectedGroupObj = null;
+            let currentGroupMembers = [];
+            let selectedMemberIds = new Set();
+
+            function switchLeftModeTab(mode) {
+                const panes = {
+                    group: document.getElementById("leftPaneGroup"),
+                    direct: document.getElementById("leftPaneDirect"),
+                    incoming: document.getElementById("leftPaneIncoming"),
+                };
+                const btns = {
+                    group: document.getElementById("leftTabBtnGroup"),
+                    direct: document.getElementById("leftTabBtnDirect"),
+                    incoming: document.getElementById("leftTabBtnIncoming"),
+                };
+                for (const k of ["group", "direct", "incoming"]) {
+                    if (panes[k]) panes[k].style.display = k === mode ? "block" : "none";
+                    if (btns[k]) {
+                        if (k === mode) btns[k].classList.add("active");
+                        else btns[k].classList.remove("active");
+                    }
+                }
+            }
+
+            function renderGroupsPickerUI(groups) {
+                allLoadedGroups = Array.isArray(groups) ? groups : [];
+                const countEl = document.getElementById("groupsCountText");
+                if (countEl) countEl.textContent = String(allLoadedGroups.length);
+                filterGroupsPickerUI();
+                if (allLoadedGroups.length > 0) {
+                    const currentGid = document.getElementById("groupIdInput")?.value?.trim();
+                    const found = allLoadedGroups.find(
+                        (g) => g.groupId === currentGid && currentGid !== "8889990001112223334",
+                    );
+                    selectGroupFromPicker((found || allLoadedGroups[0]).groupId);
+                }
+            }
+
+            function filterGroupsPickerUI() {
+                const listEl = document.getElementById("groupsPickerList");
+                if (!listEl) return;
+                const q = (document.getElementById("groupSearchInput")?.value || "").trim().toLowerCase();
+                const filtered = allLoadedGroups.filter(
+                    (g) =>
+                        !q ||
+                        String(g.name || "")
+                            .toLowerCase()
+                            .includes(q) ||
+                        String(g.groupId || "")
+                            .toLowerCase()
+                            .includes(q),
+                );
+                if (filtered.length === 0) {
+                    listEl.innerHTML = `<div style="padding:10px; font-size:12px; color:var(--muted); text-align:center;">Không tìm thấy nhóm phù hợp.</div>`;
+                    return;
+                }
+                const currentGid = document.getElementById("groupIdInput")?.value?.trim();
+                listEl.innerHTML = filtered
+                    .map((g) => {
+                        const isSel = g.groupId === currentGid;
+                        const initials = String(g.name || "G")
+                            .trim()
+                            .slice(0, 2)
+                            .toUpperCase();
+                        const avtHtml = g.avatar
+                            ? `<img src="${escapeHtml(g.avatar)}" class="group-avatar" alt="" onerror="this.style.display='none'" />`
+                            : `<div class="group-avatar">${escapeHtml(initials)}</div>`;
+                        return `<div class="group-item ${isSel ? "selected" : ""}" onclick="selectGroupFromPicker('${escapeHtml(g.groupId)}')">
+                            ${avtHtml}
+                            <div class="group-meta">
+                                <div class="group-name">${escapeHtml(g.name || g.groupId)}</div>
+                                <div class="group-sub">ID: ${escapeHtml(g.groupId)} • ${Number(g.totalMember || (g.memberIds ? g.memberIds.length + 1 : 0))} thành viên</div>
+                            </div>
+                            <span class="badge" style="font-size:10px;">${isSel ? "✓ Đang chọn" : "Chọn"}</span>
+                        </div>`;
+                    })
+                    .join("");
+            }
+
+            async function selectGroupFromPicker(groupId) {
+                const g = allLoadedGroups.find((x) => x.groupId === groupId) || {
+                    groupId,
+                    name: `Nhóm ${groupId}`,
+                    avatar: "",
+                    memberIds: [],
+                };
+                selectedGroupObj = g;
+                const gidInput = document.getElementById("groupIdInput");
+                if (gidInput) gidInput.value = groupId;
+                filterGroupsPickerUI();
+                await loadGroupMembersForPicker(groupId);
+            }
+
+            async function loadGroupMembersForPicker(groupId) {
+                const memBox = document.getElementById("groupMembersPickerList");
+                if (memBox) {
+                    memBox.innerHTML = `<div style="padding:10px; font-size:12px; color:var(--muted); text-align:center;">⏳ Đang tải danh sách thành viên nhóm ${escapeHtml(groupId)}...</div>`;
+                }
+                try {
+                    const res = await fetch(`/api/group-members?groupId=${encodeURIComponent(groupId)}`).then((r) =>
+                        r.json(),
+                    );
+                    if (res.ok && Array.isArray(res.members)) {
+                        currentGroupMembers = res.members;
+                        if (res.groupName && selectedGroupObj) {
+                            selectedGroupObj.name = res.groupName;
+                            selectedGroupObj.avatar = res.groupAvatar || selectedGroupObj.avatar || "";
+                        }
+                        selectedMemberIds = new Set(currentGroupMembers.slice(0, 7).map((m) => String(m.id)));
+                        renderGroupMembersCheckboxes();
+                        updateSelectedGroupMembersInput();
+                    } else {
+                        if (memBox) {
+                            memBox.innerHTML = `<div style="padding:10px; font-size:12px; color:var(--warning); text-align:center;">⚠️ ${escapeHtml(res.error || "Không tải được danh sách thành viên")}</div>`;
+                        }
+                    }
+                } catch (err) {
+                    if (memBox) {
+                        memBox.innerHTML = `<div style="padding:10px; font-size:12px; color:var(--danger); text-align:center;">❌ Lỗi tải thành viên: ${escapeHtml(err.message || String(err))}</div>`;
+                    }
+                }
+            }
+
+            function renderGroupMembersCheckboxes() {
+                const memBox = document.getElementById("groupMembersPickerList");
+                if (!memBox) return;
+                if (!currentGroupMembers.length) {
+                    memBox.innerHTML = `<div style="padding:10px; font-size:12px; color:var(--muted); text-align:center;">Nhóm chưa có thành viên khác.</div>`;
+                    return;
+                }
+                memBox.innerHTML = currentGroupMembers
+                    .map((m) => {
+                        const checked = selectedMemberIds.has(String(m.id));
+                        const avt = m.avatar
+                            ? `<img src="${escapeHtml(m.avatar)}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;" onerror="this.style.display='none'" />`
+                            : `<div class="group-avatar" style="width:24px;height:24px;font-size:10px;">${escapeHtml(
+                                  String(m.name || "U")
+                                      .slice(0, 2)
+                                      .toUpperCase(),
+                              )}</div>`;
+                        return `<label class="member-chip" style="margin-bottom:4px;">
+                            <input type="checkbox" ${checked ? "checked" : ""} onchange="toggleSingleGroupMember('${escapeHtml(m.id)}', this.checked)" />
+                            ${avt}
+                            <div style="flex:1; min-width:0;">
+                                <div style="font-size:12px; font-weight:600; color:#fff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escapeHtml(m.name || m.id)}</div>
+                                <div style="font-size:10px; color:var(--muted);">UID: ${escapeHtml(m.id)}</div>
+                            </div>
+                        </label>`;
+                    })
+                    .join("");
+            }
+
+            function toggleSingleGroupMember(uid, checked) {
+                if (checked) selectedMemberIds.add(String(uid));
+                else selectedMemberIds.delete(String(uid));
+                updateSelectedGroupMembersInput();
+            }
+
+            function toggleAllGroupMembers(checked) {
+                if (checked) {
+                    selectedMemberIds = new Set(currentGroupMembers.map((m) => String(m.id)));
+                } else {
+                    selectedMemberIds.clear();
+                }
+                renderGroupMembersCheckboxes();
+                updateSelectedGroupMembersInput();
+            }
+
+            function updateSelectedGroupMembersInput() {
+                const arr = Array.from(selectedMemberIds);
+                const inp = document.getElementById("groupPartnersInput");
+                if (inp) inp.value = arr.join(",");
+                const cnt = document.getElementById("selectedMembersCountText");
+                if (cnt) cnt.textContent = String(arr.length);
+            }
+
             async function loadGroups() {
-                addLog("📂 Đang tải danh sách nhóm của bạn...");
+                addLog("📂 Đang tải danh sách nhóm Zalo của bạn...");
                 const res = await fetch("/api/groups").then((r) => r.json());
-                if (res.ok && res.groupIds && res.groupIds.length) {
-                    document.getElementById("groupIdInput").value = res.groupIds[0];
+                if (res.ok && Array.isArray(res.groups) && res.groups.length) {
+                    renderGroupsPickerUI(res.groups);
                     addLog(
-                        `✅ Đã tải ${res.groupIds.length} nhóm. Đã điền tự động Group ID đầu tiên: ${res.groupIds[0]}`,
+                        `✅ Đã tải ${res.groups.length} nhóm Zalo! Đã chọn nhóm "${res.groups[0].name}" (${res.groups[0].groupId}).`,
                         "ok",
                     );
                 } else {
@@ -1706,27 +2437,78 @@
                 }
             }
 
-            async function startGroupCallUI(callType) {
-                resetMediaPipelineForNewCall();
-                const groupId = document.getElementById("groupIdInput").value.trim();
-                const partnersRaw = document.getElementById("groupPartnersInput").value.trim();
-                if (!groupId) {
-                    addLog("⚠️ Vui lòng nhập Group ID hoặc bấm '📂 Tải Nhóm' trước khi gọi nhóm!", "warn");
+            let simMemberToggleFlag = false;
+
+            function renderGroupPartnersUI(partners) {
+                const box = document.getElementById("groupPartnersListUI");
+                const badge = document.getElementById("groupPartnerBadge");
+                if (!box) return;
+                if (!Array.isArray(partners) || partners.length === 0) {
+                    box.textContent = "Chưa có thành viên trong phòng gọi nhóm.";
+                    if (badge) badge.textContent = "0 thành viên";
                     return;
                 }
+                if (badge) badge.textContent = `${partners.length} thành viên`;
+                box.innerHTML = partners
+                    .map((p) => {
+                        const stateNum = Number(p.state ?? p.callState ?? p.callstate ?? 0);
+                        const rawVideoState = p.videoState ?? p.videostate;
+                        const rawAudioState = p.audioState ?? p.audiostate;
+                        const camOn = rawVideoState !== undefined ? Number(rawVideoState) === 0 : false;
+                        const micOn = rawAudioState !== undefined ? Number(rawAudioState) === 0 : true;
+                        const stateLabel =
+                            stateNum === 1 || stateNum === 2 || stateNum === 3
+                                ? `<span style="color:var(--success)">● Đang trong phòng (${camOn ? "📷 Cam Bật" : "🚫 Cam Tắt"} • ${micOn ? "🎙️ Mic Bật" : "🔇 Mic Tắt"})</span>`
+                                : stateNum >= 4
+                                  ? '<span style="color:var(--danger)">● Đã rời phòng</span>'
+                                  : '<span style="color:var(--warning)">◌ Đang đổ chuông</span>';
+                        return `<div style="display:flex; justify-content:space-between; padding:4px 0; border-bottom:1px solid rgba(39,53,97,0.35);">
+                            <span><b style="color:#fff">${escapeHtml(p.name || p.id)}</b> <span style="opacity:0.75">(UID: ${escapeHtml(p.id)} ↔ VoIP: ${p.userId ?? "?"})</span></span>
+                            ${stateLabel}
+                        </div>`;
+                    })
+                    .join("");
+            }
+
+            async function startGroupCallUI(callType) {
+                resetMediaPipelineForNewCall();
+                const groupId = document.getElementById("groupIdInput").value.trim() || "8889990001112223334";
+                const partnersRaw = document.getElementById("groupPartnersInput").value.trim();
                 const partners = partnersRaw
                     .split(",")
                     .map((s) => s.trim())
                     .filter(Boolean);
-                updateStateUI("allocating", `Đang khởi tạo gọi nhóm ${groupId}...`);
+                if (partners.length === 0) {
+                    addLog("⚠️ Vui lòng tích chọn ít nhất 1 thành viên trong nhóm để mời gọi!", "warn");
+                    return;
+                }
+                const partnerInfo = partners.map((uid) => {
+                    const found = currentGroupMembers.find((m) => String(m.id) === uid);
+                    return {
+                        id: uid,
+                        name: found?.name || `Thành viên (${uid.slice(-4)})`,
+                        avatar: found?.avatar || "",
+                    };
+                });
+                const groupName = selectedGroupObj?.name || `Nhóm ${groupId.slice(-6)}`;
+                const groupAvatar = selectedGroupObj?.avatar || "";
+
+                updateStateUI("allocating", `Đang khởi tạo gọi nhóm "${groupName}" (${groupId})...`);
                 addLog(
-                    `👥 Bắt đầu gọi nhóm tới Group ${groupId} (callType=${callType}, thành viên=${partners.join(", ")})...`,
+                    `👥 Bắt đầu gọi nhóm tới "${groupName}" (Group ID: ${groupId}, callType=${callType}, mời ${partners.length} thành viên: ${partnerInfo.map((p) => p.name).join(", ")})...`,
                     "warn",
                 );
                 const res = await fetch("/api/group-call/start", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ groupId, partners, callType }),
+                    body: JSON.stringify({
+                        groupId,
+                        groupName,
+                        groupAvatar,
+                        partners,
+                        partnerInfo,
+                        callType,
+                    }),
                 }).then((r) => r.json());
                 if (!res.ok) {
                     updateStateUI("error", "Lỗi khởi tạo gọi nhóm");
@@ -1737,8 +2519,61 @@
                 if (callType === 6 && !isCamOn) await toggleCamera();
                 document.getElementById("paramsJson").textContent = JSON.stringify(res.params, null, 2);
                 document.getElementById("mRoutingToken").textContent = String(res.params.routingToken);
+                if (res.params.groupPartnerInfo) {
+                    renderGroupPartnersUI(res.params.groupPartnerInfo);
+                }
                 addLog(
-                    `✅ Đã khởi tạo phiên Gọi Nhóm thành công (callId=${res.params.callId}, rtp=${res.params.rtpAddress})!`,
+                    `✅ Đã khởi tạo phiên Gọi Nhóm "${groupName}" thành công (callId=${res.params.callId}, rtp=${res.params.rtpAddress}, localVoipUid=${res.params.fromId}, chế độ=${res.simulateLocal ? "Giả lập SFU" : "Zalo Thật"})!`,
+                    "ok",
+                );
+            }
+
+            async function joinGroupCallUI(callType = 6) {
+                resetMediaPipelineForNewCall();
+                const groupId = document.getElementById("groupIdInput").value.trim() || "8889990001112223334";
+                updateStateUI("allocating", `Đang tham gia phòng gọi nhóm ${groupId}...`);
+                const res = await fetch("/api/group-call/join", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ callId: 778899, hostCall: groupId, groupId, callType }),
+                }).then((r) => r.json());
+                if (!res.ok) {
+                    updateStateUI("error", "Lỗi tham gia gọi nhóm");
+                    addLog(`❌ Lỗi tham gia gọi nhóm: ${res.error}`, "err");
+                    return;
+                }
+                document.getElementById("paramsJson").textContent = JSON.stringify(res.params, null, 2);
+                document.getElementById("mRoutingToken").textContent = String(res.params.routingToken);
+                addLog(
+                    `✅ Đã tham gia phòng Gọi Nhóm đang hoạt động (callId=${res.params.callId}, rtp=${res.params.rtpAddress})!`,
+                    "ok",
+                );
+            }
+
+            async function simulateGroupMemberEvent(action) {
+                simMemberToggleFlag = !simMemberToggleFlag;
+                const payload =
+                    action === "toggle_media"
+                        ? {
+                              action,
+                              videoState: simMemberToggleFlag ? 0 : 1,
+                              audioState: simMemberToggleFlag ? 0 : 1,
+                          }
+                        : { action };
+                const res = await fetch("/api/group-call/simulate-member-event", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload),
+                }).then((r) => r.json());
+                if (!res.ok) {
+                    addLog(`⚠️ Không thể giả lập sự kiện thành viên nhóm: ${res.error}`, "warn");
+                    return;
+                }
+                if (res.groupPartnerInfo) {
+                    renderGroupPartnersUI(res.groupPartnerInfo);
+                }
+                addLog(
+                    `👥 [Group Sim ${action}] voipUid=${res.voipUid} -> partnerId=${res.partnerId || "?"} (state=${res.state})`,
                     "ok",
                 );
             }
@@ -1828,12 +2663,307 @@
                 }
             }
 
+            function renderFriendsListUI(friends) {
+                const fBox = document.getElementById("friendsList");
+                if (!fBox) return;
+                if (friends && friends.length) {
+                    fBox.innerHTML = friends
+                        .map(
+                            (f) =>
+                                `<div style="padding:6px 8px; border-bottom:1px solid rgba(39,53,97,0.4); cursor:pointer; display:flex; justify-content:space-between;" onclick="selectPreset('${f.userId}', '${escapeHtml(f.displayName)}')">
+                  <span style="color:#fff; font-weight:600;">${escapeHtml(f.displayName)}</span>
+                  <span>${f.userId}</span>
+                </div>`,
+                        )
+                        .join("");
+                } else {
+                    fBox.innerHTML = `<div style="padding:8px; color:var(--muted); font-size:12px;">Chưa có danh bạ (đăng nhập Zalo thật để tải danh bạ tự động)</div>`;
+                }
+            }
+
+            function renderAuthStatusUI(info) {
+                const pill = document.getElementById("sessionStatusPill");
+                const banner = document.getElementById("expiredSessionBanner");
+                const reasonEl = document.getElementById("expiredSessionReason");
+                const accountInfo = document.getElementById("accountInfo");
+
+                if (info.isOfflineSimulation) {
+                    if (pill) {
+                        pill.textContent = "🟠 GIẢ LẬP OFFLINE (MẤT PHIÊN — BẤM ĐĂNG NHẬP)";
+                        pill.style.background = "rgba(245, 166, 35, 0.2)";
+                        pill.style.color = "var(--warning)";
+                        pill.style.borderColor = "rgba(245, 166, 35, 0.5)";
+                    }
+                    if (banner) {
+                        banner.style.display = "flex";
+                    }
+                    if (reasonEl && info.authErrorReason) {
+                        reasonEl.textContent = `${info.authErrorReason}. Bạn có thể bấm "Quét Mã QR Đăng Nhập Mới" để lấy phiên thật hoặc tiếp tục test ở chế độ Giả lập.`;
+                    }
+                    if (accountInfo) {
+                        accountInfo.textContent = `Chế độ: GIẢ LẬP CỤC BỘ (UID giả lập: ${info.uid}) • Lý do: ${info.authErrorReason || "Chưa đăng nhập"}`;
+                    }
+                } else {
+                    if (pill) {
+                        pill.textContent = `🟢 ĐÃ ĐĂNG NHẬP ZALO THẬT (UID: ${info.uid})`;
+                        pill.style.background = "rgba(22, 199, 132, 0.18)";
+                        pill.style.color = "var(--success)";
+                        pill.style.borderColor = "rgba(22, 199, 132, 0.45)";
+                    }
+                    if (banner) {
+                        banner.style.display = "none";
+                    }
+                    if (accountInfo) {
+                        accountInfo.textContent = `Đã đăng nhập Zalo thật UID: ${info.uid} • VoiceCall Service: ${info.voiceCallService} • Lắng nghe cuộc gọi đến: BẬT`;
+                    }
+                }
+                if (Array.isArray(info.friends)) {
+                    const fCount = document.getElementById("friendsCountText");
+                    if (fCount) fCount.textContent = String(info.friends.length);
+                    renderFriendsListUI(info.friends);
+                }
+                if (Array.isArray(info.groups)) {
+                    renderGroupsPickerUI(info.groups);
+                }
+                if (Array.isArray(info.zplusAccounts) && info.zplusAccounts.length > 0) {
+                    const btnList = document.getElementById("zplusAccountsBtnList");
+                    if (btnList) {
+                        btnList.innerHTML = info.zplusAccounts
+                            .map(
+                                (a) =>
+                                    `<button class="btn-success" style="padding:5px 10px; font-size:11px" onclick="syncFromZPlusDesktop('${escapeHtml(a.accountId)}')">⚡ Dùng ${escapeHtml(a.displayName)} (${escapeHtml(a.accountId.slice(-4))})</button>`,
+                            )
+                            .join("");
+                    }
+                }
+            }
+
+            async function syncFromZPlusDesktop(accountId = "") {
+                addLog(
+                    `⚡ Đang đồng bộ phiên Zalo sống từ ZPlus Desktop ${accountId ? `(${accountId})` : ""}...`,
+                    "info",
+                );
+                try {
+                    const res = await fetch("/api/auth/sync-zplus-desktop", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ accountId }),
+                    }).then((r) => r.json());
+                    if (res.ok) {
+                        addLog(
+                            `✅ Đã đồng bộ & đăng nhập thành công tài khoản "${res.displayName}" (UID: ${res.uid}) từ ZPlus Desktop!`,
+                            "ok",
+                        );
+                        closeAuthModal();
+                    } else {
+                        addLog(`⚠️ Không thể đồng bộ từ ZPlus Desktop: ${res.error}`, "warn");
+                    }
+                } catch (err) {
+                    addLog(`❌ Lỗi đồng bộ ZPlus Desktop: ${err.message || String(err)}`, "err");
+                }
+            }
+
+            function openAuthModal(tab = "qr") {
+                const modal = document.getElementById("authModal");
+                if (modal) modal.style.display = "flex";
+                switchAuthTab(tab);
+                if (tab === "qr") {
+                    startQrLogin();
+                } else if (tab === "json") {
+                    exportCurrentSession();
+                }
+            }
+
+            function closeAuthModal() {
+                const modal = document.getElementById("authModal");
+                if (modal) modal.style.display = "none";
+            }
+
+            function switchAuthTab(tab) {
+                const tabQr = document.getElementById("authTabQr");
+                const tabJson = document.getElementById("authTabJson");
+                const btnQr = document.getElementById("tabBtnQr");
+                const btnJson = document.getElementById("tabBtnJson");
+                if (tab === "qr") {
+                    tabQr.style.display = "block";
+                    tabJson.style.display = "none";
+                    btnQr.className = "btn-primary";
+                    btnJson.className = "btn-secondary";
+                } else {
+                    tabQr.style.display = "none";
+                    tabJson.style.display = "block";
+                    btnQr.className = "btn-secondary";
+                    btnJson.className = "btn-primary";
+                }
+            }
+
+            function renderQrStateUI(state) {
+                if (!state) return;
+                const statusEl = document.getElementById("qrStatusText");
+                const imgEl = document.getElementById("qrCodeImg");
+                const placeholderEl = document.getElementById("qrPlaceholder");
+                const scannedBox = document.getElementById("qrScannedUserBox");
+
+                if (state.status === "generating") {
+                    statusEl.textContent = "⏳ Đang khởi tạo mã QR từ máy chủ Zalo...";
+                    statusEl.style.color = "var(--warning)";
+                    imgEl.style.display = "none";
+                    placeholderEl.style.display = "inline";
+                    placeholderEl.textContent = "Đang tải QR...";
+                    scannedBox.style.display = "none";
+                } else if (state.status === "waiting_scan") {
+                    statusEl.textContent = "📱 Mở ứng dụng Zalo trên điện thoại và quét mã QR bên dưới:";
+                    statusEl.style.color = "var(--success)";
+                    if (state.qrImage) {
+                        imgEl.src = state.qrImage;
+                        imgEl.style.display = "block";
+                        placeholderEl.style.display = "none";
+                    }
+                    scannedBox.style.display = "none";
+                } else if (state.status === "scanned") {
+                    statusEl.textContent = "📲 Đã quét mã QR! Vui lòng bấm [Đăng nhập] trên điện thoại của bạn...";
+                    statusEl.style.color = "var(--success)";
+                    if (state.scannedUser) {
+                        scannedBox.style.display = "block";
+                        scannedBox.innerHTML = `👤 Đã nhận diện tài khoản: <b>${escapeHtml(state.scannedUser.displayName || "Người dùng Zalo")}</b> — Đang chờ xác nhận trên điện thoại...`;
+                    }
+                } else if (state.status === "authenticated") {
+                    statusEl.textContent = "✅ Đăng nhập Zalo thật thành công! Đã lưu vào test/credentials.json";
+                    statusEl.style.color = "var(--success)";
+                    scannedBox.style.display = "block";
+                    scannedBox.innerHTML = `🎉 Đã kích hoạt phiên Zalo thật và bật kênh lắng nghe cuộc gọi đến (WS 601/604)!`;
+                    setTimeout(() => closeAuthModal(), 1200);
+                } else if (state.status === "expired" || state.status === "declined" || state.status === "error") {
+                    statusEl.textContent = `❌ ${state.error || "Phiên QR đã kết thúc"}`;
+                    statusEl.style.color = "var(--danger)";
+                } else {
+                    statusEl.textContent = 'Bấm "Tạo Mã QR Mới" để lấy mã QR đăng nhập trực tiếp từ máy chủ Zalo';
+                    statusEl.style.color = "var(--muted)";
+                    imgEl.style.display = "none";
+                    placeholderEl.style.display = "inline";
+                    placeholderEl.textContent = "Chưa có mã QR";
+                    scannedBox.style.display = "none";
+                }
+            }
+
+            async function startQrLogin() {
+                renderQrStateUI({ status: "generating" });
+                addLog("🔑 Đang yêu cầu tạo mã QR đăng nhập Zalo mới...", "info");
+                try {
+                    const resp = await fetch("/api/auth/qr/start", { method: "POST" });
+                    if (!resp.ok) {
+                        const text = await resp.text();
+                        renderQrStateUI({
+                            status: "error",
+                            error: `Lỗi HTTP ${resp.status}: ${text || "Server chưa được khởi động lại"}`,
+                        });
+                        return;
+                    }
+                    const res = await resp.json();
+                    if (res.ok && res.state) {
+                        renderQrStateUI(res.state);
+                    } else {
+                        renderQrStateUI({
+                            status: "error",
+                            error: res.error || "Không lấy được mã QR từ Zalo",
+                        });
+                    }
+                } catch (err) {
+                    renderQrStateUI({
+                        status: "error",
+                        error: err && err.message ? err.message : String(err),
+                    });
+                }
+            }
+
+            async function cancelQrLogin() {
+                await fetch("/api/auth/qr/cancel", { method: "POST" }).then((r) => r.json());
+                renderQrStateUI({ status: "idle" });
+                addLog("⏹️ Đã huỷ yêu cầu đăng nhập QR", "warn");
+            }
+
+            async function loginWithJson() {
+                const raw = document.getElementById("credentialsJsonInput").value.trim();
+                const fb = document.getElementById("jsonAuthFeedback");
+                if (!raw) {
+                    fb.textContent = "❌ Vui lòng dán chuỗi JSON credentials (imei, cookie, userAgent)";
+                    fb.style.color = "var(--danger)";
+                    return;
+                }
+                fb.textContent = "⏳ Đang xác thực phiên đăng nhập với máy chủ Zalo...";
+                fb.style.color = "var(--warning)";
+                const res = await fetch("/api/auth/login-credentials", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ credentialsJson: raw }),
+                }).then((r) => r.json());
+                if (res.ok) {
+                    fb.textContent = `✅ Đăng nhập thành công UID: ${res.uid}! Đã lưu vào test/credentials.json`;
+                    fb.style.color = "var(--success)";
+                    addLog(`✅ Đã đăng nhập bằng JSON Credentials (UID: ${res.uid})`, "ok");
+                    setTimeout(() => closeAuthModal(), 900);
+                } else {
+                    fb.textContent = `❌ Đăng nhập thất bại: ${res.error}`;
+                    fb.style.color = "var(--danger)";
+                    addLog(`❌ Đăng nhập bằng JSON Credentials thất bại: ${res.error}`, "err");
+                }
+            }
+
+            async function reloadDiskCredentials() {
+                addLog("🔄 Đang thử nạp lại phiên từ test/credentials.json...", "info");
+                const res = await fetch("/api/auth/login-credentials", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ reloadFromDisk: true }),
+                }).then((r) => r.json());
+                if (res.ok) {
+                    addLog(`✅ Đã khôi phục phiên Zalo thật từ test/credentials.json (UID: ${res.uid})`, "ok");
+                } else {
+                    addLog(
+                        `⚠️ Không thể đăng nhập từ test/credentials.json (${res.error}). Hãy bấm "Đăng Nhập QR / Đổi Phiên"!`,
+                        "warn",
+                    );
+                }
+            }
+
+            async function exportCurrentSession() {
+                const fb = document.getElementById("jsonAuthFeedback");
+                const res = await fetch("/api/auth/export-session").then((r) => r.json());
+                if (res.ok && res.session) {
+                    document.getElementById("credentialsJsonInput").value = JSON.stringify(res.session, null, 2);
+                    fb.textContent = `📤 Đã nạp nội dung phiên (${res.source === "live" ? "Phiên đang hoạt động" : "File test/credentials.json trên đĩa"})`;
+                    fb.style.color = "var(--success)";
+                } else {
+                    fb.textContent = `⚠️ ${res.error || "Chưa có file phiên"}`;
+                    fb.style.color = "var(--warning)";
+                }
+            }
+
+            async function logoutSession(clearCredentialsFile = false) {
+                const res = await fetch("/api/auth/logout", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ clearCredentialsFile }),
+                }).then((r) => r.json());
+                if (res.ok) {
+                    addLog(
+                        clearCredentialsFile
+                            ? "🚪 Đã đăng xuất và xoá file test/credentials.json (Đang ở chế độ Giả lập Offline)"
+                            : "🚪 Đã chủ động đăng xuất sang chế độ Giả lập Offline",
+                        "warn",
+                    );
+                    closeAuthModal();
+                }
+            }
+
             async function initStudio() {
                 connectMediaWs();
                 const info = await fetch("/api/status").then((r) => r.json());
                 if (info.ok) {
-                    document.getElementById("accountInfo").textContent =
-                        `Đã đăng nhập UID: ${info.uid} • VoiceCall Service: ${info.voiceCallService} • Lắng nghe cuộc gọi đến: BẬT`;
+                    renderAuthStatusUI(info);
+                    if (info.qrLoginState) {
+                        renderQrStateUI(info.qrLoginState);
+                    }
                     if (info.lastVerifiedProof) {
                         document.getElementById("paramsJson").textContent = JSON.stringify(
                             info.lastVerifiedProof,
@@ -1856,24 +2986,22 @@
                             raw: info.pendingIncomingCall.raw,
                         });
                     }
-                    const fBox = document.getElementById("friendsList");
-                    if (info.friends && info.friends.length) {
-                        fBox.innerHTML = info.friends
-                            .map(
-                                (f) =>
-                                    `<div style="padding:6px 8px; border-bottom:1px solid rgba(39,53,97,0.4); cursor:pointer; display:flex; justify-content:space-between;" onclick="selectPreset('${f.userId}', '${escapeHtml(f.displayName)}')">
-                  <span style="color:#fff; font-weight:600;">${escapeHtml(f.displayName)}</span>
-                  <span>${f.userId}</span>
-                </div>`,
-                            )
-                            .join("");
-                    }
                 }
 
                 const es = new EventSource("/api/events");
                 es.onmessage = (ev) => {
                     const data = JSON.parse(ev.data);
-                    if (data.type === "state") {
+                    if (data.type === "auth_status") {
+                        renderAuthStatusUI(data);
+                        addLog(
+                            data.isOfflineSimulation
+                                ? `🟠 [Auth Status] Đang ở chế độ Giả lập Offline (${data.authErrorReason || "Đã đăng xuất"})`
+                                : `🟢 [Auth Status] Đã đăng nhập Zalo thật thành công (UID: ${data.uid})`,
+                            data.isOfflineSimulation ? "warn" : "ok",
+                        );
+                    } else if (data.type === "qr_login") {
+                        renderQrStateUI(data.state);
+                    } else if (data.type === "state") {
                         updateStateUI(data.state, `Trạng thái phiên: ${data.state.toUpperCase()}`);
                         addLog(`🔔 [State] -> ${data.state.toUpperCase()}`, data.state === "active" ? "ok" : "warn");
                         if (data.state === "active") {
@@ -1932,14 +3060,34 @@
                             clearIncomingCallUI("Đối phương đã huỷ / kết thúc cuộc gọi đến");
                             updateStateUI("ended", "Cuộc gọi đến đã kết thúc");
                         }
+                    } else if (data.type === "group_partner_sync") {
+                        renderGroupPartnersUI(data.partners || []);
+                        addLog(
+                            `👥 [Group Partner Sync] Đã đồng bộ ${Array.isArray(data.partners) ? data.partners.length : 0} thành viên nhóm`,
+                            "ok",
+                        );
+                    } else if (data.type === "video_annexb_meta") {
+                        const labelEl = document.getElementById("remoteVideoOverlayLabel");
+                        if (labelEl && (data.partnerId || data.ssrc)) {
+                            labelEl.textContent = `📱 Video Nhận Về (${data.partnerId ? `UID: ${data.partnerId}` : ""}${data.ssrc ? ` • VoIP: ${data.ssrc}` : ""})`;
+                        }
+                        addLog(
+                            `🎬 [Group Video Frame] ssrc/voipUid=${data.ssrc} -> partnerId=${data.partnerId || "?"} keyframe=${data.isKeyframe} (${data.byteLength}B)`,
+                            "ok",
+                        );
                     } else if (data.type === "media_state_change") {
                         const ms = data.mediaState || {};
                         if (ms.reason === 2 || ms.reason === 3) {
                             forceNextKeyframe = true;
                             requestPliKeyframe();
                         }
+                        const who = ms.isLocal
+                            ? "Local"
+                            : ms.partnerId
+                              ? `Thành viên ${ms.partnerId} (voip=${ms.voipUid || "-"})`
+                              : "Đối phương";
                         addLog(
-                            `🎛️ [Media State] ${ms.isLocal ? "Local" : "Đối phương"}: act=${ms.rawAct || "update"} cam=${ms.isCameraOn ?? "-"} micMuted=${ms.isMicMuted ?? "-"} hold=${ms.isHold ?? "-"}`,
+                            `🎛️ [Media State] ${who}: act=${ms.rawAct || "update"} cam=${ms.isCameraOn ?? "-"} micMuted=${ms.isMicMuted ?? "-"} hold=${ms.isHold ?? "-"}`,
                             "ok",
                         );
                     } else if (data.type === "rtp_stats") {

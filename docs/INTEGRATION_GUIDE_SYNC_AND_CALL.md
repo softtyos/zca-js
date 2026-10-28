@@ -280,12 +280,40 @@ console.log("Decrypted mapping:", decrypted.data ?? decrypted.gids);
 
 ---
 
-## 6. Tích hợp Gọi Thoại (`CallType.Audio`) & Gọi Video (`CallType.Video`)
+## 6. Tích hợp Gọi Thoại (`CallType.Audio`) & Gọi Video (`CallType.Video` / `GroupVideo`)
 
-Thư viện hỗ trợ khởi tạo cuộc gọi 2 bước chuẩn giao thức C++ `ZaloCall` của Zalo PC:
+> [!TIP]
+> Để tích hợp **Đàm thoại & Video Call 2 chiều thời gian thực (1-1 & Gọi Nhóm Zavi SFU)** với `ZaloRtcSession` (`Opus 16kHz` + `H.264 Annex-B FU-A`), xem tài liệu chuyên sâu tại **[`docs/guide/call-engine.md`](./guide/call-engine.md)**.
+
+Thư viện hỗ trợ cả **động cơ truyền tải 2 chiều `ZaloRtcSession`** (`api.call.createRtcSession()`) lẫn bộ **28 API Báo hiệu (`zpw_type = 24`)** chuẩn giao thức `ZaloCall`:
 
 - **`CallType.Audio = 1`**: Cuộc gọi thoại 1-1.
 - **`CallType.Video = 3`**: Cuộc gọi video 1-1 (tự động đính kèm cấu hình codec H.264 `payload: 97` trong `extendData`).
+- **`CallType.GroupAudio = 1` / `CallType.GroupVideo = 2`**: Cuộc gọi nhóm qua máy chủ Zavi SFU (`audioState = 0` là Mic Bật / `1` là Mic Tắt; `videoState = 0` là Cam Bật / `1` là Cam Tắt).
+
+### 6.0. Gọi 1-1 & Gọi Nhóm 2 Chiều với `ZaloRtcSession` (Khuyên dùng)
+
+```ts
+import { CallType } from "@softtynet/zca-js";
+
+const session = api.call.createRtcSession({ autoAttachListener: true });
+
+// Nhận âm thanh Opus 16kHz và khung hình H.264 Annex-B từ đối phương / thành viên nhóm
+session.on("audio_frame", (frame) => {
+    // frame.payload: Buffer (Opus 16kHz Mono), frame.ssrc: number
+});
+session.on("video_annexb_frame", (frame) => {
+    // frame.annexB: Buffer (00 00 00 01 + SPS/PPS/IDR/P-Slice), frame.partnerId?: string
+});
+
+// 1. Gọi Video 1-1 hai chiều
+await session.startOutgoingCall("5249661060655759359", { callType: CallType.Video });
+
+// 2. Hoặc tạo Cuộc Gọi Nhóm Video 2 chiều
+await session.startGroupCall("1493339370763911324", ["5249661060655759359"], {
+    callType: CallType.GroupVideo,
+});
+```
 
 ### 6.1. Gọi đi (Đổ chuông Thoại hoặc Video) & Tự động huỷ khi không bắt máy
 

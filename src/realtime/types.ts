@@ -40,6 +40,48 @@ export type Voice2TextEvent = {
     data: Voice2TextEventData;
 };
 
+export type TodoEvent = {
+    act: string;
+    act_type: "personal_board";
+    data: unknown;
+};
+
+export type PollEvent = {
+    act: string;
+    act_type: "poll";
+    data: unknown;
+};
+
+export type EmojiStatusEvent = {
+    act: string;
+    act_type: "emoji_status";
+    data: unknown;
+};
+
+export type TranslateEvent = {
+    act: string;
+    act_type: "translate";
+    data: unknown;
+};
+
+export type OnlineStatusEvent = {
+    act: string;
+    act_type: "profile";
+    data: unknown;
+};
+
+export type ControlSyncEvent = {
+    act: string;
+    act_type: string;
+    data: unknown;
+};
+
+export type ZCloudEvent = {
+    cmd: 620 | 621 | 623;
+    type: "push" | "need_verify" | "done_migrate";
+    data: unknown;
+};
+
 export type WsPayload<T = Record<string, unknown>> = {
     version: number;
     cmd: number;
@@ -81,6 +123,13 @@ export interface ListenerEvents {
     call_event: [data: CallEvent];
     oa_event: [data: OAEvent];
     voice2text_event: [data: Voice2TextEvent];
+    todo_event: [data: TodoEvent];
+    poll_event: [data: PollEvent];
+    emoji_status_event: [data: EmojiStatusEvent];
+    translate_event: [data: TranslateEvent];
+    online_status_event: [data: OnlineStatusEvent];
+    control_sync_event: [data: ControlSyncEvent];
+    zcloud_event: [data: ZCloudEvent];
     cipher_key: [key: string];
     ping: [];
     pong: [];

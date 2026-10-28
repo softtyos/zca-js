@@ -1,13 +1,13 @@
 ---
 title: "Xác thực & Phiên (Auth) (api.auth) - 14 APIs"
-description: "Quản lý thiết bị đăng nhập, xuất/nhập phiên (exportSession), mã QR, Keep-Alive, giải mã GID (Global ID) và Noised ID. Tra cứu chi tiết 14 phương thức thuộc phân hệ api.auth trong bộ SDK @softtynet/zca-js."
+description: "Quản lý thiết bị đăng nhập, xuất/nhập phiên (exportSession), mã QR, Keep-Alive, đổi mật khẩu, E2EE và giải mã GID (Global ID) / Noised ID. Tra cứu chi tiết 14 phương thức thuộc phân hệ api.auth trong bộ SDK @softtynet/zca-js."
 ---
 
 # 🔐 Xác thực & Phiên (Auth)
 
 > Namespace: `api.auth` (hoặc gọi trực tiếp `api.<methodName>`) — **14 API nguyên bản**
 
-Quản lý thiết bị đăng nhập, xuất/nhập phiên (exportSession), mã QR, Keep-Alive, giải mã GID (Global ID) và Noised ID.
+Quản lý thiết bị đăng nhập, xuất/nhập phiên (exportSession), mã QR, Keep-Alive, đổi mật khẩu, E2EE và giải mã GID (Global ID) / Noised ID.
 
 ## Danh sách nhanh
 
@@ -22,7 +22,7 @@ Quản lý thiết bị đăng nhập, xuất/nhập phiên (exportSession), mã
 | [`getNoisedIds`](#getnoisedids)             | `GET`  | `/api/znoise`                                                 | Chuyển đổi danh sách UID cá nhân (`fids`) và GID nhóm (`gids`) dạng số thuần (từ SQLite ZDB4.0 mobile) sang định dạng Noised ID 19 chữ số dùng trên Zalo Web/PC (`getNoisedUids`, command `12390`). Tự động fallback sang `https://zwid.api.zalo.me/api/znoise` nếu profile domain trả về lỗi. |
 | [`getOwnId`](#getownid)                     | `GET`  | `Internal`                                                    | API `getOwnId` thuộc phân hệ `auth`.                                                                                                                                                                                                                                                           |
 | [`getQR`](#getqr)                           | `POST` | `/api/friend/mget-qr`                                         | Lấy mã QR của danh sách người dùng theo UID.                                                                                                                                                                                                                                                   |
-| [`keepAlive`](#keepalive)                   | `GET`  | `Internal`                                                    | Gửi tín hiệu duy trì phiên kết nối HTTP tới máy chủ Chat (KeepAlive - command 11770)                                                                                                                                                                                                           |
+| [`keepAlive`](#keepalive)                   | `GET`  | `/keepalive`                                                  | Gửi tín hiệu duy trì phiên kết nối HTTP tới máy chủ Chat (KeepAlive - command 11770)                                                                                                                                                                                                           |
 | [`lostFocus`](#lostfocus)                   | `POST` | `/api/social/profile/changefgtobg`                            | Gửi tín hiệu thông báo ứng dụng chuyển sang chế độ chạy nền (Background).                                                                                                                                                                                                                      |
 | [`scanURL`](#scanurl)                       | `POST` | `/api/message/scanurl`                                        | Quét và kiểm tra độ an toàn của đường dẫn URL thông qua bộ lọc bảo mật Zalo.                                                                                                                                                                                                                   |
 | [`updateActiveStatus`](#updateactivestatus) | `GET`  | `/api/social/profile/ping`<br/>`/api/social/profile/deactive` | Cập nhật trạng thái hoạt động (Online / Offline / Ping) của tài khoản.                                                                                                                                                                                                                         |
@@ -248,7 +248,7 @@ export type GetQRResponse = {
 
 Gửi tín hiệu duy trì phiên kết nối HTTP tới máy chủ Chat (KeepAlive - command 11770)
 
-<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">Hàm tiện ích nội bộ</span></div>
+<div class="zca-api-meta"><span class="zca-badge-method get">GET</span><span class="zca-endpoint-pill">api.auth</span><span class="zca-endpoint-pill">/keepalive</span></div>
 
 ```ts
 // Gọi theo phân hệ (Domain Namespace):

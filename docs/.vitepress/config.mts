@@ -7,7 +7,7 @@ export default defineConfig({
     title: "@softtynet/zca-js",
     titleTemplate: ":title | Softtynet Zalo SDK",
     description:
-        "Tài liệu chính thức bộ SDK Zalo API (@softtynet/zca-js v2.3.7) phát triển bởi Softtynet Co., Ltd. dành cho Node.js, TypeScript và Bun (256 APIs, 12 Domains).",
+        "Tài liệu chính thức bộ SDK Zalo API (@softtynet/zca-js v2.3.11) phát triển bởi Softtynet Co., Ltd. dành cho Node.js, TypeScript và Bun (333 APIs, 12 Domains).",
     base: process.env.VITEPRESS_BASE || "/",
     ignoreDeadLinks: true,
     lastUpdated: true,
@@ -62,7 +62,7 @@ export default defineConfig({
         [
             "script",
             { type: "application/ld+json" },
-            '{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"@softtynet/zca-js","version":"2.3.7","description":"Bộ thư viện SDK Zalo API hiện đại dành cho Node.js, TypeScript và Bun với 256 API nguyên bản trên 12 Domains, phát triển bởi Softtynet Co., Ltd.","programmingLanguage":["TypeScript","JavaScript"],"runtimePlatform":["Node.js","Bun"],"codeRepository":"https://github.com/softtyos/zca-js","url":"https://softtyos.github.io/zca-js-docs/","license":"https://opensource.org/licenses/MIT","author":{"@type":"Organization","name":"Softtynet Co., Ltd.","url":"https://github.com/softtyos"},"keywords":["zalo api","zca-js","@softtynet/zca-js","softtynet","zalo sdk nodejs","zalo bot typescript","zalo pc protocol","zalo cloud message"]}',
+            '{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"@softtynet/zca-js","version":"2.3.11","description":"Bộ thư viện SDK Zalo API hiện đại dành cho Node.js, TypeScript và Bun với 333 API nguyên bản trên 12 Domains, phát triển bởi Softtynet Co., Ltd.","programmingLanguage":["TypeScript","JavaScript"],"runtimePlatform":["Node.js","Bun"],"codeRepository":"https://github.com/softtyos/zca-js","url":"https://softtyos.github.io/zca-js-docs/","license":"https://opensource.org/licenses/MIT","author":{"@type":"Organization","name":"Softtynet Co., Ltd.","url":"https://github.com/softtyos"},"keywords":["zalo api","zca-js","@softtynet/zca-js","softtynet","zalo sdk nodejs","zalo bot typescript","zalo pc protocol","zalo cloud message"]}',
         ],
     ],
     transformPageData(pageData) {
@@ -94,7 +94,7 @@ export default defineConfig({
         nav: [
             { text: "Trang chủ", link: "/" },
             { text: "Hướng dẫn & Thực chiến", link: "/guide/getting-started" },
-            { text: "⚡ API Explorer (256)", link: "/api/" },
+            { text: "⚡ API Explorer (333)", link: "/api/" },
             { text: "📦 Models & Enums", link: "/api/models" },
             { text: "🤖 llms.txt", link: "https://softtyos.github.io/zca-js-docs/llms.txt" },
         ],
@@ -111,6 +111,7 @@ export default defineConfig({
                 items: [
                     { text: "Cài đặt & Bắt đầu nhanh", link: "/guide/getting-started" },
                     { text: "🛠️ Kịch bản Thực chiến (Cookbook)", link: "/guide/cookbook" },
+                    { text: "📞 Gọi Thoại, Video & Gọi Nhóm 2 Chiều", link: "/guide/call-engine" },
                     { text: "Kiến trúc 12 Domains & 64-bit ID", link: "/guide/architecture" },
                     { text: "Lắng nghe WebSocket (Listener)", link: "/guide/listeners" },
                 ],
@@ -118,7 +119,7 @@ export default defineConfig({
             {
                 text: "⚡ Tra cứu API & Models",
                 items: [
-                    { text: "🔍 API Explorer (256 APIs)", link: "/api/" },
+                    { text: "🔍 API Explorer (333 APIs)", link: "/api/" },
                     { text: "📦 Models, Enums & Errors", link: "/api/models" },
                 ],
             },
@@ -127,19 +128,19 @@ export default defineConfig({
                 collapsed: false,
                 items: [
                     {
-                        text: "💬 Tin nhắn & Hội thoại (Chat) (41)",
+                        text: "💬 Tin nhắn, Hội thoại & Dịch AI (Chat) (52)",
                         link: "/api/chat",
                     },
                     {
-                        text: "👥 Nhóm & Cộng đồng (Group) (44)",
+                        text: "👥 Nhóm & Cộng đồng (Group) (46)",
                         link: "/api/group",
                     },
                     {
-                        text: "🤝 Bạn bè & Danh bạ (Friend) (33)",
+                        text: "🤝 Bạn bè & Danh bạ (Friend) (37)",
                         link: "/api/friend",
                     },
                     {
-                        text: "🪪 Hồ sơ cá nhân (Profile) (16)",
+                        text: "🪪 Hồ sơ cá nhân & Emoji Status (Profile) (22)",
                         link: "/api/profile",
                     },
                 ],
@@ -149,11 +150,11 @@ export default defineConfig({
                 collapsed: false,
                 items: [
                     {
-                        text: "🔄 Đồng bộ Mobile ZDB 4.0 (Sync) (5)",
+                        text: "🔄 Đồng bộ Mobile ZDB 4.0 (Sync) (10)",
                         link: "/api/sync",
                     },
                     {
-                        text: "☁️ Đám mây ZCloud & ZFamily (ZCloud) (9)",
+                        text: "☁️ Đám mây ZCloud & ZFamily (ZCloud) (16)",
                         link: "/api/zcloud",
                     },
                     {
@@ -175,15 +176,15 @@ export default defineConfig({
                         link: "/api/auth",
                     },
                     {
-                        text: "✨ Nhãn dán & Biểu cảm (Sticker) (10)",
+                        text: "✨ Nhãn dán, GIF Giphy/Guggy & Hiệu ứng (Sticker) (24)",
                         link: "/api/sticker",
                     },
                     {
-                        text: "📌 Bảng tin, Ghi chú, Bình chọn & Lịch hẹn (Board) (16)",
+                        text: "📌 Bảng tin, Bình chọn, Lịch hẹn & Zalo To-Do (Board) (38)",
                         link: "/api/board",
                     },
                     {
-                        text: "💼 Zalo Business, OA, Nhãn & Danh mục (Business) (30)",
+                        text: "💼 Zalo Business, OA, Nhãn CRM & Danh mục (Business) (36)",
                         link: "/api/business",
                     },
                 ],

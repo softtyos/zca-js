@@ -509,6 +509,78 @@ export class Listener extends EventEmitter<ListenerEvents> {
         });
     }
 
+    /**
+     * Gửi tín hiệu giữ trạng thái hoạt động (`PING_ACTIVE`, `cmd 2, subCmd 2`) qua WebSocket.
+     *
+     * @param status Trạng thái hoạt động (`1` = đang hoạt động, `0` = nền)
+     */
+    public sendPingActive(status: number = 1) {
+        this.sendWs(
+            {
+                version: 1,
+                cmd: 2,
+                subCmd: 2,
+                data: {
+                    eventId: Date.now(),
+                    status,
+                },
+            },
+            false,
+        );
+    }
+
+    /**
+     * Yêu cầu trạng thái Đã nhận / Đã xem mới nhất qua WebSocket (`GET_LAST_DELIVER_SEEN`, `cmd 577`).
+     */
+    public requestLastDeliverSeen() {
+        this.sendWs({
+            version: 1,
+            cmd: 577,
+            subCmd: 0,
+            data: {},
+        });
+    }
+
+    /**
+     * Yêu cầu thời điểm xem cuối cùng của các tab hội thoại phụ qua WebSocket (`GET_LAST_SEEN_CHAT_CONTAINER`, `cmd 578`).
+     *
+     * @param subtabs Danh sách ID tab phụ cần truy vấn
+     */
+    public requestLastSeenSubChatTab(subtabs: unknown[]) {
+        this.sendWs({
+            version: 1,
+            cmd: 578,
+            subCmd: 0,
+            data: {
+                data: { subtabs },
+            },
+        });
+    }
+
+    /**
+     * Yêu cầu thông tin biểu cảm (Reaction) đã xem cuối cùng qua WebSocket (`CTRL_GET_LAST_SEEN_REACT`, `cmd 614`).
+     */
+    public requestLastSeenReaction() {
+        this.sendWs({
+            version: 1,
+            cmd: 614,
+            subCmd: 0,
+            data: {},
+        });
+    }
+
+    /**
+     * Gửi tín hiệu đánh thức thiết bị di động qua WebSocket (`REQUEST_MOBILE_WAKE_UP`, `cmd 592`) để phục vụ đồng bộ dữ liệu.
+     */
+    public requestMobileWakeUp() {
+        this.sendWs({
+            version: 1,
+            cmd: 592,
+            subCmd: 0,
+            data: {},
+        });
+    }
+
     private reset() {
         this.ws = null;
         this.cipherKey = undefined;
