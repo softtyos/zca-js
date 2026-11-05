@@ -6,7 +6,7 @@
   <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License: MIT" /></a>
 </p>
 
-**`@softtynet/zca-js`** là bộ thư viện SDK kết nối và tương tác Zalo dành cho **Node.js**, **TypeScript** và **Bun**, được phát triển và duy trì bởi **Softtynet Co., Ltd.** dựa trên phân tích giao thức Zalo PC `26.7.10`.
+**`@softtynet/zca-js`** là bộ thư viện SDK kết nối và tương tác Zalo dành cho **Node.js**, **TypeScript** và **Bun**, dựa trên phân tích giao thức Zalo PC `26.7.10`.
 
 - **Trang tài liệu chính thức (Documentation)**: [**https://softtyos.github.io/zca-js-docs/**](https://softtyos.github.io/zca-js-docs/)
 
@@ -274,7 +274,7 @@ npm run test:oa-studio
 
 ## Nguồn gốc & Ghi nhận (Credits)
 
-Phiên bản này được phát triển và duy trì bởi **Softtynet Co., Ltd.**, kế thừa nền tảng mã nguồn mở từ dự án gốc:
+Phiên bản này kế thừa và mở rộng nền tảng mã nguồn mở từ dự án gốc:
 
 - **Dự án gốc**: [RFS-ADRENO/zca-js](https://github.com/RFS-ADRENO/zca-js)
 - **Tác giả nền tảng ban đầu**: RFS-ADRENO, truong9c2208, JustKemForFun cùng các thành viên đóng góp từ cộng đồng mã nguồn mở.

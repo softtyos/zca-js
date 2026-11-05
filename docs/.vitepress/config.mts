@@ -5,9 +5,9 @@ const SITE_URL = "https://softtyos.github.io/zca-js-docs";
 export default defineConfig({
     lang: "vi-VN",
     title: "@softtynet/zca-js",
-    titleTemplate: ":title | Softtynet Zalo SDK",
+    titleTemplate: ":title | Zalo API SDK",
     description:
-        "Tài liệu chính thức bộ SDK Zalo API (@softtynet/zca-js v2.3.11) phát triển bởi Softtynet Co., Ltd. dành cho Node.js, TypeScript và Bun (333 APIs, 12 Domains).",
+        "Tài liệu chính thức bộ SDK Zalo API (@softtynet/zca-js v2.3.12) dành cho Node.js, TypeScript và Bun (333 APIs, 12 Domains).",
     base: process.env.VITEPRESS_BASE || "/",
     ignoreDeadLinks: true,
     lastUpdated: true,
@@ -25,18 +25,17 @@ export default defineConfig({
             },
         ],
         ["link", { rel: "icon", type: "image/svg+xml", href: "/zca-js-docs/favicon.svg" }],
-        ["meta", { name: "author", content: "Softtynet Co., Ltd." }],
         [
             "meta",
             {
                 name: "keywords",
                 content:
-                    "zalo api, @softtynet/zca-js, zca-js, softtynet, zalo sdk, zalo bot nodejs, zalo typescript, zalo zdb sync, zalo cloud message",
+                    "zalo api, @softtynet/zca-js, zca-js, zalo sdk, zalo bot nodejs, zalo typescript, zalo zdb sync, zalo cloud message",
             },
         ],
         ["meta", { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" }],
         ["meta", { property: "og:type", content: "website" }],
-        ["meta", { property: "og:site_name", content: "@softtynet/zca-js — Softtynet Zalo SDK" }],
+        ["meta", { property: "og:site_name", content: "@softtynet/zca-js — Zalo API SDK" }],
         ["meta", { property: "og:locale", content: "vi_VN" }],
         ["meta", { property: "og:image", content: "https://softtyos.github.io/zca-js-docs/og-banner.svg" }],
         ["meta", { name: "twitter:card", content: "summary_large_image" }],
@@ -62,7 +61,7 @@ export default defineConfig({
         [
             "script",
             { type: "application/ld+json" },
-            '{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"@softtynet/zca-js","version":"2.3.11","description":"Bộ thư viện SDK Zalo API hiện đại dành cho Node.js, TypeScript và Bun với 333 API nguyên bản trên 12 Domains, phát triển bởi Softtynet Co., Ltd.","programmingLanguage":["TypeScript","JavaScript"],"runtimePlatform":["Node.js","Bun"],"codeRepository":"https://github.com/softtyos/zca-js","url":"https://softtyos.github.io/zca-js-docs/","license":"https://opensource.org/licenses/MIT","author":{"@type":"Organization","name":"Softtynet Co., Ltd.","url":"https://github.com/softtyos"},"keywords":["zalo api","zca-js","@softtynet/zca-js","softtynet","zalo sdk nodejs","zalo bot typescript","zalo pc protocol","zalo cloud message"]}',
+            '{"@context":"https://schema.org","@type":"SoftwareSourceCode","name":"@softtynet/zca-js","version":"2.3.12","description":"Bộ thư viện SDK Zalo API hiện đại dành cho Node.js, TypeScript và Bun với 333 API nguyên bản trên 12 Domains.","programmingLanguage":["TypeScript","JavaScript"],"runtimePlatform":["Node.js","Bun"],"codeRepository":"https://github.com/softtyos/zca-js","url":"https://softtyos.github.io/zca-js-docs/","license":"https://opensource.org/licenses/MIT","keywords":["zalo api","zca-js","@softtynet/zca-js","zalo sdk nodejs","zalo bot typescript","zalo pc protocol","zalo cloud message"]}',
         ],
     ],
     transformPageData(pageData) {
@@ -83,7 +82,7 @@ export default defineConfig({
                     content:
                         pageData.frontmatter.description ||
                         pageData.description ||
-                        "Bộ SDK Zalo API Hiện Đại Cho Node.js, TypeScript & Bun bởi Softtynet Co., Ltd.",
+                        "Bộ SDK Zalo API Hiện Đại Cho Node.js, TypeScript & Bun.",
                 },
             ],
         );
@@ -202,7 +201,7 @@ export default defineConfig({
         socialLinks: [{ icon: "github", link: "https://github.com/softtyos/zca-js" }],
         footer: {
             message: "Phát hành theo giấy phép MIT License • Tích hợp chuẩn AI SEO (/llms.txt & /llms-full.txt)",
-            copyright: "Copyright © 2026 Softtynet Co., Ltd. All rights reserved.",
+            copyright: "MIT Licensed • Open Source Community",
         },
     },
 });

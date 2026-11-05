@@ -1,10 +1,10 @@
 # Tài Liệu Kiến Trúc & Cẩm Nang Toàn Tập 256 API (`@softtynet/zca-js` v2.3.11+)
 
-> **Tài liệu lưu hành nội bộ (Internal Enterprise Documentation)**: Thư mục `docs/` đã được cấu hình loại trừ khỏi gói phát hành NPM (`.npmignore` & `package.json#files`), chỉ lưu trữ trên kho Git Private `softtyos/zca-js`.
+> **Tài liệu kỹ thuật**: Thư mục `docs/` đã được cấu hình loại trừ khỏi gói phát hành NPM (`.npmignore` & `package.json#files`), lưu trữ trực tiếp trên kho mã nguồn `softtyos/zca-js`.
 
 ---
 
-## 1. Tổng Quan Kiến Trúc Phân Tầng Doanh Nghiệp (Domain-Driven SDK Architecture)
+## 1. Tổng Quan Kiến Trúc Phân Tầng (Domain-Driven SDK Architecture)
 
 Từ phiên bản `2.2.8`, `@softtynet/zca-js` được tái cấu trúc toàn diện từ mô hình phẳng sang **Kiến trúc Phân tầng theo Miền Nghiệp vụ (Domain-Driven SDK Architecture)** với 5 trụ cột:
 
@@ -255,7 +255,7 @@ const lastSeenReaction = await api.chat.getLastSeenReaction();
 const recentSearches = await api.chat.getRecentSearchList();
 await api.chat.updateRecentSearch({
     listRecent: recentSearches.list_recent,
-    listKeyword: ["Zalo SDK", "Softty"],
+    listKeyword: ["Zalo SDK", "Zalo Bot"],
 });
 ```
 

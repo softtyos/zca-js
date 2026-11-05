@@ -1,6 +1,6 @@
-# @softtynet/zca-js v2.3.11 — Full AI/LLM Technical Reference (333 APIs across 12 Domains)
+# @softtynet/zca-js v2.3.12 — Full AI/LLM Technical Reference (333 APIs across 12 Domains)
 
-Maintained by Softtynet Co., Ltd. | Docs: https://softtyos.github.io/zca-js-docs/ | NPM: npm install @softtynet/zca-js
+Docs: https://softtyos.github.io/zca-js-docs/ | NPM: npm install @softtynet/zca-js
 
 ---
 
@@ -3500,7 +3500,7 @@ export type SendRequestVoiceCallResponse = Record<string, unknown>;
 
 ### sendVoiceCall
 - **Call**: `await api.call.sendVoiceCall(calleeId: string, options: SendVoiceCallOptions = {},)` (or `await api.sendVoiceCall(calleeId: string, options: SendVoiceCallOptions = {},)`)
-- **Endpoint**: GET /api/voicecall/requestcall, /api/voicecall/request
+- **Endpoint**: GET /api/login/getLoginInfo, /api/voicecall/group/requestcall, /api/voicecall/requestcall, /api/voicecall/request
 - **Description**: Khởi tạo cuộc gọi Thoại hoặc Video 1-1 trọn gói (tự động thực hiện 2 bước 11300 + 11301 làm đổ chuông máy người nhận).
 ```ts
 export enum CallType {

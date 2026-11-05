@@ -448,7 +448,7 @@ const friendsEmoji = await api.getFriendsEmojiStatus();
 const recentSearch = await api.getRecentSearchList(0);
 await api.updateRecentSearch({
     listRecent: recentSearch.list_recent,
-    listKeyword: ["SofttyNet", "Zalo SDK"],
+    listKeyword: ["Zalo Bot", "Zalo SDK"],
 });
 ```
 

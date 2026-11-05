@@ -35,8 +35,8 @@ function deployDocs() {
     }
 
     run("git init -b gh-pages", distDir);
-    run('git config user.name "Softtynet CI Bot"', distDir);
-    run('git config user.email "ci-bot@softtynet.com"', distDir);
+    run('git config user.name "Docs CI Bot"', distDir);
+    run('git config user.email "actions@github.com"', distDir);
     run("git add -A", distDir);
     run('git commit -m "docs: auto-deploy VitePress documentation"', distDir);
     run(`git push -f "${docsRepoUrl}" gh-pages:gh-pages`, distDir);

@@ -443,18 +443,18 @@ async function startServer(): Promise<void> {
                     msgType: "chat.list.action",
                     uidFrom: oaId,
                     idTo: api!.getOwnId(),
-                    dName: oaProfiles.get(oaId)?.displayName || "SofttyNet Company Limited",
+                    dName: oaProfiles.get(oaId)?.displayName || "Zalo Official Account Demo",
                     ts: String(nowTs),
                     status: 1,
                     content: {
                         items: [
                             {
                                 type: "l.a.header.full",
-                                title: "Ra mắt nền tảng tự động hóa Softty.net AI",
+                                title: "Ra mắt tính năng quản lý Zalo Official Account",
                                 description:
-                                    "Giải pháp quản lý bán hàng đa kênh và tích hợp Zalo Official Account tự động.",
+                                    "Giải pháp quản lý hội thoại đa kênh và tích hợp Zalo Official Account tự động.",
                                 thumb: oaProfiles.get(oaId)?.cover || oaProfiles.get(oaId)?.avatar || "",
-                                href: "https://www.softty.net",
+                                href: "https://oa.zalo.me",
                             },
                             {
                                 type: "l.a.normal",
@@ -469,7 +469,7 @@ async function startServer(): Promise<void> {
                         data: {
                             canForward: 1,
                             footerList: [
-                                { title: "Website SofttyNet", action: "open_url", href: "https://www.softty.net" },
+                                { title: "Trang chủ OA", action: "open_url", href: "https://oa.zalo.me" },
                                 { title: "Tư vấn ngay", action: "send_msg", text: "Tư vấn giải pháp OA" },
                             ],
                         },
@@ -497,7 +497,7 @@ async function startServer(): Promise<void> {
                     msgType: "webchat",
                     uidFrom: oaId,
                     idTo: api!.getOwnId(),
-                    dName: oaProfiles.get(oaId)?.displayName || "SofttyNet Company Limited",
+                    dName: oaProfiles.get(oaId)?.displayName || "Zalo Official Account Demo",
                     ts: String(nowTs),
                     status: 1,
                     content: "Xin chào! Đây là tin nhắn tương tác từ Zalo OA kèm nút bấm chân trang (footerv2).",
@@ -543,7 +543,7 @@ async function startServer(): Promise<void> {
         console.log(`\n========================================================================`);
         console.log(`🏢 ZCA-JS ZALO OA STUDIO ĐÃ CHẠY TẠI: http://localhost:${PORT}`);
         console.log(`👤 Tài khoản đang đăng nhập: ${api?.getOwnId()}`);
-        console.log(`🎯 Official Account đã nạp: SofttyNet Company Limited (2359864726282056346)`);
+        console.log(`🎯 Official Account đã nạp: Zalo Official Account Demo (2359864726282056346)`);
         console.log(`========================================================================\n`);
     });
 }

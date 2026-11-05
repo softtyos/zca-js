@@ -883,7 +883,7 @@ function generateBrandAndSeoAssets(domains, domainApis, totalApis) {
   <circle cx="1020" cy="140" r="260" fill="#0068FF" fill-opacity="0.18" />
   <circle cx="180" cy="520" r="220" fill="#00E5FF" fill-opacity="0.12" />
   <rect x="80" y="80" width="1040" height="470" rx="28" fill="#0F172A" fill-opacity="0.75" stroke="#1E293B" stroke-width="2" />
-  <text x="140" y="185" fill="#38BDF8" font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="700" letter-spacing="2">SOFTTYNET CO., LTD. • OFFICIAL ZALO SDK</text>
+  <text x="140" y="185" fill="#38BDF8" font-family="Inter, system-ui, sans-serif" font-size="24" font-weight="700" letter-spacing="2">OPEN SOURCE • ZALO API CLIENT SDK</text>
   <text x="140" y="275" fill="#FFFFFF" font-family="Inter, system-ui, sans-serif" font-size="68" font-weight="800">@softtynet/zca-js</text>
   <text x="140" y="345" fill="#94A3B8" font-family="Inter, system-ui, sans-serif" font-size="30" font-weight="500">Bộ SDK Zalo API Hiện Đại Cho Node.js, TypeScript &amp; Bun</text>
   <text x="140" y="435" fill="#E2E8F0" font-family="monospace" font-size="24" font-weight="600">⚡ ${totalApis} Primitive APIs • 12 Domains • ZDB 4.0 Sync • ZCloud AES • Voice/Video Call</text>
@@ -919,12 +919,11 @@ Sitemap: ${SITE_URL}/sitemap.xml
     const llmsLines = [
         `# @softtynet/zca-js (v${pkg.version})`,
         "",
-        `> Bộ thư viện SDK Zalo API hiện đại dành cho Node.js, TypeScript và Bun, được phát triển và duy trì bởi Softtynet Co., Ltd. Cung cấp ${totalApis} API nguyên bản chia theo 12 Domains chuẩn kiến trúc Zalo PC 26.7.10.`,
+        `> Bộ thư viện SDK Zalo API hiện đại dành cho Node.js, TypeScript và Bun. Cung cấp ${totalApis} API nguyên bản chia theo 12 Domains chuẩn kiến trúc Zalo PC 26.7.10.`,
         "",
         "## Thông tin định danh gói (Package Identity)",
         `- **Package NPM**: \`@softtynet/zca-js\``,
         `- **Phiên bản**: \`${pkg.version}\``,
-        `- **Đơn vị phát triển**: Softtynet Co., Ltd.`,
         `- **Repository**: https://github.com/softtyos/zca-js`,
         `- **Website Tài liệu chính thức**: ${SITE_URL}/`,
         `- **Tài liệu đầy đủ cho AI/LLM (1 file duy nhất)**: ${SITE_URL}/llms-full.txt`,
@@ -968,7 +967,7 @@ Sitemap: ${SITE_URL}/sitemap.xml
     const llmsFullLines = [
         `# @softtynet/zca-js v${pkg.version} — Full AI/LLM Technical Reference (${totalApis} APIs across 12 Domains)`,
         "",
-        `Maintained by Softtynet Co., Ltd. | Docs: ${SITE_URL}/ | NPM: npm install @softtynet/zca-js`,
+        `Docs: ${SITE_URL}/ | NPM: npm install @softtynet/zca-js`,
         "",
         "---",
         "",
@@ -1178,12 +1177,12 @@ function generateAllDocs() {
         "---",
         "layout: home",
         `title: "@softtynet/zca-js — Bộ SDK Zalo API Hiện Đại (${totalApis} APIs, 12 Domains)"`,
-        `description: "Tài liệu chính thức @softtynet/zca-js v${pkg.version} bởi Softtynet Co., Ltd. Bộ SDK Zalo API cho Node.js, TypeScript & Bun với ${totalApis} API trên 12 Domains, Đồng bộ ZDB 4.0, ZCloud AES-256-CBC và Gọi thoại/Video Call."`,
+        `description: "Tài liệu chính thức @softtynet/zca-js v${pkg.version}. Bộ SDK Zalo API cho Node.js, TypeScript & Bun với ${totalApis} API trên 12 Domains, Đồng bộ ZDB 4.0, ZCloud AES-256-CBC và Gọi thoại/Video Call."`,
         "",
         "hero:",
         '  name: "@softtynet/zca-js"',
         '  text: "Bộ SDK Zalo API Hiện Đại Cho Node.js, TypeScript & Bun"',
-        `  tagline: "Phiên bản v${pkg.version} phát triển bởi Softtynet Co., Ltd. — ${totalApis} API nguyên bản trên 12 Domains, Đồng bộ ZDB 4.0 từ điện thoại, Giải mã ZCloud AES-256-CBC, Gọi thoại/Video Call và Bảo toàn số nguyên 64-bit."`,
+        `  tagline: "Phiên bản v${pkg.version} — ${totalApis} API nguyên bản trên 12 Domains, Đồng bộ ZDB 4.0 từ điện thoại, Giải mã ZCloud AES-256-CBC, Gọi thoại/Video Call và Bảo toàn số nguyên 64-bit."`,
         "  image:",
         "    src: /logo.svg",
         '    alt: "@softtynet/zca-js Logo"',
@@ -1243,22 +1242,16 @@ function generateAllDocs() {
         "@type": "SoftwareSourceCode",
         name: "@softtynet/zca-js",
         version: pkg.version,
-        description: `Bộ thư viện SDK Zalo API hiện đại dành cho Node.js, TypeScript và Bun với ${totalApis} API nguyên bản trên 12 Domains, phát triển bởi Softtynet Co., Ltd.`,
+        description: `Bộ thư viện SDK Zalo API hiện đại dành cho Node.js, TypeScript và Bun với ${totalApis} API nguyên bản trên 12 Domains.`,
         programmingLanguage: ["TypeScript", "JavaScript"],
         runtimePlatform: ["Node.js", "Bun"],
         codeRepository: "https://github.com/softtyos/zca-js",
         url: `${SITE_URL}/`,
         license: "https://opensource.org/licenses/MIT",
-        author: {
-            "@type": "Organization",
-            name: "Softtynet Co., Ltd.",
-            url: "https://github.com/softtyos",
-        },
         keywords: [
             "zalo api",
             "zca-js",
             "@softtynet/zca-js",
-            "softtynet",
             "zalo sdk nodejs",
             "zalo bot typescript",
             "zalo pc protocol",
@@ -1273,8 +1266,8 @@ const SITE_URL = "${SITE_URL}";
 export default defineConfig({
     lang: "vi-VN",
     title: "@softtynet/zca-js",
-    titleTemplate: ":title | Softtynet Zalo SDK",
-    description: "Tài liệu chính thức bộ SDK Zalo API (@softtynet/zca-js v${pkg.version}) phát triển bởi Softtynet Co., Ltd. dành cho Node.js, TypeScript và Bun (${totalApis} APIs, 12 Domains).",
+    titleTemplate: ":title | Zalo API SDK",
+    description: "Tài liệu chính thức bộ SDK Zalo API (@softtynet/zca-js v${pkg.version}) dành cho Node.js, TypeScript và Bun (${totalApis} APIs, 12 Domains).",
     base: process.env.VITEPRESS_BASE || "/",
     ignoreDeadLinks: true,
     lastUpdated: true,
@@ -1286,11 +1279,10 @@ export default defineConfig({
         ["link", { rel: "preconnect", href: "https://fonts.gstatic.com", crossorigin: "" }],
         ["link", { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400..700;1,400..700&family=Plus+Jakarta+Sans:ital,wght@0,400..800;1,400..800&display=swap" }],
         ["link", { rel: "icon", type: "image/svg+xml", href: "/zca-js-docs/favicon.svg" }],
-        ["meta", { name: "author", content: "Softtynet Co., Ltd." }],
-        ["meta", { name: "keywords", content: "zalo api, @softtynet/zca-js, zca-js, softtynet, zalo sdk, zalo bot nodejs, zalo typescript, zalo zdb sync, zalo cloud message" }],
+        ["meta", { name: "keywords", content: "zalo api, @softtynet/zca-js, zca-js, zalo sdk, zalo bot nodejs, zalo typescript, zalo zdb sync, zalo cloud message" }],
         ["meta", { name: "robots", content: "index, follow, max-image-preview:large, max-snippet:-1" }],
         ["meta", { property: "og:type", content: "website" }],
-        ["meta", { property: "og:site_name", content: "@softtynet/zca-js — Softtynet Zalo SDK" }],
+        ["meta", { property: "og:site_name", content: "@softtynet/zca-js — Zalo API SDK" }],
         ["meta", { property: "og:locale", content: "vi_VN" }],
         ["meta", { property: "og:image", content: "${SITE_URL}/og-banner.svg" }],
         ["meta", { name: "twitter:card", content: "summary_large_image" }],
@@ -1309,7 +1301,7 @@ export default defineConfig({
             ["link", { rel: "canonical", href: canonicalUrl }],
             ["meta", { property: "og:url", content: canonicalUrl }],
             ["meta", { property: "og:title", content: pageData.frontmatter.title || pageData.title || "@softtynet/zca-js" }],
-            ["meta", { property: "og:description", content: pageData.frontmatter.description || pageData.description || "Bộ SDK Zalo API Hiện Đại Cho Node.js, TypeScript & Bun bởi Softtynet Co., Ltd." }],
+            ["meta", { property: "og:description", content: pageData.frontmatter.description || pageData.description || "Bộ SDK Zalo API Hiện Đại Cho Node.js, TypeScript & Bun." }],
         );
     },
     themeConfig: {
@@ -1377,7 +1369,7 @@ export default defineConfig({
         ],
         footer: {
             message: "Phát hành theo giấy phép MIT License • Tích hợp chuẩn AI SEO (/llms.txt & /llms-full.txt)",
-            copyright: "Copyright © 2026 Softtynet Co., Ltd. All rights reserved.",
+            copyright: "MIT Licensed • Open Source Community",
         },
     },
 });

@@ -5,7 +5,7 @@ description: "Tài liệu hướng dẫn chi tiết toàn bộ 18 sự kiện We
 
 # 🔌 Lắng nghe Sự kiện WebSocket & Truy vấn Thời Gian Thực (`api.listener`)
 
-Hệ thống [`api.listener`](file:///Users/bonglv/repos/zca-js/src/apis/listen.ts) duy trì kết nối WebSocket nhị phân thời gian thực với máy chủ Zalo (kèm cơ chế giải mã `AES-GCM 128-bit` + giải nén `Pako` + bảo toàn số nguyên 64-bit `storeAsString`, tự động Ping/Pong, Watchdog `50s` và xoay vòng máy chủ dự phòng).
+Hệ thống `api.listener` duy trì kết nối WebSocket nhị phân thời gian thực với máy chủ Zalo (kèm cơ chế giải mã `AES-GCM 128-bit` + giải nén `Pako` + bảo toàn số nguyên 64-bit `storeAsString`, tự động Ping/Pong, Watchdog `50s` và xoay vòng máy chủ dự phòng).
 
 ---
 

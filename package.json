@@ -1,7 +1,7 @@
 {
     "name": "@softtynet/zca-js",
-    "version": "2.3.12",
-    "description": "Zalo API client library for Node.js and Bun, maintained by Softtynet.",
+    "version": "2.3.13",
+    "description": "Zalo API client library for Node.js, TypeScript, and Bun.",
     "main": "dist/cjs/index.cjs",
     "module": "dist/index.js",
     "types": "dist/index.d.ts",
@@ -59,10 +59,9 @@
         "zalo",
         "zalo-api",
         "zca-js",
-        "softtynet",
         "chatbot"
     ],
-    "author": "Softtynet Co., Ltd. (Based on zca-js by RFS-ADRENO)",
+    "author": "RFS-ADRENO & Open Source Contributors",
     "license": "MIT",
     "dependencies": {
         "crypto-js": "^4.2.0",

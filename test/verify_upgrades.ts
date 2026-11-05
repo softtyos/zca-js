@@ -726,18 +726,18 @@ async function runVerificationSuite() {
                         "2359864726282056346": {
                             userId: "2359864726282056346",
                             username: "2359864726282056346",
-                            displayName: "SofttyNet Company Limited",
-                            zaloName: "SofttyNet Company Limited",
+                            displayName: "Zalo Official Account Demo",
+                            zaloName: "Zalo Official Account Demo",
                             avatar: "https://s120-ava-talk.zadn.vn/oa-avatar.jpg",
                             cover: "https://cover-talk.zadn.vn/oa-cover.png",
                             type: 7,
                             globalId: "O2U3X3L1Z2S260R2B2J382O0",
                             oaInfo: {
-                                description: "SofttyNet là công ty phát triển phần mềm",
+                                description: "Tài khoản Zalo Official Account thử nghiệm",
                                 appUrl: null,
                                 hotline: { label: "Hotline", value: "02862705168", icon: "" },
                                 category: { label: "Danh mục", value: "Doanh nghiệp", icon: "" },
-                                website: { label: "Website", value: "https://www.softty.net", icon: "" },
+                                website: { label: "Website", value: "https://oa.zalo.me", icon: "" },
                                 address: { label: "Địa chỉ", value: "Quận 7, TP.HCM", icon: "" },
                                 openTime: { label: "Giờ mở cửa", value: "08:00 - 17:00", icon: "" },
                                 group_msg: 0,
@@ -770,11 +770,11 @@ async function runVerificationSuite() {
         if (u.pathname === "/api/social/friend/get-bizacc") {
             return makeEncryptedZaloHttpResponse(TEST_SECRET_KEY, {
                 biz: {
-                    desc: "SofttyNet Software",
+                    desc: "Demo Business",
                     cate: 1,
                     addr: "Quận 7, TP.HCM",
-                    website: "https://www.softty.net",
-                    email: "contact@softty.net",
+                    website: "https://oa.zalo.me",
+                    email: "contact@example.com",
                 },
                 setting_start_page: null,
                 pkgId: 2,
@@ -3032,16 +3032,16 @@ async function runVerificationSuite() {
         msgType: "webchat",
         uidFrom: "2359864726282056346",
         idTo: TEST_UID,
-        dName: "SofttyNet Company Limited",
+        dName: "Zalo Official Account Demo",
         ts: "1760000099000",
         status: 1,
-        content: "Xin chào anh/chị! SofttyNet có thể hỗ trợ gì cho anh/chị hôm nay?",
+        content: "Xin chào anh/chị! OA có thể hỗ trợ gì cho anh/chị hôm nay?",
         footerv2: {
             type: 0,
             data: {
                 canForward: 1,
                 footerList: [
-                    { title: "Xem bảng giá", action: "open_url", href: "https://www.softty.net/pricing" },
+                    { title: "Xem bảng giá", action: "open_url", href: "https://oa.zalo.me/pricing" },
                     { title: "Chat với tư vấn viên", action: "send_msg", text: "Tư vấn ngay" },
                 ],
             },
@@ -3090,7 +3090,7 @@ async function runVerificationSuite() {
     const oaChatMsg = new UserMessage(TEST_UID, sampleOAChatMsgRaw, true);
     assert.equal(oaChatMsg.isOAMessage(), true, "Tin nhắn hội thoại OA phải được nhận diện isOAMessage() === true");
     assert.equal(oaChatMsg.oaData?.kind, "oa_chat");
-    assert.equal(oaChatMsg.oaData?.text, "Xin chào anh/chị! SofttyNet có thể hỗ trợ gì cho anh/chị hôm nay?");
+    assert.equal(oaChatMsg.oaData?.text, "Xin chào anh/chị! OA có thể hỗ trợ gì cho anh/chị hôm nay?");
     assert.equal(oaChatMsg.oaData?.topOut, true);
     assert.equal(oaChatMsg.oaData?.canReply, true);
     assert.equal(oaChatMsg.oaData?.footer?.footerList.length, 2);
@@ -3142,16 +3142,16 @@ async function runVerificationSuite() {
     // 11.2 Kiểm định HTTP APIs cho Zalo OA (getOAProfile, blockOA, unblockOA, convertOAIds)
     const oaProfile = await api.business.getOAProfile("2359864726282056346");
     assert.equal(oaProfile.oaId, "2359864726282056346");
-    assert.equal(oaProfile.displayName, "SofttyNet Company Limited");
+    assert.equal(oaProfile.displayName, "Zalo Official Account Demo");
     assert.equal(oaProfile.type, 7);
     assert.equal(oaProfile.isOA, true);
     assert.equal(oaProfile.isVerified, true);
     assert.equal(oaProfile.isZaloBot, false);
     assert.equal(oaProfile.hotline, "02862705168");
-    assert.equal(oaProfile.website, "https://www.softty.net");
+    assert.equal(oaProfile.website, "https://oa.zalo.me");
     assert.equal(oaProfile.category, "Doanh nghiệp");
     assert.equal(oaProfile.openTime, "08:00 - 17:00");
-    assert.equal(oaProfile.email, "contact@softty.net");
+    assert.equal(oaProfile.email, "contact@example.com");
     assert.equal(oaProfile.dnrStatus.enableDnr, true);
     assert.ok(normalizeOAProfile("2359864726282056346", oaProfile.rawProfile).isVerified);
 
@@ -3292,7 +3292,7 @@ async function runVerificationSuite() {
         receivedOAMessages.some(
             (m) =>
                 m.oaData?.kind === "oa_chat" &&
-                m.oaData.text.includes("SofttyNet có thể hỗ trợ gì") &&
+                m.oaData.text.includes("OA có thể hỗ trợ gì") &&
                 m.oaData.footer?.footerList.length === 2,
         ),
         "Tin nhắn OA qua WSS cmd=570 phải giải mã đầy đủ nội dung và footerv2",

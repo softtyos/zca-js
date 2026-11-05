@@ -1,12 +1,12 @@
 ---
 layout: home
 title: "@softtynet/zca-js — Bộ SDK Zalo API Hiện Đại (333 APIs, 12 Domains)"
-description: "Tài liệu chính thức @softtynet/zca-js v2.3.11 bởi Softtynet Co., Ltd. Bộ SDK Zalo API cho Node.js, TypeScript & Bun với 333 API trên 12 Domains, Đồng bộ ZDB 4.0, ZCloud AES-256-CBC và Gọi thoại/Video Call."
+description: "Tài liệu chính thức @softtynet/zca-js v2.3.12. Bộ SDK Zalo API cho Node.js, TypeScript & Bun với 333 API trên 12 Domains, Đồng bộ ZDB 4.0, ZCloud AES-256-CBC và Gọi thoại/Video Call."
 
 hero:
     name: "@softtynet/zca-js"
     text: "Bộ SDK Zalo API Hiện Đại Cho Node.js, TypeScript & Bun"
-    tagline: "Phiên bản v2.3.11 phát triển bởi Softtynet Co., Ltd. — 333 API nguyên bản trên 12 Domains, Đồng bộ ZDB 4.0 từ điện thoại, Giải mã ZCloud AES-256-CBC, Gọi thoại/Video Call và Bảo toàn số nguyên 64-bit."
+    tagline: "Phiên bản v2.3.12 — 333 API nguyên bản trên 12 Domains, Đồng bộ ZDB 4.0 từ điện thoại, Giải mã ZCloud AES-256-CBC, Gọi thoại/Video Call và Bảo toàn số nguyên 64-bit."
     image:
         src: /logo.svg
         alt: "@softtynet/zca-js Logo"
